@@ -370,7 +370,8 @@ class Ui_MainWindow(object):
         self.actionSettings.setText(_translate("MainWindow", "Settings"))
         self.actionRescan.setText(_translate("MainWindow", "Rescan"))
         self.actionRescan.setShortcut(_translate("MainWindow", "Ctrl+S"))
-
+        
+        
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)

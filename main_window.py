@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import file_explorer
+import file_explorer, settings
 import modules.friture as friture, modules.friture_extensions as friture_extensions
 import main_window_ui
 import json
@@ -7,8 +7,18 @@ import re
 import time
 import yodel, pyaudio
 
+class player_functions():
+    def __init__(self):
+        pass
+    
+    def play_track(self, filename = ""):
+        pass
+        
+    
 
-class main_window_player(main_window_ui.Ui_MainWindow, QtWidgets.QMainWindow):
+
+
+class main_window_player(main_window_ui.Ui_MainWindow, QtWidgets.QMainWindow, player_functions):
     
     def __init__(self): 
         super(main_window_player, self).__init__()
@@ -19,6 +29,7 @@ class main_window_player(main_window_ui.Ui_MainWindow, QtWidgets.QMainWindow):
         self.attributes_dec()
         self.button_actions()
         
+        
     def pallet_declaration(self):
         self.tableView_music.setStyleSheet(("QTableView { selection-background-color: rgb(255,245,213); selection-color: black; }"))
     
@@ -27,12 +38,13 @@ class main_window_player(main_window_ui.Ui_MainWindow, QtWidgets.QMainWindow):
            
     def all_actions(self):
         self.actionAdd_Files_to_librayr.triggered.connect(self.file_exp)
+        self.actionSettings.triggered.connect(self.settings_caller)
         self.actionRescan.triggered.connect(self.populate_trees)
         self.toolButton.pressed.connect(self.search_library)
         self.lineEdit.textChanged.connect(self.lib_refresh)
     
     def button_actions(self):
-        self.play_button.pressed.connect(self.trial)
+        self.play_button.pressed.connect(self.play_track)
         self.skip_back.pressed.connect(self.trial)
         self.skip_track_back.pressed.connect(self.trial)
         self.stop.pressed.connect(self.trial)
@@ -41,7 +53,7 @@ class main_window_player(main_window_ui.Ui_MainWindow, QtWidgets.QMainWindow):
         self.skip_ford.pressed.connect(self.trial)
         self.shuffle_btn.pressed.connect(self.trial)
         self.mute_btn.pressed.connect(self.trial)
-        self.volume_btn.pressed.connect(self.trial)
+        # self.volume_btn.pressed.connect(self.trial)
 
     def searching_alg(self, search_text = "", string = ""):
         match = [bool(re.search(search_text,string.capitalize())), 
@@ -144,8 +156,11 @@ class main_window_player(main_window_ui.Ui_MainWindow, QtWidgets.QMainWindow):
     def file_exp(self):
         """displays the file explorer"""
         self.wrapper_second_window(file_explorer.FileBrowser)
-
-
+    
+    def settings_caller(self):
+        """displays the settings"""
+        self.wrapper_second_window(settings.settings_main_window)
+        
     def lib_refresh(self):
         if self.lineEdit.text() == "": 
             self.tableView_music.clearSelection()
@@ -158,8 +173,9 @@ class main_window_player(main_window_ui.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def trial(self):
         print("trial")
-    
-    
+
+
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)

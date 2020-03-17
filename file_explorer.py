@@ -43,7 +43,7 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
     def folder_scanner(self):
         self.progressBar_file_add.setProperty("value",0)
         self.scan_folder_ok() 
-        with open('resources\\file_explorer\\config.txt') as json_file:
+        with open('config.txt') as json_file:
             data = json.load(json_file)
             stringlist = data["file_path"]
             format_accepted = set(data["file_format_specifier"])
@@ -119,7 +119,7 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
     def context_list_view(self):         
         # this writes the list view and updates it
         # accordingly " as add a folder " is clicked
-        with open('resources\\file_explorer\\config.txt') as json_file:
+        with open('config.txt') as json_file:
             data = json.load(json_file)
             stringlist = data["file_path"]
             self.model_list.clear()
@@ -135,7 +135,7 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
         self.listView.clicked['QModelIndex'].connect(self.update_check_box)     
     
     
-    def settings_file_update(self, string, flag = None, owr = False, emp = False, filename = 'resources\\file_explorer\\config.txt'):
+    def settings_file_update(self, string, flag = None, owr = False, emp = False, filename = 'config.txt'):
         with open(filename) as json_file:
             data = json.load(json_file)
             if string not in data[flag] and not (owr):
