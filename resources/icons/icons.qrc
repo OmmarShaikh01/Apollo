@@ -1,0 +1,15 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>noun_Stop_219790.svg</file>
+    <file>noun_Folder_2426752.svg</file>
+    <file>noun_forward_1939968.svg</file>
+    <file>noun_Mute_1939974.svg</file>
+    <file>noun_Next_1939966.svg</file>
+    <file>noun_pause_1939967.svg</file>
+    <file>noun_play_1939965.svg</file>
+    <file>noun_previous_1939964.svg</file>
+    <file>noun_rewind_1939969.svg</file>
+    <file>noun_Shuffle_1939972.svg</file>
+    <file>noun_Sound_1939979.svg</file>
+  </qresource>
+</RCC>
