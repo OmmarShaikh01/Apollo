@@ -7,18 +7,8 @@ import re
 import time
 import yodel, pyaudio
 
-class player_functions():
-    def __init__(self):
-        pass
-    
-    def play_track(self, filename = ""):
-        pass
-        
-    
 
-
-
-class main_window_player(main_window_ui.Ui_MainWindow, QtWidgets.QMainWindow, player_functions):
+class main_window_player(main_window_ui.Ui_MainWindow, QtWidgets.QMainWindow):
     
     def __init__(self): 
         super(main_window_player, self).__init__()
@@ -44,7 +34,7 @@ class main_window_player(main_window_ui.Ui_MainWindow, QtWidgets.QMainWindow, pl
         self.lineEdit.textChanged.connect(self.lib_refresh)
     
     def button_actions(self):
-        self.play_button.pressed.connect(self.play_track)
+        self.play_button.pressed.connect(self.trial)
         self.skip_back.pressed.connect(self.trial)
         self.skip_track_back.pressed.connect(self.trial)
         self.stop.pressed.connect(self.trial)
@@ -54,7 +44,19 @@ class main_window_player(main_window_ui.Ui_MainWindow, QtWidgets.QMainWindow, pl
         self.shuffle_btn.pressed.connect(self.trial)
         self.mute_btn.pressed.connect(self.trial)
         # self.volume_btn.pressed.connect(self.trial)
+        
+        
+### button functions ###########################################################
+################################################################################
 
+
+
+################################################################################
+################################################################################
+
+
+### misc functions #############################################################
+################################################################################
     def searching_alg(self, search_text = "", string = ""):
         match = [bool(re.search(search_text,string.capitalize())), 
         bool(re.search(search_text,string.upper())), 
@@ -85,16 +87,8 @@ class main_window_player(main_window_ui.Ui_MainWindow, QtWidgets.QMainWindow, pl
         library
         """
         self.table_model = QtGui.QStandardItemModel()
-        dicto = {'Abs Path': 1, 'File Name': 1,
-                 'Filesize': 1, 'Album': 1,
-                 'Albumartist': 1, 'Artist': 1,
-                 'Audio Offset': 0, 'Bitrate': 1,
-                 'Channels': 1, 'Composer': 1,
-                 'Disc': 1, 'Disc Total': 1,
-                 'Duration': 1, 'Genre': 1,
-                 'Samplerate': 1, 'Title': 1,
-                 'Track': 1, 'Track Total': 1,
-                 'Year': 1, 'Priority': 1}
+        with open("config.txt") as json_file:
+            dicto = (json.load(json_file))["column_displayed"]
         count = 0
         for j in dicto.keys():
             self.table_model.setHorizontalHeaderItem(count, QtGui.QStandardItem(str(j)))
@@ -175,7 +169,8 @@ class main_window_player(main_window_ui.Ui_MainWindow, QtWidgets.QMainWindow, pl
         print("trial")
 
 
-
+################################################################################
+################################################################################
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)

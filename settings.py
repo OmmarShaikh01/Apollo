@@ -21,9 +21,21 @@ class settings_main_window(settings_ui.Ui_setting_main_window, QtWidgets.QMainWi
         self.toolButton_remove.pressed.connect(self.path_removed)     
         self.toolButton_refresh.pressed.connect(self.path_refresh)
         
+    
+    def apply_pressed(self):
+        self.update_check_box(self.file_ext_list, "file_format_selected")
+        print(self.config_dict)
+        if len(self.config_dict) != 0:  
+            self.settings_file_update(self.config_dict,dire = True)
+        
+
+    
+### misc functions #############################################################
+################################################################################
     def read_config(self, flag = ''):
         with open("config.txt") as config:
             self.config_dict = json.load(config)
+            
             
     def settings_file_update(self, string, flag = None, owr = False, emp = False, filename = 'config.txt', dire = False):
         if dire == False:
@@ -42,17 +54,60 @@ class settings_main_window(settings_ui.Ui_setting_main_window, QtWidgets.QMainWi
         if dire == True:
             with open(filename, 'w') as json_file:
                 json.dump(string, json_file, indent =2)
-                json_file.close()
+                json_file.close()    
     
-    def apply_pressed(self):
-        self.update_check_box(self.file_ext_list, "file_format_selected")
+    
+    def update_check_box(self, view, dtype = ''):
+        model = view.model()
+        index = 0; state = []
+        while index >= 0:
+            item = model.item(index)
+            if item == None:
+                break
+            if item.checkState() == 0:    
+                state.append(0)
+            else:
+                state.append(1)
+            index += 1
+        for indx, (key,value) in enumerate(self.config_dict[dtype].items()):
+            self.config_dict[dtype][key] = state[indx]
         print(self.config_dict)
-        if len(self.config_dict) != 0:  
-            self.settings_file_update(self.config_dict,dire = True)
+    
+    
+    def cancle(self):
+        self.close()
         
+        
+    def trial(self):
+        print("TRIAL")
+        
+        
+    def wrapper_second_window(self, cls):# wraps and displays second window
+        self.ui = cls()
+        return self.ui.show()
+    
+    
+    def file_exp(self):
+        """displays the file explorer"""
+        self.wrapper_second_window(file_explorer.FileBrowser)
+        
+        
+################################################################################
+################################################################################
+
+
+### player tab functions########################################################
+################################################################################
     def player_pressed(self):
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(0)       
+
+
+################################################################################
+################################################################################
+
         
+### library tab functions#######################################################
+################################################################################
     def library_pressed(self):
         self.path_refresh()
         model = QtGui.QStandardItemModel()
@@ -97,36 +152,13 @@ class settings_main_window(settings_ui.Ui_setting_main_window, QtWidgets.QMainWi
             check = QtCore.Qt.Checked
             temp_model.setCheckState(check)
             model.appendRow(temp_model)
-        self.file_path_list.setModel(model)
-         
-    def trial(self):
-        print("TRIAL")
-        
-    def wrapper_second_window(self, cls):# wraps and displays second window
-        self.ui = cls()
-        return self.ui.show()
-    
-    def file_exp(self):
-        """displays the file explorer"""
-        self.wrapper_second_window(file_explorer.FileBrowser)
-        
-    def update_check_box(self, view, dtype = ''):
-        model = view.model()
-        index = 0; state = []
-        while index >= 0:
-            item = model.item(index)
-            if item == None:
-                break
-            if item.checkState() == 0:    
-                state.append(0)
-            else:
-                state.append(1)
-            index += 1
-        for indx, (key,value) in enumerate(self.config_dict[dtype].items()):
-            self.config_dict[dtype][key] = state[indx]
-        print(self.config_dict)
-    def cancle(self):
-        self.close() 
+        self.file_path_list.setModel(model)        
+
+
+################################################################################
+################################################################################
+
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
