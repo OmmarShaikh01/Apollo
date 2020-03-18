@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>style.css</file>
     <file>noun_Stop_219790.svg</file>
     <file>noun_Folder_2426752.svg</file>
     <file>noun_forward_1939968.svg</file>

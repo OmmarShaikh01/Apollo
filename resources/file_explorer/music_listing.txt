@@ -1,11 +1,6 @@
 {
   "music_files": [
     {
-      "E:/musiccc/c": [
-        "Don DiabloTake Her Place Feat A R I Z O N A Don Diablo S Vip Mix  zippya.mp3"
-      ]
-    },
-    {
       "E:/musiccc": [
         "Dj SnakeMiddle feat. Bipolar Sunshine.mp3",
         "DNCE FT NICKI MINAJKissing Strange.mp3",
@@ -27,6 +22,11 @@
         "Firebeatz & KSHMR feat. Luciana vs. BlasterjaxxNo Heroes (DELIRRION Mash-up).mp3",
         "Florian PicassoFinal Call (Orignal Mix).mp3",
         "Flux PavilionEmotional (feat. Matthew Koma).mp3"
+      ]
+    },
+    {
+      "E:/musiccc\\c": [
+        "Don DiabloTake Her Place Feat A R I Z O N A Don Diablo S Vip Mix  zippya.mp3"
       ]
     }
   ]

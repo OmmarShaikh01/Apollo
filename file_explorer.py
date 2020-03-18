@@ -5,7 +5,7 @@ import re, os, json, tinytag, sys
 from file_explorer_ui import * 
 
 class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, *args):
         super(FileBrowser, self).__init__()
         self.setupUi(self)
         self.treeView.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -46,10 +46,8 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
         with open('config.txt') as json_file:
             data = json.load(json_file)
             stringlist = data["file_path"]
-            format_accepted = set(data["file_format_specifier"])
-            all_items = []
-            temp = []
-            temp1 = []
+            format_accepted = set([key for (key,value) in data["file_format_selected"].items() if value == 1 ])
+            all_items = []; temp = []; temp1 = []
         for path in stringlist:                
             file_bulk = os.walk(path)
             self.outputlabel.setText("Scanning Library")
@@ -96,7 +94,7 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
                 string.append(data)
             index = index + 1
         self.settings_file_update(string, flag="file_path", owr=True)
-        
+        self.cancle()
                 
     def populate(self):
         path = r""
