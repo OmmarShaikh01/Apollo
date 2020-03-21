@@ -1,37 +1,45 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import settings_ui, file_explorer
+import preferences_ui, file_explorer
 import re, time, json
 import yodel, pyaudio
 
 
-class settings_main_window(settings_ui.Ui_setting_main_window, QtWidgets.QMainWindow):
+class settings_main_window(preferences_ui.Ui_preferences_window, QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.button_declaration()
         self.read_config()
-    
-    
-    def button_declaration(self):
-        self.pushButton_player.pressed.connect(self.player_pressed)
-        self.pushButton_library.pressed.connect(self.library_pressed)
-        self.apply_btn.pressed.connect(self.apply_pressed)
-        self.cancel_btn.pressed.connect(self.cancle)
-        self.toolButton_add.pressed.connect(self.file_exp)
-        self.toolButton_remove.pressed.connect(self.path_removed)     
-        self.toolButton_refresh.pressed.connect(self.path_refresh)
+        self.button_declaration()
+        self.initilization_run()
         
+    def initilization_run(self):
+        self.file_types_list_pop()
+    
+    def button_declaration(self):       
+        self.general_btn.pressed.connect(lambda : self.all_tabs_stacked.setCurrentIndex(0)) 
+        self.now_playing_btn.pressed.connect(lambda : self.all_tabs_stacked.setCurrentIndex(1))
+        self.layout_btn.pressed.connect(lambda : self.all_tabs_stacked.setCurrentIndex(2))
+        self.library_btn.pressed.connect(lambda : self.all_tabs_stacked.setCurrentIndex(3)) 
+        self.tags_btn.pressed.connect(lambda : self.all_tabs_stacked.setCurrentIndex(4))
+        self.players_btn.pressed.connect(lambda : self.all_tabs_stacked.setCurrentIndex(5))
+        self.hotkeys_btn.pressed.connect(lambda : self.all_tabs_stacked.setCurrentIndex(6))
+        self.sort_gp_btn.pressed.connect(lambda : self.all_tabs_stacked.setCurrentIndex(7))
+        self.file_con_btn.pressed.connect(lambda : self.all_tabs_stacked.setCurrentIndex(8))
+        self.tools_btn.pressed.connect(lambda : self.all_tabs_stacked.setCurrentIndex(9))        
+        self.apply_button.pressed.connect(self.apply_pressed)
+        self.save_button.pressed.connect(self.save_pressed)
+        self.file_types_list_pop()
     
     def apply_pressed(self):
-        self.update_check_box(self.file_ext_list, "file_format_selected")
-        print(self.config_dict)
-        if len(self.config_dict) != 0:  
-            self.settings_file_update(self.config_dict,dire = True)
+        print("apply")
         
-
-    
+    def save_pressed(self):
+        print("save")
+            
+        
 ### misc functions #############################################################
 ################################################################################
+    
     def read_config(self, flag = ''):
         with open("config.txt") as config:
             self.config_dict = json.load(config)
@@ -96,10 +104,27 @@ class settings_main_window(settings_ui.Ui_setting_main_window, QtWidgets.QMainWi
 ################################################################################
 
 
-### player tab functions########################################################
+### general tab functions########################################################
 ################################################################################
-    def player_pressed(self):
-        self.stackedWidget.setCurrentIndex(0)       
+    def application_cox_fun(self):
+        pass
+        
+    def file_types_list_pop(self):
+        check_state = [1, 1, 1, 1, 0, 1, 0, 0]
+        for ind, value in enumerate(check_state):
+            if value == 1:
+                check_state[ind] = QtCore.Qt.Checked
+            else:
+                check_state[ind] = QtCore.Qt.Unchecked
+                
+        self.checkBox_77.setCheckState(check_state[0]) ## wav
+        self.checkBox_72.setCheckState(check_state[1]) ## aiff
+        self.checkBox_73.setCheckState(check_state[2]) ## alac
+        self.checkBox_74.setCheckState(check_state[3]) ## mp3
+        self.checkBox_71.setCheckState(check_state[4]) ## aac
+        self.checkBox_75.setCheckState(check_state[5]) ## ogg
+        self.checkBox_76.setCheckState(check_state[6]) ## wma
+        self.checkBox_78.setCheckState(check_state[7]) ## flac
 
 
 ################################################################################

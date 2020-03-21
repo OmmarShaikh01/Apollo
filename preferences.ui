@@ -860,6 +860,26 @@ QPushButton:pressed {
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="styleSheet">
+             <string notr="true"> QScrollBar:vertical {
+     border: 2px solid grey;
+     background: #32CC99;
+     width: 10px;
+     margin: 0px 0 0px 0;
+ }
+ QScrollBar::handle:vertical {
+background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.130682 rgba(59, 78, 97, 255), stop:0.539773 rgba(40, 88, 135, 255), stop:0.744318 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));
+     min-height: 20px;
+ }
+
+ QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+none
+ }
+
+ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+background-color: rgb(36, 41, 46);
+ }</string>
+            </property>
             <property name="currentIndex">
              <number>0</number>
             </property>
@@ -1352,8 +1372,361 @@ color: #D0D4D9;
                  <property name="spacing">
                   <number>0</number>
                  </property>
-                 <item row="0" column="0">
-                  <widget class="QListView" name="listView"/>
+                 <item row="1" column="0">
+                  <layout class="QGridLayout" name="gridLayout_44">
+                   <item row="0" column="0">
+                    <widget class="QFrame" name="verticalFrame_3">
+                     <layout class="QGridLayout" name="gridLayout_45">
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="horizontalSpacing">
+                       <number>0</number>
+                      </property>
+                      <property name="verticalSpacing">
+                       <number>4</number>
+                      </property>
+                      <item row="6" column="0">
+                       <widget class="QCheckBox" name="checkBox_77">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.wav</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QCheckBox" name="checkBox_72">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.aiff</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="0">
+                       <widget class="QCheckBox" name="checkBox_73">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.alac</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="0">
+                       <widget class="QCheckBox" name="checkBox_74">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.mp3</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="0">
+                       <widget class="QCheckBox" name="checkBox_71">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.aac</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="4" column="0">
+                       <widget class="QCheckBox" name="checkBox_75">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.ogg</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="5" column="0">
+                       <widget class="QCheckBox" name="checkBox_76">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.wma</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QLabel" name="label_3">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="1">
+                       <widget class="QLabel" name="label_5">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="1">
+                       <widget class="QLabel" name="label_4">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="1">
+                       <widget class="QLabel" name="label_6">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="4" column="1">
+                       <widget class="QLabel" name="label_7">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="5" column="1">
+                       <widget class="QLabel" name="label_8">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="6" column="1">
+                       <widget class="QLabel" name="label_9">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="7" column="1">
+                       <widget class="QLabel" name="label_10">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="7" column="0">
+                       <widget class="QCheckBox" name="checkBox_78">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.flac</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                  </layout>
                  </item>
                 </layout>
                </widget>
@@ -1693,7 +2066,7 @@ color: #D0D4D9;
                       <x>0</x>
                       <y>0</y>
                       <width>500</width>
-                      <height>196</height>
+                      <height>205</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_22">
@@ -1908,7 +2281,7 @@ color: #D0D4D9;
                       <x>0</x>
                       <y>0</y>
                       <width>500</width>
-                      <height>262</height>
+                      <height>253</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_12">
@@ -3473,9 +3846,9 @@ padding: 1px;
                 </property>
                 <property name="styleSheet">
                  <string notr="true"> QScrollBar:vertical {
-     border: none;
+     border:1px solid black;
      background: #32CC99;
-     width: 15px;
+     width: 10px;
      margin: 0px 0 0px 0;
  }
  QScrollBar::handle:vertical {
@@ -3521,7 +3894,7 @@ none
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>495</width>
+                   <width>500</width>
                    <height>940</height>
                   </rect>
                  </property>
