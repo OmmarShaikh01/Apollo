@@ -855,7 +855,7 @@ QPushButton:pressed {
             </layout>
            </widget>
           </item>
-          <item row="0" column="1">
+          <item row="0" column="2">
            <widget class="QStackedWidget" name="all_tabs_stacked">
             <property name="enabled">
              <bool>true</bool>
@@ -902,6 +902,18 @@ background-color: rgb(36, 41, 46);
               </property>
               <item row="3" column="0">
                <widget class="QGroupBox" name="misc_box">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>280</height>
+                 </size>
+                </property>
                 <property name="styleSheet">
                  <string notr="true">background-color: #24292E ;
 font: 10pt &quot;MS Shell Dlg 2&quot;;
@@ -939,13 +951,13 @@ color: #D0D4D9;
                   <widget class="QFrame" name="verticalFrame_2">
                    <layout class="QVBoxLayout" name="verticalLayout_3">
                     <property name="spacing">
-                     <number>2</number>
+                     <number>4</number>
                     </property>
                     <property name="leftMargin">
                      <number>0</number>
                     </property>
                     <property name="topMargin">
-                     <number>0</number>
+                     <number>6</number>
                     </property>
                     <property name="rightMargin">
                      <number>0</number>
@@ -954,14 +966,9 @@ color: #D0D4D9;
                      <number>0</number>
                     </property>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_9">
-                      <property name="sizeConstraint">
-                       <enum>QLayout::SetMinimumSize</enum>
-                      </property>
-                      <item>
-                       <widget class="QCheckBox" name="checkBox_12">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
+                     <widget class="QCheckBox" name="checkBox_10">
+                      <property name="styleSheet">
+                       <string notr="true">QCheckBox {
     spacing: 5px;
 }
 QCheckBox::indicator {
@@ -986,23 +993,16 @@ border-color: #000000;
 min-width: 1em;
 padding: 1px;
 }</string>
-                        </property>
-                        <property name="text">
-                         <string>CheckBox</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                      </property>
+                      <property name="text">
+                       <string>Warn When Duplicate Tracks are Added to Playlist</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_4">
-                      <property name="sizeConstraint">
-                       <enum>QLayout::SetMinimumSize</enum>
-                      </property>
-                      <item>
-                       <widget class="QCheckBox" name="checkBox_7">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
+                     <widget class="QCheckBox" name="checkBox_11">
+                      <property name="styleSheet">
+                       <string notr="true">QCheckBox {
     spacing: 5px;
 }
 QCheckBox::indicator {
@@ -1027,23 +1027,16 @@ border-color: #000000;
 min-width: 1em;
 padding: 1px;
 }</string>
-                        </property>
-                        <property name="text">
-                         <string>CheckBox</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                      </property>
+                      <property name="text">
+                       <string>Warn When Files Are Not Recognized</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_6">
-                      <property name="sizeConstraint">
-                       <enum>QLayout::SetMinimumSize</enum>
-                      </property>
-                      <item>
-                       <widget class="QCheckBox" name="checkBox_9">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
+                     <widget class="QCheckBox" name="checkBox_71">
+                      <property name="styleSheet">
+                       <string notr="true">QCheckBox {
     spacing: 5px;
 }
 QCheckBox::indicator {
@@ -1068,23 +1061,16 @@ border-color: #000000;
 min-width: 1em;
 padding: 1px;
 }</string>
-                        </property>
-                        <property name="text">
-                         <string>CheckBox</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                      </property>
+                      <property name="text">
+                       <string>Confirm When Tags Are Modified</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_8">
-                      <property name="sizeConstraint">
-                       <enum>QLayout::SetMinimumSize</enum>
-                      </property>
-                      <item>
-                       <widget class="QCheckBox" name="checkBox_11">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
+                     <widget class="QCheckBox" name="checkBox_12">
+                      <property name="styleSheet">
+                       <string notr="true">QCheckBox {
     spacing: 5px;
 }
 QCheckBox::indicator {
@@ -1109,23 +1095,16 @@ border-color: #000000;
 min-width: 1em;
 padding: 1px;
 }</string>
-                        </property>
-                        <property name="text">
-                         <string>CheckBox</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                      </property>
+                      <property name="text">
+                       <string>Confirm Permanant File Deletion</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_3">
-                      <property name="sizeConstraint">
-                       <enum>QLayout::SetMinimumSize</enum>
-                      </property>
-                      <item>
-                       <widget class="QCheckBox" name="checkBox_6">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
+                     <widget class="QCheckBox" name="checkBox_72">
+                      <property name="styleSheet">
+                       <string notr="true">QCheckBox {
     spacing: 5px;
 }
 QCheckBox::indicator {
@@ -1150,23 +1129,16 @@ border-color: #000000;
 min-width: 1em;
 padding: 1px;
 }</string>
-                        </property>
-                        <property name="text">
-                         <string>CheckBox</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                      </property>
+                      <property name="text">
+                       <string>Confirm Removal of File from Playlist</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_5">
-                      <property name="sizeConstraint">
-                       <enum>QLayout::SetMinimumSize</enum>
-                      </property>
-                      <item>
-                       <widget class="QCheckBox" name="checkBox_5">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
+                     <widget class="QCheckBox" name="checkBox_73">
+                      <property name="styleSheet">
+                       <string notr="true">QCheckBox {
     spacing: 5px;
 }
 QCheckBox::indicator {
@@ -1191,23 +1163,16 @@ border-color: #000000;
 min-width: 1em;
 padding: 1px;
 }</string>
-                        </property>
-                        <property name="text">
-                         <string>CheckBox</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                      </property>
+                      <property name="text">
+                       <string>Confirm When Modifing Artwork</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_10">
-                      <property name="sizeConstraint">
-                       <enum>QLayout::SetMinimumSize</enum>
-                      </property>
-                      <item>
-                       <widget class="QCheckBox" name="checkBox_13">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
+                     <widget class="QCheckBox" name="checkBox_74">
+                      <property name="styleSheet">
+                       <string notr="true">QCheckBox {
     spacing: 5px;
 }
 QCheckBox::indicator {
@@ -1232,23 +1197,16 @@ border-color: #000000;
 min-width: 1em;
 padding: 1px;
 }</string>
-                        </property>
-                        <property name="text">
-                         <string>CheckBox</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                      </property>
+                      <property name="text">
+                       <string>Confirm Removal Of Dead Links From Library</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_7">
-                      <property name="sizeConstraint">
-                       <enum>QLayout::SetMinimumSize</enum>
-                      </property>
-                      <item>
-                       <widget class="QCheckBox" name="checkBox_8">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
+                     <widget class="QCheckBox" name="checkBox_13">
+                      <property name="styleSheet">
+                       <string notr="true">QCheckBox {
     spacing: 5px;
 }
 QCheckBox::indicator {
@@ -1273,23 +1231,16 @@ border-color: #000000;
 min-width: 1em;
 padding: 1px;
 }</string>
-                        </property>
-                        <property name="text">
-                         <string>CheckBox</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                      </property>
+                      <property name="text">
+                       <string>Confirm When Switcing Between Audio Devices</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_11">
-                      <property name="sizeConstraint">
-                       <enum>QLayout::SetMinimumSize</enum>
-                      </property>
-                      <item>
-                       <widget class="QCheckBox" name="checkBox_10">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
+                     <widget class="QCheckBox" name="checkBox_75">
+                      <property name="styleSheet">
+                       <string notr="true">QCheckBox {
     spacing: 5px;
 }
 QCheckBox::indicator {
@@ -1314,419 +1265,61 @@ border-color: #000000;
 min-width: 1em;
 padding: 1px;
 }</string>
-                        </property>
-                        <property name="text">
-                         <string>CheckBox</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                      </property>
+                      <property name="text">
+                       <string>Confirm When New Items are Added to the library</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBox_76">
+                      <property name="styleSheet">
+                       <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Confirm When New Auto Playlist is Generated</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="verticalSpacer_4">
+                      <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>40</height>
+                       </size>
+                      </property>
+                     </spacer>
                     </item>
                    </layout>
                   </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QGroupBox" name="file_types_box">
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>250</height>
-                 </size>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: #24292E ;
-font: 10pt &quot;MS Shell Dlg 2&quot;;
-letter-spacing: 2px;
-word-spacing: 1.4px;
-color: #D0D4D9;
-</string>
-                </property>
-                <property name="title">
-                 <string>File Types</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-                <property name="checkable">
-                 <bool>false</bool>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_8">
-                 <property name="leftMargin">
-                  <number>10</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="spacing">
-                  <number>0</number>
-                 </property>
-                 <item row="1" column="0">
-                  <layout class="QGridLayout" name="gridLayout_44">
-                   <item row="0" column="0">
-                    <widget class="QFrame" name="verticalFrame_3">
-                     <layout class="QGridLayout" name="gridLayout_45">
-                      <property name="leftMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="topMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="rightMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="bottomMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="horizontalSpacing">
-                       <number>0</number>
-                      </property>
-                      <property name="verticalSpacing">
-                       <number>4</number>
-                      </property>
-                      <item row="6" column="0">
-                       <widget class="QCheckBox" name="checkBox_77">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
-    spacing: 5px;
-}
-QCheckBox::indicator {
-    width: 13px;
-    height: 13px;
-}
-QCheckBox::indicator:unchecked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}
-QCheckBox::indicator:checked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}</string>
-                        </property>
-                        <property name="text">
-                         <string>.wav</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="0">
-                       <widget class="QCheckBox" name="checkBox_72">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
-    spacing: 5px;
-}
-QCheckBox::indicator {
-    width: 13px;
-    height: 13px;
-}
-QCheckBox::indicator:unchecked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}
-QCheckBox::indicator:checked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}</string>
-                        </property>
-                        <property name="text">
-                         <string>.aiff</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="2" column="0">
-                       <widget class="QCheckBox" name="checkBox_73">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
-    spacing: 5px;
-}
-QCheckBox::indicator {
-    width: 13px;
-    height: 13px;
-}
-QCheckBox::indicator:unchecked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}
-QCheckBox::indicator:checked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}</string>
-                        </property>
-                        <property name="text">
-                         <string>.alac</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="3" column="0">
-                       <widget class="QCheckBox" name="checkBox_74">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
-    spacing: 5px;
-}
-QCheckBox::indicator {
-    width: 13px;
-    height: 13px;
-}
-QCheckBox::indicator:unchecked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}
-QCheckBox::indicator:checked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}</string>
-                        </property>
-                        <property name="text">
-                         <string>.mp3</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="0" column="0">
-                       <widget class="QCheckBox" name="checkBox_71">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
-    spacing: 5px;
-}
-QCheckBox::indicator {
-    width: 13px;
-    height: 13px;
-}
-QCheckBox::indicator:unchecked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}
-QCheckBox::indicator:checked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}</string>
-                        </property>
-                        <property name="text">
-                         <string>.aac</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="4" column="0">
-                       <widget class="QCheckBox" name="checkBox_75">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
-    spacing: 5px;
-}
-QCheckBox::indicator {
-    width: 13px;
-    height: 13px;
-}
-QCheckBox::indicator:unchecked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}
-QCheckBox::indicator:checked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}</string>
-                        </property>
-                        <property name="text">
-                         <string>.ogg</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="5" column="0">
-                       <widget class="QCheckBox" name="checkBox_76">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
-    spacing: 5px;
-}
-QCheckBox::indicator {
-    width: 13px;
-    height: 13px;
-}
-QCheckBox::indicator:unchecked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}
-QCheckBox::indicator:checked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}</string>
-                        </property>
-                        <property name="text">
-                         <string>.wma</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="0" column="1">
-                       <widget class="QLabel" name="label_3">
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="2" column="1">
-                       <widget class="QLabel" name="label_5">
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="1">
-                       <widget class="QLabel" name="label_4">
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="3" column="1">
-                       <widget class="QLabel" name="label_6">
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="4" column="1">
-                       <widget class="QLabel" name="label_7">
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="5" column="1">
-                       <widget class="QLabel" name="label_8">
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="6" column="1">
-                       <widget class="QLabel" name="label_9">
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="7" column="1">
-                       <widget class="QLabel" name="label_10">
-                        <property name="text">
-                         <string>TextLabel</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="7" column="0">
-                       <widget class="QCheckBox" name="checkBox_78">
-                        <property name="styleSheet">
-                         <string notr="true">QCheckBox {
-    spacing: 5px;
-}
-QCheckBox::indicator {
-    width: 13px;
-    height: 13px;
-}
-QCheckBox::indicator:unchecked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}
-QCheckBox::indicator:checked {
-background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
-border-style: outset;
-border-width: 1px;
-border-radius: 6px;
-border-color: #000000;
-min-width: 1em;
-padding: 1px;
-}</string>
-                        </property>
-                        <property name="text">
-                         <string>.flac</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </widget>
-                   </item>
-                  </layout>
                  </item>
                 </layout>
                </widget>
@@ -1761,7 +1354,7 @@ color: #D0D4D9;
                   <number>10</number>
                  </property>
                  <property name="topMargin">
-                  <number>0</number>
+                  <number>6</number>
                  </property>
                  <property name="rightMargin">
                   <number>0</number>
@@ -1775,19 +1368,19 @@ color: #D0D4D9;
                  <item row="0" column="0">
                   <layout class="QVBoxLayout" name="verticalLayout_2">
                    <property name="spacing">
-                    <number>10</number>
+                    <number>4</number>
                    </property>
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_2">
                      <item>
                       <widget class="QLabel" name="label_2">
                        <property name="text">
-                        <string>TextLabel</string>
+                        <string>Startup Mode</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QComboBox" name="comboBox">
+                      <widget class="QComboBox" name="comboBox_startup_mode">
                        <property name="styleSheet">
                         <string notr="true">QComboBox {
     border: 1px solid gray;
@@ -1837,6 +1430,11 @@ QComboBox::down-arrow:on { /* shift the arrow when popup is open */
                        </property>
                        <item>
                         <property name="text">
+                         <string>Main Player</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
                          <string>Taskbar</string>
                         </property>
                        </item>
@@ -1847,7 +1445,7 @@ QComboBox::down-arrow:on { /* shift the arrow when popup is open */
                        </item>
                        <item>
                         <property name="text">
-                         <string>Compact </string>
+                         <string>Compact Player</string>
                         </property>
                        </item>
                       </widget>
@@ -1855,7 +1453,7 @@ QComboBox::down-arrow:on { /* shift the arrow when popup is open */
                     </layout>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="checkBox_3">
+                    <widget class="QCheckBox" name="checkBoxsplash_screen">
                      <property name="styleSheet">
                       <string notr="true">QCheckBox {
     spacing: 5px;
@@ -1884,12 +1482,15 @@ padding: 1px;
 }</string>
                      </property>
                      <property name="text">
-                      <string>CheckBox</string>
+                      <string>Display Splash Screen</string>
+                     </property>
+                     <property name="tristate">
+                      <bool>false</bool>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="checkBox">
+                    <widget class="QCheckBox" name="checkBox_min_totask">
                      <property name="styleSheet">
                       <string notr="true">QCheckBox {
     spacing: 5px;
@@ -1918,12 +1519,12 @@ padding: 1px;
 }</string>
                      </property>
                      <property name="text">
-                      <string>CheckBox</string>
+                      <string>Minimize to Taskbar</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="checkBox_2">
+                    <widget class="QCheckBox" name="checkBox_play_str">
                      <property name="styleSheet">
                       <string notr="true">QCheckBox {
     spacing: 5px;
@@ -1952,12 +1553,12 @@ padding: 1px;
 }</string>
                      </property>
                      <property name="text">
-                      <string>CheckBox</string>
+                      <string>Play on Startup</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="checkBox_4">
+                    <widget class="QCheckBox" name="checkBox_chkOnsstr">
                      <property name="styleSheet">
                       <string notr="true">QCheckBox {
     spacing: 5px;
@@ -1986,9 +1587,451 @@ padding: 1px;
 }</string>
                      </property>
                      <property name="text">
-                      <string>CheckBox</string>
+                      <string>Check for Updates on Startup</string>
                      </property>
                     </widget>
+                   </item>
+                   <item>
+                    <spacer name="verticalSpacer_3">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>20</width>
+                       <height>40</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QGroupBox" name="file_types_box">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>280</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: #24292E ;
+font: 10pt &quot;MS Shell Dlg 2&quot;;
+letter-spacing: 2px;
+word-spacing: 1.4px;
+color: #D0D4D9;
+</string>
+                </property>
+                <property name="title">
+                 <string>File Types</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+                <property name="checkable">
+                 <bool>false</bool>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_8">
+                 <property name="leftMargin">
+                  <number>10</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>6</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <item row="0" column="0">
+                  <layout class="QGridLayout" name="gridLayout_44">
+                   <item row="1" column="0">
+                    <spacer name="verticalSpacer_5">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>20</width>
+                       <height>40</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QListView" name="listView_num_each_fl_type"/>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QFrame" name="verticalFrame_3">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>170</height>
+                      </size>
+                     </property>
+                     <layout class="QGridLayout" name="gridLayout_45">
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="horizontalSpacing">
+                       <number>0</number>
+                      </property>
+                      <property name="verticalSpacing">
+                       <number>2</number>
+                      </property>
+                      <item row="7" column="0">
+                       <widget class="QCheckBox" name="checkBox_wav">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.wav ( Waveform Audio File )</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QCheckBox" name="checkBox_aiff">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.aiff ( Audio Interchange File Format )</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="5" column="0">
+                       <widget class="QCheckBox" name="checkBox_ogg">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.ogg ( Ogg )</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="4" column="0">
+                       <widget class="QCheckBox" name="checkBox_mp3">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.mp3 ( MPEG Audio Layer-3 )</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="0">
+                       <widget class="QCheckBox" name="checkBox_alac">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.alac ( Apple Lossless Audio Codec )</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="0">
+                       <widget class="QCheckBox" name="checkBox_acc">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.aac ( Advanced Audio Coding )</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="6" column="0">
+                       <widget class="QCheckBox" name="checkBox_wma">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.wma ( Windows Media Audio )</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="0">
+                       <widget class="QCheckBox" name="checkBox_flac">
+                        <property name="styleSheet">
+                         <string notr="true">QCheckBox {
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QCheckBox::indicator:unchecked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}
+QCheckBox::indicator:checked {
+background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>.flac ( Free Lossless Audio Codec )</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <layout class="QHBoxLayout" name="horizontalLayout_3">
+                     <item>
+                      <widget class="QPushButton" name="apply_button_3">
+                       <property name="autoFillBackground">
+                        <bool>false</bool>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">QPushButton {
+background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.653409 rgba(59, 78, 97, 255), stop:0.761364 rgba(40, 88, 135, 255), stop:0.892045 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 4em;
+padding: 6px;
+}
+QPushButton:pressed {
+   	background-color: rgb(47, 54, 67);
+    border-style: inset;
+}</string>
+                       </property>
+                       <property name="text">
+                        <string>Select All</string>
+                       </property>
+                       <property name="flat">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="apply_button_2">
+                       <property name="autoFillBackground">
+                        <bool>false</bool>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">QPushButton {
+background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.653409 rgba(59, 78, 97, 255), stop:0.761364 rgba(40, 88, 135, 255), stop:0.892045 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 4em;
+padding: 6px;
+}
+QPushButton:pressed {
+   	background-color: rgb(47, 54, 67);
+    border-style: inset;
+}</string>
+                       </property>
+                       <property name="text">
+                        <string>Select None</string>
+                       </property>
+                       <property name="flat">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </item>
@@ -2047,35 +2090,272 @@ color: #D0D4D9;
                   <number>0</number>
                  </property>
                  <property name="bottomMargin">
-                  <number>15</number>
+                  <number>0</number>
                  </property>
                  <property name="spacing">
                   <number>0</number>
                  </property>
                  <item row="0" column="0">
-                  <widget class="QScrollArea" name="scrollArea_2">
-                   <property name="frameShape">
-                    <enum>QFrame::NoFrame</enum>
-                   </property>
-                   <property name="widgetResizable">
-                    <bool>true</bool>
-                   </property>
-                   <widget class="QWidget" name="scrollAreaWidgetContents_2">
-                    <property name="geometry">
-                     <rect>
-                      <x>0</x>
-                      <y>0</y>
-                      <width>500</width>
-                      <height>205</height>
-                     </rect>
-                    </property>
-                    <layout class="QGridLayout" name="gridLayout_22">
-                     <item row="0" column="0">
-                      <layout class="QGridLayout" name="gridLayout_6"/>
+                  <layout class="QGridLayout" name="gridLayout_22">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="verticalLayout_18">
+                     <item>
+                      <widget class="QLabel" name="label_7">
+                       <property name="text">
+                        <string>Action When Track is Double-clicked</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_6">
+                       <item>
+                        <widget class="QLabel" name="label_8">
+                         <property name="text">
+                          <string>Playing Track</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="comboBox_13">
+                         <property name="styleSheet">
+                          <string notr="true">QComboBox {
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 1px 18px 1px 3px;
+    min-width: 6em;
+}
+
+QComboBox:editable {
+background-color: rgb(47, 54, 67);
+}
+
+QComboBox:!editable, QComboBox::drop-down:editable {
+background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));
+}
+
+/* QComboBox gets the &quot;on&quot; state when the popup is open */
+QComboBox:!editable:on, QComboBox::drop-down:editable:one {
+background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));
+}
+
+QComboBox:on { /* shift the text when the popup opens */
+    padding-top:1px;
+    padding-left: 1px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid; /* just a single line */
+    border-top-right-radius: 3px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 3px;
+}
+
+QComboBox::down-arrow {
+   
+	background-color: qconicalgradient(cx:0.5, cy:0.523, angle:269.5, stop:0.375 rgba(255, 0, 0, 0), stop:0.375957 rgba(255, 0, 0, 0), stop:0.375982 rgba(21, 0, 0, 255), stop:0.5 rgba(75, 75, 75, 255), stop:0.619318 rgba(0, 0, 0, 255), stop:0.625 rgba(255, 255, 255, 0));
+}
+
+QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+    top: 1px;
+    left: 1px;
+}</string>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>Play Now</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>Queue Next</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>Queue Last</string>
+                          </property>
+                         </item>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_7">
+                       <item>
+                        <widget class="QLabel" name="label_9">
+                         <property name="text">
+                          <string>Playback Stopped</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="comboBox_12">
+                         <property name="styleSheet">
+                          <string notr="true">QComboBox {
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 1px 18px 1px 3px;
+    min-width: 6em;
+}
+
+QComboBox:editable {
+background-color: rgb(47, 54, 67);
+}
+
+QComboBox:!editable, QComboBox::drop-down:editable {
+background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));
+}
+
+/* QComboBox gets the &quot;on&quot; state when the popup is open */
+QComboBox:!editable:on, QComboBox::drop-down:editable:one {
+background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));
+}
+
+QComboBox:on { /* shift the text when the popup opens */
+    padding-top:1px;
+    padding-left: 1px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid; /* just a single line */
+    border-top-right-radius: 3px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 3px;
+}
+
+QComboBox::down-arrow {
+   
+	background-color: qconicalgradient(cx:0.5, cy:0.523, angle:269.5, stop:0.375 rgba(255, 0, 0, 0), stop:0.375957 rgba(255, 0, 0, 0), stop:0.375982 rgba(21, 0, 0, 255), stop:0.5 rgba(75, 75, 75, 255), stop:0.619318 rgba(0, 0, 0, 255), stop:0.625 rgba(255, 255, 255, 0));
+}
+
+QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+    top: 1px;
+    left: 1px;
+}</string>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>Play Now</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>Queue Next</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>Queue Last</string>
+                          </property>
+                         </item>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="label_10">
+                       <property name="text">
+                        <string>Play Now action</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_19">
+                       <item>
+                        <widget class="QRadioButton" name="radioButton_16">
+                         <property name="styleSheet">
+                          <string notr="true">QRadioButton::indicator {
+    width: 13px;
+    height: 13px;
+}
+
+QRadioButton::indicator::unchecked {
+background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 0, 0, 255), stop:0.505682 rgba(25, 0, 0, 255), stop:0.693182 rgba(255, 0, 0, 255), stop:0.943182 rgba(255, 0, 0, 255), stop:1 rgba(255, 255, 255, 0));
+}
+
+QRadioButton::indicator::checked {
+background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 0, 0, 255), stop:0.505682 rgba(25, 0, 0, 255), stop:0.693182 rgba(36, 255, 0, 255), stop:0.943182 rgba(25, 255, 0, 255), stop:1 rgba(255, 255, 255, 0));
+}
+</string>
+                         </property>
+                         <property name="text">
+                          <string>Clear List and Play Selected Track Only</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="radioButton_17">
+                         <property name="styleSheet">
+                          <string notr="true">QRadioButton::indicator {
+    width: 13px;
+    height: 13px;
+}
+
+QRadioButton::indicator::unchecked {
+background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 0, 0, 255), stop:0.505682 rgba(25, 0, 0, 255), stop:0.693182 rgba(255, 0, 0, 255), stop:0.943182 rgba(255, 0, 0, 255), stop:1 rgba(255, 255, 255, 0));
+}
+
+QRadioButton::indicator::checked {
+background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 0, 0, 255), stop:0.505682 rgba(25, 0, 0, 255), stop:0.693182 rgba(36, 255, 0, 255), stop:0.943182 rgba(25, 255, 0, 255), stop:1 rgba(255, 255, 255, 0));
+}
+</string>
+                         </property>
+                         <property name="text">
+                          <string>Clear List and Play Album Only</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QRadioButton" name="radioButton_18">
+                         <property name="styleSheet">
+                          <string notr="true">QRadioButton::indicator {
+    width: 13px;
+    height: 13px;
+}
+
+QRadioButton::indicator::unchecked {
+background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 0, 0, 255), stop:0.505682 rgba(25, 0, 0, 255), stop:0.693182 rgba(255, 0, 0, 255), stop:0.943182 rgba(255, 0, 0, 255), stop:1 rgba(255, 255, 255, 0));
+}
+
+QRadioButton::indicator::checked {
+background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 0, 0, 255), stop:0.505682 rgba(25, 0, 0, 255), stop:0.693182 rgba(36, 255, 0, 255), stop:0.943182 rgba(25, 255, 0, 255), stop:1 rgba(255, 255, 255, 0));
+}
+</string>
+                         </property>
+                         <property name="text">
+                          <string>Clear List and Play All Tracks</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="verticalSpacer_7">
+                         <property name="orientation">
+                          <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>20</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
                      </item>
                     </layout>
-                   </widget>
-                  </widget>
+                   </item>
+                  </layout>
                  </item>
                 </layout>
                </widget>
@@ -2135,7 +2415,7 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
 </string>
                      </property>
                      <property name="text">
-                      <string>RadioButton</string>
+                      <string>Random</string>
                      </property>
                     </widget>
                    </item>
@@ -2157,7 +2437,7 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
 </string>
                      </property>
                      <property name="text">
-                      <string>RadioButton</string>
+                      <string>Random By Album</string>
                      </property>
                     </widget>
                    </item>
@@ -2179,7 +2459,7 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
 </string>
                      </property>
                      <property name="text">
-                      <string>RadioButton</string>
+                      <string>Recently added Random</string>
                      </property>
                     </widget>
                    </item>
@@ -2201,7 +2481,7 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
 </string>
                      </property>
                      <property name="text">
-                      <string>RadioButton</string>
+                      <string>Most Played </string>
                      </property>
                     </widget>
                    </item>
@@ -2223,7 +2503,7 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
 </string>
                      </property>
                      <property name="text">
-                      <string>RadioButton</string>
+                      <string>Rating</string>
                      </property>
                     </widget>
                    </item>
@@ -2281,7 +2561,7 @@ color: #D0D4D9;
                       <x>0</x>
                       <y>0</y>
                       <width>500</width>
-                      <height>253</height>
+                      <height>249</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_12">
@@ -2337,7 +2617,7 @@ padding: 1px;
 }</string>
                            </property>
                            <property name="text">
-                            <string>CheckBox</string>
+                            <string>Switch Player to While Playing</string>
                            </property>
                           </widget>
                          </item>
@@ -2402,6 +2682,11 @@ QComboBox::down-arrow:on { /* shift the arrow when popup is open */
                            </item>
                            <item>
                             <property name="text">
+                             <string>Task Bar</string>
+                            </property>
+                           </item>
+                           <item>
+                            <property name="text">
                              <string>Mini Player</string>
                             </property>
                            </item>
@@ -2441,58 +2726,42 @@ padding: 1px;
 }</string>
                            </property>
                            <property name="text">
-                            <string>CheckBox</string>
+                            <string>Show in Taskbar As</string>
                            </property>
                           </widget>
                          </item>
                          <item>
-                          <widget class="QComboBox" name="comboBox_3">
+                          <widget class="QLabel" name="label_3">
+                           <property name="text">
+                            <string/>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QPushButton" name="pushButton">
+                           <property name="maximumSize">
+                            <size>
+                             <width>20</width>
+                             <height>20</height>
+                            </size>
+                           </property>
                            <property name="styleSheet">
-                            <string notr="true">QComboBox {
-    border: 1px solid gray;
-    border-radius: 3px;
-    padding: 1px 18px 1px 3px;
-    min-width: 6em;
+                            <string notr="true">QPushButton {
+background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.653409 rgba(59, 78, 97, 255), stop:0.761364 rgba(40, 88, 135, 255), stop:0.892045 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 4px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
 }
-
-QComboBox:editable {
-background-color: rgb(47, 54, 67);
-}
-
-QComboBox:!editable, QComboBox::drop-down:editable {
-background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));
-}
-
-/* QComboBox gets the &quot;on&quot; state when the popup is open */
-QComboBox:!editable:on, QComboBox::drop-down:editable:one {
-background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));
-}
-
-QComboBox:on { /* shift the text when the popup opens */
-    padding-top:1px;
-    padding-left: 1px;
-}
-
-QComboBox::drop-down {
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 15px;
-    border-left-width: 1px;
-    border-left-color: darkgray;
-    border-left-style: solid; /* just a single line */
-    border-top-right-radius: 3px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 3px;
-}
-
-QComboBox::down-arrow {
-   
-	background-color: qconicalgradient(cx:0.5, cy:0.523, angle:269.5, stop:0.375 rgba(255, 0, 0, 0), stop:0.375957 rgba(255, 0, 0, 0), stop:0.375982 rgba(21, 0, 0, 255), stop:0.5 rgba(75, 75, 75, 255), stop:0.619318 rgba(0, 0, 0, 255), stop:0.625 rgba(255, 255, 255, 0));
-}
-
-QComboBox::down-arrow:on { /* shift the arrow when popup is open */
-    top: 1px;
-    left: 1px;
+QPushButton:pressed {
+   	background-color: rgb(47, 54, 67);
+    border-style: inset;
 }</string>
+                           </property>
+                           <property name="text">
+                            <string>...</string>
                            </property>
                           </widget>
                          </item>
@@ -2530,58 +2799,42 @@ padding: 1px;
 }</string>
                            </property>
                            <property name="text">
-                            <string>CheckBox</string>
+                            <string>Show in Player As</string>
                            </property>
                           </widget>
                          </item>
                          <item>
-                          <widget class="QComboBox" name="comboBox_4">
+                          <widget class="QLabel" name="label_4">
+                           <property name="text">
+                            <string/>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QPushButton" name="pushButton_2">
+                           <property name="maximumSize">
+                            <size>
+                             <width>20</width>
+                             <height>20</height>
+                            </size>
+                           </property>
                            <property name="styleSheet">
-                            <string notr="true">QComboBox {
-    border: 1px solid gray;
-    border-radius: 3px;
-    padding: 1px 18px 1px 3px;
-    min-width: 6em;
+                            <string notr="true">QPushButton {
+background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.653409 rgba(59, 78, 97, 255), stop:0.761364 rgba(40, 88, 135, 255), stop:0.892045 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 4px;
+border-color: #000000;
+min-width: 1em;
+padding: 1px;
 }
-
-QComboBox:editable {
-background-color: rgb(47, 54, 67);
-}
-
-QComboBox:!editable, QComboBox::drop-down:editable {
-background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));
-}
-
-/* QComboBox gets the &quot;on&quot; state when the popup is open */
-QComboBox:!editable:on, QComboBox::drop-down:editable:one {
-background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));
-}
-
-QComboBox:on { /* shift the text when the popup opens */
-    padding-top:1px;
-    padding-left: 1px;
-}
-
-QComboBox::drop-down {
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 15px;
-    border-left-width: 1px;
-    border-left-color: darkgray;
-    border-left-style: solid; /* just a single line */
-    border-top-right-radius: 3px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 3px;
-}
-
-QComboBox::down-arrow {
-   
-	background-color: qconicalgradient(cx:0.5, cy:0.523, angle:269.5, stop:0.375 rgba(255, 0, 0, 0), stop:0.375957 rgba(255, 0, 0, 0), stop:0.375982 rgba(21, 0, 0, 255), stop:0.5 rgba(75, 75, 75, 255), stop:0.619318 rgba(0, 0, 0, 255), stop:0.625 rgba(255, 255, 255, 0));
-}
-
-QComboBox::down-arrow:on { /* shift the arrow when popup is open */
-    top: 1px;
-    left: 1px;
+QPushButton:pressed {
+   	background-color: rgb(47, 54, 67);
+    border-style: inset;
 }</string>
+                           </property>
+                           <property name="text">
+                            <string>...</string>
                            </property>
                           </widget>
                          </item>
@@ -2619,7 +2872,7 @@ padding: 1px;
 }</string>
                            </property>
                            <property name="text">
-                            <string>CheckBox</string>
+                            <string>Highlight Track in Platlist</string>
                            </property>
                           </widget>
                          </item>
@@ -2657,7 +2910,7 @@ padding: 1px;
 }</string>
                            </property>
                            <property name="text">
-                            <string>CheckBox</string>
+                            <string>Highlight Track In Main Player</string>
                            </property>
                           </widget>
                          </item>
@@ -2695,7 +2948,7 @@ padding: 1px;
 }</string>
                            </property>
                            <property name="text">
-                            <string>CheckBox</string>
+                            <string>Playback Follows Cursor</string>
                            </property>
                           </widget>
                          </item>
@@ -2733,7 +2986,7 @@ padding: 1px;
 }</string>
                            </property>
                            <property name="text">
-                            <string>CheckBox</string>
+                            <string>Show Taskbar Popups</string>
                            </property>
                           </widget>
                          </item>
@@ -2771,7 +3024,7 @@ padding: 1px;
 }</string>
                            </property>
                            <property name="text">
-                            <string>CheckBox</string>
+                            <string/>
                            </property>
                           </widget>
                          </item>
@@ -2782,7 +3035,7 @@ padding: 1px;
                          <item>
                           <widget class="QLabel" name="label_12">
                            <property name="text">
-                            <string>TextLabel</string>
+                            <string>Skip 1 Track: Less Than</string>
                            </property>
                           </widget>
                          </item>
@@ -2792,7 +3045,7 @@ padding: 1px;
                          <item>
                           <widget class="QLabel" name="label_13">
                            <property name="text">
-                            <string>TextLabel</string>
+                            <string>% of Track is Played or Seconds is </string>
                            </property>
                           </widget>
                          </item>
@@ -2806,7 +3059,7 @@ padding: 1px;
                          <item>
                           <widget class="QLabel" name="label_14">
                            <property name="text">
-                            <string>TextLabel</string>
+                            <string>Play 1 Track: More Than</string>
                            </property>
                           </widget>
                          </item>
@@ -2816,7 +3069,7 @@ padding: 1px;
                          <item>
                           <widget class="QLabel" name="label_15">
                            <property name="text">
-                            <string>TextLabel</string>
+                            <string>% of Track is Played or Seconds is </string>
                            </property>
                           </widget>
                          </item>
@@ -3894,7 +4147,7 @@ none
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>500</width>
+                   <width>188</width>
                    <height>940</height>
                   </rect>
                  </property>

@@ -50,7 +50,7 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
             all_items = []; temp = []; temp1 = []
         for path in stringlist:                
             file_bulk = os.walk(path)
-            self.outputlabel.setText("Scanning Library")
+            self.label_12.setText("Scanning Library")
             for (directoy, sub_dir, files)in file_bulk:
                 temp = []
                 for item in files:
@@ -63,7 +63,7 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
         self.progressBar_file_add.setProperty("value",100)    
         self.settings_file_update(all_items, flag="music_files", owr=True, filename = "resources\\file_explorer\\music_listing.txt")
         self.music_metadata_reader(filename = "resources\\file_explorer\\music_listing.txt")
-        self.outputlabel.setText("Scanning Library Completed")
+        self.label_12.setText("Scanning Library Completed")
         self.cancle()
             
         
@@ -152,9 +152,9 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
         index = self.treeView.currentIndex()
         file_path = self.model.filePath(index)
         if  re.findall('\.[A-Za-z]{0,5}$', file_path) != []:
-            self.outputlabel.setText('Select a folder')
+            self.label_12.setText('Select a folder')
         else:
-            self.outputlabel.setText(file_path)
+            self.label_12.setText(file_path)
             self.settings_file_update(file_path, "file_path")
     
             

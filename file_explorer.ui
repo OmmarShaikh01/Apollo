@@ -40,7 +40,20 @@
    <double>1.000000000000000</double>
   </property>
   <property name="autoFillBackground">
-   <bool>true</bool>
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: #24292E ;
+font-family: Arial, Helvetica, sans-serif;
+font-size: 14px;
+letter-spacing: 2px;
+word-spacing: 1.4px;
+color: #D0D4D9;
+font-weight: normal;
+text-decoration: none;
+font-style: normal;
+font-variant: normal;
+text-transform: none;</string>
   </property>
   <property name="iconSize">
    <size>
@@ -66,173 +79,292 @@
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <property name="leftMargin">
-     <number>2</number>
+     <number>10</number>
     </property>
     <property name="topMargin">
      <number>2</number>
     </property>
     <property name="rightMargin">
-     <number>2</number>
+     <number>10</number>
     </property>
     <property name="bottomMargin">
-     <number>2</number>
+     <number>6</number>
     </property>
     <property name="spacing">
      <number>2</number>
     </property>
     <item row="0" column="0">
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="spacing">
-       <number>3</number>
+     <widget class="QFrame" name="grid">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
       </property>
-      <item row="0" column="1">
-       <widget class="QTreeView" name="treeView">
-        <property name="mouseTracking">
-         <bool>false</bool>
-        </property>
-        <property name="autoFillBackground">
-         <bool>true</bool>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="dragEnabled">
-         <bool>true</bool>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::SingleSelection</enum>
-        </property>
-        <property name="selectionBehavior">
-         <enum>QAbstractItemView::SelectRows</enum>
-        </property>
-        <property name="autoExpandDelay">
-         <number>1</number>
-        </property>
-        <property name="indentation">
-         <number>15</number>
-        </property>
-        <property name="uniformRowHeights">
-         <bool>true</bool>
-        </property>
-        <property name="sortingEnabled">
-         <bool>true</bool>
-        </property>
-        <property name="allColumnsShowFocus">
-         <bool>true</bool>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="topMargin">
-         <number>1</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="outputlabel">
-          <property name="font">
-           <font>
-            <pointsize>8</pointsize>
-           </font>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Sunken</enum>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="scaledContents">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton">
-          <property name="maximumSize">
-           <size>
-            <width>74</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Scan</string>
-          </property>
-          <property name="checkable">
-           <bool>false</bool>
-          </property>
-          <property name="autoDefault">
-           <bool>false</bool>
-          </property>
-          <property name="default">
-           <bool>false</bool>
-          </property>
-          <property name="flat">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QDialogButtonBox" name="buttonBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
-          <property name="standardButtons">
-           <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-          </property>
-          <property name="centerButtons">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="0" column="0">
-       <widget class="QListView" name="listView">
-        <property name="autoFillBackground">
-         <bool>true</bool>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="alternatingRowColors">
-         <bool>true</bool>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::SingleSelection</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QProgressBar" name="progressBar_file_add">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="value">
-         <number>0</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="invertedAppearance">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
+      <layout class="QGridLayout" name="gridLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <property name="horizontalSpacing">
+        <number>2</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>0</number>
+       </property>
+       <item row="1" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="topMargin">
+          <number>1</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::NoTextInteraction</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="maximumSize">
+            <size>
+             <width>74</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">
+QPushButton {
+background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.653409 rgba(59, 78, 97, 255), stop:0.761364 rgba(40, 88, 135, 255), stop:0.892045 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 4em;
+padding: 6px;
+}
+QPushButton:pressed {
+   	background-color: rgb(47, 54, 67);
+    border-style: inset;
+}</string>
+           </property>
+           <property name="text">
+            <string>Scan</string>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+           <property name="default">
+            <bool>false</bool>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDialogButtonBox" name="buttonBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">
+QPushButton {
+background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.653409 rgba(59, 78, 97, 255), stop:0.761364 rgba(40, 88, 135, 255), stop:0.892045 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));
+border-style: outset;
+border-width: 1px;
+border-radius: 6px;
+border-color: #000000;
+min-width: 4em;
+padding: 6px;
+}
+QPushButton:pressed {
+   	background-color: rgb(47, 54, 67);
+    border-style: inset;
+}</string>
+           </property>
+           <property name="standardButtons">
+            <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+           </property>
+           <property name="centerButtons">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QProgressBar" name="progressBar_file_add">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="value">
+          <number>0</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="invertedAppearance">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QTreeView" name="treeView">
+         <property name="mouseTracking">
+          <bool>false</bool>
+         </property>
+         <property name="autoFillBackground">
+          <bool>true</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QTreeView {
+    show-decoration-selected: 1;
+	background-color: rgb(47, 54, 67);
+}
+
+QScrollBar:vertical {
+     border: 2px solid grey;
+     background: #32CC99;
+     width: 10px;
+     margin: 0px 0 0px 0;
+ }
+ QScrollBar::handle:vertical {
+background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.130682 rgba(59, 78, 97, 255), stop:0.539773 rgba(40, 88, 135, 255), stop:0.744318 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));
+     min-height: 20px;
+ }
+
+ QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+none
+ }
+
+ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+background-color: rgb(36, 41, 46);
+ }
+
+QScrollBar:horizontal {
+     border: 2px solid grey;
+     background: #32CC99;
+     width: 10px;
+     margin: 0px 0 0px 0;
+ }
+ QScrollBar::handle:horizontal {
+background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.130682 rgba(59, 78, 97, 255), stop:0.539773 rgba(40, 88, 135, 255), stop:0.744318 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));
+     min-height: 20px;
+ }
+
+ QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal {
+none
+ }
+
+ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+background-color: rgb(36, 41, 46);
+ }
+
+QHeaderView::section { color:white; background-color:#232326; }
+
+QTreeView::item {
+     border: none
+}
+QTreeView::item:hover {  
+	background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.130682 rgba(59, 78, 97, 255), stop:0.539773 rgba(40, 88, 135, 255), stop:0.744318 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));
+    border: 1px solid #000000;
+}
+QTreeView::item:selected {
+    border: 1px solid rgb(36, 41, 46);
+}
+
+QTreeView::item:selected:active{ 
+	background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));
+}
+
+QTreeView::item:selected:!active {
+background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:0, y2:1, stop:0 rgba(36, 41, 46, 255), stop:0.0909091 rgba(59, 78, 97, 255), stop:0.255682 rgba(40, 88, 135, 255), stop:0.619318 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));
+}
+</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAsNeeded</enum>
+         </property>
+         <property name="dragEnabled">
+          <bool>true</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <property name="autoExpandDelay">
+          <number>1</number>
+         </property>
+         <property name="indentation">
+          <number>15</number>
+         </property>
+         <property name="uniformRowHeights">
+          <bool>true</bool>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+         <property name="allColumnsShowFocus">
+          <bool>true</bool>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <attribute name="headerDefaultSectionSize">
+          <number>1</number>
+         </attribute>
+         <attribute name="headerHighlightSections">
+          <bool>false</bool>
+         </attribute>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QListView" name="listView">
+         <property name="autoFillBackground">
+          <bool>true</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(47, 54, 67);</string>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <property name="alternatingRowColors">
+          <bool>false</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </item>
    </layout>
   </widget>

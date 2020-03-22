@@ -498,6 +498,8 @@ class Ui_preferences_window(object):
         self.gridLayout_3.setSpacing(0)
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.misc_box = QtWidgets.QGroupBox(self.general_tab)
+        self.misc_box.setMinimumSize(QtCore.QSize(0, 200))
+        self.misc_box.setMaximumSize(QtCore.QSize(16777215, 280))
         self.misc_box.setStyleSheet("background-color: #24292E ;\n"
 "font: 10pt \"MS Shell Dlg 2\";\n"
 "letter-spacing: 2px;\n"
@@ -514,268 +516,9 @@ class Ui_preferences_window(object):
         self.verticalFrame_2 = QtWidgets.QFrame(self.misc_box)
         self.verticalFrame_2.setObjectName("verticalFrame_2")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.verticalFrame_2)
-        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_3.setSpacing(2)
+        self.verticalLayout_3.setContentsMargins(0, 6, 0, 0)
+        self.verticalLayout_3.setSpacing(4)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.horizontalLayout_9 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_9.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
-        self.checkBox_12 = QtWidgets.QCheckBox(self.verticalFrame_2)
-        self.checkBox_12.setStyleSheet("QCheckBox {\n"
-"    spacing: 5px;\n"
-"}\n"
-"QCheckBox::indicator {\n"
-"    width: 13px;\n"
-"    height: 13px;\n"
-"}\n"
-"QCheckBox::indicator:unchecked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}\n"
-"QCheckBox::indicator:checked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}")
-        self.checkBox_12.setObjectName("checkBox_12")
-        self.horizontalLayout_9.addWidget(self.checkBox_12)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_9)
-        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_4.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
-        self.checkBox_7 = QtWidgets.QCheckBox(self.verticalFrame_2)
-        self.checkBox_7.setStyleSheet("QCheckBox {\n"
-"    spacing: 5px;\n"
-"}\n"
-"QCheckBox::indicator {\n"
-"    width: 13px;\n"
-"    height: 13px;\n"
-"}\n"
-"QCheckBox::indicator:unchecked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}\n"
-"QCheckBox::indicator:checked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}")
-        self.checkBox_7.setObjectName("checkBox_7")
-        self.horizontalLayout_4.addWidget(self.checkBox_7)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_4)
-        self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_6.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-        self.checkBox_9 = QtWidgets.QCheckBox(self.verticalFrame_2)
-        self.checkBox_9.setStyleSheet("QCheckBox {\n"
-"    spacing: 5px;\n"
-"}\n"
-"QCheckBox::indicator {\n"
-"    width: 13px;\n"
-"    height: 13px;\n"
-"}\n"
-"QCheckBox::indicator:unchecked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}\n"
-"QCheckBox::indicator:checked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}")
-        self.checkBox_9.setObjectName("checkBox_9")
-        self.horizontalLayout_6.addWidget(self.checkBox_9)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_6)
-        self.horizontalLayout_8 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_8.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        self.horizontalLayout_8.setObjectName("horizontalLayout_8")
-        self.checkBox_11 = QtWidgets.QCheckBox(self.verticalFrame_2)
-        self.checkBox_11.setStyleSheet("QCheckBox {\n"
-"    spacing: 5px;\n"
-"}\n"
-"QCheckBox::indicator {\n"
-"    width: 13px;\n"
-"    height: 13px;\n"
-"}\n"
-"QCheckBox::indicator:unchecked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}\n"
-"QCheckBox::indicator:checked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}")
-        self.checkBox_11.setObjectName("checkBox_11")
-        self.horizontalLayout_8.addWidget(self.checkBox_11)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_8)
-        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_3.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.checkBox_6 = QtWidgets.QCheckBox(self.verticalFrame_2)
-        self.checkBox_6.setStyleSheet("QCheckBox {\n"
-"    spacing: 5px;\n"
-"}\n"
-"QCheckBox::indicator {\n"
-"    width: 13px;\n"
-"    height: 13px;\n"
-"}\n"
-"QCheckBox::indicator:unchecked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}\n"
-"QCheckBox::indicator:checked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}")
-        self.checkBox_6.setObjectName("checkBox_6")
-        self.horizontalLayout_3.addWidget(self.checkBox_6)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
-        self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_5.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
-        self.checkBox_5 = QtWidgets.QCheckBox(self.verticalFrame_2)
-        self.checkBox_5.setStyleSheet("QCheckBox {\n"
-"    spacing: 5px;\n"
-"}\n"
-"QCheckBox::indicator {\n"
-"    width: 13px;\n"
-"    height: 13px;\n"
-"}\n"
-"QCheckBox::indicator:unchecked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}\n"
-"QCheckBox::indicator:checked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}")
-        self.checkBox_5.setObjectName("checkBox_5")
-        self.horizontalLayout_5.addWidget(self.checkBox_5)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_5)
-        self.horizontalLayout_10 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_10.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
-        self.checkBox_13 = QtWidgets.QCheckBox(self.verticalFrame_2)
-        self.checkBox_13.setStyleSheet("QCheckBox {\n"
-"    spacing: 5px;\n"
-"}\n"
-"QCheckBox::indicator {\n"
-"    width: 13px;\n"
-"    height: 13px;\n"
-"}\n"
-"QCheckBox::indicator:unchecked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}\n"
-"QCheckBox::indicator:checked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}")
-        self.checkBox_13.setObjectName("checkBox_13")
-        self.horizontalLayout_10.addWidget(self.checkBox_13)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_10)
-        self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_7.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-        self.checkBox_8 = QtWidgets.QCheckBox(self.verticalFrame_2)
-        self.checkBox_8.setStyleSheet("QCheckBox {\n"
-"    spacing: 5px;\n"
-"}\n"
-"QCheckBox::indicator {\n"
-"    width: 13px;\n"
-"    height: 13px;\n"
-"}\n"
-"QCheckBox::indicator:unchecked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}\n"
-"QCheckBox::indicator:checked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}")
-        self.checkBox_8.setObjectName("checkBox_8")
-        self.horizontalLayout_7.addWidget(self.checkBox_8)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_7)
-        self.horizontalLayout_11 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_11.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        self.horizontalLayout_11.setObjectName("horizontalLayout_11")
         self.checkBox_10 = QtWidgets.QCheckBox(self.verticalFrame_2)
         self.checkBox_10.setStyleSheet("QCheckBox {\n"
 "    spacing: 5px;\n"
@@ -803,37 +546,9 @@ class Ui_preferences_window(object):
 "padding: 1px;\n"
 "}")
         self.checkBox_10.setObjectName("checkBox_10")
-        self.horizontalLayout_11.addWidget(self.checkBox_10)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_11)
-        self.gridLayout_10.addWidget(self.verticalFrame_2, 0, 0, 1, 1)
-        self.gridLayout_3.addWidget(self.misc_box, 3, 0, 1, 1)
-        self.file_types_box = QtWidgets.QGroupBox(self.general_tab)
-        self.file_types_box.setMaximumSize(QtCore.QSize(16777215, 250))
-        self.file_types_box.setStyleSheet("background-color: #24292E ;\n"
-"font: 10pt \"MS Shell Dlg 2\";\n"
-"letter-spacing: 2px;\n"
-"word-spacing: 1.4px;\n"
-"color: #D0D4D9;\n"
-"")
-        self.file_types_box.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.file_types_box.setFlat(True)
-        self.file_types_box.setCheckable(False)
-        self.file_types_box.setObjectName("file_types_box")
-        self.gridLayout_8 = QtWidgets.QGridLayout(self.file_types_box)
-        self.gridLayout_8.setContentsMargins(10, 0, 0, 0)
-        self.gridLayout_8.setSpacing(0)
-        self.gridLayout_8.setObjectName("gridLayout_8")
-        self.gridLayout_44 = QtWidgets.QGridLayout()
-        self.gridLayout_44.setObjectName("gridLayout_44")
-        self.verticalFrame_3 = QtWidgets.QFrame(self.file_types_box)
-        self.verticalFrame_3.setObjectName("verticalFrame_3")
-        self.gridLayout_45 = QtWidgets.QGridLayout(self.verticalFrame_3)
-        self.gridLayout_45.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout_45.setHorizontalSpacing(0)
-        self.gridLayout_45.setVerticalSpacing(4)
-        self.gridLayout_45.setObjectName("gridLayout_45")
-        self.checkBox_77 = QtWidgets.QCheckBox(self.verticalFrame_3)
-        self.checkBox_77.setStyleSheet("QCheckBox {\n"
+        self.verticalLayout_3.addWidget(self.checkBox_10)
+        self.checkBox_11 = QtWidgets.QCheckBox(self.verticalFrame_2)
+        self.checkBox_11.setStyleSheet("QCheckBox {\n"
 "    spacing: 5px;\n"
 "}\n"
 "QCheckBox::indicator {\n"
@@ -858,93 +573,9 @@ class Ui_preferences_window(object):
 "min-width: 1em;\n"
 "padding: 1px;\n"
 "}")
-        self.checkBox_77.setObjectName("checkBox_77")
-        self.gridLayout_45.addWidget(self.checkBox_77, 6, 0, 1, 1)
-        self.checkBox_72 = QtWidgets.QCheckBox(self.verticalFrame_3)
-        self.checkBox_72.setStyleSheet("QCheckBox {\n"
-"    spacing: 5px;\n"
-"}\n"
-"QCheckBox::indicator {\n"
-"    width: 13px;\n"
-"    height: 13px;\n"
-"}\n"
-"QCheckBox::indicator:unchecked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}\n"
-"QCheckBox::indicator:checked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}")
-        self.checkBox_72.setObjectName("checkBox_72")
-        self.gridLayout_45.addWidget(self.checkBox_72, 1, 0, 1, 1)
-        self.checkBox_73 = QtWidgets.QCheckBox(self.verticalFrame_3)
-        self.checkBox_73.setStyleSheet("QCheckBox {\n"
-"    spacing: 5px;\n"
-"}\n"
-"QCheckBox::indicator {\n"
-"    width: 13px;\n"
-"    height: 13px;\n"
-"}\n"
-"QCheckBox::indicator:unchecked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}\n"
-"QCheckBox::indicator:checked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}")
-        self.checkBox_73.setObjectName("checkBox_73")
-        self.gridLayout_45.addWidget(self.checkBox_73, 2, 0, 1, 1)
-        self.checkBox_74 = QtWidgets.QCheckBox(self.verticalFrame_3)
-        self.checkBox_74.setStyleSheet("QCheckBox {\n"
-"    spacing: 5px;\n"
-"}\n"
-"QCheckBox::indicator {\n"
-"    width: 13px;\n"
-"    height: 13px;\n"
-"}\n"
-"QCheckBox::indicator:unchecked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}\n"
-"QCheckBox::indicator:checked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}")
-        self.checkBox_74.setObjectName("checkBox_74")
-        self.gridLayout_45.addWidget(self.checkBox_74, 3, 0, 1, 1)
-        self.checkBox_71 = QtWidgets.QCheckBox(self.verticalFrame_3)
+        self.checkBox_11.setObjectName("checkBox_11")
+        self.verticalLayout_3.addWidget(self.checkBox_11)
+        self.checkBox_71 = QtWidgets.QCheckBox(self.verticalFrame_2)
         self.checkBox_71.setStyleSheet("QCheckBox {\n"
 "    spacing: 5px;\n"
 "}\n"
@@ -971,8 +602,148 @@ class Ui_preferences_window(object):
 "padding: 1px;\n"
 "}")
         self.checkBox_71.setObjectName("checkBox_71")
-        self.gridLayout_45.addWidget(self.checkBox_71, 0, 0, 1, 1)
-        self.checkBox_75 = QtWidgets.QCheckBox(self.verticalFrame_3)
+        self.verticalLayout_3.addWidget(self.checkBox_71)
+        self.checkBox_12 = QtWidgets.QCheckBox(self.verticalFrame_2)
+        self.checkBox_12.setStyleSheet("QCheckBox {\n"
+"    spacing: 5px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"QCheckBox::indicator:unchecked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}")
+        self.checkBox_12.setObjectName("checkBox_12")
+        self.verticalLayout_3.addWidget(self.checkBox_12)
+        self.checkBox_72 = QtWidgets.QCheckBox(self.verticalFrame_2)
+        self.checkBox_72.setStyleSheet("QCheckBox {\n"
+"    spacing: 5px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"QCheckBox::indicator:unchecked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}")
+        self.checkBox_72.setObjectName("checkBox_72")
+        self.verticalLayout_3.addWidget(self.checkBox_72)
+        self.checkBox_73 = QtWidgets.QCheckBox(self.verticalFrame_2)
+        self.checkBox_73.setStyleSheet("QCheckBox {\n"
+"    spacing: 5px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"QCheckBox::indicator:unchecked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}")
+        self.checkBox_73.setObjectName("checkBox_73")
+        self.verticalLayout_3.addWidget(self.checkBox_73)
+        self.checkBox_74 = QtWidgets.QCheckBox(self.verticalFrame_2)
+        self.checkBox_74.setStyleSheet("QCheckBox {\n"
+"    spacing: 5px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"QCheckBox::indicator:unchecked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}")
+        self.checkBox_74.setObjectName("checkBox_74")
+        self.verticalLayout_3.addWidget(self.checkBox_74)
+        self.checkBox_13 = QtWidgets.QCheckBox(self.verticalFrame_2)
+        self.checkBox_13.setStyleSheet("QCheckBox {\n"
+"    spacing: 5px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"QCheckBox::indicator:unchecked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}")
+        self.checkBox_13.setObjectName("checkBox_13")
+        self.verticalLayout_3.addWidget(self.checkBox_13)
+        self.checkBox_75 = QtWidgets.QCheckBox(self.verticalFrame_2)
         self.checkBox_75.setStyleSheet("QCheckBox {\n"
 "    spacing: 5px;\n"
 "}\n"
@@ -999,8 +770,8 @@ class Ui_preferences_window(object):
 "padding: 1px;\n"
 "}")
         self.checkBox_75.setObjectName("checkBox_75")
-        self.gridLayout_45.addWidget(self.checkBox_75, 4, 0, 1, 1)
-        self.checkBox_76 = QtWidgets.QCheckBox(self.verticalFrame_3)
+        self.verticalLayout_3.addWidget(self.checkBox_75)
+        self.checkBox_76 = QtWidgets.QCheckBox(self.verticalFrame_2)
         self.checkBox_76.setStyleSheet("QCheckBox {\n"
 "    spacing: 5px;\n"
 "}\n"
@@ -1027,62 +798,11 @@ class Ui_preferences_window(object):
 "padding: 1px;\n"
 "}")
         self.checkBox_76.setObjectName("checkBox_76")
-        self.gridLayout_45.addWidget(self.checkBox_76, 5, 0, 1, 1)
-        self.label_3 = QtWidgets.QLabel(self.verticalFrame_3)
-        self.label_3.setObjectName("label_3")
-        self.gridLayout_45.addWidget(self.label_3, 0, 1, 1, 1)
-        self.label_5 = QtWidgets.QLabel(self.verticalFrame_3)
-        self.label_5.setObjectName("label_5")
-        self.gridLayout_45.addWidget(self.label_5, 2, 1, 1, 1)
-        self.label_4 = QtWidgets.QLabel(self.verticalFrame_3)
-        self.label_4.setObjectName("label_4")
-        self.gridLayout_45.addWidget(self.label_4, 1, 1, 1, 1)
-        self.label_6 = QtWidgets.QLabel(self.verticalFrame_3)
-        self.label_6.setObjectName("label_6")
-        self.gridLayout_45.addWidget(self.label_6, 3, 1, 1, 1)
-        self.label_7 = QtWidgets.QLabel(self.verticalFrame_3)
-        self.label_7.setObjectName("label_7")
-        self.gridLayout_45.addWidget(self.label_7, 4, 1, 1, 1)
-        self.label_8 = QtWidgets.QLabel(self.verticalFrame_3)
-        self.label_8.setObjectName("label_8")
-        self.gridLayout_45.addWidget(self.label_8, 5, 1, 1, 1)
-        self.label_9 = QtWidgets.QLabel(self.verticalFrame_3)
-        self.label_9.setObjectName("label_9")
-        self.gridLayout_45.addWidget(self.label_9, 6, 1, 1, 1)
-        self.label_10 = QtWidgets.QLabel(self.verticalFrame_3)
-        self.label_10.setObjectName("label_10")
-        self.gridLayout_45.addWidget(self.label_10, 7, 1, 1, 1)
-        self.checkBox_78 = QtWidgets.QCheckBox(self.verticalFrame_3)
-        self.checkBox_78.setStyleSheet("QCheckBox {\n"
-"    spacing: 5px;\n"
-"}\n"
-"QCheckBox::indicator {\n"
-"    width: 13px;\n"
-"    height: 13px;\n"
-"}\n"
-"QCheckBox::indicator:unchecked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}\n"
-"QCheckBox::indicator:checked {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
-"border-style: outset;\n"
-"border-width: 1px;\n"
-"border-radius: 6px;\n"
-"border-color: #000000;\n"
-"min-width: 1em;\n"
-"padding: 1px;\n"
-"}")
-        self.checkBox_78.setObjectName("checkBox_78")
-        self.gridLayout_45.addWidget(self.checkBox_78, 7, 0, 1, 1)
-        self.gridLayout_44.addWidget(self.verticalFrame_3, 0, 0, 1, 1)
-        self.gridLayout_8.addLayout(self.gridLayout_44, 1, 0, 1, 1)
-        self.gridLayout_3.addWidget(self.file_types_box, 2, 0, 1, 1)
+        self.verticalLayout_3.addWidget(self.checkBox_76)
+        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_3.addItem(spacerItem2)
+        self.gridLayout_10.addWidget(self.verticalFrame_2, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.misc_box, 3, 0, 1, 1)
         self.application_box = QtWidgets.QGroupBox(self.general_tab)
         self.application_box.setMaximumSize(QtCore.QSize(16777215, 150))
         self.application_box.setStyleSheet("background-color: #24292E ;\n"
@@ -1095,19 +815,19 @@ class Ui_preferences_window(object):
         self.application_box.setCheckable(False)
         self.application_box.setObjectName("application_box")
         self.gridLayout_9 = QtWidgets.QGridLayout(self.application_box)
-        self.gridLayout_9.setContentsMargins(10, 0, 0, 0)
+        self.gridLayout_9.setContentsMargins(10, 6, 0, 0)
         self.gridLayout_9.setHorizontalSpacing(0)
         self.gridLayout_9.setObjectName("gridLayout_9")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
-        self.verticalLayout_2.setSpacing(10)
+        self.verticalLayout_2.setSpacing(4)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.label_2 = QtWidgets.QLabel(self.application_box)
         self.label_2.setObjectName("label_2")
         self.horizontalLayout_2.addWidget(self.label_2)
-        self.comboBox = QtWidgets.QComboBox(self.application_box)
-        self.comboBox.setStyleSheet("QComboBox {\n"
+        self.comboBox_startup_mode = QtWidgets.QComboBox(self.application_box)
+        self.comboBox_startup_mode.setStyleSheet("QComboBox {\n"
 "    border: 1px solid gray;\n"
 "    border-radius: 3px;\n"
 "    padding: 1px 18px 1px 3px;\n"
@@ -1152,14 +872,15 @@ class Ui_preferences_window(object):
 "    top: 1px;\n"
 "    left: 1px;\n"
 "}")
-        self.comboBox.setObjectName("comboBox")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.horizontalLayout_2.addWidget(self.comboBox)
+        self.comboBox_startup_mode.setObjectName("comboBox_startup_mode")
+        self.comboBox_startup_mode.addItem("")
+        self.comboBox_startup_mode.addItem("")
+        self.comboBox_startup_mode.addItem("")
+        self.comboBox_startup_mode.addItem("")
+        self.horizontalLayout_2.addWidget(self.comboBox_startup_mode)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
-        self.checkBox_3 = QtWidgets.QCheckBox(self.application_box)
-        self.checkBox_3.setStyleSheet("QCheckBox {\n"
+        self.checkBoxsplash_screen = QtWidgets.QCheckBox(self.application_box)
+        self.checkBoxsplash_screen.setStyleSheet("QCheckBox {\n"
 "    spacing: 5px;\n"
 "}\n"
 "QCheckBox::indicator {\n"
@@ -1184,10 +905,11 @@ class Ui_preferences_window(object):
 "min-width: 1em;\n"
 "padding: 1px;\n"
 "}")
-        self.checkBox_3.setObjectName("checkBox_3")
-        self.verticalLayout_2.addWidget(self.checkBox_3)
-        self.checkBox = QtWidgets.QCheckBox(self.application_box)
-        self.checkBox.setStyleSheet("QCheckBox {\n"
+        self.checkBoxsplash_screen.setTristate(False)
+        self.checkBoxsplash_screen.setObjectName("checkBoxsplash_screen")
+        self.verticalLayout_2.addWidget(self.checkBoxsplash_screen)
+        self.checkBox_min_totask = QtWidgets.QCheckBox(self.application_box)
+        self.checkBox_min_totask.setStyleSheet("QCheckBox {\n"
 "    spacing: 5px;\n"
 "}\n"
 "QCheckBox::indicator {\n"
@@ -1212,10 +934,10 @@ class Ui_preferences_window(object):
 "min-width: 1em;\n"
 "padding: 1px;\n"
 "}")
-        self.checkBox.setObjectName("checkBox")
-        self.verticalLayout_2.addWidget(self.checkBox)
-        self.checkBox_2 = QtWidgets.QCheckBox(self.application_box)
-        self.checkBox_2.setStyleSheet("QCheckBox {\n"
+        self.checkBox_min_totask.setObjectName("checkBox_min_totask")
+        self.verticalLayout_2.addWidget(self.checkBox_min_totask)
+        self.checkBox_play_str = QtWidgets.QCheckBox(self.application_box)
+        self.checkBox_play_str.setStyleSheet("QCheckBox {\n"
 "    spacing: 5px;\n"
 "}\n"
 "QCheckBox::indicator {\n"
@@ -1240,10 +962,10 @@ class Ui_preferences_window(object):
 "min-width: 1em;\n"
 "padding: 1px;\n"
 "}")
-        self.checkBox_2.setObjectName("checkBox_2")
-        self.verticalLayout_2.addWidget(self.checkBox_2)
-        self.checkBox_4 = QtWidgets.QCheckBox(self.application_box)
-        self.checkBox_4.setStyleSheet("QCheckBox {\n"
+        self.checkBox_play_str.setObjectName("checkBox_play_str")
+        self.verticalLayout_2.addWidget(self.checkBox_play_str)
+        self.checkBox_chkOnsstr = QtWidgets.QCheckBox(self.application_box)
+        self.checkBox_chkOnsstr.setStyleSheet("QCheckBox {\n"
 "    spacing: 5px;\n"
 "}\n"
 "QCheckBox::indicator {\n"
@@ -1268,10 +990,309 @@ class Ui_preferences_window(object):
 "min-width: 1em;\n"
 "padding: 1px;\n"
 "}")
-        self.checkBox_4.setObjectName("checkBox_4")
-        self.verticalLayout_2.addWidget(self.checkBox_4)
+        self.checkBox_chkOnsstr.setObjectName("checkBox_chkOnsstr")
+        self.verticalLayout_2.addWidget(self.checkBox_chkOnsstr)
+        spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_2.addItem(spacerItem3)
         self.gridLayout_9.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
         self.gridLayout_3.addWidget(self.application_box, 1, 0, 1, 1)
+        self.file_types_box = QtWidgets.QGroupBox(self.general_tab)
+        self.file_types_box.setMaximumSize(QtCore.QSize(16777215, 280))
+        self.file_types_box.setStyleSheet("background-color: #24292E ;\n"
+"font: 10pt \"MS Shell Dlg 2\";\n"
+"letter-spacing: 2px;\n"
+"word-spacing: 1.4px;\n"
+"color: #D0D4D9;\n"
+"")
+        self.file_types_box.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.file_types_box.setFlat(True)
+        self.file_types_box.setCheckable(False)
+        self.file_types_box.setObjectName("file_types_box")
+        self.gridLayout_8 = QtWidgets.QGridLayout(self.file_types_box)
+        self.gridLayout_8.setContentsMargins(10, 6, 0, 0)
+        self.gridLayout_8.setSpacing(0)
+        self.gridLayout_8.setObjectName("gridLayout_8")
+        self.gridLayout_44 = QtWidgets.QGridLayout()
+        self.gridLayout_44.setObjectName("gridLayout_44")
+        spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout_44.addItem(spacerItem4, 1, 0, 1, 1)
+        self.listView_num_each_fl_type = QtWidgets.QListView(self.file_types_box)
+        self.listView_num_each_fl_type.setObjectName("listView_num_each_fl_type")
+        self.gridLayout_44.addWidget(self.listView_num_each_fl_type, 0, 1, 1, 1)
+        self.verticalFrame_3 = QtWidgets.QFrame(self.file_types_box)
+        self.verticalFrame_3.setMaximumSize(QtCore.QSize(16777215, 170))
+        self.verticalFrame_3.setObjectName("verticalFrame_3")
+        self.gridLayout_45 = QtWidgets.QGridLayout(self.verticalFrame_3)
+        self.gridLayout_45.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout_45.setHorizontalSpacing(0)
+        self.gridLayout_45.setVerticalSpacing(2)
+        self.gridLayout_45.setObjectName("gridLayout_45")
+        self.checkBox_wav = QtWidgets.QCheckBox(self.verticalFrame_3)
+        self.checkBox_wav.setStyleSheet("QCheckBox {\n"
+"    spacing: 5px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"QCheckBox::indicator:unchecked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}")
+        self.checkBox_wav.setObjectName("checkBox_wav")
+        self.gridLayout_45.addWidget(self.checkBox_wav, 7, 0, 1, 1)
+        self.checkBox_aiff = QtWidgets.QCheckBox(self.verticalFrame_3)
+        self.checkBox_aiff.setStyleSheet("QCheckBox {\n"
+"    spacing: 5px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"QCheckBox::indicator:unchecked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}")
+        self.checkBox_aiff.setObjectName("checkBox_aiff")
+        self.gridLayout_45.addWidget(self.checkBox_aiff, 1, 0, 1, 1)
+        self.checkBox_ogg = QtWidgets.QCheckBox(self.verticalFrame_3)
+        self.checkBox_ogg.setStyleSheet("QCheckBox {\n"
+"    spacing: 5px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"QCheckBox::indicator:unchecked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}")
+        self.checkBox_ogg.setObjectName("checkBox_ogg")
+        self.gridLayout_45.addWidget(self.checkBox_ogg, 5, 0, 1, 1)
+        self.checkBox_mp3 = QtWidgets.QCheckBox(self.verticalFrame_3)
+        self.checkBox_mp3.setStyleSheet("QCheckBox {\n"
+"    spacing: 5px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"QCheckBox::indicator:unchecked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}")
+        self.checkBox_mp3.setObjectName("checkBox_mp3")
+        self.gridLayout_45.addWidget(self.checkBox_mp3, 4, 0, 1, 1)
+        self.checkBox_alac = QtWidgets.QCheckBox(self.verticalFrame_3)
+        self.checkBox_alac.setStyleSheet("QCheckBox {\n"
+"    spacing: 5px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"QCheckBox::indicator:unchecked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}")
+        self.checkBox_alac.setObjectName("checkBox_alac")
+        self.gridLayout_45.addWidget(self.checkBox_alac, 2, 0, 1, 1)
+        self.checkBox_acc = QtWidgets.QCheckBox(self.verticalFrame_3)
+        self.checkBox_acc.setStyleSheet("QCheckBox {\n"
+"    spacing: 5px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"QCheckBox::indicator:unchecked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}")
+        self.checkBox_acc.setObjectName("checkBox_acc")
+        self.gridLayout_45.addWidget(self.checkBox_acc, 0, 0, 1, 1)
+        self.checkBox_wma = QtWidgets.QCheckBox(self.verticalFrame_3)
+        self.checkBox_wma.setStyleSheet("QCheckBox {\n"
+"    spacing: 5px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"QCheckBox::indicator:unchecked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}")
+        self.checkBox_wma.setObjectName("checkBox_wma")
+        self.gridLayout_45.addWidget(self.checkBox_wma, 6, 0, 1, 1)
+        self.checkBox_flac = QtWidgets.QCheckBox(self.verticalFrame_3)
+        self.checkBox_flac.setStyleSheet("QCheckBox {\n"
+"    spacing: 5px;\n"
+"}\n"
+"QCheckBox::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"QCheckBox::indicator:unchecked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(255, 0, 0, 255), stop:0.528409 rgba(173, 25, 25, 255), stop:1 rgba(187, 60, 60, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}\n"
+"QCheckBox::indicator:checked {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.54, y1:1, x2:0.534, y2:0, stop:0 rgba(0, 255, 18, 255), stop:0.306818 rgba(10, 171, 24, 255), stop:0.636364 rgba(25, 173, 41, 255), stop:0.994318 rgba(33, 104, 47, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
+"}")
+        self.checkBox_flac.setObjectName("checkBox_flac")
+        self.gridLayout_45.addWidget(self.checkBox_flac, 3, 0, 1, 1)
+        self.gridLayout_44.addWidget(self.verticalFrame_3, 0, 0, 1, 1)
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.apply_button_3 = QtWidgets.QPushButton(self.file_types_box)
+        self.apply_button_3.setAutoFillBackground(False)
+        self.apply_button_3.setStyleSheet("QPushButton {\n"
+"background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.653409 rgba(59, 78, 97, 255), stop:0.761364 rgba(40, 88, 135, 255), stop:0.892045 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 4em;\n"
+"padding: 6px;\n"
+"}\n"
+"QPushButton:pressed {\n"
+"       background-color: rgb(47, 54, 67);\n"
+"    border-style: inset;\n"
+"}")
+        self.apply_button_3.setFlat(True)
+        self.apply_button_3.setObjectName("apply_button_3")
+        self.horizontalLayout_3.addWidget(self.apply_button_3)
+        self.apply_button_2 = QtWidgets.QPushButton(self.file_types_box)
+        self.apply_button_2.setAutoFillBackground(False)
+        self.apply_button_2.setStyleSheet("QPushButton {\n"
+"background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.653409 rgba(59, 78, 97, 255), stop:0.761364 rgba(40, 88, 135, 255), stop:0.892045 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 6px;\n"
+"border-color: #000000;\n"
+"min-width: 4em;\n"
+"padding: 6px;\n"
+"}\n"
+"QPushButton:pressed {\n"
+"       background-color: rgb(47, 54, 67);\n"
+"    border-style: inset;\n"
+"}")
+        self.apply_button_2.setFlat(True)
+        self.apply_button_2.setObjectName("apply_button_2")
+        self.horizontalLayout_3.addWidget(self.apply_button_2)
+        self.gridLayout_44.addLayout(self.horizontalLayout_3, 1, 1, 1, 1)
+        self.gridLayout_8.addLayout(self.gridLayout_44, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.file_types_box, 2, 0, 1, 1)
         self.all_tabs_stacked.addWidget(self.general_tab)
         self.now_playing_tab = QtWidgets.QWidget()
         self.now_playing_tab.setObjectName("now_playing_tab")
@@ -1291,23 +1312,189 @@ class Ui_preferences_window(object):
         self.playing_track_Box.setCheckable(False)
         self.playing_track_Box.setObjectName("playing_track_Box")
         self.gridLayout_11 = QtWidgets.QGridLayout(self.playing_track_Box)
-        self.gridLayout_11.setContentsMargins(10, 0, 0, 15)
+        self.gridLayout_11.setContentsMargins(10, 0, 0, 0)
         self.gridLayout_11.setSpacing(0)
         self.gridLayout_11.setObjectName("gridLayout_11")
-        self.scrollArea_2 = QtWidgets.QScrollArea(self.playing_track_Box)
-        self.scrollArea_2.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.scrollArea_2.setWidgetResizable(True)
-        self.scrollArea_2.setObjectName("scrollArea_2")
-        self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 500, 205))
-        self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
-        self.gridLayout_22 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
+        self.gridLayout_22 = QtWidgets.QGridLayout()
         self.gridLayout_22.setObjectName("gridLayout_22")
-        self.gridLayout_6 = QtWidgets.QGridLayout()
-        self.gridLayout_6.setObjectName("gridLayout_6")
-        self.gridLayout_22.addLayout(self.gridLayout_6, 0, 0, 1, 1)
-        self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
-        self.gridLayout_11.addWidget(self.scrollArea_2, 0, 0, 1, 1)
+        self.verticalLayout_18 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_18.setObjectName("verticalLayout_18")
+        self.label_7 = QtWidgets.QLabel(self.playing_track_Box)
+        self.label_7.setObjectName("label_7")
+        self.verticalLayout_18.addWidget(self.label_7)
+        self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        self.label_8 = QtWidgets.QLabel(self.playing_track_Box)
+        self.label_8.setObjectName("label_8")
+        self.horizontalLayout_6.addWidget(self.label_8)
+        self.comboBox_13 = QtWidgets.QComboBox(self.playing_track_Box)
+        self.comboBox_13.setStyleSheet("QComboBox {\n"
+"    border: 1px solid gray;\n"
+"    border-radius: 3px;\n"
+"    padding: 1px 18px 1px 3px;\n"
+"    min-width: 6em;\n"
+"}\n"
+"\n"
+"QComboBox:editable {\n"
+"background-color: rgb(47, 54, 67);\n"
+"}\n"
+"\n"
+"QComboBox:!editable, QComboBox::drop-down:editable {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));\n"
+"}\n"
+"\n"
+"/* QComboBox gets the \"on\" state when the popup is open */\n"
+"QComboBox:!editable:on, QComboBox::drop-down:editable:one {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));\n"
+"}\n"
+"\n"
+"QComboBox:on { /* shift the text when the popup opens */\n"
+"    padding-top:1px;\n"
+"    padding-left: 1px;\n"
+"}\n"
+"\n"
+"QComboBox::drop-down {\n"
+"    subcontrol-origin: padding;\n"
+"    subcontrol-position: top right;\n"
+"    width: 15px;\n"
+"    border-left-width: 1px;\n"
+"    border-left-color: darkgray;\n"
+"    border-left-style: solid; /* just a single line */\n"
+"    border-top-right-radius: 3px; /* same radius as the QComboBox */\n"
+"    border-bottom-right-radius: 3px;\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow {\n"
+"   \n"
+"    background-color: qconicalgradient(cx:0.5, cy:0.523, angle:269.5, stop:0.375 rgba(255, 0, 0, 0), stop:0.375957 rgba(255, 0, 0, 0), stop:0.375982 rgba(21, 0, 0, 255), stop:0.5 rgba(75, 75, 75, 255), stop:0.619318 rgba(0, 0, 0, 255), stop:0.625 rgba(255, 255, 255, 0));\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow:on { /* shift the arrow when popup is open */\n"
+"    top: 1px;\n"
+"    left: 1px;\n"
+"}")
+        self.comboBox_13.setObjectName("comboBox_13")
+        self.comboBox_13.addItem("")
+        self.comboBox_13.addItem("")
+        self.comboBox_13.addItem("")
+        self.horizontalLayout_6.addWidget(self.comboBox_13)
+        self.verticalLayout_18.addLayout(self.horizontalLayout_6)
+        self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
+        self.label_9 = QtWidgets.QLabel(self.playing_track_Box)
+        self.label_9.setObjectName("label_9")
+        self.horizontalLayout_7.addWidget(self.label_9)
+        self.comboBox_12 = QtWidgets.QComboBox(self.playing_track_Box)
+        self.comboBox_12.setStyleSheet("QComboBox {\n"
+"    border: 1px solid gray;\n"
+"    border-radius: 3px;\n"
+"    padding: 1px 18px 1px 3px;\n"
+"    min-width: 6em;\n"
+"}\n"
+"\n"
+"QComboBox:editable {\n"
+"background-color: rgb(47, 54, 67);\n"
+"}\n"
+"\n"
+"QComboBox:!editable, QComboBox::drop-down:editable {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));\n"
+"}\n"
+"\n"
+"/* QComboBox gets the \"on\" state when the popup is open */\n"
+"QComboBox:!editable:on, QComboBox::drop-down:editable:one {\n"
+"background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));\n"
+"}\n"
+"\n"
+"QComboBox:on { /* shift the text when the popup opens */\n"
+"    padding-top:1px;\n"
+"    padding-left: 1px;\n"
+"}\n"
+"\n"
+"QComboBox::drop-down {\n"
+"    subcontrol-origin: padding;\n"
+"    subcontrol-position: top right;\n"
+"    width: 15px;\n"
+"    border-left-width: 1px;\n"
+"    border-left-color: darkgray;\n"
+"    border-left-style: solid; /* just a single line */\n"
+"    border-top-right-radius: 3px; /* same radius as the QComboBox */\n"
+"    border-bottom-right-radius: 3px;\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow {\n"
+"   \n"
+"    background-color: qconicalgradient(cx:0.5, cy:0.523, angle:269.5, stop:0.375 rgba(255, 0, 0, 0), stop:0.375957 rgba(255, 0, 0, 0), stop:0.375982 rgba(21, 0, 0, 255), stop:0.5 rgba(75, 75, 75, 255), stop:0.619318 rgba(0, 0, 0, 255), stop:0.625 rgba(255, 255, 255, 0));\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow:on { /* shift the arrow when popup is open */\n"
+"    top: 1px;\n"
+"    left: 1px;\n"
+"}")
+        self.comboBox_12.setObjectName("comboBox_12")
+        self.comboBox_12.addItem("")
+        self.comboBox_12.addItem("")
+        self.comboBox_12.addItem("")
+        self.horizontalLayout_7.addWidget(self.comboBox_12)
+        self.verticalLayout_18.addLayout(self.horizontalLayout_7)
+        self.label_10 = QtWidgets.QLabel(self.playing_track_Box)
+        self.label_10.setObjectName("label_10")
+        self.verticalLayout_18.addWidget(self.label_10)
+        self.verticalLayout_19 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_19.setObjectName("verticalLayout_19")
+        self.radioButton_16 = QtWidgets.QRadioButton(self.playing_track_Box)
+        self.radioButton_16.setStyleSheet("QRadioButton::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"\n"
+"QRadioButton::indicator::unchecked {\n"
+"background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 0, 0, 255), stop:0.505682 rgba(25, 0, 0, 255), stop:0.693182 rgba(255, 0, 0, 255), stop:0.943182 rgba(255, 0, 0, 255), stop:1 rgba(255, 255, 255, 0));\n"
+"}\n"
+"\n"
+"QRadioButton::indicator::checked {\n"
+"background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 0, 0, 255), stop:0.505682 rgba(25, 0, 0, 255), stop:0.693182 rgba(36, 255, 0, 255), stop:0.943182 rgba(25, 255, 0, 255), stop:1 rgba(255, 255, 255, 0));\n"
+"}\n"
+"")
+        self.radioButton_16.setObjectName("radioButton_16")
+        self.verticalLayout_19.addWidget(self.radioButton_16)
+        self.radioButton_17 = QtWidgets.QRadioButton(self.playing_track_Box)
+        self.radioButton_17.setStyleSheet("QRadioButton::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"\n"
+"QRadioButton::indicator::unchecked {\n"
+"background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 0, 0, 255), stop:0.505682 rgba(25, 0, 0, 255), stop:0.693182 rgba(255, 0, 0, 255), stop:0.943182 rgba(255, 0, 0, 255), stop:1 rgba(255, 255, 255, 0));\n"
+"}\n"
+"\n"
+"QRadioButton::indicator::checked {\n"
+"background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 0, 0, 255), stop:0.505682 rgba(25, 0, 0, 255), stop:0.693182 rgba(36, 255, 0, 255), stop:0.943182 rgba(25, 255, 0, 255), stop:1 rgba(255, 255, 255, 0));\n"
+"}\n"
+"")
+        self.radioButton_17.setObjectName("radioButton_17")
+        self.verticalLayout_19.addWidget(self.radioButton_17)
+        self.radioButton_18 = QtWidgets.QRadioButton(self.playing_track_Box)
+        self.radioButton_18.setStyleSheet("QRadioButton::indicator {\n"
+"    width: 13px;\n"
+"    height: 13px;\n"
+"}\n"
+"\n"
+"QRadioButton::indicator::unchecked {\n"
+"background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 0, 0, 255), stop:0.505682 rgba(25, 0, 0, 255), stop:0.693182 rgba(255, 0, 0, 255), stop:0.943182 rgba(255, 0, 0, 255), stop:1 rgba(255, 255, 255, 0));\n"
+"}\n"
+"\n"
+"QRadioButton::indicator::checked {\n"
+"background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(0, 0, 0, 255), stop:0.505682 rgba(25, 0, 0, 255), stop:0.693182 rgba(36, 255, 0, 255), stop:0.943182 rgba(25, 255, 0, 255), stop:1 rgba(255, 255, 255, 0));\n"
+"}\n"
+"")
+        self.radioButton_18.setChecked(True)
+        self.radioButton_18.setObjectName("radioButton_18")
+        self.verticalLayout_19.addWidget(self.radioButton_18)
+        spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_19.addItem(spacerItem5)
+        self.verticalLayout_18.addLayout(self.verticalLayout_19)
+        self.gridLayout_22.addLayout(self.verticalLayout_18, 0, 0, 1, 1)
+        self.gridLayout_11.addLayout(self.gridLayout_22, 0, 0, 1, 1)
         self.gridLayout_4.addWidget(self.playing_track_Box, 0, 0, 1, 1)
         self.shuffle_box = QtWidgets.QGroupBox(self.now_playing_tab)
         self.shuffle_box.setStyleSheet("background-color: #24292E ;\n"
@@ -1426,7 +1613,7 @@ class Ui_preferences_window(object):
         self.scrollArea_4.setWidgetResizable(True)
         self.scrollArea_4.setObjectName("scrollArea_4")
         self.scrollAreaWidgetContents_4 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_4.setGeometry(QtCore.QRect(0, 0, 500, 253))
+        self.scrollAreaWidgetContents_4.setGeometry(QtCore.QRect(0, 0, 500, 249))
         self.scrollAreaWidgetContents_4.setObjectName("scrollAreaWidgetContents_4")
         self.gridLayout_12 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_4)
         self.gridLayout_12.setContentsMargins(0, 0, 0, 0)
@@ -1515,6 +1702,7 @@ class Ui_preferences_window(object):
         self.comboBox_2.addItem("")
         self.comboBox_2.addItem("")
         self.comboBox_2.addItem("")
+        self.comboBox_2.addItem("")
         self.horizontalLayout_12.addWidget(self.comboBox_2)
         self.verticalLayout_5.addLayout(self.horizontalLayout_12)
         self.horizontalLayout_13 = QtWidgets.QHBoxLayout()
@@ -1547,54 +1735,27 @@ class Ui_preferences_window(object):
 "}")
         self.checkBox_15.setObjectName("checkBox_15")
         self.horizontalLayout_13.addWidget(self.checkBox_15)
-        self.comboBox_3 = QtWidgets.QComboBox(self.scrollAreaWidgetContents_4)
-        self.comboBox_3.setStyleSheet("QComboBox {\n"
-"    border: 1px solid gray;\n"
-"    border-radius: 3px;\n"
-"    padding: 1px 18px 1px 3px;\n"
-"    min-width: 6em;\n"
+        self.label_3 = QtWidgets.QLabel(self.scrollAreaWidgetContents_4)
+        self.label_3.setText("")
+        self.label_3.setObjectName("label_3")
+        self.horizontalLayout_13.addWidget(self.label_3)
+        self.pushButton = QtWidgets.QPushButton(self.scrollAreaWidgetContents_4)
+        self.pushButton.setMaximumSize(QtCore.QSize(20, 20))
+        self.pushButton.setStyleSheet("QPushButton {\n"
+"background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.653409 rgba(59, 78, 97, 255), stop:0.761364 rgba(40, 88, 135, 255), stop:0.892045 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 4px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
 "}\n"
-"\n"
-"QComboBox:editable {\n"
-"background-color: rgb(47, 54, 67);\n"
-"}\n"
-"\n"
-"QComboBox:!editable, QComboBox::drop-down:editable {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));\n"
-"}\n"
-"\n"
-"/* QComboBox gets the \"on\" state when the popup is open */\n"
-"QComboBox:!editable:on, QComboBox::drop-down:editable:one {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));\n"
-"}\n"
-"\n"
-"QComboBox:on { /* shift the text when the popup opens */\n"
-"    padding-top:1px;\n"
-"    padding-left: 1px;\n"
-"}\n"
-"\n"
-"QComboBox::drop-down {\n"
-"    subcontrol-origin: padding;\n"
-"    subcontrol-position: top right;\n"
-"    width: 15px;\n"
-"    border-left-width: 1px;\n"
-"    border-left-color: darkgray;\n"
-"    border-left-style: solid; /* just a single line */\n"
-"    border-top-right-radius: 3px; /* same radius as the QComboBox */\n"
-"    border-bottom-right-radius: 3px;\n"
-"}\n"
-"\n"
-"QComboBox::down-arrow {\n"
-"   \n"
-"    background-color: qconicalgradient(cx:0.5, cy:0.523, angle:269.5, stop:0.375 rgba(255, 0, 0, 0), stop:0.375957 rgba(255, 0, 0, 0), stop:0.375982 rgba(21, 0, 0, 255), stop:0.5 rgba(75, 75, 75, 255), stop:0.619318 rgba(0, 0, 0, 255), stop:0.625 rgba(255, 255, 255, 0));\n"
-"}\n"
-"\n"
-"QComboBox::down-arrow:on { /* shift the arrow when popup is open */\n"
-"    top: 1px;\n"
-"    left: 1px;\n"
+"QPushButton:pressed {\n"
+"       background-color: rgb(47, 54, 67);\n"
+"    border-style: inset;\n"
 "}")
-        self.comboBox_3.setObjectName("comboBox_3")
-        self.horizontalLayout_13.addWidget(self.comboBox_3)
+        self.pushButton.setObjectName("pushButton")
+        self.horizontalLayout_13.addWidget(self.pushButton)
         self.verticalLayout_5.addLayout(self.horizontalLayout_13)
         self.horizontalLayout_14 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_14.setObjectName("horizontalLayout_14")
@@ -1626,54 +1787,27 @@ class Ui_preferences_window(object):
 "}")
         self.checkBox_16.setObjectName("checkBox_16")
         self.horizontalLayout_14.addWidget(self.checkBox_16)
-        self.comboBox_4 = QtWidgets.QComboBox(self.scrollAreaWidgetContents_4)
-        self.comboBox_4.setStyleSheet("QComboBox {\n"
-"    border: 1px solid gray;\n"
-"    border-radius: 3px;\n"
-"    padding: 1px 18px 1px 3px;\n"
-"    min-width: 6em;\n"
+        self.label_4 = QtWidgets.QLabel(self.scrollAreaWidgetContents_4)
+        self.label_4.setText("")
+        self.label_4.setObjectName("label_4")
+        self.horizontalLayout_14.addWidget(self.label_4)
+        self.pushButton_2 = QtWidgets.QPushButton(self.scrollAreaWidgetContents_4)
+        self.pushButton_2.setMaximumSize(QtCore.QSize(20, 20))
+        self.pushButton_2.setStyleSheet("QPushButton {\n"
+"background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.653409 rgba(59, 78, 97, 255), stop:0.761364 rgba(40, 88, 135, 255), stop:0.892045 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));\n"
+"border-style: outset;\n"
+"border-width: 1px;\n"
+"border-radius: 4px;\n"
+"border-color: #000000;\n"
+"min-width: 1em;\n"
+"padding: 1px;\n"
 "}\n"
-"\n"
-"QComboBox:editable {\n"
-"background-color: rgb(47, 54, 67);\n"
-"}\n"
-"\n"
-"QComboBox:!editable, QComboBox::drop-down:editable {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));\n"
-"}\n"
-"\n"
-"/* QComboBox gets the \"on\" state when the popup is open */\n"
-"QComboBox:!editable:on, QComboBox::drop-down:editable:one {\n"
-"background-color: qlineargradient(spread:reflect, x1:0.08, y1:0, x2:1, y2:0, stop:0 rgba(47, 54, 67, 255), stop:0.454545 rgba(68, 85, 117, 255), stop:0.755682 rgba(69, 94, 142, 255), stop:1 rgba(83, 117, 182, 255));\n"
-"}\n"
-"\n"
-"QComboBox:on { /* shift the text when the popup opens */\n"
-"    padding-top:1px;\n"
-"    padding-left: 1px;\n"
-"}\n"
-"\n"
-"QComboBox::drop-down {\n"
-"    subcontrol-origin: padding;\n"
-"    subcontrol-position: top right;\n"
-"    width: 15px;\n"
-"    border-left-width: 1px;\n"
-"    border-left-color: darkgray;\n"
-"    border-left-style: solid; /* just a single line */\n"
-"    border-top-right-radius: 3px; /* same radius as the QComboBox */\n"
-"    border-bottom-right-radius: 3px;\n"
-"}\n"
-"\n"
-"QComboBox::down-arrow {\n"
-"   \n"
-"    background-color: qconicalgradient(cx:0.5, cy:0.523, angle:269.5, stop:0.375 rgba(255, 0, 0, 0), stop:0.375957 rgba(255, 0, 0, 0), stop:0.375982 rgba(21, 0, 0, 255), stop:0.5 rgba(75, 75, 75, 255), stop:0.619318 rgba(0, 0, 0, 255), stop:0.625 rgba(255, 255, 255, 0));\n"
-"}\n"
-"\n"
-"QComboBox::down-arrow:on { /* shift the arrow when popup is open */\n"
-"    top: 1px;\n"
-"    left: 1px;\n"
+"QPushButton:pressed {\n"
+"       background-color: rgb(47, 54, 67);\n"
+"    border-style: inset;\n"
 "}")
-        self.comboBox_4.setObjectName("comboBox_4")
-        self.horizontalLayout_14.addWidget(self.comboBox_4)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.horizontalLayout_14.addWidget(self.pushButton_2)
         self.verticalLayout_5.addLayout(self.horizontalLayout_14)
         self.horizontalLayout_15 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_15.setObjectName("horizontalLayout_15")
@@ -1827,6 +1961,7 @@ class Ui_preferences_window(object):
 "min-width: 1em;\n"
 "padding: 1px;\n"
 "}")
+        self.checkBox_21.setText("")
         self.checkBox_21.setObjectName("checkBox_21")
         self.horizontalLayout_19.addWidget(self.checkBox_21)
         self.verticalLayout_5.addLayout(self.horizontalLayout_19)
@@ -1980,8 +2115,8 @@ class Ui_preferences_window(object):
 "}")
         self.checkBox_24.setObjectName("checkBox_24")
         self.gridLayout_23.addWidget(self.checkBox_24, 1, 0, 1, 1)
-        self.pushButton = QtWidgets.QPushButton(self.musi_library_box)
-        self.pushButton.setStyleSheet("QPushButton {\n"
+        self.pushButton1 = QtWidgets.QPushButton(self.musi_library_box)
+        self.pushButton1.setStyleSheet("QPushButton {\n"
 "background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.653409 rgba(59, 78, 97, 255), stop:0.761364 rgba(40, 88, 135, 255), stop:0.892045 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));\n"
 "border-style: outset;\n"
 "border-width: 1px;\n"
@@ -1994,8 +2129,8 @@ class Ui_preferences_window(object):
 "       background-color: rgb(47, 54, 67);\n"
 "    border-style: inset;\n"
 "}")
-        self.pushButton.setObjectName("pushButton")
-        self.gridLayout_23.addWidget(self.pushButton, 0, 1, 1, 1)
+        self.pushButton1.setObjectName("pushButton1")
+        self.gridLayout_23.addWidget(self.pushButton1, 0, 1, 1, 1)
         self.checkBox_25 = QtWidgets.QCheckBox(self.musi_library_box)
         self.checkBox_25.setStyleSheet("QCheckBox {\n"
 "    spacing: 5px;\n"
@@ -2107,8 +2242,8 @@ class Ui_preferences_window(object):
 "}")
         self.checkBox_27.setObjectName("checkBox_27")
         self.horizontalLayout_23.addWidget(self.checkBox_27)
-        self.pushButton_2 = QtWidgets.QPushButton(self.mon_files_box)
-        self.pushButton_2.setStyleSheet("QPushButton {\n"
+        self.pushButton_21 = QtWidgets.QPushButton(self.mon_files_box)
+        self.pushButton_21.setStyleSheet("QPushButton {\n"
 "background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.653409 rgba(59, 78, 97, 255), stop:0.761364 rgba(40, 88, 135, 255), stop:0.892045 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));\n"
 "border-style: outset;\n"
 "border-width: 1px;\n"
@@ -2121,8 +2256,8 @@ class Ui_preferences_window(object):
 "       background-color: rgb(47, 54, 67);\n"
 "    border-style: inset;\n"
 "}")
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.horizontalLayout_23.addWidget(self.pushButton_2)
+        self.pushButton_21.setObjectName("pushButton_21")
+        self.horizontalLayout_23.addWidget(self.pushButton_21)
         self.pushButton_3 = QtWidgets.QPushButton(self.mon_files_box)
         self.pushButton_3.setStyleSheet("QPushButton {\n"
 "background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:1, y2:0, stop:0 rgba(36, 41, 46, 255), stop:0.653409 rgba(59, 78, 97, 255), stop:0.761364 rgba(40, 88, 135, 255), stop:0.892045 rgba(31, 112, 194, 255), stop:1 rgba(47, 139, 230, 255));\n"
@@ -2617,7 +2752,7 @@ class Ui_preferences_window(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 500, 940))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 188, 940))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_7 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_7.setContentsMargins(0, 0, 0, 0)
@@ -3769,8 +3904,8 @@ class Ui_preferences_window(object):
         self.radioButton_12.setObjectName("radioButton_12")
         self.horizontalLayout_28.addWidget(self.radioButton_12)
         self.gridLayout_40.addLayout(self.horizontalLayout_28, 3, 0, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout_40.addItem(spacerItem2, 2, 0, 1, 1)
+        spacerItem6 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout_40.addItem(spacerItem6, 2, 0, 1, 1)
         self.gridLayout_41.addLayout(self.gridLayout_40, 0, 0, 1, 1)
         self.gridLayout_15.addWidget(self.groupBox_5, 0, 0, 1, 1)
         self.groupBox_4 = QtWidgets.QGroupBox(self.player_tab)
@@ -4257,7 +4392,7 @@ class Ui_preferences_window(object):
         self.gridLayout_19.setSpacing(0)
         self.gridLayout_19.setObjectName("gridLayout_19")
         self.all_tabs_stacked.addWidget(self.tool_tab)
-        self.main_grid.addWidget(self.all_tabs_stacked, 0, 1, 1, 1)
+        self.main_grid.addWidget(self.all_tabs_stacked, 0, 2, 1, 1)
         self.gridLayout.addWidget(self.main_grid_2, 1, 0, 1, 1)
         self.title_bar_2 = QtWidgets.QWidget(self.main_frame)
         self.title_bar_2.setMinimumSize(QtCore.QSize(0, 30))
@@ -4331,74 +4466,85 @@ class Ui_preferences_window(object):
         self.file_con_btn.setText(_translate("preferences_window", "File Converters"))
         self.tools_btn.setText(_translate("preferences_window", "Tools"))
         self.misc_box.setTitle(_translate("preferences_window", "Miscellaneous"))
-        self.checkBox_12.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_7.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_9.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_11.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_6.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_5.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_13.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_8.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_10.setText(_translate("preferences_window", "CheckBox"))
-        self.file_types_box.setTitle(_translate("preferences_window", "File Types"))
-        self.checkBox_77.setText(_translate("preferences_window", ".wav"))
-        self.checkBox_72.setText(_translate("preferences_window", ".aiff"))
-        self.checkBox_73.setText(_translate("preferences_window", ".alac"))
-        self.checkBox_74.setText(_translate("preferences_window", ".mp3"))
-        self.checkBox_71.setText(_translate("preferences_window", ".aac"))
-        self.checkBox_75.setText(_translate("preferences_window", ".ogg"))
-        self.checkBox_76.setText(_translate("preferences_window", ".wma"))
-        self.label_3.setText(_translate("preferences_window", "TextLabel"))
-        self.label_5.setText(_translate("preferences_window", "TextLabel"))
-        self.label_4.setText(_translate("preferences_window", "TextLabel"))
-        self.label_6.setText(_translate("preferences_window", "TextLabel"))
-        self.label_7.setText(_translate("preferences_window", "TextLabel"))
-        self.label_8.setText(_translate("preferences_window", "TextLabel"))
-        self.label_9.setText(_translate("preferences_window", "TextLabel"))
-        self.label_10.setText(_translate("preferences_window", "TextLabel"))
-        self.checkBox_78.setText(_translate("preferences_window", ".flac"))
+        self.checkBox_10.setText(_translate("preferences_window", "Warn When Duplicate Tracks are Added to Playlist"))
+        self.checkBox_11.setText(_translate("preferences_window", "Warn When Files Are Not Recognized"))
+        self.checkBox_71.setText(_translate("preferences_window", "Confirm When Tags Are Modified"))
+        self.checkBox_12.setText(_translate("preferences_window", "Confirm Permanant File Deletion"))
+        self.checkBox_72.setText(_translate("preferences_window", "Confirm Removal of File from Playlist"))
+        self.checkBox_73.setText(_translate("preferences_window", "Confirm When Modifing Artwork"))
+        self.checkBox_74.setText(_translate("preferences_window", "Confirm Removal Of Dead Links From Library"))
+        self.checkBox_13.setText(_translate("preferences_window", "Confirm When Switcing Between Audio Devices"))
+        self.checkBox_75.setText(_translate("preferences_window", "Confirm When New Items are Added to the library"))
+        self.checkBox_76.setText(_translate("preferences_window", "Confirm When New Auto Playlist is Generated"))
         self.application_box.setTitle(_translate("preferences_window", "Application"))
-        self.label_2.setText(_translate("preferences_window", "TextLabel"))
-        self.comboBox.setItemText(0, _translate("preferences_window", "Taskbar"))
-        self.comboBox.setItemText(1, _translate("preferences_window", "Mini Player"))
-        self.comboBox.setItemText(2, _translate("preferences_window", "Compact "))
-        self.checkBox_3.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_2.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_4.setText(_translate("preferences_window", "CheckBox"))
+        self.label_2.setText(_translate("preferences_window", "Startup Mode"))
+        self.comboBox_startup_mode.setItemText(0, _translate("preferences_window", "Main Player"))
+        self.comboBox_startup_mode.setItemText(1, _translate("preferences_window", "Taskbar"))
+        self.comboBox_startup_mode.setItemText(2, _translate("preferences_window", "Mini Player"))
+        self.comboBox_startup_mode.setItemText(3, _translate("preferences_window", "Compact Player"))
+        self.checkBoxsplash_screen.setText(_translate("preferences_window", "Display Splash Screen"))
+        self.checkBox_min_totask.setText(_translate("preferences_window", "Minimize to Taskbar"))
+        self.checkBox_play_str.setText(_translate("preferences_window", "Play on Startup"))
+        self.checkBox_chkOnsstr.setText(_translate("preferences_window", "Check for Updates on Startup"))
+        self.file_types_box.setTitle(_translate("preferences_window", "File Types"))
+        self.checkBox_wav.setText(_translate("preferences_window", ".wav ( Waveform Audio File )"))
+        self.checkBox_aiff.setText(_translate("preferences_window", ".aiff ( Audio Interchange File Format )"))
+        self.checkBox_ogg.setText(_translate("preferences_window", ".ogg ( Ogg )"))
+        self.checkBox_mp3.setText(_translate("preferences_window", ".mp3 ( MPEG Audio Layer-3 )"))
+        self.checkBox_alac.setText(_translate("preferences_window", ".alac ( Apple Lossless Audio Codec )"))
+        self.checkBox_acc.setText(_translate("preferences_window", ".aac ( Advanced Audio Coding )"))
+        self.checkBox_wma.setText(_translate("preferences_window", ".wma ( Windows Media Audio )"))
+        self.checkBox_flac.setText(_translate("preferences_window", ".flac ( Free Lossless Audio Codec )"))
+        self.apply_button_3.setText(_translate("preferences_window", "Select All"))
+        self.apply_button_2.setText(_translate("preferences_window", "Select None"))
         self.playing_track_Box.setTitle(_translate("preferences_window", "Playing Track List"))
+        self.label_7.setText(_translate("preferences_window", "Action When Track is Double-clicked"))
+        self.label_8.setText(_translate("preferences_window", "Playing Track"))
+        self.comboBox_13.setItemText(0, _translate("preferences_window", "Play Now"))
+        self.comboBox_13.setItemText(1, _translate("preferences_window", "Queue Next"))
+        self.comboBox_13.setItemText(2, _translate("preferences_window", "Queue Last"))
+        self.label_9.setText(_translate("preferences_window", "Playback Stopped"))
+        self.comboBox_12.setItemText(0, _translate("preferences_window", "Play Now"))
+        self.comboBox_12.setItemText(1, _translate("preferences_window", "Queue Next"))
+        self.comboBox_12.setItemText(2, _translate("preferences_window", "Queue Last"))
+        self.label_10.setText(_translate("preferences_window", "Play Now action"))
+        self.radioButton_16.setText(_translate("preferences_window", "Clear List and Play Selected Track Only"))
+        self.radioButton_17.setText(_translate("preferences_window", "Clear List and Play Album Only"))
+        self.radioButton_18.setText(_translate("preferences_window", "Clear List and Play All Tracks"))
         self.shuffle_box.setTitle(_translate("preferences_window", "Shuffle Settings"))
-        self.radioButton.setText(_translate("preferences_window", "RadioButton"))
-        self.radioButton_4.setText(_translate("preferences_window", "RadioButton"))
-        self.radioButton_3.setText(_translate("preferences_window", "RadioButton"))
-        self.radioButton_5.setText(_translate("preferences_window", "RadioButton"))
-        self.radioButton_2.setText(_translate("preferences_window", "RadioButton"))
+        self.radioButton.setText(_translate("preferences_window", "Random"))
+        self.radioButton_4.setText(_translate("preferences_window", "Random By Album"))
+        self.radioButton_3.setText(_translate("preferences_window", "Recently added Random"))
+        self.radioButton_5.setText(_translate("preferences_window", "Most Played "))
+        self.radioButton_2.setText(_translate("preferences_window", "Rating"))
         self.playback_box.setTitle(_translate("preferences_window", "Playback"))
-        self.checkBox_14.setText(_translate("preferences_window", "CheckBox"))
+        self.checkBox_14.setText(_translate("preferences_window", "Switch Player to While Playing"))
         self.comboBox_2.setItemText(0, _translate("preferences_window", "Normal Player"))
         self.comboBox_2.setItemText(1, _translate("preferences_window", "Compact Player"))
-        self.comboBox_2.setItemText(2, _translate("preferences_window", "Mini Player"))
-        self.checkBox_15.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_16.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_17.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_18.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_19.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_20.setText(_translate("preferences_window", "CheckBox"))
-        self.checkBox_21.setText(_translate("preferences_window", "CheckBox"))
-        self.label_12.setText(_translate("preferences_window", "TextLabel"))
-        self.label_13.setText(_translate("preferences_window", "TextLabel"))
-        self.label_14.setText(_translate("preferences_window", "TextLabel"))
-        self.label_15.setText(_translate("preferences_window", "TextLabel"))
+        self.comboBox_2.setItemText(2, _translate("preferences_window", "Task Bar"))
+        self.comboBox_2.setItemText(3, _translate("preferences_window", "Mini Player"))
+        self.checkBox_15.setText(_translate("preferences_window", "Show in Taskbar As"))
+        self.pushButton.setText(_translate("preferences_window", "..."))
+        self.checkBox_16.setText(_translate("preferences_window", "Show in Player As"))
+        self.pushButton_2.setText(_translate("preferences_window", "..."))
+        self.checkBox_17.setText(_translate("preferences_window", "Highlight Track in Platlist"))
+        self.checkBox_18.setText(_translate("preferences_window", "Highlight Track In Main Player"))
+        self.checkBox_19.setText(_translate("preferences_window", "Playback Follows Cursor"))
+        self.checkBox_20.setText(_translate("preferences_window", "Show Taskbar Popups"))
+        self.label_12.setText(_translate("preferences_window", "Skip 1 Track: Less Than"))
+        self.label_13.setText(_translate("preferences_window", "% of Track is Played or Seconds is "))
+        self.label_14.setText(_translate("preferences_window", "Play 1 Track: More Than"))
+        self.label_15.setText(_translate("preferences_window", "% of Track is Played or Seconds is "))
         self.musi_library_box.setTitle(_translate("preferences_window", "Music Library"))
         self.checkBox_22.setText(_translate("preferences_window", "CheckBox"))
         self.checkBox_23.setText(_translate("preferences_window", "CheckBox"))
         self.checkBox_24.setText(_translate("preferences_window", "CheckBox"))
-        self.pushButton.setText(_translate("preferences_window", "PushButton"))
+        self.pushButton1.setText(_translate("preferences_window", "PushButton"))
         self.checkBox_25.setText(_translate("preferences_window", "CheckBox"))
         self.mon_files_box.setTitle(_translate("preferences_window", "Monitored Files"))
         self.checkBox_26.setText(_translate("preferences_window", "CheckBox"))
         self.checkBox_27.setText(_translate("preferences_window", "CheckBox"))
-        self.pushButton_2.setText(_translate("preferences_window", "PushButton"))
+        self.pushButton_21.setText(_translate("preferences_window", "PushButton"))
         self.pushButton_3.setText(_translate("preferences_window", "PushButton"))
         self.radioButton_6.setText(_translate("preferences_window", "RadioButton"))
         self.checkBox_28.setText(_translate("preferences_window", "CheckBox"))
