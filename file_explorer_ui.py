@@ -8,6 +8,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import os
 
 
 class Ui_MainWindow_file_exp(object):
@@ -23,7 +24,7 @@ class Ui_MainWindow_file_exp(object):
         MainWindow_file_exp.setMaximumSize(QtCore.QSize(6120, 3000))
         MainWindow_file_exp.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("resources/file_explorer/icons8-sound-wave-32.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(os.path.split(os.getcwd())[0]+'\\'+"resources/icons/icons8-sound-wave-32.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow_file_exp.setWindowIcon(icon)
         MainWindow_file_exp.setWindowOpacity(1.0)
         MainWindow_file_exp.setAutoFillBackground(False)

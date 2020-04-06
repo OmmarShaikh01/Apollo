@@ -1,12 +1,17 @@
 from PyQt5 import QtWidgets
 from PyQt5  import QtGui
 from PyQt5  import QtCore
-import re, os, json, tinytag, sys
-from file_explorer_ui import * 
+import re, os, json, tinytag, sys, time
 
-class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
+try:
+    from . import file_explorer_ui
+except:
+    import file_explorer_ui
+    
+class FileBrowser(file_explorer_ui.Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
     def __init__(self, *args):
         super(FileBrowser, self).__init__()
+        sys.path.append(os.path.split(os.getcwd())[0])
         self.setupUi(self)
         self.treeView.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.treeView.customContextMenuRequested.connect(self.context_menu)
@@ -23,6 +28,8 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
             tag = tinytag.TinyTag.get(path)
             tag = tag.as_dict()
             del tag["comment"]
+            tag["date_added"] = time.ctime()
+            tag["file_format"] = os.path.splitext(path)[1]
             return {"file_path":direct + '/' + file,"meta_data":tag}
         
         
@@ -35,18 +42,18 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
                         list_data.append(file_parser(direct, file))
         
 
-        with open("resources\\file_explorer\\Music_library_data.txt", 'w') as json_file:
-            json.dump(list_data, json_file)
+        with open("resources\\settings\\Music_library_data.txt", 'w') as json_file:
+            json.dump(list_data, json_file, indent = 2)
             json_file.close()
         
 
     def folder_scanner(self):
         self.progressBar_file_add.setProperty("value",0)
         self.scan_folder_ok() 
-        with open('config.txt') as json_file:
+        with open('resources\\settings\\config.txt') as json_file:
             data = json.load(json_file)
             stringlist = data["file_path"]
-            format_accepted = set([key for (key,value) in data["file_format_selected"].items() if value == 1 ])
+            format_accepted = set([key for (key,value) in data["file_format_selected"].items() if value[0] == 1 ])
             all_items = []; temp = []; temp1 = []
         for path in stringlist:                
             file_bulk = os.walk(path)
@@ -57,12 +64,12 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
                     if format_accepted.intersection(set(re.findall('\..{3,5}$', item))) != set():
                         temp.append(item)
                 if  directoy.replace("\\", '/') not in temp1 and temp != []:       
-                    temp1.append(directoy.replace("\\", '/'))
+                    temp1.append(directoy)
                     all_items.append({directoy : temp})
         
         self.progressBar_file_add.setProperty("value",100)    
-        self.settings_file_update(all_items, flag="music_files", owr=True, filename = "resources\\file_explorer\\music_listing.txt")
-        self.music_metadata_reader(filename = "resources\\file_explorer\\music_listing.txt")
+        self.settings_file_update(all_items, flag="music_files", owr=True, filename = "resources\\settings\\music_listing.txt")
+        self.music_metadata_reader(filename = "resources\\settings\\music_listing.txt")
         self.label_12.setText("Scanning Library Completed")
         self.cancle()
             
@@ -94,7 +101,6 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
                 string.append(data)
             index = index + 1
         self.settings_file_update(string, flag="file_path", owr=True)
-        self.cancle()
                 
     def populate(self):
         path = r""
@@ -117,7 +123,7 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
     def context_list_view(self):         
         # this writes the list view and updates it
         # accordingly " as add a folder " is clicked
-        with open('config.txt') as json_file:
+        with open('resources\\settings\\config.txt') as json_file:
             data = json.load(json_file)
             stringlist = data["file_path"]
             self.model_list.clear()
@@ -133,7 +139,7 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
         self.listView.clicked['QModelIndex'].connect(self.update_check_box)     
     
     
-    def settings_file_update(self, string, flag = None, owr = False, emp = False, filename = 'config.txt'):
+    def settings_file_update(self, string, flag = None, owr = False, emp = False, filename = 'resources\\settings\\config.txt'):
         with open(filename) as json_file:
             data = json.load(json_file)
             if string not in data[flag] and not (owr):
@@ -163,7 +169,7 @@ class FileBrowser(Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
     
     
 if __name__ == "__main__":
-    import sys
+
     app = QtWidgets.QApplication(sys.argv)
     file_browser_app = FileBrowser()
     file_browser_app.show()
