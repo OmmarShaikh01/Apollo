@@ -3,6 +3,8 @@ import pyo
 import dsp_player_ui
 import subprocess as sp
 import pyqtgraph as pg
+import numpy as np
+import time
     
 class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
 
@@ -16,27 +18,98 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.server_on_toolB.pressed.connect(self.server_on)
         self.server_off_toolB.pressed.connect(self.server_off)    
         self.amp_dial.valueChanged.connect(lambda : (self.audio_server.setAmp(self.amp_dial.value() / 100)))
+        
+        # Gate
+        self.gate_amp.valueChanged.connect(lambda : (self.gate_filter_out.setMul(self.gate_amp.value() / 100)))
+        self.gate_fall.valueChanged.connect(lambda : (self.gate_filter_out.setFallTime(self.gate_fall.value())))
+        self.gate_la.valueChanged.connect(lambda : (self.gate_filter_out.setLookAhead(self.gate_la.value())))
+        self.gate_tresh.valueChanged.connect(lambda : (self.gate_filter_out.setThresh(self.gate_tresh.value())))
+        self.gate_rise.valueChanged.connect(lambda : (self.gate_filter_out.setRiseTime(self.gate_rise.value())))
+        
+        self.Gate_en.pressed.connect(lambda: (self.gate_en_dis(True), self.output_switch_gate.setVoice(1)))
+        self.Gate_dis.pressed.connect(lambda: (self.gate_en_dis(False), self.output_switch_gate.setVoice(0)))
+        
+        # Compressor
+        
+        self.Compress_en.pressed.connect(lambda: (self.com_ex_en_dis(True, "comp"))) 
+        self.Compress_dis.pressed.connect(lambda: (self.com_ex_en_dis(False, "comp"))) 
+        
+        self.comp_amp.valueChanged.connect(lambda : (self.com_ex_out.setMul(self.comp_amp.value())))
+        self.comp_fa.valueChanged.connect(lambda : (self.com_ex_out.setFallTime(self.comp_fa.value())))
+        self.comp_kn.valueChanged.connect(lambda : (self.com_ex_out.setKnee(self.comp_kn.value())))
+        self.comp_la.valueChanged.connect(lambda : (self.com_ex_out.setLookAhead(self.comp_la.value())))
+        self.comp_rat.valueChanged.connect(lambda : (self.com_ex_out.setRatio(self.comp_rat.value())))
+        self.comp_rise.valueChanged.connect(lambda : (self.com_ex_out.setRiseTime(self.comp_rise.value())))
+        self.comp_tres.valueChanged.connect(lambda : (self.com_ex_out.setThresh(self.comp_tres.value())))
 
+        # Expand
+        self.Expand_en.pressed.connect(lambda: (self.com_ex_en_dis(True, "expd"))) 
+        self.Expand_dis.pressed.connect(lambda: (self.com_ex_en_dis(False, "expd")))
+        
+        self.exp_amp.valueChanged.connect(lambda : (self.com_ex_out.setMul(self.exp_amp.value())))
+        self.exp_dt.valueChanged.connect(lambda : (self.com_ex_out.setDownThresh(self.exp_dt.value())))
+        self.exp_la.valueChanged.connect(lambda : (self.com_ex_out.setLookAhead(self.exp_la.value())))
+        self.exp_ra.valueChanged.connect(lambda : (self.com_ex_out.setRiseTime(self.exp_ra.value())))
+        self.exp_rat.valueChanged.connect(lambda : (self.com_ex_out.setRatio(self.exp_rat.value())))
+        self.exp_ut.valueChanged.connect(lambda : (self.com_ex_out.setUpThresh(self.exp_ut.value())))
+        self.exp_fall.valueChanged.connect(lambda : (self.com_ex_out.setFallTime(self.exp_fall.value())))     
+        
+        # Clip
+        self.clip_en.pressed.connect(lambda : (self.clip_en_dis(True)))
+        self.clip_dis.pressed.connect(lambda : (self.clip_en_dis(False)))
+        self.clip_amp.valueChanged.connect(lambda : (self.clip_out.setMul(self.clip_amp.value())))
+        self.clip_max.valueChanged.connect(lambda : (self.clip_out.setMax(self.clip_max.value())))
+        self.clip_min.valueChanged.connect(lambda : (self.clip_out.setMin(self.clip_min.value())))
+        
+        # Chrous
+        self.Chrous_en.pressed.connect(lambda : (self.chrous_en_dis(True)))
+        self.Chrous_dis.pressed.connect(lambda : (self.chrous_en_dis(False)))
+        
+        self.chor_amp.valueChanged.connect(lambda : (self.chor_out.setMul(self.chor_amp.value())))
+        self.chor_f.valueChanged.connect(lambda : (self.chor_out.setFeedback(self.chor_f.value())))
+        self.chor_d.valueChanged.connect(lambda : (self.chor_out.setDepth(self.chor_d.value())))
+        self.chor_b.valueChanged.connect(lambda : (self.chor_out.setBal(self.chor_b.value())))              
+        
+        # Freeverb
+        self.FreeVerb_en.pressed.connect(lambda : (self.freeverb_en_dis(True)))
+        self.FreeVerb_dis.pressed.connect(lambda : (self.freeverb_en_dis(False)))
+        
+        self.free_a.valueChanged.connect(lambda : (self.free_out.setMul(self.free_a.value())))
+        self.free_s.valueChanged.connect(lambda : (self.free_out.setSize(self.free_s.value())))
+        self.free_d.valueChanged.connect(lambda : (self.free_out.setDamp(self.free_d.value())))
+        self.free_b.valueChanged.connect(lambda : (self.free_out.setBal(self.free_b.value())))          
+        
         # Equlizer
         self.EnableB.pressed.connect(lambda: (self.eq_en_dis(True))) # calls Eq player function with Eq enabled
         self.DisableB.pressed.connect(lambda: (self.eq_en_dis(False))) # calls Eq player function with Eq disabled
-        self.preset_eq_loader()
-        self.eq_buttons()
                 
         # Simple panning
-        self.span_en.pressed.connect(lambda: (self.panner_en_dis(True, "simp"))) # calls panning simple function with panning enabled
-        self.span_dis.pressed.connect(lambda: (self.panner_en_dis(False, "simp"))) # calls panning simple function with panning disabled        
-        self.pan_sim_dial_2.valueChanged.connect(lambda: self.pan_out.setPan(self.pan_sim_dial_2.value() / 100))# calls panning simple function to set panning
-        self.pan_spread_dial.valueChanged.connect(lambda: self.pan_out.setSpread(self.pan_spread_dial.value() / 100))# calls panning simple function to set spread  
+        self.span_en.pressed.connect(lambda:
+                                     (self.binaurp_dis_3.setChecked(True),
+                                      self.panner_en_dis(True, "simp"),
+                                      self.output_switch_pan.setVoice(0),
+                                      self.panner_bypass.setVoice(3))) # calls panning simple function with panning enabled
+        self.span_dis.pressed.connect(lambda:
+                                      (self.panner_en_dis(False, "simp"),
+                                       self.panner_bypass_call())) # calls panning simple function with panning disabled        
+        self.pan_sim_dial_2.valueChanged.connect(lambda: self.pan_out_simp.setPan(self.pan_sim_dial_2.value() / 100))# calls panning simple function to set panning
+        self.pan_spread_dial.valueChanged.connect(lambda: self.pan_out_simp.setSpread(self.pan_spread_dial.value() / 100))# calls panning simple function to set spread  
         
         # binaura panning
-        self.binaurp_en_3.pressed.connect(lambda: (self.panner_en_dis(True, "binaur"))) # calls panning binaural function with panning enabled
-        self.binaurp_dis_3.pressed.connect(lambda: (self.panner_en_dis(False,  "binaur"))) # calls panning binaural function with panning disabled
-        self.azimuth_dial_5.valueChanged.connect(lambda: self.pan_out.setAzimuth(self.azimuth_dial_5.value() / 100)) # calls panning biaural function to set azimuth
-        self.azimuth_span_2.valueChanged.connect(lambda: self.pan_out.setAzispan(self.azimuth_span_2.value() / 100)) # calls panning biaural function to set azimuth span
-        self.elev_dial3_2.valueChanged.connect(lambda: self.pan_out.setElevation(self.elev_dial3_2.value() / 100)) # calls panning biaural function to set elevation
-        self.elev_span_d_2.valueChanged.connect(lambda: self.pan_out.setElespan(self.elev_span_d_2.value() / 100)) # calls panning biaural function to set elevation span
+        self.binaurp_en_3.pressed.connect(lambda:
+                                          (self.span_dis.setChecked(True),
+                                           self.panner_en_dis(True, "binaur"),
+                                           self.output_switch_pan.setVoice(1),
+                                           self.panner_bypass.setVoice(3))) # calls panning binaural function with panning enabled
+        self.binaurp_dis_3.pressed.connect(lambda: (self.panner_en_dis(False,  "binaur"),self.panner_bypass_call())) # calls panning binaural function with panning disabled
+        self.azimuth_dial_5.valueChanged.connect(lambda: self.pan_out_bin.setAzimuth(self.azimuth_dial_5.value() / 100)) # calls panning biaural function to set azimuth
+        self.azimuth_span_2.valueChanged.connect(lambda: self.pan_out_bin.setAzispan(self.azimuth_span_2.value() / 100)) # calls panning biaural function to set azimuth span
+        self.elev_dial3_2.valueChanged.connect(lambda: self.pan_out_bin.setElevation(self.elev_dial3_2.value() / 100)) # calls panning biaural function to set elevation
+        self.elev_span_d_2.valueChanged.connect(lambda: self.pan_out_bin.setElespan(self.elev_span_d_2.value() / 100)) # calls panning biaural function to set elevation span
         
+        # Misc
+        self.bypass.clicked.connect(lambda:(self.output_switch.setVoice(0)))
+        self.process.clicked.connect(lambda:(self.output_switch.setVoice(1)))
         
     def audio_setup(self):
         audio_setup = {}
@@ -75,8 +148,7 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         # try:
         if self.audio_server.start():
             self.label.setText("Server Started ........")
-            self.src = pyo.Sine(1500)
-            self.audio_pipe_init(self.src)
+            self.audio_pipe_init()
         #except AttributeError:
             #self.label.setText("No Server is Initilized")
         
@@ -92,115 +164,257 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         print('trial')
     
 ################################################################################
-########################  Panning functions  ###################################
-################################################################################
-    
-        
-################################################################################
-################################################################################
-################################################################################            
-    
-################################################################################
 ########################  Equlizer functions  ##################################
 ################################################################################       
-   
+    def eq_button_dec(self): 
+        self.eq_sld_m_2.valueChanged.connect(lambda : (self.eq_sld.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_2.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_3.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_4.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_5.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_6.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_7.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_8.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_9.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_10.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_11.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_12.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_13.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_14.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_15.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_16.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_17.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_18.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_19.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_20.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_21.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_22.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_23.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_24.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_25.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_26.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_27.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_28.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_29.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_30.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_31.setValue(self.eq_sld_m_2.value()),
+                                                       self.eq_sld_32.setValue(self.eq_sld_m_2.value())))
+        
+        self.dial_m_eq_2.valueChanged.connect(lambda:(self.dial.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_2.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_3.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_4.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_5.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_6.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_7.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_8.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_9.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_10.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_11.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_12.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_13.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_14.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_15.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_16.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_17.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_18.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_19.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_20.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_21.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_22.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_23.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_24.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_25.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_26.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_27.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_28.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_29.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_30.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_31.setValue(self.dial_m_eq_2.value()),
+                                                      self.dial_32.setValue(self.dial_m_eq_2.value())))        
+        
+        self.eq_sld.valueChanged.connect(lambda : (self.e_1.setBoost(self.eq_sld.value()/100)))
+        self.dial.valueChanged.connect(lambda : (self.e_1.setQ(self.dial.value())))
+        
+        self.eq_sld_2.valueChanged.connect(lambda : (self.e_2.setBoost(self.eq_sld.value()/100)))
+        self.dial_2.valueChanged.connect(lambda : (self.e_2.setQ(self.dial_2.value())))
+        
+        self.eq_sld_3.valueChanged.connect(lambda : (self.e_3.setBoost(self.eq_sld.value()/100)))
+        self.dial_3.valueChanged.connect(lambda : (self.e_3.setQ(self.dial_3.value())))
+        
+        self.eq_sld_4.valueChanged.connect(lambda : (self.e_4.setBoost(self.eq_sld.value()/100)))
+        self.dial_4.valueChanged.connect(lambda : (self.e_4.setQ(self.dial_4.value())))
+        
+        self.eq_sld_5.valueChanged.connect(lambda : (self.e_5.setBoost(self.eq_sld.value()/100)))
+        self.dial_5.valueChanged.connect(lambda : (self.e_5.setQ(self.dial_5.value())))
+        
+        self.eq_sld_6.valueChanged.connect(lambda : (self.e_6.setBoost(self.eq_sld.value()/100)))
+        self.dial_6.valueChanged.connect(lambda : (self.e_6.setQ(self.dial_6.value())))
+        
+        self.eq_sld_7.valueChanged.connect(lambda : (self.e_7.setBoost(self.eq_sld.value()/100)))
+        self.dial_7.valueChanged.connect(lambda : (self.e_7.setQ(self.dial_7.value())))
+        
+        self.eq_sld_8.valueChanged.connect(lambda : (self.e_8.setBoost(self.eq_sld.value()/100)))
+        self.dial_8.valueChanged.connect(lambda : (self.e_8.setQ(self.dial_8.value())))
+        
+        self.eq_sld_9.valueChanged.connect(lambda : (self.e_9.setBoost(self.eq_sld.value()/100)))
+        self.dial_9.valueChanged.connect(lambda : (self.e_9.setQ(self.dial_9.value())))
+        
+        self.eq_sld_10.valueChanged.connect(lambda : (self.e10.setBoost(self.eq_sld.value()/100)))
+        self.dial_10.valueChanged.connect(lambda : (self.e10.setQ(self.dial_10.value())))
+        
+        self.eq_sld_11.valueChanged.connect(lambda : (self.e11.setBoost(self.eq_sld.value()/100)))
+        self.dial_11.valueChanged.connect(lambda : (self.e11.setQ(self.dial_11.value())))
+        
+        self.eq_sld_12.valueChanged.connect(lambda : (self.e12.setBoost(self.eq_sld.value()/100)))
+        self.dial_12.valueChanged.connect(lambda : (self.e12.setQ(self.dial_12.value())))
+        
+        self.eq_sld_13.valueChanged.connect(lambda : (self.e13.setBoost(self.eq_sld.value()/100)))
+        self.dial_13.valueChanged.connect(lambda : (self.e13.setQ(self.dial_13.value())))
+        
+        self.eq_sld_14.valueChanged.connect(lambda : (self.e14.setBoost(self.eq_sld.value()/100)))
+        self.dial_14.valueChanged.connect(lambda : (self.e14.setQ(self.dial_14.value())))
+        
+        self.eq_sld_15.valueChanged.connect(lambda : (self.e15.setBoost(self.eq_sld.value()/100)))
+        self.dial_15.valueChanged.connect(lambda : (self.e15.setQ(self.dial_15.value())))
+        
+        self.eq_sld_16.valueChanged.connect(lambda : (self.e16.setBoost(self.eq_sld.value()/100)))
+        self.dial_16.valueChanged.connect(lambda : (self.e16.setQ(self.dial_16.value())))
+        
+        self.eq_sld_17.valueChanged.connect(lambda : (self.e17.setBoost(self.eq_sld.value()/100)))
+        self.dial_17.valueChanged.connect(lambda : (self.e17.setQ(self.dial_17.value())))
+        
+        self.eq_sld_18.valueChanged.connect(lambda : (self.e18.setBoost(self.eq_sld.value()/100)))
+        self.dial_18.valueChanged.connect(lambda : (self.e18.setQ(self.dial_18.value())))
+        
+        self.eq_sld_19.valueChanged.connect(lambda : (self.e19.setBoost(self.eq_sld.value()/100)))
+        self.dial_19.valueChanged.connect(lambda : (self.e19.setQ(self.dial_19.value())))
+        
+        self.eq_sld_20.valueChanged.connect(lambda : (self.e20.setBoost(self.eq_sld.value()/100)))
+        self.dial_20.valueChanged.connect(lambda : (self.e20.setQ(self.dial_20.value())))
+        
+        self.eq_sld_21.valueChanged.connect(lambda : (self.e21.setBoost(self.eq_sld.value()/100)))
+        self.dial_21.valueChanged.connect(lambda : (self.e21.setQ(self.dial_21.value())))
+        
+        self.eq_sld_22.valueChanged.connect(lambda : (self.e22.setBoost(self.eq_sld.value()/100)))
+        self.dial_22.valueChanged.connect(lambda : (self.e22.setQ(self.dial_22.value())))
+        
+        self.eq_sld_23.valueChanged.connect(lambda : (self.e23.setBoost(self.eq_sld.value()/100)))
+        self.dial_23.valueChanged.connect(lambda : (self.e23.setQ(self.dial_23.value())))
+        
+        self.eq_sld_24.valueChanged.connect(lambda : (self.e24.setBoost(self.eq_sld.value()/100)))
+        self.dial_24.valueChanged.connect(lambda : (self.e24.setQ(self.dial_24.value())))
+        
+        self.eq_sld_25.valueChanged.connect(lambda : (self.e25.setBoost(self.eq_sld.value()/100)))
+        self.dial_25.valueChanged.connect(lambda : (self.e25.setQ(self.dial_25.value())))
+        
+        self.eq_sld_26.valueChanged.connect(lambda : (self.e26.setBoost(self.eq_sld.value()/100)))
+        self.dial_26.valueChanged.connect(lambda : (self.e26.setQ(self.dial_26.value())))
+        
+        self.eq_sld_27.valueChanged.connect(lambda : (self.e27.setBoost(self.eq_sld.value()/100)))
+        self.dial_27.valueChanged.connect(lambda : (self.e27.setQ(self.dial_27.value())))
+        
+        self.eq_sld_28.valueChanged.connect(lambda : (self.e28.setBoost(self.eq_sld.value()/100)))
+        self.dial_28.valueChanged.connect(lambda : (self.e28.setQ(self.dial_28.value())))
+        
+        self.eq_sld_29.valueChanged.connect(lambda : (self.e29.setBoost(self.eq_sld.value()/100)))
+        self.dial_29.valueChanged.connect(lambda : (self.e29.setQ(self.dial_29.value())))
+        
+        self.eq_sld_30.valueChanged.connect(lambda : (self.e30.setBoost(self.eq_sld.value()/100)))
+        self.dial_30.valueChanged.connect(lambda : (self.e30.setQ(self.dial_30.value())))
+        
+        self.eq_sld_31.valueChanged.connect(lambda : (self.e31.setBoost(self.eq_sld.value()/100)))
+        self.dial_31.valueChanged.connect(lambda : (self.e31.setQ(self.dial_31.value())))
+        
+        self.eq_sld_32.valueChanged.connect(lambda : (self.e32.setBoost(self.eq_sld.value()/100)))
+        self.dial_32.valueChanged.connect(lambda : (self.e32.setQ(self.dial_32.value())))
     
-    def eq_bar_cont(self, bnd_btn, band, freq, spr, amp):
-        bnd_btn.pressed.connect(lambda: print(band.boost,band.freq,band.q, band.type))
-        freq.valueChanged.connect(lambda: (band.setFreq(freq.value())))
-        spr.valueChanged.connect(lambda: (band.setQ(spr.value())))        
-        amp.valueChanged.connect(lambda: (band.setBoost((amp.value() / 10))))
-    
-   
-    def eq_buttons(self):       
-        self.lp_2.pressed.connect(lambda : (self.eq_1.setType(1)))
-        self.lp_3.pressed.connect(lambda : (self.eq_2.setType(1)))
-        self.lp_4.pressed.connect(lambda : (self.eq_3.setType(1)))
-        self.lp_5.pressed.connect(lambda : (self.eq_4.setType(1)))
-        self.lp_6.pressed.connect(lambda : (self.eq_5.setType(1)))
-        self.lp_7.pressed.connect(lambda : (self.eq_6.setType(1)))
-        self.lp_8.pressed.connect(lambda : (self.eq_7.setType(1)))
-        
-        self.hp_2.pressed.connect(lambda : (self.eq_1.setType(2)))
-        self.hp_3.pressed.connect(lambda : (self.eq_2.setType(2)))
-        self.hp_4.pressed.connect(lambda : (self.eq_3.setType(2)))
-        self.hp_5.pressed.connect(lambda : (self.eq_4.setType(2)))
-        self.hp_6.pressed.connect(lambda : (self.eq_5.setType(2)))
-        self.hp_7.pressed.connect(lambda : (self.eq_6.setType(2)))
-        self.hp_8.pressed.connect(lambda : (self.eq_7.setType(2)))
-
-        self.pn_2.pressed.connect(lambda : (self.eq_1.setType(0)))
-        self.pn_3.pressed.connect(lambda : (self.eq_2.setType(0)))
-        self.pn_4.pressed.connect(lambda : (self.eq_3.setType(0)))
-        self.pn_5.pressed.connect(lambda : (self.eq_4.setType(0)))
-        self.pn_6.pressed.connect(lambda : (self.eq_5.setType(0)))
-        self.pn_7.pressed.connect(lambda : (self.eq_6.setType(0)))
-        self.pn_8.pressed.connect(lambda : (self.eq_7.setType(0)))
-        
-    def preset_eq_loader(self):      
-        
-        self.settings_dict = {"Flat":
-                              {"bands": [ 64, 1, 1,
-                                        125, 1, 1, 
-                                        200, 1, 1, 
-                                        500, 1, 1, 
-                                        400, 1, 1, 
-                                        4000, 1, 1, 
-                                        8000, 1, 1 ],
-                                "filters": [0, 0, 2, 0, 2, 0, 1]
-                                }
-                               }
-                              
-        
-        data_bands = (self.settings_dict[self.comboBox.currentText()]["bands"])
-        items = [self.frd2, self.spd2, self.amp2,                
-                 self.frd3, self.spd3, self.amp3,                 
-                 self.frd4, self.spd4, self.amp4, 
-                 self.frd5, self.spd5, self.amp5, 
-                 self.frd6, self.spd6, self.amp6, 
-                 self.frd7, self.spd7, self.amp7 ]
-        for i,j in zip(items, data_bands):
-            i.setValue(j)
-            
-        filters = (self.settings_dict[self.comboBox.currentText()]["filters"])
-        items =[
-            [self.pn_2, self.pn_3, self.pn_4, self.pn_5, self.pn_6, self.pn_7, self.pn_8],            
-            [self.lp_2, self.lp_3, self.lp_4, self.lp_5, self.lp_6, self.lp_7, self.lp_8],
-            [self.hp_2, self.hp_3, self.hp_4, self.hp_5, self.hp_6, self.hp_7, self.hp_8]]
-            
-        for index, filt in enumerate(filters):
-            [items[0][index], items[1][index], items[2][index]][filt].setChecked(True)
-        
     def parametric_eq(self, inp):
-            self.comboBox.currentIndexChanged.connect(self.preset_eq_loader)
-            
-            self.eq_1 = pyo.EQ(inp)
-            self.eq_bar_cont(self.bnd1, self.eq_1, self.frd1, self.spd1, self.amp1) 
-
-            self.eq_2 = pyo.EQ(self.eq_1)
-            self.eq_bar_cont(self.bnd2, self.eq_2, self.frd2, self.spd2, self.amp2)
-            
-            self.eq_3 = pyo.EQ(self.eq_2)
-            self.eq_bar_cont(self.bnd3, self.eq_3, self.frd3, self.spd3, self.amp3)
-            
-            self.eq_4 = pyo.EQ(self.eq_3)
-            self.eq_bar_cont(self.bnd4, self.eq_4, self.frd4, self.spd4, self.amp4)
-            
-            self.eq_5 = pyo.EQ(self.eq_4)
-            self.eq_bar_cont(self.bnd5, self.eq_5, self.frd5, self.spd5, self.amp5)
-            
-            self.eq_6 = pyo.EQ(self.eq_5)
-            self.eq_bar_cont(self.bnd6, self.eq_6, self.frd6, self.spd6, self.amp6)
-            
-            self.eq_7 = pyo.EQ(self.eq_6).out()
-            self.eq_bar_cont(self.bnd7, self.eq_7, self.frd7, self.spd7, self.amp7)
-
-            return self.eq_7
-
+        osc = inp
+        
+        self.e_1 = pyo.EQ(osc, type = 1, freq = 20)
+        self.e_2 = pyo.EQ(osc, type = 0, freq = 40)
+        self.e_3 = pyo.EQ(osc, type = 0, freq = 60)
+        self.e_4 = pyo.EQ(osc, type = 0, freq = 80)
+        self.e_5 = pyo.EQ(osc, type = 0, freq = 100)
+        self.e_6 = pyo.EQ(osc, type = 0, freq = 150)
+        self.e_7 = pyo.EQ(osc, type = 0, freq = 200)
+        self.e_8 = pyo.EQ(osc, type = 0, freq = 250)
+        self.e_9 = pyo.EQ(osc, type = 0, freq = 300)
+        self.e10 = pyo.EQ(osc, type = 0, freq = 350)
+        self.e11 = pyo.EQ(osc, type = 0, freq = 400)
+        self.e12 = pyo.EQ(osc, type = 0, freq = 500)
+        self.e13 = pyo.EQ(osc, type = 0, freq = 630)
+        self.e14 = pyo.EQ(osc, type = 0, freq = 800)
+        self.e15 = pyo.EQ(osc, type = 0, freq = 1000)
+        self.e16 = pyo.EQ(osc, type = 0, freq = 1250)
+        self.e17 = pyo.EQ(osc, type = 0, freq = 1500)
+        self.e18 = pyo.EQ(osc, type = 0, freq = 2000)
+        self.e19 = pyo.EQ(osc, type = 0, freq = 2500)
+        self.e20 = pyo.EQ(osc, type = 0, freq = 3160)
+        self.e21 = pyo.EQ(osc, type = 0, freq = 4000)
+        self.e22 = pyo.EQ(osc, type = 0, freq = 5000)
+        self.e23 = pyo.EQ(osc, type = 0, freq = 6300)
+        self.e24 = pyo.EQ(osc, type = 0, freq = 6500)
+        self.e25 = pyo.EQ(osc, type = 0, freq = 7000)
+        self.e26 = pyo.EQ(osc, type = 0, freq = 7500)
+        self.e27 = pyo.EQ(osc, type = 0, freq = 8000)
+        self.e28 = pyo.EQ(osc, type = 0, freq = 9000)
+        self.e29 = pyo.EQ(osc, type = 0, freq = 10000)
+        self.e30 = pyo.EQ(osc, type = 0, freq = 12500)
+        self.e31 = pyo.EQ(osc, type = 0, freq = 16000)
+        self.e32 = pyo.EQ(osc, type = 2, freq = 20000)
+        self.eq_button_dec()
+        
+        
+        a = [self.e_1,
+             self.e_2,
+             self.e_3,
+             self.e_4,
+             self.e_5,
+             self.e_6,
+             self.e_7,
+             self.e_8,
+             self.e_9,
+             self.e10,
+             self.e11,
+             self.e12,
+             self.e13,
+             self.e14,
+             self.e15,
+             self.e16,
+             self.e17,
+             self.e18,
+             self.e19,
+             self.e20,
+             self.e21,
+             self.e22,
+             self.e23,
+             self.e24,
+             self.e25,
+             self.e26,
+             self.e27,
+             self.e28,
+             self.e29,
+             self.e30,
+             self.e31,
+             self.e32]
+        
+        temp = []
+        while len(a) != 1:
+            for i in range(int(len(a) / 2)):
+                a1 = a.pop()
+                b1 = a.pop()
+                temp.append(pyo.Selector([a1, b1], 0.5))
+            a = temp
+            temp = []        
+        
+        return a[0]
+    
 
 ########################## Audio pipeline ######################################
 ################################################################################
-        
+    
     def pre_plot_declaration(self):
         self.master_vu_meter_graph.plot()
         self.master_vu_meter_graph.setXRange(0, 2)
@@ -212,97 +426,253 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
                                    x1 = xr, height = (range(2600)),
                                    y0 = [0, 0], width=1, brush=[255, 255, 255])
         self.master_vu_meter_graph.addItem(self.bg1) 
-        
-        
-        self.eq_graph.plot()
-        self.eq_graph.setYRange(20, 20000)        
-        self.spectrogram_img = pg.ImageItem()
-        self.eq_graph.addItem(self.spectrogram_img)
-        
-        
+
     def master_peak_plotter(self, *args):
         (l, r) = self.audio_server.getCurrentAmp()
         self.bg1.setOpts(height = [int(l*10000), int(r*10000)])
-   
-    def equlizer_plotter(self, *args):
-        pass
-   
-    def audio_pipe_init(self, inp):
+  
+    def audio_pipe_init(self):
         self.pre_plot_declaration()
-        self.start = inp 
-        self.eq_en_dis(False) # goes to patametric EQ
-        self.spectrogram = pyo.Spectrum(self.parametric_eq_out, function=self.equlizer_plotter)
-        self.spectrogram.view()
-        self.panning_in = self.parametric_eq_out # patametric EQ output to panning in
-        self.panner_en_dis(True, "binaur")
-        self.final_out = self.pan_out
-        self.peak_amp = pyo.PeakAmp(self.final_out, function = self.master_peak_plotter)
-        self.final_out.out()
+        self.in_table = pyo.SndTable("C:\\Users\\OMMAR\\Desktop\\dsp_player\\ui_forms\\01 Jumpstarter (Original Mix).flac")
+        self.src = pyo.Osc(self.in_table, self.in_table.getRate())        
+        self.start = self.src
+        self.processs()
+        self.output_switch = pyo.Selector([self.start, self.process_out], 1)
+        self.output_switch.out()        
+      
+    def processs(self): 
+        self.gate_filter_in = self.start
+        
+        
+        self.gate_filter_out = pyo.Gate(self.gate_filter_in)
+        self.output_switch_gate = pyo.Selector([self.start, self.gate_filter_out], 1)
 
-    def eq_en_dis(self, val):
-        self.enable_eq = val
-        if self.enable_eq:
-            self.parametric_eq_out = self.parametric_eq(self.start)
+
+        self.panning_in = self.output_switch_gate
+        self.pan_out_bin = pyo.Binaural(self.panning_in)
+        self.pan_out_simp = pyo.Pan(self.panning_in)
+        self.output_switch_pan = pyo.Selector([self.pan_out_simp, self.pan_out_bin], 0)
+        self.panner_bypass = pyo.Selector([self.start, self.output_switch_gate, self.output_switch_pan], 3)
+        
+        #MAIN INPUT LINEE
+        #self.com_ex_in = self.panner_bypass
+        #self.com_ex_en_dis(True, "comp")
+
+        #self.clip_in = self.com_ex_out
+        #self.clip_en_dis(True)
+
+        #self.chor_in = self.clip_out
+        #self.chrous_en_dis(True)
+
+        #self.free_in = self.chor_out
+        #self.freeverb_en_dis(True)        
+
+        #self.eui_inp = self.free_out
+        #self.eq_en_dis(True)
+        
+        self.process_out = self.panner_bypass
+        self.peak_amp = pyo.PeakAmp(self.process_out, function = self.master_peak_plotter)
+
+ 
+    def gate_en_dis(self, val):
+        self.enable_gate = val
+        if self.enable_gate:
+            self.gate_amp.setEnabled(True)
+            self.gate_fall.setEnabled(True)
+            self.gate_la.setEnabled(True)
+            self.gate_tresh.setEnabled(True)
+            self.gate_rise.setEnabled(True)
         else:
-            try:
-                self.parametric_eq_out.stop()
-            except:
-                pass
-            self.parametric_eq_out = self.start
-   
-   
+            self.gate_amp.setEnabled(False)
+            self.gate_fall.setEnabled(False)
+            self.gate_la.setEnabled(False)
+            self.gate_tresh.setEnabled(False)
+            self.gate_rise.setEnabled(False)                
+  
     def panner_en_dis(self, val, pan):
-        self.panning_in = self.parametric_eq_out
         if val == True and pan == 'simp':
             self.pan_sim_dial_2.setEnabled(True)
             self.pan_spread_dial.setEnabled(True)
-            
             self.azimuth_dial_5.setEnabled(False)
             self.azimuth_span_2.setEnabled(False)
             self.elev_dial3_2.setEnabled(False)
             self.elev_span_d_2.setEnabled(False)
+            self.binaurp_dis_3.setEnabled(True)
             
-            self.pan_out = pyo.Pan(self.panning_in)
-        
         if val == False and pan == 'simp':
-            try:
-                self.pan_out.stop()
-            except:
-                pass
             self.pan_sim_dial_2.setEnabled(False)
             self.pan_spread_dial.setEnabled(False)            
-            self.pan_out = self.panning_in
             
         if val == True and pan == 'binaur':
             self.pan_sim_dial_2.setEnabled(False)
             self.pan_spread_dial.setEnabled(False)
-            
             self.azimuth_dial_5.setEnabled(True)
             self.azimuth_span_2.setEnabled(True)
             self.elev_dial3_2.setEnabled(True)
             self.elev_span_d_2.setEnabled(True)             
-            self.pan_out = pyo.Binaural(self.panning_in)
-        
+            self.span_dis.setEnabled(True)
+            
         if val == False and pan == 'binaur':
-            try:
-                self.pan_out.stop()
-            except:
-                pass
             self.azimuth_dial_5.setEnabled(False)
             self.azimuth_span_2.setEnabled(False)
             self.elev_dial3_2.setEnabled(False)
-            self.elev_span_d_2.setEnabled(False)         
-            self.pan_out = self.panning_in            
+            self.elev_span_d_2.setEnabled(False)  
+    
+    
+    def com_ex_en_dis(self, val, pan):
+        if val == True and pan == 'comp':
+            
+            self.comp_amp.setEnabled(True)
+            self.comp_fa.setEnabled(True)
+            self.comp_kn.setEnabled(True)
+            self.comp_la.setEnabled(True)
+            self.comp_rat.setEnabled(True)
+            self.comp_rise.setEnabled(True)
+            self.comp_tres.setEnabled(True)
+            
+            self.exp_amp.setEnabled(False)
+            self.exp_dt.setEnabled(False)
+            self.exp_la.setEnabled(False)
+            self.exp_ra.setEnabled(False)
+            self.exp_rat.setEnabled(False)
+            self.exp_ut.setEnabled(False)
+            self.exp_fall.setEnabled(False)
+            
+            self.com_ex_out = pyo.Compress(self.com_ex_in)
         
+        if val == False and pan == 'comp':
+            try:
+                self.com_ex_out.stop()
+                
+                self.comp_amp.setEnabled(False)
+                self.comp_fa.setEnabled(False)
+                self.comp_kn.setEnabled(False)
+                self.comp_la.setEnabled(False)
+                self.comp_rat.setEnabled(False)
+                self.comp_rise.setEnabled(False)
+                self.comp_tres.setEnabled(False)
+
+            except:
+                pass         
+            self.com_ex_out = self.com_ex_in
+            
+        if val == True and pan == 'expd':          
+            self.com_ex_out = pyo.Expand(self.com_ex_in)
+            
+            self.comp_amp.setEnabled(False)
+            self.comp_fa.setEnabled(False)
+            self.comp_kn.setEnabled(False)
+            self.comp_la.setEnabled(False)
+            self.comp_rat.setEnabled(False)
+            self.comp_rise.setEnabled(False)
+            self.comp_tres.setEnabled(False)
+            
+            self.exp_amp.setEnabled(True)
+            self.exp_dt.setEnabled(True)
+            self.exp_la.setEnabled(True)
+            self.exp_ra.setEnabled(True)
+            self.exp_rat.setEnabled(True)
+            self.exp_ut.setEnabled(True)
+            self.exp_fall.setEnabled(True)
+            
+        if val == False and pan == 'expd':
+            try:
+                self.com_ex_out.stop()
+                self.exp_amp.setEnabled(False)
+                self.exp_dt.setEnabled(False)
+                self.exp_la.setEnabled(False)
+                self.exp_ra.setEnabled(False)
+                self.exp_rat.setEnabled(False)
+                self.exp_ut.setEnabled(False)
+                self.exp_fall.setEnabled(False)
+                
+            except:
+                pass       
+            self.com_ex_out = self.com_ex_in
+            
+    def clip_en_dis(self, val):
+        self.enable_clip = val
+        if self.enable_clip:
+            self.clip_out = pyo.Clip(self.clip_in)
+            self.clip_amp.setEnabled(True)
+            self.clip_max.setEnabled(True)
+            self.clip_min.setEnabled(True)
+        else:
+            try:
+                self.clip_out.stop()
+                self.clip_amp.setEnabled(False)
+                self.clip_max.setEnabled(False)
+                self.clip_min.setEnabled(False)                
+            except:
+                pass
+            self.clip_out = self.clip_in
+    
+    def chrous_en_dis(self, val):
+        self.enable_chrous = val
+        if self.enable_chrous:
+            self.chor_out = pyo.Chorus(self.chor_in)
+            self.chor_d.setEnabled(True)
+            self.chor_b.setEnabled(True)
+            self.chor_f.setEnabled(True)
+            self.chor_amp.setEnabled(True)
+        else:
+            try:
+                self.chor_out.stop()
+                self.chor_d.setEnabled(False)
+                self.chor_b.setEnabled(False)
+                self.chor_f.setEnabled(False)
+                self.chor_amp.setEnabled(False)                
+            except:
+                pass
+            self.chor_out = self.chor_in
+
+    def freeverb_en_dis(self, val):
+        self.enable_free = val
+        if self.enable_free:
+            self.free_out = pyo.Freeverb(self.free_in)
+            self.free_a.setEnabled(True)
+            self.free_s.setEnabled(True)
+            self.free_d.setEnabled(True)
+            self.free_b.setEnabled(True)
+        else:
+            try:
+                self.free_out.stop()
+                self.free_a.setEnabled(False)
+                self.free_s.setEnabled(False)
+                self.free_d.setEnabled(False)
+                self.free_b.setEnabled(False)
+            except:
+                pass
+            self.free_out = self.free_in
+        
+    
+    def eq_en_dis(self, val):
+        self.enable_eq = val
+        if self.enable_eq:
+            self.eq_bar_frame.setEnabled(True)
+            self.eq_graphic_view.setEnabled(True)
+            self.eq_out = self.parametric_eq(self.eui_inp)
+        else:
+            try:
+                self.eq_bar_frame.setEnabled(False)
+                self.eq_graphic_view.setEnabled(False)
+                self.eq_out.stop()
+            except:
+                pass
 
 
 ################################################################################
 ################################################################################   
-  
 
+    def panner_bypass_call(self): 
+        if self.Gate_dis.isChecked() and (self.span_dis.isChecked() or self.binaurp_dis_3.isChecked()):
+            self.panner_bypass.setVoice(0)
+        if not(self.Gate_dis.isChecked()) and (self.span_dis.isChecked() or self.binaurp_dis_3.isChecked()):
+            self.panner_bypass.setVoice(1)  
 
 ################################################################################
-################################################################################
+################################################################################ 
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
