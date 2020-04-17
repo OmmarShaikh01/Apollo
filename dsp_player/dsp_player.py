@@ -26,8 +26,39 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.gate_tresh.valueChanged.connect(lambda : (self.gate_filter_out.setThresh(self.gate_tresh.value())))
         self.gate_rise.valueChanged.connect(lambda : (self.gate_filter_out.setRiseTime(self.gate_rise.value())))
         
-        self.Gate_en.pressed.connect(lambda: (self.gate_en_dis(True), self.output_switch_gate.setVoice(1)))
-        self.Gate_dis.pressed.connect(lambda: (self.gate_en_dis(False), self.output_switch_gate.setVoice(0)))
+        self.Gate_en.pressed.connect(lambda: (self.gate_en_dis(True), self.gate_filter_out.play(), self.output_switch_gate.setVoice(1)))
+        self.Gate_dis.pressed.connect(lambda: (self.gate_en_dis(False), self.gate_filter_out.stop(), self.output_switch_gate.setVoice(0)))
+        
+        # Simple panning
+        self.span_en.pressed.connect(lambda:
+                                     (self.binaurp_dis_3.setChecked(True),
+                                      self.pan_out_simp.play(), 
+                                      self.panner_en_dis(True, "simp"),
+                                      self.output_switch_pan.setVoice(0),
+                                      self.panner_bypass.setVoice(3))) # calls panning simple function with panning enabled
+        self.span_dis.pressed.connect(lambda:
+                                      (self.panner_en_dis(False, "simp"),
+                                       self.pan_out_simp.stop(), 
+                                       self.panner_bypass_call())) # calls panning simple function with panning disabled        
+        self.pan_sim_dial_2.valueChanged.connect(lambda: self.pan_out_simp.setPan(self.pan_sim_dial_2.value() / 100))# calls panning simple function to set panning
+        self.pan_spread_dial.valueChanged.connect(lambda: self.pan_out_simp.setSpread(self.pan_spread_dial.value() / 100))# calls panning simple function to set spread  
+        
+        # binaura panning
+        self.binaurp_en_3.pressed.connect(lambda:
+                                          (self.span_dis.setChecked(True),
+                                           self.pan_out_bin.play(), 
+                                           self.panner_en_dis(True, "binaur"),
+                                           self.output_switch_pan.setVoice(1),
+                                           self.panner_bypass.setVoice(3))) # calls panning binaural function with panning enabled
+        self.binaurp_dis_3.pressed.connect(lambda: (self.panner_en_dis(False,  "binaur"), self.pan_out_bin.stop(),self.panner_bypass_call())) # calls panning binaural function with panning disabled
+        self.azimuth_dial_5.valueChanged.connect(lambda: self.pan_out_bin.setAzimuth(self.azimuth_dial_5.value() / 100)) # calls panning biaural function to set azimuth
+        self.azimuth_span_2.valueChanged.connect(lambda: self.pan_out_bin.setAzispan(self.azimuth_span_2.value() / 100)) # calls panning biaural function to set azimuth span
+        self.elev_dial3_2.valueChanged.connect(lambda: self.pan_out_bin.setElevation(self.elev_dial3_2.value() / 100)) # calls panning biaural function to set elevation
+        self.elev_span_d_2.valueChanged.connect(lambda: self.pan_out_bin.setElespan(self.elev_span_d_2.value() / 100)) # calls panning biaural function to set elevation span
+  
+        # Equlizer
+        self.EnableB.pressed.connect(lambda: (self.eq_en_dis(True), self.eq_start(), self.output_switch_eq.setVoice(1))) # calls Eq player function with Eq enabled
+        self.DisableB.pressed.connect(lambda: (self.eq_en_dis(False), self.eq_stop(), self.output_switch_eq.setVoice(0))) # calls Eq player function with Eq disabled
         
         # Compressor
         
@@ -79,37 +110,10 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.free_d.valueChanged.connect(lambda : (self.free_out.setDamp(self.free_d.value())))
         self.free_b.valueChanged.connect(lambda : (self.free_out.setBal(self.free_b.value())))          
         
-        # Equlizer
-        self.EnableB.pressed.connect(lambda: (self.eq_en_dis(True))) # calls Eq player function with Eq enabled
-        self.DisableB.pressed.connect(lambda: (self.eq_en_dis(False))) # calls Eq player function with Eq disabled
-                
-        # Simple panning
-        self.span_en.pressed.connect(lambda:
-                                     (self.binaurp_dis_3.setChecked(True),
-                                      self.panner_en_dis(True, "simp"),
-                                      self.output_switch_pan.setVoice(0),
-                                      self.panner_bypass.setVoice(3))) # calls panning simple function with panning enabled
-        self.span_dis.pressed.connect(lambda:
-                                      (self.panner_en_dis(False, "simp"),
-                                       self.panner_bypass_call())) # calls panning simple function with panning disabled        
-        self.pan_sim_dial_2.valueChanged.connect(lambda: self.pan_out_simp.setPan(self.pan_sim_dial_2.value() / 100))# calls panning simple function to set panning
-        self.pan_spread_dial.valueChanged.connect(lambda: self.pan_out_simp.setSpread(self.pan_spread_dial.value() / 100))# calls panning simple function to set spread  
-        
-        # binaura panning
-        self.binaurp_en_3.pressed.connect(lambda:
-                                          (self.span_dis.setChecked(True),
-                                           self.panner_en_dis(True, "binaur"),
-                                           self.output_switch_pan.setVoice(1),
-                                           self.panner_bypass.setVoice(3))) # calls panning binaural function with panning enabled
-        self.binaurp_dis_3.pressed.connect(lambda: (self.panner_en_dis(False,  "binaur"),self.panner_bypass_call())) # calls panning binaural function with panning disabled
-        self.azimuth_dial_5.valueChanged.connect(lambda: self.pan_out_bin.setAzimuth(self.azimuth_dial_5.value() / 100)) # calls panning biaural function to set azimuth
-        self.azimuth_span_2.valueChanged.connect(lambda: self.pan_out_bin.setAzispan(self.azimuth_span_2.value() / 100)) # calls panning biaural function to set azimuth span
-        self.elev_dial3_2.valueChanged.connect(lambda: self.pan_out_bin.setElevation(self.elev_dial3_2.value() / 100)) # calls panning biaural function to set elevation
-        self.elev_span_d_2.valueChanged.connect(lambda: self.pan_out_bin.setElespan(self.elev_span_d_2.value() / 100)) # calls panning biaural function to set elevation span
-        
+  
         # Misc
         self.bypass.clicked.connect(lambda:(self.output_switch.setVoice(0)))
-        self.process.clicked.connect(lambda:(self.output_switch.setVoice(1)))
+        self.process.clicked.connect(lambda:(self.output_switch.setVoice(1), self.main_input_line.play()))
         
     def audio_setup(self):
         audio_setup = {}
@@ -411,7 +415,76 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         
         return a[0]
     
-
+    def eq_stop(self):
+        self.e_1.stop()
+        self.e_2.stop()
+        self.e_3.stop()
+        self.e_4.stop()
+        self.e_5.stop()
+        self.e_6.stop()
+        self.e_7.stop()
+        self.e_8.stop()
+        self.e_9.stop()
+        self.e10.stop()
+        self.e11.stop()
+        self.e12.stop()
+        self.e13.stop()
+        self.e14.stop()
+        self.e15.stop()
+        self.e16.stop()
+        self.e17.stop()
+        self.e18.stop()
+        self.e19.stop()
+        self.e20.stop()
+        self.e21.stop()
+        self.e22.stop()
+        self.e23.stop()
+        self.e24.stop()
+        self.e25.stop()
+        self.e26.stop()
+        self.e27.stop()
+        self.e28.stop()
+        self.e29.stop()
+        self.e30.stop()
+        self.e31.stop()
+        self.e32.stop()
+        
+        
+    def eq_start(self):
+        self.e_1.play()
+        self.e_2.play()
+        self.e_3.play()
+        self.e_4.play()
+        self.e_5.play()
+        self.e_6.play()
+        self.e_7.play()
+        self.e_8.play()
+        self.e_9.play()
+        self.e10.play()
+        self.e11.play()
+        self.e12.play()
+        self.e13.play()
+        self.e14.play()
+        self.e15.play()
+        self.e16.play()
+        self.e17.play()
+        self.e18.play()
+        self.e19.play()
+        self.e20.play()
+        self.e21.play()
+        self.e22.play()
+        self.e23.play()
+        self.e24.play()
+        self.e25.play()
+        self.e26.play()
+        self.e27.play()
+        self.e28.play()
+        self.e29.play()
+        self.e30.play()
+        self.e31.play()
+        self.e32.play()
+        
+        
 ########################## Audio pipeline ######################################
 ################################################################################
     
@@ -435,24 +508,36 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.pre_plot_declaration()
         self.in_table = pyo.SndTable("C:\\Users\\OMMAR\\Desktop\\dsp_player\\ui_forms\\01 Jumpstarter (Original Mix).flac")
         self.src = pyo.Osc(self.in_table, self.in_table.getRate())        
-        self.start = self.src
+        self.start = pyo.Sine(300)
         self.processs()
         self.output_switch = pyo.Selector([self.start, self.process_out], 1)
-        self.output_switch.out()        
+        self.output_switch.out()
       
-    def processs(self): 
-        self.gate_filter_in = self.start
+    def processs(self):
         
+        self.main_input_line = None
         
+        self.gate_filter_in = self.src
         self.gate_filter_out = pyo.Gate(self.gate_filter_in)
+        self.gate_filter_out.stop()
         self.output_switch_gate = pyo.Selector([self.start, self.gate_filter_out], 1)
+        self.main_input_line = self.output_switch_gate
 
-
-        self.panning_in = self.output_switch_gate
+        self.panning_in = self.main_input_line
         self.pan_out_bin = pyo.Binaural(self.panning_in)
         self.pan_out_simp = pyo.Pan(self.panning_in)
+        self.pan_out_bin.stop()
+        self.pan_out_simp.stop()
         self.output_switch_pan = pyo.Selector([self.pan_out_simp, self.pan_out_bin], 0)
-        self.panner_bypass = pyo.Selector([self.start, self.output_switch_gate, self.output_switch_pan], 3)
+        self.panner_bypass = pyo.Selector([self.main_input_line, self.output_switch_pan], 1)
+        self.main_input_line = self.panner_bypass
+        
+        self.eui_inp = self.main_input_line
+        self.eq_out = self.parametric_eq(self.eui_inp)
+        self.eq_stop()
+        self.output_switch_eq = pyo.Selector([self.main_input_line, self.eq_out], 1)
+        self.main_input_line = self.output_switch_eq
+
         
         #MAIN INPUT LINEE
         #self.com_ex_in = self.panner_bypass
@@ -466,11 +551,8 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
 
         #self.free_in = self.chor_out
         #self.freeverb_en_dis(True)        
-
-        #self.eui_inp = self.free_out
-        #self.eq_en_dis(True)
         
-        self.process_out = self.panner_bypass
+        self.process_out = self.main_input_line
         self.peak_amp = pyo.PeakAmp(self.process_out, function = self.master_peak_plotter)
 
  
@@ -665,10 +747,9 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
 ################################################################################   
 
     def panner_bypass_call(self): 
-        if self.Gate_dis.isChecked() and (self.span_dis.isChecked() or self.binaurp_dis_3.isChecked()):
+        if (self.span_dis.isChecked() or self.binaurp_dis_3.isChecked()):
             self.panner_bypass.setVoice(0)
-        if not(self.Gate_dis.isChecked()) and (self.span_dis.isChecked() or self.binaurp_dis_3.isChecked()):
-            self.panner_bypass.setVoice(1)  
+
 
 ################################################################################
 ################################################################################ 

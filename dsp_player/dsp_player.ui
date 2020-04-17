@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>895</width>
-    <height>729</height>
+    <width>1366</width>
+    <height>745</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -585,8 +585,8 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>-859</y>
-           <width>979</width>
+           <y>-245</y>
+           <width>1223</width>
            <height>1517</height>
           </rect>
          </property>
@@ -785,8 +785,8 @@
                <widget class="QWidget" name="scrollAreaWidgetContents_2">
                 <property name="geometry">
                  <rect>
-                  <x>-969</x>
-                  <y>0</y>
+                  <x>0</x>
+                  <y>-7</y>
                   <width>2153</width>
                   <height>300</height>
                  </rect>
@@ -816,7 +816,7 @@
                  <item>
                   <widget class="QFrame" name="eq_bar_frame">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <property name="minimumSize">
                     <size>
@@ -1432,7 +1432,7 @@
                        <item>
                         <widget class="QDial" name="dial_m_eq_2">
                          <property name="enabled">
-                          <bool>false</bool>
+                          <bool>true</bool>
                          </property>
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -5243,7 +5243,7 @@
                <item row="3" column="0">
                 <widget class="QDial" name="comp_rat">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -5265,7 +5265,7 @@
                <item row="3" column="1">
                 <widget class="QDial" name="comp_fa">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -5274,7 +5274,7 @@
                   </sizepolicy>
                  </property>
                  <property name="maximum">
-                  <number>3000</number>
+                  <number>300</number>
                  </property>
                  <property name="singleStep">
                   <number>10</number>
@@ -5287,7 +5287,7 @@
                <item row="3" column="2">
                 <widget class="QDial" name="comp_kn">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -5412,7 +5412,7 @@
                <item row="1" column="1">
                 <widget class="QDial" name="comp_rise">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -5421,7 +5421,7 @@
                   </sizepolicy>
                  </property>
                  <property name="maximum">
-                  <number>3000</number>
+                  <number>300</number>
                  </property>
                  <property name="singleStep">
                   <number>10</number>
@@ -5487,7 +5487,7 @@
                <item row="1" column="0">
                 <widget class="QDial" name="comp_tres">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -5496,13 +5496,16 @@
                   </sizepolicy>
                  </property>
                  <property name="minimum">
-                  <number>-60</number>
+                  <number>-600</number>
                  </property>
                  <property name="maximum">
                   <number>0</number>
                  </property>
                  <property name="value">
                   <number>-30</number>
+                 </property>
+                 <property name="notchTarget">
+                  <double>30.000000000000000</double>
                  </property>
                  <property name="notchesVisible">
                   <bool>true</bool>
@@ -5512,7 +5515,7 @@
                <item row="1" column="2">
                 <widget class="QDial" name="comp_la">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -5711,7 +5714,7 @@
                   <item>
                    <widget class="QSlider" name="comp_amp">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -6195,7 +6198,7 @@
                <item row="1" column="2">
                 <widget class="QDial" name="exp_ra">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -6204,7 +6207,7 @@
                   </sizepolicy>
                  </property>
                  <property name="maximum">
-                  <number>3000</number>
+                  <number>300</number>
                  </property>
                  <property name="singleStep">
                   <number>10</number>
@@ -6217,7 +6220,7 @@
                <item row="1" column="0">
                 <widget class="QDial" name="exp_ut">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -6226,13 +6229,16 @@
                   </sizepolicy>
                  </property>
                  <property name="minimum">
-                  <number>-60</number>
+                  <number>-600</number>
                  </property>
                  <property name="maximum">
                   <number>0</number>
                  </property>
                  <property name="value">
                   <number>-30</number>
+                 </property>
+                 <property name="notchTarget">
+                  <double>20.000000000000000</double>
                  </property>
                  <property name="notchesVisible">
                   <bool>true</bool>
@@ -6242,7 +6248,7 @@
                <item row="1" column="1">
                 <widget class="QDial" name="exp_la">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -6264,7 +6270,7 @@
                <item row="3" column="0">
                 <widget class="QDial" name="exp_dt">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -6273,13 +6279,16 @@
                   </sizepolicy>
                  </property>
                  <property name="minimum">
-                  <number>-60</number>
+                  <number>-600</number>
                  </property>
                  <property name="maximum">
                   <number>0</number>
                  </property>
                  <property name="value">
                   <number>-30</number>
+                 </property>
+                 <property name="notchTarget">
+                  <double>20.000000000000000</double>
                  </property>
                  <property name="notchesVisible">
                   <bool>true</bool>
@@ -6289,7 +6298,7 @@
                <item row="3" column="1">
                 <widget class="QDial" name="exp_rat">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -6311,7 +6320,7 @@
                <item row="3" column="2">
                 <widget class="QDial" name="exp_fall">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -6320,7 +6329,7 @@
                   </sizepolicy>
                  </property>
                  <property name="maximum">
-                  <number>3000</number>
+                  <number>300</number>
                  </property>
                  <property name="singleStep">
                   <number>10</number>
@@ -6330,7 +6339,93 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0" colspan="3">
+               <item row="1" column="3" rowspan="4">
+                <widget class="QFrame" name="frame_6">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_57">
+                  <property name="leftMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>3</number>
+                  </property>
+                  <item>
+                   <widget class="QSlider" name="exp_amp">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximum">
+                     <number>200</number>
+                    </property>
+                    <property name="value">
+                     <number>100</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="tickPosition">
+                     <enum>QSlider::TicksBothSides</enum>
+                    </property>
+                    <property name="tickInterval">
+                     <number>10</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLCDNumber" name="lcdNumber_68">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::Box</enum>
+                    </property>
+                    <property name="smallDecimalPoint">
+                     <bool>true</bool>
+                    </property>
+                    <property name="segmentStyle">
+                     <enum>QLCDNumber::Flat</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_112">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="text">
+                     <string>Amp</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="0" colspan="4">
                 <widget class="QFrame" name="horizontalFrame_9">
                  <property name="maximumSize">
                   <size>
@@ -6415,1297 +6510,6 @@
                   </item>
                  </layout>
                 </widget>
-               </item>
-               <item row="0" column="3" rowspan="5">
-                <widget class="QFrame" name="frame_6">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_57">
-                  <property name="leftMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>3</number>
-                  </property>
-                  <item>
-                   <widget class="QSlider" name="exp_amp">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="maximum">
-                     <number>200</number>
-                    </property>
-                    <property name="value">
-                     <number>100</number>
-                    </property>
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="tickPosition">
-                     <enum>QSlider::TicksBothSides</enum>
-                    </property>
-                    <property name="tickInterval">
-                     <number>10</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLCDNumber" name="lcdNumber_68">
-                    <property name="font">
-                     <font>
-                      <pointsize>8</pointsize>
-                     </font>
-                    </property>
-                    <property name="frameShape">
-                     <enum>QFrame::Box</enum>
-                    </property>
-                    <property name="smallDecimalPoint">
-                     <bool>true</bool>
-                    </property>
-                    <property name="segmentStyle">
-                     <enum>QLCDNumber::Flat</enum>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_112">
-                    <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="text">
-                     <string>Amp</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="3" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_15">
-            <item>
-             <widget class="QFrame" name="frame_7">
-              <property name="frameShape">
-               <enum>QFrame::Panel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Sunken</enum>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_12">
-               <item row="1" column="1">
-                <widget class="QFrame" name="frame_8">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_45">
-                  <property name="leftMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>3</number>
-                  </property>
-                  <item>
-                   <widget class="QSlider" name="clip_max">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>28</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="minimum">
-                     <number>0</number>
-                    </property>
-                    <property name="maximum">
-                     <number>100</number>
-                    </property>
-                    <property name="singleStep">
-                     <number>0</number>
-                    </property>
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="tickPosition">
-                     <enum>QSlider::TicksBothSides</enum>
-                    </property>
-                    <property name="tickInterval">
-                     <number>5</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLCDNumber" name="lcdNumber_64">
-                    <property name="font">
-                     <font>
-                      <pointsize>8</pointsize>
-                     </font>
-                    </property>
-                    <property name="frameShape">
-                     <enum>QFrame::Box</enum>
-                    </property>
-                    <property name="smallDecimalPoint">
-                     <bool>true</bool>
-                    </property>
-                    <property name="segmentStyle">
-                     <enum>QLCDNumber::Flat</enum>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_73">
-                    <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="text">
-                     <string>Max</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QFrame" name="frame_9">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_43">
-                  <property name="leftMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>3</number>
-                  </property>
-                  <item>
-                   <widget class="QSlider" name="clip_min">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>28</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="minimum">
-                     <number>-100</number>
-                    </property>
-                    <property name="maximum">
-                     <number>0</number>
-                    </property>
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="tickPosition">
-                     <enum>QSlider::TicksBothSides</enum>
-                    </property>
-                    <property name="tickInterval">
-                     <number>5</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLCDNumber" name="lcdNumber_63">
-                    <property name="font">
-                     <font>
-                      <pointsize>8</pointsize>
-                     </font>
-                    </property>
-                    <property name="frameShape">
-                     <enum>QFrame::Box</enum>
-                    </property>
-                    <property name="smallDecimalPoint">
-                     <bool>true</bool>
-                    </property>
-                    <property name="segmentStyle">
-                     <enum>QLCDNumber::Flat</enum>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_72">
-                    <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="text">
-                     <string>Min</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QFrame" name="frame_10">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_44">
-                  <property name="leftMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>3</number>
-                  </property>
-                  <item>
-                   <widget class="QSlider" name="clip_amp">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>28</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="maximum">
-                     <number>200</number>
-                    </property>
-                    <property name="value">
-                     <number>100</number>
-                    </property>
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="tickPosition">
-                     <enum>QSlider::TicksBothSides</enum>
-                    </property>
-                    <property name="tickInterval">
-                     <number>10</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLCDNumber" name="lcdNumber_65">
-                    <property name="font">
-                     <font>
-                      <pointsize>8</pointsize>
-                     </font>
-                    </property>
-                    <property name="frameShape">
-                     <enum>QFrame::Box</enum>
-                    </property>
-                    <property name="smallDecimalPoint">
-                     <bool>true</bool>
-                    </property>
-                    <property name="segmentStyle">
-                     <enum>QLCDNumber::Flat</enum>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_71">
-                    <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="text">
-                     <string>Amp</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="0" column="0" colspan="3">
-                <widget class="QFrame" name="horizontalFrame_4">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <layout class="QHBoxLayout" name="horizontalLayout_31">
-                  <property name="spacing">
-                   <number>4</number>
-                  </property>
-                  <property name="leftMargin">
-                   <number>4</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>2</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <widget class="QLabel" name="label_74">
-                    <property name="font">
-                     <font>
-                      <pointsize>10</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Clip</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QToolButton" name="clip_en">
-                    <property name="text">
-                     <string>Enable</string>
-                    </property>
-                    <property name="checkable">
-                     <bool>true</bool>
-                    </property>
-                    <property name="autoExclusive">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QToolButton" name="clip_dis">
-                    <property name="text">
-                     <string>Disable</string>
-                    </property>
-                    <property name="checkable">
-                     <bool>true</bool>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                    <property name="autoExclusive">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QFrame" name="frame_11">
-              <property name="frameShape">
-               <enum>QFrame::Panel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Sunken</enum>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_13">
-               <item row="1" column="2" rowspan="4">
-                <widget class="QFrame" name="frame_12">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_65">
-                  <property name="leftMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>3</number>
-                  </property>
-                  <item>
-                   <widget class="QSlider" name="chor_amp">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="maximum">
-                     <number>200</number>
-                    </property>
-                    <property name="value">
-                     <number>100</number>
-                    </property>
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="tickPosition">
-                     <enum>QSlider::TicksBothSides</enum>
-                    </property>
-                    <property name="tickInterval">
-                     <number>10</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLCDNumber" name="lcdNumber_69">
-                    <property name="font">
-                     <font>
-                      <pointsize>8</pointsize>
-                     </font>
-                    </property>
-                    <property name="frameShape">
-                     <enum>QFrame::Box</enum>
-                    </property>
-                    <property name="smallDecimalPoint">
-                     <bool>true</bool>
-                    </property>
-                    <property name="segmentStyle">
-                     <enum>QLCDNumber::Flat</enum>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_133">
-                    <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="text">
-                     <string>Amp</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="0" column="0" colspan="3">
-                <widget class="QFrame" name="horizontalFrame_11">
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <layout class="QHBoxLayout" name="horizontalLayout_39">
-                  <property name="spacing">
-                   <number>4</number>
-                  </property>
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>2</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <widget class="QLabel" name="label_134">
-                    <property name="maximumSize">
-                     <size>
-                      <width>16777215</width>
-                      <height>11111110</height>
-                     </size>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <pointsize>10</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Chrous</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QToolButton" name="Chrous_en">
-                    <property name="text">
-                     <string>Enable</string>
-                    </property>
-                    <property name="checkable">
-                     <bool>true</bool>
-                    </property>
-                    <property name="autoExclusive">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QToolButton" name="Chrous_dis">
-                    <property name="text">
-                     <string>Disable</string>
-                    </property>
-                    <property name="checkable">
-                     <bool>true</bool>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                    <property name="autoExclusive">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_19">
-                 <item>
-                  <widget class="QLabel" name="label_129">
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Sunken</enum>
-                   </property>
-                   <property name="text">
-                    <string>Feedback</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLCDNumber" name="lcdNumber_14">
-                   <property name="smallDecimalPoint">
-                    <bool>true</bool>
-                   </property>
-                   <property name="segmentStyle">
-                    <enum>QLCDNumber::Flat</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="2" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_16">
-                 <item>
-                  <widget class="QLabel" name="label_126">
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Sunken</enum>
-                   </property>
-                   <property name="text">
-                    <string>Depth</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLCDNumber" name="lcdNumber_13">
-                   <property name="smallDecimalPoint">
-                    <bool>true</bool>
-                   </property>
-                   <property name="segmentStyle">
-                    <enum>QLCDNumber::Flat</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="4" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_20">
-                 <item>
-                  <widget class="QLabel" name="label_132">
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Sunken</enum>
-                   </property>
-                   <property name="text">
-                    <string>Balance</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLCDNumber" name="lcdNumber_15">
-                   <property name="smallDecimalPoint">
-                    <bool>true</bool>
-                   </property>
-                   <property name="segmentStyle">
-                    <enum>QLCDNumber::Flat</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="3" column="1" rowspan="2">
-                <layout class="QVBoxLayout" name="verticalLayout_15"/>
-               </item>
-               <item row="3" column="0">
-                <widget class="QDial" name="chor_b">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximum">
-                  <number>250</number>
-                 </property>
-                 <property name="notchTarget">
-                  <double>10.000000000000000</double>
-                 </property>
-                 <property name="notchesVisible">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QDial" name="chor_d">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimum">
-                  <number>-60</number>
-                 </property>
-                 <property name="maximum">
-                  <number>0</number>
-                 </property>
-                 <property name="value">
-                  <number>-30</number>
-                 </property>
-                 <property name="notchesVisible">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QDial" name="chor_f">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximum">
-                  <number>3000</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>10</number>
-                 </property>
-                 <property name="notchesVisible">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QFrame" name="frame_13">
-              <property name="frameShape">
-               <enum>QFrame::Panel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Sunken</enum>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_14">
-               <item row="0" column="0" colspan="3">
-                <widget class="QFrame" name="horizontalFrame_10">
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <layout class="QHBoxLayout" name="horizontalLayout_35">
-                  <property name="spacing">
-                   <number>4</number>
-                  </property>
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>2</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <widget class="QLabel" name="label_123">
-                    <property name="maximumSize">
-                     <size>
-                      <width>16777215</width>
-                      <height>11111110</height>
-                     </size>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <pointsize>10</pointsize>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>FreeVerb</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QToolButton" name="FreeVerb_en">
-                    <property name="text">
-                     <string>Enable</string>
-                    </property>
-                    <property name="checkable">
-                     <bool>true</bool>
-                    </property>
-                    <property name="autoExclusive">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QToolButton" name="FreeVerb_dis">
-                    <property name="text">
-                     <string>Disable</string>
-                    </property>
-                    <property name="checkable">
-                     <bool>true</bool>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                    <property name="autoExclusive">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="1" column="2" rowspan="4">
-                <widget class="QFrame" name="frame_14">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_61">
-                  <property name="leftMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>3</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>3</number>
-                  </property>
-                  <item>
-                   <widget class="QSlider" name="free_a">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="maximum">
-                     <number>200</number>
-                    </property>
-                    <property name="value">
-                     <number>100</number>
-                    </property>
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="tickPosition">
-                     <enum>QSlider::TicksBothSides</enum>
-                    </property>
-                    <property name="tickInterval">
-                     <number>10</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLCDNumber" name="lcdNumber_70">
-                    <property name="font">
-                     <font>
-                      <pointsize>8</pointsize>
-                     </font>
-                    </property>
-                    <property name="frameShape">
-                     <enum>QFrame::Box</enum>
-                    </property>
-                    <property name="smallDecimalPoint">
-                     <bool>true</bool>
-                    </property>
-                    <property name="segmentStyle">
-                     <enum>QLCDNumber::Flat</enum>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_122">
-                    <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="text">
-                     <string>Amp</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_21">
-                 <item>
-                  <widget class="QLabel" name="label_118">
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Sunken</enum>
-                   </property>
-                   <property name="text">
-                    <string>Damp</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLCDNumber" name="lcdNumber_22">
-                   <property name="smallDecimalPoint">
-                    <bool>true</bool>
-                   </property>
-                   <property name="segmentStyle">
-                    <enum>QLCDNumber::Flat</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="2" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_22">
-                 <item>
-                  <widget class="QLabel" name="label_115">
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Sunken</enum>
-                   </property>
-                   <property name="text">
-                    <string>Size</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLCDNumber" name="lcdNumber_23">
-                   <property name="smallDecimalPoint">
-                    <bool>true</bool>
-                   </property>
-                   <property name="segmentStyle">
-                    <enum>QLCDNumber::Flat</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="1" column="0">
-                <widget class="QDial" name="free_s">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimum">
-                  <number>-60</number>
-                 </property>
-                 <property name="maximum">
-                  <number>0</number>
-                 </property>
-                 <property name="value">
-                  <number>-30</number>
-                 </property>
-                 <property name="notchesVisible">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QDial" name="free_d">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximum">
-                  <number>3000</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>10</number>
-                 </property>
-                 <property name="notchesVisible">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_23">
-                 <item>
-                  <widget class="QLabel" name="label_121">
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Sunken</enum>
-                   </property>
-                   <property name="text">
-                    <string>Balance</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLCDNumber" name="lcdNumber_24">
-                   <property name="smallDecimalPoint">
-                    <bool>true</bool>
-                   </property>
-                   <property name="segmentStyle">
-                    <enum>QLCDNumber::Flat</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="3" column="0">
-                <widget class="QDial" name="free_b">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximum">
-                  <number>250</number>
-                 </property>
-                 <property name="notchTarget">
-                  <double>10.000000000000000</double>
-                 </property>
-                 <property name="notchesVisible">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1" rowspan="2">
-                <layout class="QVBoxLayout" name="verticalLayout_16"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QFrame" name="frame_19">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_38">
-               <property name="spacing">
-                <number>2</number>
-               </property>
-               <property name="leftMargin">
-                <number>2</number>
-               </property>
-               <property name="topMargin">
-                <number>2</number>
-               </property>
-               <property name="rightMargin">
-                <number>2</number>
-               </property>
-               <property name="bottomMargin">
-                <number>2</number>
-               </property>
-               <item>
-                <widget class="QLabel" name="label_155">
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>11111110</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>10</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Presets</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="Line" name="line_27">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QComboBox" name="comboBox_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>Flat</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Bass</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer_4">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="Line" name="line_31">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_26">
-                 <property name="spacing">
-                  <number>4</number>
-                 </property>
-                 <item>
-                  <widget class="QToolButton" name="EnableB_6">
-                   <property name="text">
-                    <string>Add</string>
-                   </property>
-                   <property name="checkable">
-                    <bool>true</bool>
-                   </property>
-                   <property name="autoExclusive">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QToolButton" name="EnableB_7">
-                   <property name="text">
-                    <string>Reset</string>
-                   </property>
-                   <property name="checkable">
-                    <bool>true</bool>
-                   </property>
-                   <property name="autoExclusive">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QToolButton" name="EnableB_8">
-                   <property name="text">
-                    <string>Delete</string>
-                   </property>
-                   <property name="checkable">
-                    <bool>true</bool>
-                   </property>
-                   <property name="autoExclusive">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
                </item>
               </layout>
              </widget>
@@ -7824,7 +6628,7 @@
                   <item>
                    <widget class="QSlider" name="gate_amp">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -7998,7 +6802,7 @@
                <item row="1" column="1">
                 <widget class="QDial" name="gate_rise">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -8007,7 +6811,7 @@
                   </sizepolicy>
                  </property>
                  <property name="maximum">
-                  <number>3000</number>
+                  <number>300</number>
                  </property>
                  <property name="singleStep">
                   <number>10</number>
@@ -8020,7 +6824,7 @@
                <item row="3" column="1">
                 <widget class="QDial" name="gate_fall">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -8029,7 +6833,7 @@
                   </sizepolicy>
                  </property>
                  <property name="maximum">
-                  <number>3000</number>
+                  <number>300</number>
                  </property>
                  <property name="singleStep">
                   <number>10</number>
@@ -8042,7 +6846,7 @@
                <item row="3" column="0">
                 <widget class="QDial" name="gate_la">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -8051,10 +6855,10 @@
                   </sizepolicy>
                  </property>
                  <property name="maximum">
-                  <number>250</number>
+                  <number>2500</number>
                  </property>
                  <property name="notchTarget">
-                  <double>10.000000000000000</double>
+                  <double>50.000000000000000</double>
                  </property>
                  <property name="notchesVisible">
                   <bool>true</bool>
@@ -8064,7 +6868,7 @@
                <item row="1" column="0">
                 <widget class="QDial" name="gate_tresh">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -8073,13 +6877,22 @@
                   </sizepolicy>
                  </property>
                  <property name="minimum">
-                  <number>-60</number>
+                  <number>-1000</number>
                  </property>
                  <property name="maximum">
                   <number>0</number>
                  </property>
                  <property name="value">
-                  <number>-30</number>
+                  <number>0</number>
+                 </property>
+                 <property name="invertedAppearance">
+                  <bool>false</bool>
+                 </property>
+                 <property name="invertedControls">
+                  <bool>false</bool>
+                 </property>
+                 <property name="notchTarget">
+                  <double>50.000000000000000</double>
                  </property>
                  <property name="notchesVisible">
                   <bool>true</bool>
@@ -8281,7 +7094,7 @@
                <item row="3" column="0">
                 <widget class="QDial" name="pan_spread_dial">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -8360,7 +7173,7 @@
                <item row="1" column="0">
                 <widget class="QDial" name="pan_sim_dial_2">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -8633,46 +7446,10 @@
                  </item>
                 </layout>
                </item>
-               <item row="2" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_8">
-                 <item>
-                  <widget class="QLabel" name="label_36">
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Sunken</enum>
-                   </property>
-                   <property name="text">
-                    <string>Azimuth</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLCDNumber" name="lcdNumber_3">
-                   <property name="smallDecimalPoint">
-                    <bool>true</bool>
-                   </property>
-                   <property name="segmentStyle">
-                    <enum>QLCDNumber::Flat</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="1" column="0">
-                <widget class="QDial" name="azimuth_dial_5">
+               <item row="1" column="1">
+                <widget class="QDial" name="elev_dial3_2">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -8715,10 +7492,46 @@
                  </property>
                 </widget>
                </item>
+               <item row="2" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_8">
+                 <item>
+                  <widget class="QLabel" name="label_36">
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Sunken</enum>
+                   </property>
+                   <property name="text">
+                    <string>Azimuth</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLCDNumber" name="lcdNumber_3">
+                   <property name="smallDecimalPoint">
+                    <bool>true</bool>
+                   </property>
+                   <property name="segmentStyle">
+                    <enum>QLCDNumber::Flat</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
                <item row="3" column="1">
                 <widget class="QDial" name="elev_span_d_2">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -8761,7 +7574,7 @@
                <item row="3" column="0">
                 <widget class="QDial" name="azimuth_span_2">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -8801,10 +7614,10 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <widget class="QDial" name="elev_dial3_2">
+               <item row="1" column="0">
+                <widget class="QDial" name="azimuth_dial_5">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -8852,6 +7665,1223 @@
             </item>
            </layout>
           </item>
+          <item row="3" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_15">
+            <item>
+             <widget class="QFrame" name="frame_7">
+              <property name="frameShape">
+               <enum>QFrame::Panel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_12">
+               <item row="1" column="1">
+                <widget class="QFrame" name="frame_8">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_45">
+                  <property name="leftMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>3</number>
+                  </property>
+                  <item>
+                   <widget class="QSlider" name="clip_max">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>28</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="minimum">
+                     <number>0</number>
+                    </property>
+                    <property name="maximum">
+                     <number>100</number>
+                    </property>
+                    <property name="singleStep">
+                     <number>0</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="tickPosition">
+                     <enum>QSlider::TicksBothSides</enum>
+                    </property>
+                    <property name="tickInterval">
+                     <number>5</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLCDNumber" name="lcdNumber_64">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::Box</enum>
+                    </property>
+                    <property name="smallDecimalPoint">
+                     <bool>true</bool>
+                    </property>
+                    <property name="segmentStyle">
+                     <enum>QLCDNumber::Flat</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_73">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="text">
+                     <string>Max</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QFrame" name="frame_9">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_43">
+                  <property name="leftMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>3</number>
+                  </property>
+                  <item>
+                   <widget class="QSlider" name="clip_min">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>28</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="minimum">
+                     <number>-100</number>
+                    </property>
+                    <property name="maximum">
+                     <number>0</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="tickPosition">
+                     <enum>QSlider::TicksBothSides</enum>
+                    </property>
+                    <property name="tickInterval">
+                     <number>5</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLCDNumber" name="lcdNumber_63">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::Box</enum>
+                    </property>
+                    <property name="smallDecimalPoint">
+                     <bool>true</bool>
+                    </property>
+                    <property name="segmentStyle">
+                     <enum>QLCDNumber::Flat</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_72">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="text">
+                     <string>Min</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QFrame" name="frame_10">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_44">
+                  <property name="leftMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>3</number>
+                  </property>
+                  <item>
+                   <widget class="QSlider" name="clip_amp">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>28</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximum">
+                     <number>200</number>
+                    </property>
+                    <property name="value">
+                     <number>100</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="tickPosition">
+                     <enum>QSlider::TicksBothSides</enum>
+                    </property>
+                    <property name="tickInterval">
+                     <number>10</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLCDNumber" name="lcdNumber_65">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::Box</enum>
+                    </property>
+                    <property name="smallDecimalPoint">
+                     <bool>true</bool>
+                    </property>
+                    <property name="segmentStyle">
+                     <enum>QLCDNumber::Flat</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_71">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="text">
+                     <string>Amp</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="0" colspan="3">
+                <widget class="QFrame" name="horizontalFrame_4">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_31">
+                  <property name="spacing">
+                   <number>4</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>4</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_74">
+                    <property name="font">
+                     <font>
+                      <pointsize>10</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Clip</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QToolButton" name="clip_en">
+                    <property name="text">
+                     <string>Enable</string>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="autoExclusive">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QToolButton" name="clip_dis">
+                    <property name="text">
+                     <string>Disable</string>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                    <property name="autoExclusive">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="frame_11">
+              <property name="frameShape">
+               <enum>QFrame::Panel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_13">
+               <item row="1" column="2" rowspan="4">
+                <widget class="QFrame" name="frame_12">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_65">
+                  <property name="leftMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>3</number>
+                  </property>
+                  <item>
+                   <widget class="QSlider" name="chor_amp">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximum">
+                     <number>200</number>
+                    </property>
+                    <property name="value">
+                     <number>100</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="tickPosition">
+                     <enum>QSlider::TicksBothSides</enum>
+                    </property>
+                    <property name="tickInterval">
+                     <number>10</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLCDNumber" name="lcdNumber_69">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::Box</enum>
+                    </property>
+                    <property name="smallDecimalPoint">
+                     <bool>true</bool>
+                    </property>
+                    <property name="segmentStyle">
+                     <enum>QLCDNumber::Flat</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_133">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="text">
+                     <string>Amp</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="0" colspan="3">
+                <widget class="QFrame" name="horizontalFrame_11">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_39">
+                  <property name="spacing">
+                   <number>4</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_134">
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>11111110</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>10</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Chrous</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QToolButton" name="Chrous_en">
+                    <property name="text">
+                     <string>Enable</string>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="autoExclusive">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QToolButton" name="Chrous_dis">
+                    <property name="text">
+                     <string>Disable</string>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                    <property name="autoExclusive">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_19">
+                 <item>
+                  <widget class="QLabel" name="label_129">
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Sunken</enum>
+                   </property>
+                   <property name="text">
+                    <string>Feedback</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLCDNumber" name="lcdNumber_14">
+                   <property name="smallDecimalPoint">
+                    <bool>true</bool>
+                   </property>
+                   <property name="segmentStyle">
+                    <enum>QLCDNumber::Flat</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_16">
+                 <item>
+                  <widget class="QLabel" name="label_126">
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Sunken</enum>
+                   </property>
+                   <property name="text">
+                    <string>Depth</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLCDNumber" name="lcdNumber_13">
+                   <property name="smallDecimalPoint">
+                    <bool>true</bool>
+                   </property>
+                   <property name="segmentStyle">
+                    <enum>QLCDNumber::Flat</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="4" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_20">
+                 <item>
+                  <widget class="QLabel" name="label_132">
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Sunken</enum>
+                   </property>
+                   <property name="text">
+                    <string>Balance</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLCDNumber" name="lcdNumber_15">
+                   <property name="smallDecimalPoint">
+                    <bool>true</bool>
+                   </property>
+                   <property name="segmentStyle">
+                    <enum>QLCDNumber::Flat</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="3" column="1" rowspan="2">
+                <layout class="QVBoxLayout" name="verticalLayout_15"/>
+               </item>
+               <item row="3" column="0">
+                <widget class="QDial" name="chor_b">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="notchTarget">
+                  <double>4.000000000000000</double>
+                 </property>
+                 <property name="notchesVisible">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QDial" name="chor_d">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimum">
+                  <number>0</number>
+                 </property>
+                 <property name="maximum">
+                  <number>500</number>
+                 </property>
+                 <property name="value">
+                  <number>500</number>
+                 </property>
+                 <property name="notchTarget">
+                  <double>20.000000000000000</double>
+                 </property>
+                 <property name="notchesVisible">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QDial" name="chor_f">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>1</number>
+                 </property>
+                 <property name="notchTarget">
+                  <double>4.000000000000000</double>
+                 </property>
+                 <property name="notchesVisible">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="frame_13">
+              <property name="frameShape">
+               <enum>QFrame::Panel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_14">
+               <item row="0" column="0" colspan="3">
+                <widget class="QFrame" name="horizontalFrame_10">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_35">
+                  <property name="spacing">
+                   <number>4</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_123">
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>11111110</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <pointsize>10</pointsize>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>FreeVerb</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QToolButton" name="FreeVerb_en">
+                    <property name="text">
+                     <string>Enable</string>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="autoExclusive">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QToolButton" name="FreeVerb_dis">
+                    <property name="text">
+                     <string>Disable</string>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                    <property name="autoExclusive">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="2" rowspan="4">
+                <widget class="QFrame" name="frame_14">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_61">
+                  <property name="leftMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>3</number>
+                  </property>
+                  <item>
+                   <widget class="QSlider" name="free_a">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximum">
+                     <number>200</number>
+                    </property>
+                    <property name="value">
+                     <number>100</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="tickPosition">
+                     <enum>QSlider::TicksBothSides</enum>
+                    </property>
+                    <property name="tickInterval">
+                     <number>10</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLCDNumber" name="lcdNumber_70">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::Box</enum>
+                    </property>
+                    <property name="smallDecimalPoint">
+                     <bool>true</bool>
+                    </property>
+                    <property name="segmentStyle">
+                     <enum>QLCDNumber::Flat</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_122">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="text">
+                     <string>Amp</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_21">
+                 <item>
+                  <widget class="QLabel" name="label_118">
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Sunken</enum>
+                   </property>
+                   <property name="text">
+                    <string>Damp</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLCDNumber" name="lcdNumber_22">
+                   <property name="smallDecimalPoint">
+                    <bool>true</bool>
+                   </property>
+                   <property name="segmentStyle">
+                    <enum>QLCDNumber::Flat</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_22">
+                 <item>
+                  <widget class="QLabel" name="label_115">
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Sunken</enum>
+                   </property>
+                   <property name="text">
+                    <string>Size</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLCDNumber" name="lcdNumber_23">
+                   <property name="smallDecimalPoint">
+                    <bool>true</bool>
+                   </property>
+                   <property name="segmentStyle">
+                    <enum>QLCDNumber::Flat</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="1" column="0">
+                <widget class="QDial" name="free_s">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimum">
+                  <number>0</number>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
+                 </property>
+                 <property name="notchTarget">
+                  <double>4.000000000000000</double>
+                 </property>
+                 <property name="notchesVisible">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QDial" name="free_d">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>1</number>
+                 </property>
+                 <property name="notchTarget">
+                  <double>4.000000000000000</double>
+                 </property>
+                 <property name="notchesVisible">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_23">
+                 <item>
+                  <widget class="QLabel" name="label_121">
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Sunken</enum>
+                   </property>
+                   <property name="text">
+                    <string>Balance</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLCDNumber" name="lcdNumber_24">
+                   <property name="smallDecimalPoint">
+                    <bool>true</bool>
+                   </property>
+                   <property name="segmentStyle">
+                    <enum>QLCDNumber::Flat</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="3" column="0">
+                <widget class="QDial" name="free_b">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="notchTarget">
+                  <double>4.000000000000000</double>
+                 </property>
+                 <property name="notchesVisible">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1" rowspan="2">
+                <layout class="QVBoxLayout" name="verticalLayout_16"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="frame_19">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_38">
+               <property name="spacing">
+                <number>2</number>
+               </property>
+               <property name="leftMargin">
+                <number>2</number>
+               </property>
+               <property name="topMargin">
+                <number>2</number>
+               </property>
+               <property name="rightMargin">
+                <number>2</number>
+               </property>
+               <property name="bottomMargin">
+                <number>2</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="label_155">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>11111110</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>10</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Presets</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="Line" name="line_27">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="comboBox_2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Flat</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Bass</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="Line" name="line_31">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_26">
+                 <property name="spacing">
+                  <number>4</number>
+                 </property>
+                 <item>
+                  <widget class="QToolButton" name="EnableB_6">
+                   <property name="text">
+                    <string>Add</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
+                   <property name="autoExclusive">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="EnableB_7">
+                   <property name="text">
+                    <string>Reset</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
+                   <property name="autoExclusive">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="EnableB_8">
+                   <property name="text">
+                    <string>Delete</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
+                   <property name="autoExclusive">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </item>
          </layout>
         </widget>
        </widget>
@@ -8882,12 +8912,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>894</x>
-     <y>534</y>
+     <x>1029</x>
+     <y>-217</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1007</x>
-     <y>626</y>
+     <x>1028</x>
+     <y>-88</y>
     </hint>
    </hints>
   </connection>
@@ -8898,12 +8928,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1085</x>
-     <y>534</y>
+     <x>1220</x>
+     <y>-217</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1199</x>
-     <y>626</y>
+     <x>1219</x>
+     <y>-88</y>
     </hint>
    </hints>
   </connection>
@@ -8914,12 +8944,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>619</x>
-     <y>532</y>
+     <x>811</x>
+     <y>-217</y>
     </hint>
     <hint type="destinationlabel">
-     <x>769</x>
-     <y>626</y>
+     <x>810</x>
+     <y>-88</y>
     </hint>
    </hints>
   </connection>
@@ -8930,12 +8960,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>645</x>
-     <y>657</y>
+     <x>811</x>
+     <y>19</y>
     </hint>
     <hint type="destinationlabel">
-     <x>769</x>
-     <y>763</y>
+     <x>810</x>
+     <y>49</y>
     </hint>
    </hints>
   </connection>
@@ -8946,12 +8976,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>955</x>
-     <y>678</y>
+     <x>1029</x>
+     <y>19</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1007</x>
-     <y>763</y>
+     <x>1028</x>
+     <y>49</y>
     </hint>
    </hints>
   </connection>
@@ -8962,12 +8992,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1126</x>
-     <y>676</y>
+     <x>1220</x>
+     <y>19</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1199</x>
-     <y>763</y>
+     <x>1219</x>
+     <y>49</y>
     </hint>
    </hints>
   </connection>
@@ -8978,12 +9008,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>132</x>
-     <y>850</y>
+     <x>157</x>
+     <y>105</y>
     </hint>
     <hint type="destinationlabel">
-     <x>111</x>
-     <y>948</y>
+     <x>190</x>
+     <y>234</y>
     </hint>
    </hints>
   </connection>
@@ -8994,12 +9024,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>308</x>
-     <y>851</y>
+     <x>369</x>
+     <y>105</y>
     </hint>
     <hint type="destinationlabel">
-     <x>345</x>
-     <y>948</y>
+     <x>365</x>
+     <y>234</y>
     </hint>
    </hints>
   </connection>
@@ -9010,12 +9040,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>482</x>
-     <y>854</y>
+     <x>544</x>
+     <y>105</y>
     </hint>
     <hint type="destinationlabel">
-     <x>520</x>
-     <y>948</y>
+     <x>540</x>
+     <y>234</y>
     </hint>
    </hints>
   </connection>
@@ -9026,12 +9056,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>132</x>
-     <y>989</y>
+     <x>157</x>
+     <y>341</y>
     </hint>
     <hint type="destinationlabel">
-     <x>111</x>
-     <y>1085</y>
+     <x>190</x>
+     <y>371</y>
     </hint>
    </hints>
   </connection>
@@ -9042,12 +9072,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>308</x>
-     <y>988</y>
+     <x>369</x>
+     <y>341</y>
     </hint>
     <hint type="destinationlabel">
-     <x>345</x>
-     <y>1085</y>
+     <x>365</x>
+     <y>371</y>
     </hint>
    </hints>
   </connection>
@@ -9058,12 +9088,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>482</x>
-     <y>989</y>
+     <x>544</x>
+     <y>341</y>
     </hint>
     <hint type="destinationlabel">
-     <x>520</x>
-     <y>1085</y>
+     <x>540</x>
+     <y>371</y>
     </hint>
    </hints>
   </connection>
@@ -9074,12 +9104,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>754</x>
-     <y>848</y>
+     <x>808</x>
+     <y>105</y>
     </hint>
     <hint type="destinationlabel">
-     <x>788</x>
-     <y>948</y>
+     <x>804</x>
+     <y>234</y>
     </hint>
    </hints>
   </connection>
@@ -9090,12 +9120,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>917</x>
-     <y>841</y>
+     <x>982</x>
+     <y>105</y>
     </hint>
     <hint type="destinationlabel">
-     <x>956</x>
-     <y>948</y>
+     <x>978</x>
+     <y>234</y>
     </hint>
    </hints>
   </connection>
@@ -9106,12 +9136,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1091</x>
-     <y>845</y>
+     <x>1157</x>
+     <y>105</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1131</x>
-     <y>948</y>
+     <x>1153</x>
+     <y>234</y>
     </hint>
    </hints>
   </connection>
@@ -9122,12 +9152,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>754</x>
-     <y>980</y>
+     <x>808</x>
+     <y>341</y>
     </hint>
     <hint type="destinationlabel">
-     <x>779</x>
-     <y>1085</y>
+     <x>804</x>
+     <y>371</y>
     </hint>
    </hints>
   </connection>
@@ -9138,12 +9168,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>916</x>
-     <y>985</y>
+     <x>982</x>
+     <y>341</y>
     </hint>
     <hint type="destinationlabel">
-     <x>956</x>
-     <y>1085</y>
+     <x>978</x>
+     <y>371</y>
     </hint>
    </hints>
   </connection>
@@ -9154,12 +9184,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1091</x>
-     <y>983</y>
+     <x>1157</x>
+     <y>341</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1131</x>
-     <y>1085</y>
+     <x>1153</x>
+     <y>371</y>
     </hint>
    </hints>
   </connection>
@@ -9170,12 +9200,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>333</x>
-     <y>1181</y>
+     <x>417</x>
+     <y>427</y>
     </hint>
     <hint type="destinationlabel">
-     <x>393</x>
-     <y>1270</y>
+     <x>416</x>
+     <y>556</y>
     </hint>
    </hints>
   </connection>
@@ -9186,12 +9216,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>534</x>
-     <y>1163</y>
+     <x>588</x>
+     <y>427</y>
     </hint>
     <hint type="destinationlabel">
-     <x>564</x>
-     <y>1270</y>
+     <x>587</x>
+     <y>556</y>
     </hint>
    </hints>
   </connection>
@@ -9202,12 +9232,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>785</x>
-     <y>1163</y>
+     <x>848</x>
+     <y>427</y>
     </hint>
     <hint type="destinationlabel">
-     <x>824</x>
-     <y>1270</y>
+     <x>847</x>
+     <y>556</y>
     </hint>
    </hints>
   </connection>
@@ -9218,12 +9248,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>933</x>
-     <y>1178</y>
+     <x>1018</x>
+     <y>427</y>
     </hint>
     <hint type="destinationlabel">
-     <x>994</x>
-     <y>1270</y>
+     <x>1017</x>
+     <y>556</y>
     </hint>
    </hints>
   </connection>
@@ -9234,12 +9264,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>354</x>
-     <y>1300</y>
+     <x>417</x>
+     <y>662</y>
     </hint>
     <hint type="destinationlabel">
-     <x>393</x>
-     <y>1407</y>
+     <x>416</x>
+     <y>693</y>
     </hint>
    </hints>
   </connection>
@@ -9250,12 +9280,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>764</x>
-     <y>1315</y>
+     <x>848</x>
+     <y>663</y>
     </hint>
     <hint type="destinationlabel">
-     <x>824</x>
-     <y>1407</y>
+     <x>847</x>
+     <y>693</y>
     </hint>
    </hints>
   </connection>
@@ -9266,12 +9296,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-933</x>
-     <y>368</y>
+     <x>36</x>
+     <y>-366</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-933</x>
-     <y>422</y>
+     <x>36</x>
+     <y>-341</y>
     </hint>
    </hints>
   </connection>
@@ -9282,12 +9312,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-870</x>
-     <y>368</y>
+     <x>99</x>
+     <y>-366</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-870</x>
-     <y>422</y>
+     <x>99</x>
+     <y>-341</y>
     </hint>
    </hints>
   </connection>
@@ -9298,12 +9328,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-806</x>
-     <y>369</y>
+     <x>163</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-806</x>
-     <y>421</y>
+     <x>163</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9314,12 +9344,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-741</x>
-     <y>369</y>
+     <x>228</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-741</x>
-     <y>421</y>
+     <x>228</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9330,12 +9360,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-676</x>
-     <y>369</y>
+     <x>293</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-676</x>
-     <y>421</y>
+     <x>293</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9346,12 +9376,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-611</x>
-     <y>369</y>
+     <x>358</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-611</x>
-     <y>421</y>
+     <x>358</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9362,12 +9392,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-546</x>
-     <y>369</y>
+     <x>423</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-546</x>
-     <y>421</y>
+     <x>423</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9378,12 +9408,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-481</x>
-     <y>369</y>
+     <x>488</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-481</x>
-     <y>421</y>
+     <x>488</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9394,12 +9424,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-416</x>
-     <y>369</y>
+     <x>553</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-416</x>
-     <y>421</y>
+     <x>553</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9410,12 +9440,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-351</x>
-     <y>369</y>
+     <x>618</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-351</x>
-     <y>421</y>
+     <x>618</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9426,12 +9456,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-286</x>
-     <y>369</y>
+     <x>683</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-286</x>
-     <y>421</y>
+     <x>683</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9442,12 +9472,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-221</x>
-     <y>369</y>
+     <x>748</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-221</x>
-     <y>421</y>
+     <x>748</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9458,12 +9488,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-156</x>
-     <y>369</y>
+     <x>813</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-156</x>
-     <y>421</y>
+     <x>813</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9474,12 +9504,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-91</x>
-     <y>369</y>
+     <x>878</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-91</x>
-     <y>421</y>
+     <x>878</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9490,12 +9520,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-26</x>
-     <y>369</y>
+     <x>943</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-26</x>
-     <y>421</y>
+     <x>943</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9506,12 +9536,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>39</x>
-     <y>369</y>
+     <x>1045</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>39</x>
-     <y>421</y>
+     <x>1045</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9522,12 +9552,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>104</x>
-     <y>369</y>
+     <x>1127</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>104</x>
-     <y>421</y>
+     <x>1127</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9538,12 +9568,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>171</x>
-     <y>369</y>
+     <x>1192</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>177</x>
-     <y>421</y>
+     <x>1192</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9554,12 +9584,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>288</x>
-     <y>369</y>
+     <x>1257</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>259</x>
-     <y>421</y>
+     <x>1257</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9570,12 +9600,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>353</x>
-     <y>369</y>
+     <x>1322</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>324</x>
-     <y>421</y>
+     <x>1322</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9586,12 +9616,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>418</x>
-     <y>369</y>
+     <x>1387</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>389</x>
-     <y>421</y>
+     <x>1387</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9602,12 +9632,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>483</x>
-     <y>369</y>
+     <x>1452</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>454</x>
-     <y>421</y>
+     <x>1452</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9618,12 +9648,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>548</x>
-     <y>369</y>
+     <x>1517</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>519</x>
-     <y>421</y>
+     <x>1517</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9634,12 +9664,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>613</x>
-     <y>369</y>
+     <x>1582</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>584</x>
-     <y>421</y>
+     <x>1582</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9650,12 +9680,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>678</x>
-     <y>369</y>
+     <x>1647</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>649</x>
-     <y>421</y>
+     <x>1647</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9666,12 +9696,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>743</x>
-     <y>369</y>
+     <x>1712</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>714</x>
-     <y>421</y>
+     <x>1712</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9682,12 +9712,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>808</x>
-     <y>369</y>
+     <x>1777</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>779</x>
-     <y>421</y>
+     <x>1777</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9698,12 +9728,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1133</x>
-     <y>369</y>
+     <x>2102</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1104</x>
-     <y>421</y>
+     <x>2102</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9714,12 +9744,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1068</x>
-     <y>369</y>
+     <x>2037</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1039</x>
-     <y>421</y>
+     <x>2037</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9730,12 +9760,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1003</x>
-     <y>369</y>
+     <x>1972</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>974</x>
-     <y>421</y>
+     <x>1972</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9746,12 +9776,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>938</x>
-     <y>369</y>
+     <x>1907</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>909</x>
-     <y>421</y>
+     <x>1907</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9762,12 +9792,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>873</x>
-     <y>369</y>
+     <x>1842</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>844</x>
-     <y>421</y>
+     <x>1842</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
@@ -9794,12 +9824,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>128</x>
-     <y>538</y>
+     <x>153</x>
+     <y>-218</y>
     </hint>
     <hint type="destinationlabel">
-     <x>106</x>
-     <y>626</y>
+     <x>175</x>
+     <y>-88</y>
     </hint>
    </hints>
   </connection>
@@ -9810,12 +9840,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>131</x>
-     <y>672</y>
+     <x>156</x>
+     <y>19</y>
     </hint>
     <hint type="destinationlabel">
-     <x>106</x>
-     <y>763</y>
+     <x>175</x>
+     <y>49</y>
     </hint>
    </hints>
   </connection>
@@ -9826,12 +9856,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>264</x>
-     <y>536</y>
+     <x>339</x>
+     <y>-218</y>
     </hint>
     <hint type="destinationlabel">
-     <x>320</x>
-     <y>626</y>
+     <x>335</x>
+     <y>-88</y>
     </hint>
    </hints>
   </connection>
@@ -9842,12 +9872,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>264</x>
-     <y>677</y>
+     <x>339</x>
+     <y>19</y>
     </hint>
     <hint type="destinationlabel">
-     <x>312</x>
-     <y>763</y>
+     <x>335</x>
+     <y>49</y>
     </hint>
    </hints>
   </connection>
@@ -9858,12 +9888,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>40</x>
-     <y>1289</y>
+     <x>69</x>
+     <y>519</y>
     </hint>
     <hint type="destinationlabel">
-     <x>30</x>
-     <y>1383</y>
+     <x>59</x>
+     <y>669</y>
     </hint>
    </hints>
   </connection>
@@ -9874,12 +9904,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>1296</y>
+     <x>153</x>
+     <y>526</y>
     </hint>
     <hint type="destinationlabel">
-     <x>99</x>
-     <y>1383</y>
+     <x>153</x>
+     <y>669</y>
     </hint>
    </hints>
   </connection>
@@ -9890,12 +9920,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>177</x>
-     <y>1271</y>
+     <x>222</x>
+     <y>501</y>
     </hint>
     <hint type="destinationlabel">
-     <x>181</x>
-     <y>1383</y>
+     <x>222</x>
+     <y>669</y>
     </hint>
    </hints>
   </connection>
@@ -9906,12 +9936,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>355</x>
-     <y>627</y>
+     <x>404</x>
+     <y>-144</y>
     </hint>
     <hint type="destinationlabel">
      <x>404</x>
-     <y>739</y>
+     <y>25</y>
     </hint>
    </hints>
   </connection>
@@ -9922,12 +9952,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>559</x>
-     <y>952</y>
+     <x>609</x>
+     <y>181</y>
     </hint>
     <hint type="destinationlabel">
      <x>609</x>
-     <y>1061</y>
+     <y>347</y>
     </hint>
    </hints>
   </connection>
@@ -9939,11 +9969,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>1222</x>
-     <y>819</y>
+     <y>83</y>
     </hint>
     <hint type="destinationlabel">
      <x>1222</x>
-     <y>1061</y>
+     <y>347</y>
     </hint>
    </hints>
   </connection>
@@ -9955,11 +9985,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>653</x>
-     <y>1167</y>
+     <y>431</y>
     </hint>
     <hint type="destinationlabel">
      <x>653</x>
-     <y>1383</y>
+     <y>669</y>
     </hint>
    </hints>
   </connection>
@@ -9971,11 +10001,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>1083</x>
-     <y>1167</y>
+     <y>431</y>
     </hint>
     <hint type="destinationlabel">
      <x>1083</x>
-     <y>1383</y>
+     <y>669</y>
     </hint>
    </hints>
   </connection>
@@ -9986,12 +10016,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-931</x>
-     <y>287</y>
+     <x>36</x>
+     <y>-452</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-923</x>
-     <y>350</y>
+     <x>36</x>
+     <y>-427</y>
     </hint>
    </hints>
   </connection>
@@ -10002,12 +10032,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-848</x>
-     <y>307</y>
+     <x>99</x>
+     <y>-452</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-865</x>
-     <y>352</y>
+     <x>99</x>
+     <y>-427</y>
     </hint>
    </hints>
   </connection>
@@ -10018,12 +10048,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-805</x>
-     <y>316</y>
+     <x>163</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-798</x>
-     <y>358</y>
+     <x>163</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10034,12 +10064,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-740</x>
-     <y>310</y>
+     <x>228</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-737</x>
-     <y>354</y>
+     <x>228</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10050,12 +10080,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-665</x>
-     <y>310</y>
+     <x>293</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-665</x>
-     <y>355</y>
+     <x>293</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10066,12 +10096,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-609</x>
-     <y>311</y>
+     <x>358</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-609</x>
-     <y>348</y>
+     <x>358</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10082,12 +10112,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-521</x>
-     <y>323</y>
+     <x>423</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-521</x>
-     <y>348</y>
+     <x>423</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10098,12 +10128,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-477</x>
-     <y>314</y>
+     <x>488</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-477</x>
-     <y>346</y>
+     <x>488</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10114,12 +10144,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-406</x>
-     <y>318</y>
+     <x>553</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-404</x>
-     <y>354</y>
+     <x>553</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10130,12 +10160,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-325</x>
-     <y>308</y>
+     <x>618</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-345</x>
-     <y>342</y>
+     <x>618</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10146,12 +10176,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-280</x>
-     <y>315</y>
+     <x>683</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-281</x>
-     <y>349</y>
+     <x>683</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10162,12 +10192,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-199</x>
-     <y>294</y>
+     <x>748</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-199</x>
-     <y>353</y>
+     <x>748</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10178,12 +10208,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-148</x>
-     <y>335</y>
+     <x>813</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-148</x>
-     <y>352</y>
+     <x>813</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10194,12 +10224,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-63</x>
-     <y>327</y>
+     <x>878</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-90</x>
-     <y>352</y>
+     <x>878</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10210,12 +10240,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-5</x>
-     <y>316</y>
+     <x>943</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>-2</x>
-     <y>348</y>
+     <x>943</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10226,12 +10256,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>54</x>
-     <y>326</y>
+     <x>1060</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>57</x>
-     <y>354</y>
+     <x>1062</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10242,12 +10272,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>326</y>
+     <x>1127</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>108</x>
-     <y>349</y>
+     <x>1127</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10258,12 +10288,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>207</x>
-     <y>318</y>
+     <x>1192</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>205</x>
-     <y>343</y>
+     <x>1192</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10274,12 +10304,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>272</x>
-     <y>306</y>
+     <x>1257</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>269</x>
-     <y>352</y>
+     <x>1257</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10290,12 +10320,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>312</x>
-     <y>280</y>
+     <x>1322</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>319</x>
-     <y>347</y>
+     <x>1322</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10306,12 +10336,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>392</x>
-     <y>310</y>
+     <x>1387</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>396</x>
-     <y>346</y>
+     <x>1387</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10322,12 +10352,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>464</x>
-     <y>312</y>
+     <x>1452</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>467</x>
-     <y>353</y>
+     <x>1452</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10338,12 +10368,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>516</x>
-     <y>304</y>
+     <x>1517</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>517</x>
-     <y>341</y>
+     <x>1517</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10354,12 +10384,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>591</x>
-     <y>305</y>
+     <x>1582</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>593</x>
-     <y>351</y>
+     <x>1582</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10370,12 +10400,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>650</x>
-     <y>298</y>
+     <x>1647</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>651</x>
-     <y>354</y>
+     <x>1647</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10386,12 +10416,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>720</x>
-     <y>274</y>
+     <x>1712</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>717</x>
-     <y>343</y>
+     <x>1712</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10402,12 +10432,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>788</x>
-     <y>298</y>
+     <x>1777</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>778</x>
-     <y>358</y>
+     <x>1777</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10418,12 +10448,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>859</x>
-     <y>299</y>
+     <x>1842</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>860</x>
-     <y>343</y>
+     <x>1842</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10434,12 +10464,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>915</x>
-     <y>309</y>
+     <x>1907</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>917</x>
-     <y>339</y>
+     <x>1907</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10450,12 +10480,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>982</x>
-     <y>314</y>
+     <x>1972</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>982</x>
-     <y>344</y>
+     <x>1972</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10466,12 +10496,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1041</x>
-     <y>331</y>
+     <x>2037</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1044</x>
-     <y>351</y>
+     <x>2037</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10482,12 +10512,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1116</x>
-     <y>319</y>
+     <x>2102</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1115</x>
-     <y>346</y>
+     <x>2102</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10498,12 +10528,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1175</x>
-     <y>316</y>
+     <x>2167</x>
+     <y>-451</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1175</x>
-     <y>348</y>
+     <x>2167</x>
+     <y>-426</y>
     </hint>
    </hints>
   </connection>
@@ -10514,22 +10544,22 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1176</x>
-     <y>412</y>
+     <x>2167</x>
+     <y>-367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1176</x>
-     <y>421</y>
+     <x>2167</x>
+     <y>-342</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
-  <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup_4"/>
+  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_5"/>
   <buttongroup name="buttonGroup_6"/>
+  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup_3"/>
  </buttongroups>
 </ui>
