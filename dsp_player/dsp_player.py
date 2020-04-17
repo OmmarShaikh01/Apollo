@@ -21,76 +21,24 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         
         # Gate
         self.gate_amp.valueChanged.connect(lambda : (self.gate_filter_out.setMul(self.gate_amp.value() / 100)))
-        self.gate_fall.valueChanged.connect(lambda : (self.gate_filter_out.setFallTime(self.gate_fall.value())))
-        self.gate_la.valueChanged.connect(lambda : (self.gate_filter_out.setLookAhead(self.gate_la.value())))
-        self.gate_tresh.valueChanged.connect(lambda : (self.gate_filter_out.setThresh(self.gate_tresh.value())))
-        self.gate_rise.valueChanged.connect(lambda : (self.gate_filter_out.setRiseTime(self.gate_rise.value())))
+        self.gate_tresh.valueChanged.connect(lambda : (self.gate_filter_out.setThresh(self.gate_tresh.value() / 10)))
+        self.gate_la.valueChanged.connect(lambda : (self.gate_filter_out.setLookAhead(self.gate_la.value() / 100)))
+        self.gate_rise.valueChanged.connect(lambda : (self.gate_filter_out.setRiseTime(self.gate_rise.value() / 1000)))
+        self.gate_fall.valueChanged.connect(lambda : (self.gate_filter_out.setFallTime(self.gate_fall.value() / 1000)))
         
-        self.Gate_en.pressed.connect(lambda: (self.gate_en_dis(True), self.output_switch_gate.setVoice(1)))
-        self.Gate_dis.pressed.connect(lambda: (self.gate_en_dis(False), self.output_switch_gate.setVoice(0)))
+        self.Gate_en.pressed.connect(lambda: (self.gate_en_dis(True), self.gate_filter_out.play(), self.output_switch_gate.setVoice(1)))
+        self.Gate_dis.pressed.connect(lambda: (self.gate_en_dis(False), self.gate_filter_out.stop(), self.output_switch_gate.setVoice(0)))
         
-        # Compressor
-        
-        self.Compress_en.pressed.connect(lambda: (self.com_ex_en_dis(True, "comp"))) 
-        self.Compress_dis.pressed.connect(lambda: (self.com_ex_en_dis(False, "comp"))) 
-        
-        self.comp_amp.valueChanged.connect(lambda : (self.com_ex_out.setMul(self.comp_amp.value())))
-        self.comp_fa.valueChanged.connect(lambda : (self.com_ex_out.setFallTime(self.comp_fa.value())))
-        self.comp_kn.valueChanged.connect(lambda : (self.com_ex_out.setKnee(self.comp_kn.value())))
-        self.comp_la.valueChanged.connect(lambda : (self.com_ex_out.setLookAhead(self.comp_la.value())))
-        self.comp_rat.valueChanged.connect(lambda : (self.com_ex_out.setRatio(self.comp_rat.value())))
-        self.comp_rise.valueChanged.connect(lambda : (self.com_ex_out.setRiseTime(self.comp_rise.value())))
-        self.comp_tres.valueChanged.connect(lambda : (self.com_ex_out.setThresh(self.comp_tres.value())))
-
-        # Expand
-        self.Expand_en.pressed.connect(lambda: (self.com_ex_en_dis(True, "expd"))) 
-        self.Expand_dis.pressed.connect(lambda: (self.com_ex_en_dis(False, "expd")))
-        
-        self.exp_amp.valueChanged.connect(lambda : (self.com_ex_out.setMul(self.exp_amp.value())))
-        self.exp_dt.valueChanged.connect(lambda : (self.com_ex_out.setDownThresh(self.exp_dt.value())))
-        self.exp_la.valueChanged.connect(lambda : (self.com_ex_out.setLookAhead(self.exp_la.value())))
-        self.exp_ra.valueChanged.connect(lambda : (self.com_ex_out.setRiseTime(self.exp_ra.value())))
-        self.exp_rat.valueChanged.connect(lambda : (self.com_ex_out.setRatio(self.exp_rat.value())))
-        self.exp_ut.valueChanged.connect(lambda : (self.com_ex_out.setUpThresh(self.exp_ut.value())))
-        self.exp_fall.valueChanged.connect(lambda : (self.com_ex_out.setFallTime(self.exp_fall.value())))     
-        
-        # Clip
-        self.clip_en.pressed.connect(lambda : (self.clip_en_dis(True)))
-        self.clip_dis.pressed.connect(lambda : (self.clip_en_dis(False)))
-        self.clip_amp.valueChanged.connect(lambda : (self.clip_out.setMul(self.clip_amp.value())))
-        self.clip_max.valueChanged.connect(lambda : (self.clip_out.setMax(self.clip_max.value())))
-        self.clip_min.valueChanged.connect(lambda : (self.clip_out.setMin(self.clip_min.value())))
-        
-        # Chrous
-        self.Chrous_en.pressed.connect(lambda : (self.chrous_en_dis(True)))
-        self.Chrous_dis.pressed.connect(lambda : (self.chrous_en_dis(False)))
-        
-        self.chor_amp.valueChanged.connect(lambda : (self.chor_out.setMul(self.chor_amp.value())))
-        self.chor_f.valueChanged.connect(lambda : (self.chor_out.setFeedback(self.chor_f.value())))
-        self.chor_d.valueChanged.connect(lambda : (self.chor_out.setDepth(self.chor_d.value())))
-        self.chor_b.valueChanged.connect(lambda : (self.chor_out.setBal(self.chor_b.value())))              
-        
-        # Freeverb
-        self.FreeVerb_en.pressed.connect(lambda : (self.freeverb_en_dis(True)))
-        self.FreeVerb_dis.pressed.connect(lambda : (self.freeverb_en_dis(False)))
-        
-        self.free_a.valueChanged.connect(lambda : (self.free_out.setMul(self.free_a.value())))
-        self.free_s.valueChanged.connect(lambda : (self.free_out.setSize(self.free_s.value())))
-        self.free_d.valueChanged.connect(lambda : (self.free_out.setDamp(self.free_d.value())))
-        self.free_b.valueChanged.connect(lambda : (self.free_out.setBal(self.free_b.value())))          
-        
-        # Equlizer
-        self.EnableB.pressed.connect(lambda: (self.eq_en_dis(True))) # calls Eq player function with Eq enabled
-        self.DisableB.pressed.connect(lambda: (self.eq_en_dis(False))) # calls Eq player function with Eq disabled
-                
         # Simple panning
         self.span_en.pressed.connect(lambda:
                                      (self.binaurp_dis_3.setChecked(True),
+                                      self.pan_out_simp.play(), 
                                       self.panner_en_dis(True, "simp"),
                                       self.output_switch_pan.setVoice(0),
-                                      self.panner_bypass.setVoice(3))) # calls panning simple function with panning enabled
+                                      self.panner_bypass.setVoice(1))) # calls panning simple function with panning enabled
         self.span_dis.pressed.connect(lambda:
                                       (self.panner_en_dis(False, "simp"),
+                                       self.pan_out_simp.stop(), 
                                        self.panner_bypass_call())) # calls panning simple function with panning disabled        
         self.pan_sim_dial_2.valueChanged.connect(lambda: self.pan_out_simp.setPan(self.pan_sim_dial_2.value() / 100))# calls panning simple function to set panning
         self.pan_spread_dial.valueChanged.connect(lambda: self.pan_out_simp.setSpread(self.pan_spread_dial.value() / 100))# calls panning simple function to set spread  
@@ -98,18 +46,97 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         # binaura panning
         self.binaurp_en_3.pressed.connect(lambda:
                                           (self.span_dis.setChecked(True),
+                                           self.pan_out_bin.play(), 
                                            self.panner_en_dis(True, "binaur"),
                                            self.output_switch_pan.setVoice(1),
-                                           self.panner_bypass.setVoice(3))) # calls panning binaural function with panning enabled
-        self.binaurp_dis_3.pressed.connect(lambda: (self.panner_en_dis(False,  "binaur"),self.panner_bypass_call())) # calls panning binaural function with panning disabled
+                                           self.panner_bypass.setVoice(1))) # calls panning binaural function with panning enabled
+        self.binaurp_dis_3.pressed.connect(lambda: (self.panner_en_dis(False,  "binaur"), self.pan_out_bin.stop(),self.panner_bypass_call())) # calls panning binaural function with panning disabled
         self.azimuth_dial_5.valueChanged.connect(lambda: self.pan_out_bin.setAzimuth(self.azimuth_dial_5.value() / 100)) # calls panning biaural function to set azimuth
         self.azimuth_span_2.valueChanged.connect(lambda: self.pan_out_bin.setAzispan(self.azimuth_span_2.value() / 100)) # calls panning biaural function to set azimuth span
         self.elev_dial3_2.valueChanged.connect(lambda: self.pan_out_bin.setElevation(self.elev_dial3_2.value() / 100)) # calls panning biaural function to set elevation
         self.elev_span_d_2.valueChanged.connect(lambda: self.pan_out_bin.setElespan(self.elev_span_d_2.value() / 100)) # calls panning biaural function to set elevation span
+  
+        # Equlizer
+        self.EnableB.pressed.connect(lambda: (self.eq_en_dis(True), self.eq_start(), self.output_switch_eq.setVoice(1))) # calls Eq player function with Eq enabled
+        self.DisableB.pressed.connect(lambda: (self.eq_en_dis(False), self.eq_stop(), self.output_switch_eq.setVoice(0))) # calls Eq player function with Eq disabled
         
+        # Compressor
+        
+        self.Compress_en.pressed.connect(lambda: (self.com_ex_en_dis(True, "comp"),
+                                                  self.output_switch_comex.setVoice(0),
+                                                  self.compress_f.play())) 
+        self.Compress_dis.pressed.connect(lambda: (self.com_ex_en_dis(False, "comp"), 
+                                                   self.compress_f.play(),
+                                                   self.comex_bypass_call())) 
+        
+        self.comp_amp.valueChanged.connect(lambda : (self.compress_f.setMul(self.comp_amp.value() / 100)))
+        self.comp_tres.valueChanged.connect(lambda : (self.compress_f.setThresh(self.comp_tres.value() / 10)))
+        self.comp_rat.valueChanged.connect(lambda : (self.compress_f.setRatio(self.comp_rat.value() / 100)))
+        self.comp_rise.valueChanged.connect(lambda : (self.compress_f.setRiseTime(self.comp_rise.value() / 1000)))        
+        self.comp_fa.valueChanged.connect(lambda : (self.compress_f.setFallTime(self.comp_fa.value() / 1000)))        
+        self.comp_la.valueChanged.connect(lambda : (self.compress_f.setLookAhead(self.comp_la.value() / 10)))
+        self.comp_kn.valueChanged.connect(lambda : (self.compress_f.setKnee(self.comp_kn.value() / 100)))
+
+        # Expand
+        self.Expand_en.pressed.connect(lambda: (self.com_ex_en_dis(True, "expd"),
+                                                self.output_switch_comex.setVoice(1),
+                                                self.expand_f.play())) 
+        self.Expand_dis.pressed.connect(lambda: (self.com_ex_en_dis(False, "expd"),
+                                                 self.expand_f.play(),
+                                                 self.comex_bypass_call()))
+        
+        self.exp_amp.valueChanged.connect(lambda : (self.expand_f.setMul(self.exp_amp.value() / 100)))
+        self.exp_dt.valueChanged.connect(lambda : (self.expand_f.setDownThresh(self.exp_dt.value() / 10)))
+        self.exp_ut.valueChanged.connect(lambda : (self.expand_f.setUpThresh(self.exp_ut.value() / 10)))
+        self.exp_la.valueChanged.connect(lambda : (self.expand_f.setLookAhead(self.exp_la.value() / 10)))
+        self.exp_rat.valueChanged.connect(lambda : (self.expand_f.setRatio(self.exp_rat.value() / 1000)))
+        self.exp_ra.valueChanged.connect(lambda : (self.expand_f.setRiseTime(self.exp_ra.value() / 1000)))
+        self.exp_fall.valueChanged.connect(lambda : (self.expand_f.setFallTime(self.exp_fall.value() / 1000)))     
+        
+        # Clip
+        self.clip_en.pressed.connect(lambda :
+                                     (self.clip_en_dis(True),
+                                      self.clip_fil_out.play(), 
+                                      self.output_switch_clip.setVoice(1) ))
+        
+        self.clip_dis.pressed.connect(lambda : (self.clip_en_dis(False), 
+                                                self.clip_fil_out.stop(), 
+                                                self.output_switch_clip.setVoice(0)))
+        self.clip_amp.valueChanged.connect(lambda : (self.clip_fil_out.setMul(self.clip_amp.value()/100)))
+        self.clip_max.valueChanged.connect(lambda : (self.clip_fil_out.setMax(self.clip_max.value()/100)))
+        self.clip_min.valueChanged.connect(lambda : (self.clip_fil_out.setMin(self.clip_min.value()/100)))
+        
+        # Chrous
+        self.Chrous_en.pressed.connect(lambda : (self.chrous_en_dis(True), 
+                                                 self.chor_fil_out.play(), 
+                                                 self.output_switch_chor.setVoice(1)))
+            
+        self.Chrous_dis.pressed.connect(lambda : (self.chrous_en_dis(False),
+                                                  self.chor_fil_out.stop(), 
+                                                  self.output_switch_chor.setVoice(0)))
+        
+        self.chor_amp.valueChanged.connect(lambda : (self.chor_fil_out.setMul(self.chor_amp.value() / 100)))
+        self.chor_f.valueChanged.connect(lambda : (self.chor_fil_out.setFeedback(self.chor_f.value() / 100)))
+        self.chor_d.valueChanged.connect(lambda : (self.chor_fil_out.setDepth(self.chor_d.value() / 100)))
+        self.chor_b.valueChanged.connect(lambda : (self.chor_fil_out.setBal(self.chor_b.value() / 100)))              
+        
+        # Freeverb
+        self.FreeVerb_en.pressed.connect(lambda : (self.freeverb_en_dis(True), 
+                                                   self.free_fil_out.play(), 
+                                                   self.output_switch_free.setVoice(1)))
+        self.FreeVerb_dis.pressed.connect(lambda : (self.freeverb_en_dis(False), 
+                                                    self.free_fil_out.stop(), 
+                                                    self.output_switch_free.setVoice(0)))
+        
+        self.free_a.valueChanged.connect(lambda : (self.free_fil_out.setMul(self.free_a.value() / 100)))
+        self.free_s.valueChanged.connect(lambda : (self.free_fil_out.setSize(self.free_s.value() / 100)))
+        self.free_d.valueChanged.connect(lambda : (self.free_fil_out.setDamp(self.free_d.value() / 100)))
+        self.free_b.valueChanged.connect(lambda : (self.free_fil_out.setBal(self.free_b.value() / 100)))          
+        
+  
         # Misc
-        self.bypass.clicked.connect(lambda:(self.output_switch.setVoice(0)))
-        self.process.clicked.connect(lambda:(self.output_switch.setVoice(1)))
+        self.process.clicked.connect(lambda:(self.output_switch.setVoice(1), self.src.stop(), self.process_out.play()))
+        self.bypass.clicked.connect(lambda:(self.output_switch.setVoice(0), self.src.play(), self.process_out.stop(),  self.disabler_all()))
         
     def audio_setup(self):
         audio_setup = {}
@@ -411,7 +438,78 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         
         return a[0]
     
-
+    def eq_stop(self):
+        
+        self.e_1.stop()
+        self.e_2.stop()
+        self.e_3.stop()
+        self.e_4.stop()
+        self.e_5.stop()
+        self.e_6.stop()
+        self.e_7.stop()
+        self.e_8.stop()
+        self.e_9.stop()
+        self.e10.stop()
+        self.e11.stop()
+        self.e12.stop()
+        self.e13.stop()
+        self.e14.stop()
+        self.e15.stop()
+        self.e16.stop()
+        self.e17.stop()
+        self.e18.stop()
+        self.e19.stop()
+        self.e20.stop()
+        self.e21.stop()
+        self.e22.stop()
+        self.e23.stop()
+        self.e24.stop()
+        self.e25.stop()
+        self.e26.stop()
+        self.e27.stop()
+        self.e28.stop()
+        self.e29.stop()
+        self.e30.stop()
+        self.e31.stop()
+        self.e32.stop()
+        
+        
+    def eq_start(self):
+        
+        self.e_1.play()
+        self.e_2.play()
+        self.e_3.play()
+        self.e_4.play()
+        self.e_5.play()
+        self.e_6.play()
+        self.e_7.play()
+        self.e_8.play()
+        self.e_9.play()
+        self.e10.play()
+        self.e11.play()
+        self.e12.play()
+        self.e13.play()
+        self.e14.play()
+        self.e15.play()
+        self.e16.play()
+        self.e17.play()
+        self.e18.play()
+        self.e19.play()
+        self.e20.play()
+        self.e21.play()
+        self.e22.play()
+        self.e23.play()
+        self.e24.play()
+        self.e25.play()
+        self.e26.play()
+        self.e27.play()
+        self.e28.play()
+        self.e29.play()
+        self.e30.play()
+        self.e31.play()
+        self.e32.play()
+        
+        
 ########################## Audio pipeline ######################################
 ################################################################################
     
@@ -425,8 +523,8 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.bg1 = pg.BarGraphItem(x = xm, x0 = xl, 
                                    x1 = xr, height = (range(2600)),
                                    y0 = [0, 0], width=1, brush=[255, 255, 255])
-        self.master_vu_meter_graph.addItem(self.bg1) 
-
+        self.master_vu_meter_graph.addItem(self.bg1)
+        
     def master_peak_plotter(self, *args):
         (l, r) = self.audio_server.getCurrentAmp()
         self.bg1.setOpts(height = [int(l*10000), int(r*10000)])
@@ -435,43 +533,67 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.pre_plot_declaration()
         self.in_table = pyo.SndTable("C:\\Users\\OMMAR\\Desktop\\dsp_player\\ui_forms\\01 Jumpstarter (Original Mix).flac")
         self.src = pyo.Osc(self.in_table, self.in_table.getRate())        
-        self.start = self.src
+        self.process_in = pyo.Sine(300)
         self.processs()
-        self.output_switch = pyo.Selector([self.start, self.process_out], 1)
-        self.output_switch.out()        
+        self.output_switch = pyo.Selector([self.src, self.process_out], 0)
+        self.peak_amp = pyo.PeakAmp(self.process_out, function = self.master_peak_plotter)
+        self.output_switch.out()
       
-    def processs(self): 
-        self.gate_filter_in = self.start
+    def processs(self):
+        self.disabler_all()
+        self.main_input_line = None
         
-        
+        self.gate_filter_in = self.process_in
         self.gate_filter_out = pyo.Gate(self.gate_filter_in)
-        self.output_switch_gate = pyo.Selector([self.start, self.gate_filter_out], 1)
+        self.gate_filter_out.stop()
+        self.output_switch_gate = pyo.Selector([self.process_in, self.gate_filter_out], 0)
+        self.main_input_line = self.output_switch_gate
 
-
-        self.panning_in = self.output_switch_gate
+        self.panning_in = self.main_input_line
         self.pan_out_bin = pyo.Binaural(self.panning_in)
         self.pan_out_simp = pyo.Pan(self.panning_in)
+        self.pan_out_bin.stop()
+        self.pan_out_simp.stop()
         self.output_switch_pan = pyo.Selector([self.pan_out_simp, self.pan_out_bin], 0)
-        self.panner_bypass = pyo.Selector([self.start, self.output_switch_gate, self.output_switch_pan], 3)
+        self.panner_bypass = pyo.Selector([self.main_input_line, self.output_switch_pan], 0)
+        self.main_input_line = self.panner_bypass
         
-        #MAIN INPUT LINEE
-        #self.com_ex_in = self.panner_bypass
-        #self.com_ex_en_dis(True, "comp")
+        self.eui_inp = self.main_input_line
+        self.eq_out = self.parametric_eq(self.eui_inp)
+        self.eq_stop()
+        self.output_switch_eq = pyo.Selector([self.main_input_line, self.eq_out], 0)
+        self.main_input_line = self.output_switch_eq
 
-        #self.clip_in = self.com_ex_out
-        #self.clip_en_dis(True)
-
-        #self.chor_in = self.clip_out
-        #self.chrous_en_dis(True)
-
-        #self.free_in = self.chor_out
-        #self.freeverb_en_dis(True)        
-
-        #self.eui_inp = self.free_out
-        #self.eq_en_dis(True)
+        self.com_ex_in = self.main_input_line
+        self.compress_f = pyo.Compress(self.com_ex_in)
+        self.expand_f = pyo.Expand(self.com_ex_in)
+        self.compress_f.stop()
+        self.expand_f.stop()
+        self.output_switch_comex = pyo.Selector([self.compress_f, self.expand_f], 0)
+        self.comex_bypass = pyo.Selector([self.main_input_line, self.output_switch_comex], 0)
+        self.main_input_line = self.comex_bypass
         
-        self.process_out = self.panner_bypass
-        self.peak_amp = pyo.PeakAmp(self.process_out, function = self.master_peak_plotter)
+        self.clip_in = self.main_input_line
+        self.clip_fil_out = pyo.Clip(self.clip_in)
+        self.clip_fil_out.stop()
+        self.output_switch_clip = pyo.Selector([self.main_input_line, self.clip_fil_out], 0)
+        self.main_input_line = self.output_switch_clip
+        
+
+        self.chor_in = self.main_input_line
+        self.chor_fil_out = pyo.Chorus(self.chor_in)
+        self.chor_fil_out.stop()
+        self.output_switch_chor = pyo.Selector([self.main_input_line, self.chor_fil_out], 0)
+        self.main_input_line = self.output_switch_chor
+        
+        
+        self.free_in  = self.main_input_line
+        self.free_fil_out = pyo.Freeverb(self.free_in )
+        self.free_fil_out.stop()
+        self.output_switch_free = pyo.Selector([self.main_input_line, self.free_fil_out], 0)
+        self.main_input_line = self.output_switch_free
+        
+        self.process_out = self.main_input_line
 
  
     def gate_en_dis(self, val):
@@ -518,10 +640,17 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
             self.elev_dial3_2.setEnabled(False)
             self.elev_span_d_2.setEnabled(False)  
     
+    def eq_en_dis(self, val):
+        self.enable_eq = val
+        if self.enable_eq:
+            self.eq_bar_frame.setEnabled(True)
+            self.eq_graphic_view.setEnabled(True)
+        else:
+            self.eq_bar_frame.setEnabled(False)
+            self.eq_graphic_view.setEnabled(False)    
     
     def com_ex_en_dis(self, val, pan):
         if val == True and pan == 'comp':
-            
             self.comp_amp.setEnabled(True)
             self.comp_fa.setEnabled(True)
             self.comp_kn.setEnabled(True)
@@ -529,7 +658,6 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
             self.comp_rat.setEnabled(True)
             self.comp_rise.setEnabled(True)
             self.comp_tres.setEnabled(True)
-            
             self.exp_amp.setEnabled(False)
             self.exp_dt.setEnabled(False)
             self.exp_la.setEnabled(False)
@@ -537,28 +665,7 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
             self.exp_rat.setEnabled(False)
             self.exp_ut.setEnabled(False)
             self.exp_fall.setEnabled(False)
-            
-            self.com_ex_out = pyo.Compress(self.com_ex_in)
-        
         if val == False and pan == 'comp':
-            try:
-                self.com_ex_out.stop()
-                
-                self.comp_amp.setEnabled(False)
-                self.comp_fa.setEnabled(False)
-                self.comp_kn.setEnabled(False)
-                self.comp_la.setEnabled(False)
-                self.comp_rat.setEnabled(False)
-                self.comp_rise.setEnabled(False)
-                self.comp_tres.setEnabled(False)
-
-            except:
-                pass         
-            self.com_ex_out = self.com_ex_in
-            
-        if val == True and pan == 'expd':          
-            self.com_ex_out = pyo.Expand(self.com_ex_in)
-            
             self.comp_amp.setEnabled(False)
             self.comp_fa.setEnabled(False)
             self.comp_kn.setEnabled(False)
@@ -566,110 +673,90 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
             self.comp_rat.setEnabled(False)
             self.comp_rise.setEnabled(False)
             self.comp_tres.setEnabled(False)
-            
+        if val == True and pan == 'expd':          
+            self.comp_amp.setEnabled(False)
+            self.comp_fa.setEnabled(False)
+            self.comp_kn.setEnabled(False)
+            self.comp_la.setEnabled(False)
+            self.comp_rat.setEnabled(False)
+            self.comp_rise.setEnabled(False)
+            self.comp_tres.setEnabled(False)
             self.exp_amp.setEnabled(True)
             self.exp_dt.setEnabled(True)
             self.exp_la.setEnabled(True)
             self.exp_ra.setEnabled(True)
             self.exp_rat.setEnabled(True)
             self.exp_ut.setEnabled(True)
-            self.exp_fall.setEnabled(True)
-            
+            self.exp_fall.setEnabled(True)  
         if val == False and pan == 'expd':
-            try:
-                self.com_ex_out.stop()
-                self.exp_amp.setEnabled(False)
-                self.exp_dt.setEnabled(False)
-                self.exp_la.setEnabled(False)
-                self.exp_ra.setEnabled(False)
-                self.exp_rat.setEnabled(False)
-                self.exp_ut.setEnabled(False)
-                self.exp_fall.setEnabled(False)
-                
-            except:
-                pass       
-            self.com_ex_out = self.com_ex_in
-            
+            self.exp_amp.setEnabled(False)
+            self.exp_dt.setEnabled(False)
+            self.exp_la.setEnabled(False)
+            self.exp_ra.setEnabled(False)
+            self.exp_rat.setEnabled(False)
+            self.exp_ut.setEnabled(False)
+            self.exp_fall.setEnabled(False)
     def clip_en_dis(self, val):
         self.enable_clip = val
         if self.enable_clip:
-            self.clip_out = pyo.Clip(self.clip_in)
             self.clip_amp.setEnabled(True)
             self.clip_max.setEnabled(True)
             self.clip_min.setEnabled(True)
         else:
-            try:
-                self.clip_out.stop()
-                self.clip_amp.setEnabled(False)
-                self.clip_max.setEnabled(False)
-                self.clip_min.setEnabled(False)                
-            except:
-                pass
-            self.clip_out = self.clip_in
+            self.clip_amp.setEnabled(False)
+            self.clip_max.setEnabled(False)
+            self.clip_min.setEnabled(False)                
     
     def chrous_en_dis(self, val):
         self.enable_chrous = val
         if self.enable_chrous:
-            self.chor_out = pyo.Chorus(self.chor_in)
             self.chor_d.setEnabled(True)
             self.chor_b.setEnabled(True)
             self.chor_f.setEnabled(True)
             self.chor_amp.setEnabled(True)
         else:
-            try:
-                self.chor_out.stop()
-                self.chor_d.setEnabled(False)
-                self.chor_b.setEnabled(False)
-                self.chor_f.setEnabled(False)
-                self.chor_amp.setEnabled(False)                
-            except:
-                pass
-            self.chor_out = self.chor_in
-
+            self.chor_d.setEnabled(False)
+            self.chor_b.setEnabled(False)
+            self.chor_f.setEnabled(False)
+            self.chor_amp.setEnabled(False)                
     def freeverb_en_dis(self, val):
         self.enable_free = val
         if self.enable_free:
-            self.free_out = pyo.Freeverb(self.free_in)
             self.free_a.setEnabled(True)
             self.free_s.setEnabled(True)
             self.free_d.setEnabled(True)
             self.free_b.setEnabled(True)
         else:
-            try:
-                self.free_out.stop()
-                self.free_a.setEnabled(False)
-                self.free_s.setEnabled(False)
-                self.free_d.setEnabled(False)
-                self.free_b.setEnabled(False)
-            except:
-                pass
-            self.free_out = self.free_in
-        
+            self.free_a.setEnabled(False)
+            self.free_s.setEnabled(False)
+            self.free_d.setEnabled(False)
+            self.free_b.setEnabled(False)  
     
-    def eq_en_dis(self, val):
-        self.enable_eq = val
-        if self.enable_eq:
-            self.eq_bar_frame.setEnabled(True)
-            self.eq_graphic_view.setEnabled(True)
-            self.eq_out = self.parametric_eq(self.eui_inp)
-        else:
-            try:
-                self.eq_bar_frame.setEnabled(False)
-                self.eq_graphic_view.setEnabled(False)
-                self.eq_out.stop()
-            except:
-                pass
+
 
 
 ################################################################################
 ################################################################################   
 
     def panner_bypass_call(self): 
-        if self.Gate_dis.isChecked() and (self.span_dis.isChecked() or self.binaurp_dis_3.isChecked()):
+        if (self.span_dis.isChecked() or self.binaurp_dis_3.isChecked()):
             self.panner_bypass.setVoice(0)
-        if not(self.Gate_dis.isChecked()) and (self.span_dis.isChecked() or self.binaurp_dis_3.isChecked()):
-            self.panner_bypass.setVoice(1)  
-
+    
+    def disabler_all(self):
+        self.gate_en_dis(False)
+        self.panner_en_dis(False, 'simp')
+        self.panner_en_dis(False, 'binaur')
+        self.eq_en_dis(False)
+        self.com_ex_en_dis(False, 'comp')
+        self.com_ex_en_dis(False, 'expd')
+        self.clip_en_dis(False)
+        self.chrous_en_dis(False)
+        self.freeverb_en_dis(False)                
+    
+    def comex_bypass_call(self): 
+        if (self.Compress_dis.isChecked() or self.Expand_dis.isChecked()):
+            self.comex_bypass.setVoice(0)
+            
 ################################################################################
 ################################################################################ 
 
