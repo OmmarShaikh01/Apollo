@@ -2,31 +2,26 @@
   "music_files": [
     {
       "E:/musiccc": [
-        "Dj SnakeMiddle feat. Bipolar Sunshine.mp3",
-        "DNCE FT NICKI MINAJKissing Strange.mp3",
-        "Don DiabloSave A Little Love.mp3",
-        "Don DiabloTake Her Place Feat A R I Z O N A Don Diablo S Vip Mix  zippya.mp3",
-        "Dotcom x SAYMYNAMEPythonYouTube.mp3",
-        "Dr.Dre feat Snoop DoggDr.Dre Feat Snoop Dog - (Still D.R.E) (94).mp3",
-        "DropgunLittle Drop (Original Mix).mp3",
-        "Durga.mp3",
-        "EH!DECaptain Jack Sparrow.mp3",
-        "EminemNot Afraid [thezippyaudio3.com].mp3",
-        "Enslaved.mp3",
-        "Eptic_-_The_End_(Lowkey_Remix)_[FREE_DOWNLOAD].mp3",
-        "EurythmicsSweet Dreams Are Made Of This [thezippyaudio3.com].mp3",
-        "F4BLE x NAEMS - Damaskus  (Extended Mix).mp3",
-        "Face Out.mp3",
-        "Fall Out BoysImmortals.mp3",
-        "FindlayOff & On (PES 2018 OST).mp3",
-        "Firebeatz & KSHMR feat. Luciana vs. BlasterjaxxNo Heroes (DELIRRION Mash-up).mp3",
-        "Florian PicassoFinal Call (Orignal Mix).mp3",
-        "Flux PavilionEmotional (feat. Matthew Koma).mp3"
-      ]
-    },
-    {
-      "E:/musiccc\\c": [
-        "Don DiabloTake Her Place Feat A R I Z O N A Don Diablo S Vip Mix  zippya.mp3"
+        "01 Back 2 U (Steve Aoki & Bad Royale Remix).flac",
+        "01 Empire (Original Mix).flac",
+        "01 Internet Friends.flac",
+        "01 Jumpstarter (Original Mix).flac",
+        "01 Kingdom (Original Mix).flac",
+        "01 Mimi.flac",
+        "01 Moscow (Original Mix).flac",
+        "01 Olympus (Original Mix).flac",
+        "01 Power Glove.flac",
+        "01 Rage Valley.flac",
+        "01 Reconnect.flac",
+        "01 Rough (Extended Mix).flac",
+        "01 Sanctify.flac",
+        "01 Scream (Original Mix).flac",
+        "01 This Is Dirty (Original Mix).flac",
+        "01 To The Beat (feat. Hawkboy) (Original Mix).flac",
+        "01 VEGAS (Extended Mix).flac",
+        "01 Zantar (Original Mix).flac",
+        "1-01  The Fall (Original Mix).flac",
+        "1-01 Coming Home (Seven Lions & Ricky Mears Festival Radio Mix).flac"
       ]
     }
   ]

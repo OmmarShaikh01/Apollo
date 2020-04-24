@@ -1,10 +1,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pyo
+import audioread
 import dsp_player_ui
 import subprocess as sp
 import pyqtgraph as pg
 import numpy as np
-import time
+import time, json, random
     
 class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
 
@@ -15,18 +16,30 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.server_booted()
         self.variable_dec()
         
+    
     def variable_dec(self):
         self.equilizer = {}
         self.allPreset = {}
-        
+        self.src_input_fader_fade = 0 # seconds
+        self.playlist_builder()
+
+################################################################################
+#########################  button_action_decl  ################################# 
+################################################################################     
     def button_action_decl(self): 
-        self.server_on_toolB.pressed.connect(self.server_on)
-        self.server_off_toolB.pressed.connect(self.server_off)    
-        self.amp_dial.valueChanged.connect(lambda : (self.audio_server.setAmp(self.amp_dial.value() / 100)))
-        
-        self.add_all.pressed.connect(lambda:(self.add_preset_all(self.all_combo_pre.text())))
-        self.add_eq.pressed.connect(lambda:(self.add_preset_eq(self.eq_combo_pre.text())))
-        
+        self.gate_btns_dec()    
+        self.span_btns_dec()    
+        self.binpan_btns_dec()    
+        self.comp_btns_dec()
+        self.expand_btns_dec()    
+        self.clip_btns_dec()    
+        self.chrous_btns_dec()    
+        self.free_btns_dec()    
+        self.equi_btns_dec()
+        self.misc_btns_dec()
+            
+    
+    def gate_btns_dec(self):    
         # Gate
         self.gate_amp.valueChanged.connect(lambda : (self.gate_filter_out.setMul(self.gate_amp.value() / 100)))
         self.gate_tresh.valueChanged.connect(lambda : (self.gate_filter_out.setThresh(self.gate_tresh.value() / 10)))
@@ -36,7 +49,9 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         
         self.Gate_en.pressed.connect(lambda: (self.gate_en_dis(True), self.gate_filter_out.play(), self.output_switch_gate.setVoice(1)))
         self.Gate_dis.pressed.connect(lambda: (self.gate_en_dis(False), self.gate_filter_out.stop(), self.output_switch_gate.setVoice(0)))
-        
+    
+    
+    def span_btns_dec(self):    
         # Simple panning
         self.span_en.pressed.connect(lambda:
                                      (self.binaurp_dis_3.setChecked(True),
@@ -50,7 +65,9 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
                                        self.panner_bypass_call())) # calls panning simple function with panning disabled        
         self.pan_sim_dial_2.valueChanged.connect(lambda: self.pan_out_simp.setPan(self.pan_sim_dial_2.value() / 100))# calls panning simple function to set panning
         self.pan_spread_dial.valueChanged.connect(lambda: self.pan_out_simp.setSpread(self.pan_spread_dial.value() / 100))# calls panning simple function to set spread  
-        
+    
+    
+    def binpan_btns_dec(self):    
         # binaura panning
         self.binaurp_en_3.pressed.connect(lambda:
                                           (self.span_dis.setChecked(True),
@@ -63,9 +80,10 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.azimuth_span_2.valueChanged.connect(lambda: self.pan_out_bin.setAzispan(self.azimuth_span_2.value() / 100)) # calls panning biaural function to set azimuth span
         self.elev_dial3_2.valueChanged.connect(lambda: self.pan_out_bin.setElevation(self.elev_dial3_2.value() / 100)) # calls panning biaural function to set elevation
         self.elev_span_d_2.valueChanged.connect(lambda: self.pan_out_bin.setElespan(self.elev_span_d_2.value() / 100)) # calls panning biaural function to set elevation span
-  
+   
+   
+    def comp_btns_dec(self):
         # Compressor
-        
         self.Compress_en.pressed.connect(lambda: (self.com_ex_en_dis(True, "comp"),
                                                   self.output_switch_comex.setVoice(0),
                                                   self.compress_f.play())) 
@@ -80,7 +98,9 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.comp_fa.valueChanged.connect(lambda : (self.compress_f.setFallTime(self.comp_fa.value() / 1000)))        
         self.comp_la.valueChanged.connect(lambda : (self.compress_f.setLookAhead(self.comp_la.value() / 10)))
         self.comp_kn.valueChanged.connect(lambda : (self.compress_f.setKnee(self.comp_kn.value() / 100)))
-
+    
+    
+    def expand_btns_dec(self):    
         # Expand
         self.Expand_en.pressed.connect(lambda: (self.com_ex_en_dis(True, "expd"),
                                                 self.output_switch_comex.setVoice(1),
@@ -96,7 +116,9 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.exp_rat.valueChanged.connect(lambda : (self.expand_f.setRatio(self.exp_rat.value() / 1000)))
         self.exp_ra.valueChanged.connect(lambda : (self.expand_f.setRiseTime(self.exp_ra.value() / 1000)))
         self.exp_fall.valueChanged.connect(lambda : (self.expand_f.setFallTime(self.exp_fall.value() / 1000)))     
-        
+    
+    
+    def clip_btns_dec(self):    
         # Clip
         self.clip_en.pressed.connect(lambda :
                                      (self.clip_en_dis(True),
@@ -109,7 +131,9 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.clip_amp.valueChanged.connect(lambda : (self.clip_fil_out.setMul(self.clip_amp.value()/100)))
         self.clip_max.valueChanged.connect(lambda : (self.clip_fil_out.setMax(self.clip_max.value()/100)))
         self.clip_min.valueChanged.connect(lambda : (self.clip_fil_out.setMin(self.clip_min.value()/100)))
-        
+    
+    
+    def chrous_btns_dec(self):    
         # Chrous
         self.Chrous_en.pressed.connect(lambda : (self.chrous_en_dis(True), 
                                                  self.chor_fil_out.play(), 
@@ -123,7 +147,9 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.chor_f.valueChanged.connect(lambda : (self.chor_fil_out.setFeedback(self.chor_f.value() / 100)))
         self.chor_d.valueChanged.connect(lambda : (self.chor_fil_out.setDepth(self.chor_d.value() / 100)))
         self.chor_b.valueChanged.connect(lambda : (self.chor_fil_out.setBal(self.chor_b.value() / 100)))              
-        
+    
+    
+    def free_btns_dec(self):    
         # Freeverb
         self.FreeVerb_en.pressed.connect(lambda : (self.freeverb_en_dis(True), 
                                                    self.free_fil_out.play(), 
@@ -135,16 +161,43 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.free_a.valueChanged.connect(lambda : (self.free_fil_out.setMul(self.free_a.value() / 100)))
         self.free_s.valueChanged.connect(lambda : (self.free_fil_out.setSize(self.free_s.value() / 100)))
         self.free_d.valueChanged.connect(lambda : (self.free_fil_out.setDamp(self.free_d.value() / 100)))
-        self.free_b.valueChanged.connect(lambda : (self.free_fil_out.setBal(self.free_b.value() / 100)))          
-
+        self.free_b.valueChanged.connect(lambda : (self.free_fil_out.setBal(self.free_b.value() / 100)))
+        
+        self.server_on_toolB.pressed.connect(self.server_on)
+        self.server_off_toolB.pressed.connect(self.server_off)    
+        self.amp_dial.valueChanged.connect(lambda : (self.audio_server.setAmp(self.amp_dial.value() / 100)))
+        
+        self.add_all.pressed.connect(lambda:(self.add_preset_all(self.all_combo_pre.text())))
+        self.add_eq.pressed.connect(lambda:(self.add_preset_eq(self.eq_combo_pre.text())))
+        
+        self.all_combo_pre.returnPressed.connect(lambda:(self.add_preset_all(self.all_combo_pre.text())))
+        self.eq_combo_pre.returnPressed.connect(lambda:(self.add_preset_eq(self.eq_combo_pre.text())))
+        
+        self.reset_eq.pressed.connect(lambda: self.set_preset_eq('reset'))
+        self.eq_combo.currentTextChanged.connect(lambda: self.set_preset_eq(self.eq_combo.currentText()))
+        
+        self.reset_all.pressed.connect(lambda: self.set_preset_all('reset'))
+        self.all_p_combo.currentTextChanged.connect(lambda: self.set_preset_all(self.all_p_combo.currentText()))        
+    
+    
+    def equi_btns_dec(self):
         # Equlizer
         self.EnableB.pressed.connect(lambda: (self.eq_en_dis(True), self.output_switch_eq.setVoice(0), self.eq_start())) # calls Eq player function with Eq enabled
         self.DisableB.pressed.connect(lambda: (self.eq_en_dis(False), self.output_switch_eq.setVoice(1), self.eq_stop())) # calls Eq player function with Eq disabled
           
+   
+   
+    def misc_btns_dec(self):
         # Misc
         self.process.clicked.connect(lambda:(self.output_switch.setVoice(1), self.process_out.play(), self.enable_all()))
         self.bypass.clicked.connect(lambda:(self.output_switch.setVoice(0), self.process_out.stop(),  self.disabler_all()))
         
+        self.toolb_play.clicked.connect(self.play_track)
+    
+################################################################################
+#########################  audio setup ######################################### 
+################################################################################ 
+
     def audio_setup(self):
         audio_setup = {}
         audio_setup["PA-ver"] =pyo.pa_get_version()
@@ -196,6 +249,49 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
     def trial(self):
         print('trial')
     
+    def playlist_builder(self):
+        with open("C:\\Users\\OMMAR\\Desktop\\Apollo\\resources\\settings\\Music_library_data.txt") as json_file:
+            json_file = json.load(json_file)
+            random.shuffle(json_file)
+            self.played = []
+            self.queued = json_file
+        
+################################################################################
+########################  PlayBack functions  ##################################
+################################################################################
+    def play_track(self):
+        track = ((self.queued.pop())['file_path'])
+        print(self.queued)
+        self.played.append(track)
+        
+        self.audio_array = self.audioread_load(track)
+        self.osci = pyo.Osc(self.audio_array, self.audio_array.getRate())
+        self.osci.out()
+        self.src_input_fader.stop()
+        print('player')
+        
+    def pause_track(self):
+        pass
+    
+    def stop_track(self):
+        pass
+    
+    def next_track(self):
+        pass
+    
+    def prev_track(self):
+        pass
+    
+    def seekf_track(self):
+        pass
+    
+    def seekb_track(self):
+        pass    
+################################################################################
+################################################################################ 
+################################################################################     
+
+
 ################################################################################
 ########################  Equlizer functions  ##################################
 ################################################################################       
@@ -585,7 +681,6 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         
 ########################## Audio pipeline ######################################
 ################################################################################
-    
     def pre_plot_declaration(self):
         self.master_vu_meter_graph.plot()
         self.master_vu_meter_graph.setXRange(0, 2)
@@ -604,16 +699,33 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
   
     def audio_pipe_init(self):
         self.pre_plot_declaration()
-        self.in_table = pyo.SndTable("C:\\Users\\OMMAR\\Desktop\\dsp_player\\ui_forms\\01 Jumpstarter (Original Mix).flac")
-        self.src = pyo.Osc(self.in_table, self.in_table.getRate())
-        self.process_in = self.src
         
-        self.gate_filter_in = self.process_in # self.process_in
+        self.src_input_fader = pyo.InputFader(pyo.Sine(100))
+        self.process_in = self.src_input_fader
+        
+        # audio procerssing pipeline declaration
+        self.gate_filter_pipe()
+        self.panning_filter_pipe()
+        self.comex_filter_pipe()
+        self.clip_filter_pipe()
+        self.chrous_filter_pipe()
+        self.freeverb_filter_pipe()
+        self.eq_filter_pipe()
+        
+        # audio procerssing pipeline ended and output switch declaration
+        self.output_switch = pyo.Selector([self.src_input_fader, self.process_out], 0)
+        self.peak_amp = pyo.PeakAmp(self.output_switch, function = self.master_peak_plotter)
+        self.output_switch.out()
+        self.disabler_all()
+
+    def gate_filter_pipe(self): 
+        self.gate_filter_in = self.process_in
         self.gate_filter_out = pyo.Gate(self.gate_filter_in)
         self.gate_filter_out.stop()
         self.output_switch_gate = pyo.Selector([self.process_in, self.gate_filter_out], 0)
         self.filter_input_line = self.output_switch_gate
-
+    
+    def panning_filter_pipe(self):
         self.panning_in = self.filter_input_line
         self.pan_out_bin = pyo.Binaural(self.panning_in)
         self.pan_out_simp = pyo.Pan(self.panning_in)
@@ -622,7 +734,8 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.output_switch_pan = pyo.Selector([self.pan_out_simp, self.pan_out_bin], 0)
         self.panner_bypass = pyo.Selector([self.filter_input_line, self.output_switch_pan], 0)
         self.filter_input_line = self.panner_bypass
-        
+    
+    def comex_filter_pipe(self):
         self.com_ex_in = self.filter_input_line
         self.compress_f = pyo.Compress(self.com_ex_in)
         self.expand_f = pyo.Expand(self.com_ex_in)
@@ -631,39 +744,37 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.output_switch_comex = pyo.Selector([self.compress_f, self.expand_f], 0)
         self.comex_bypass = pyo.Selector([self.filter_input_line, self.output_switch_comex], 0)
         self.filter_input_line = self.comex_bypass
-        
+    
+    def clip_filter_pipe(self):
         self.clip_in = self.filter_input_line
         self.clip_fil_out = pyo.Clip(self.clip_in)
         self.clip_fil_out.stop()
         self.output_switch_clip = pyo.Selector([self.filter_input_line, self.clip_fil_out], 0)
         self.filter_input_line = self.output_switch_clip
-        
+    
+    def chrous_filter_pipe(self):
         self.chor_in = self.filter_input_line
         self.chor_fil_out = pyo.Chorus(self.chor_in)
         self.chor_fil_out.stop()
         self.output_switch_chor = pyo.Selector([self.filter_input_line, self.chor_fil_out], 0)
         self.filter_input_line = self.output_switch_chor
-        
+    
+    def freeverb_filter_pipe(self):
         self.free_in  = self.filter_input_line
         self.free_fil_out = pyo.Freeverb(self.free_in )
         self.free_fil_out.stop()
         self.output_switch_free = pyo.Selector([self.filter_input_line, self.free_fil_out], 0)
         self.filter_input_line = self.output_switch_free
-        
-        self.eq_in = self.parametric_eq(self.src)
+    
+    def eq_filter_pipe(self):
+        self.eq_in = self.parametric_eq(self.src_input_fader)
         self.eq_stop()
-        self.eq_bypass = pyo.Selector([self.eq_in, self.src], 0)
+        self.eq_bypass = pyo.Selector([self.eq_in, self.src_input_fader], 0)
         self.output_switch_eq = pyo.Selector([self.eq_bypass, self.filter_input_line], 1)
         self.process_out = self.output_switch_eq
-
-        self.output_switch = pyo.Selector([self.src, self.process_out], 0)
-        self.peak_amp = pyo.PeakAmp(self.output_switch, function = self.master_peak_plotter)
-        self.output_switch.out()
-        self.disabler_all()
-
-    def processs(self):
-        self.main_input_line = None
-
+        
+################################# Buttons_enable disable #######################  
+################################################################################
     def gate_en_dis(self, val):
         self.enable_gate = val
         if self.enable_gate:
@@ -745,25 +856,25 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
                 self.frame_chrous.setEnabled(True)
                 self.frame_free.setEnabled(True)                
                 
-                [self.Compress_dis.click()  for i in '1' if (bool(self.state[0] ))]
-                [self.Gate_dis.click()   for i in '1' if (bool(self.state[1] ))]
-                [self.span_dis.click()   for i in '1' if (bool(self.state[2] ))]
-                [self.binaurp_dis_3.click()   for i in '1' if (bool(self.state[3] ))]
-                [self.Compress_dis.click()   for i in '1' if (bool(self.state[4] ))]
-                [self.Expand_dis.click()   for i in '1' if (bool(self.state[5] ))]
-                [self.clip_dis.click()   for i in '1' if (bool(self.state[6] ))]
-                [self.Chrous_dis.click()   for i in '1' if (bool(self.state[7] ))]
-                [self.FreeVerb_dis.click()   for i in '1' if (bool(self.state[8] ))]
-                
-                [self.Compress_en.click()   for i in '1' if (not(bool(self.state[0] )))]
-                [self.Gate_en.click()   for i in '1' if (not(bool(self.state[1] )))]
-                [self.span_en.click()   for i in '1' if (not(bool(self.state[2] )))]
-                [self.binaurp_en_3.click()   for i in '1' if (not(bool(self.state[3] )))]
-                [self.Compress_en.click()   for i in '1' if (not(bool(self.state[4] )))]
-                [self.Expand_en.click()   for i in '1' if (not(bool(self.state[5] )))]
-                [self.clip_en.click()   for i in '1' if (not(bool(self.state[6] )))]
-                [self.Chrous_en.click()   for i in '1' if (not(bool(self.state[7] )))]
-                [self.FreeVerb_en.click()   for i in '1' if (not(bool(self.state[8] )))]
+                if (bool(self.state[0] )) : self.Compress_dis.click() 
+                if (bool(self.state[1] )) : self.Gate_dis.click() 
+                if (bool(self.state[2] )) : self.span_dis.click() 
+                if (bool(self.state[3] )) : self.binaurp_dis_3.click() 
+                if (bool(self.state[4] )) : self.Compress_dis.click() 
+                if (bool(self.state[5] )) : self.Expand_dis.click() 
+                if (bool(self.state[6] )) : self.clip_dis.click() 
+                if (bool(self.state[7] )) : self.Chrous_dis.click() 
+                if (bool(self.state[8] )) : self.FreeVerb_dis.click() 
+               
+                if (not(bool(self.state[0] ))) : self.Compress_en.click() 
+                if (not(bool(self.state[1] ))) : self.Gate_en.click() 
+                if (not(bool(self.state[2] ))) : self.span_en.click() 
+                if (not(bool(self.state[3] ))) : self.binaurp_en_3.click() 
+                if (not(bool(self.state[4] ))) : self.Compress_en.click() 
+                if (not(bool(self.state[5] ))) : self.Expand_en.click() 
+                if (not(bool(self.state[6] ))) : self.clip_en.click() 
+                if (not(bool(self.state[7] ))) : self.Chrous_en.click() 
+                if (not(bool(self.state[8] ))) : self.FreeVerb_en.click() 
             except:
                 pass
                 
@@ -850,13 +961,15 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
             self.free_d.setEnabled(False)
             self.free_b.setEnabled(False)  
     
-
-
-
+    
 ################################################################################
-################################# Misc Functions ##############################   
+################################# Misc Functions ###############################  
 ################################################################################
-   
+    def audioread_load(self, path, chnl=2, duration = None, offset = 0):
+        array = pyo.SndTable(path, chnl)
+        return array
+    
+    
     def panner_bypass_call(self): 
         if (self.span_dis.isChecked() or self.binaurp_dis_3.isChecked()):
             self.panner_bypass.setVoice(0)
@@ -881,6 +994,7 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.frame_chrous.setEnabled(False)
         self.frame_free.setEnabled(False)
         self.eq_grid_frame.setEnabled(False)
+        self.frame_all_pre.setEnabled(False)
 
     def enable_all(self):
         self.frame_gate.setEnabled(True)
@@ -892,27 +1006,28 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.frame_chrous.setEnabled(True)
         self.frame_free.setEnabled(True)
         self.eq_grid_frame.setEnabled(True)
-        
-        [self.Gate_en.click()  for i in '1' if (bool(self.state_all[0]))]
-        [self.span_en.click() for i in '1' if (bool(self.state_all[1]))]
-        [self.binaurp_en_3.click()  for i in '1' if (bool(self.state_all[2]))]
-        [self.Compress_en.click() for i in '1' if (bool(self.state_all[3]))]
-        [self.Expand_en.click() for i in '1' if (bool(self.state_all[4]))]
-        [self.clip_en.click() for i in '1' if (bool(self.state_all[5]))]
-        [self.Chrous_en.click()  for i in '1' if (bool(self.state_all[6]))]
-        [self.FreeVerb_en.click() for i in '1' if (bool(self.state_all[7]))]
-        
-        [self.Gate_dis.click()  for i in '1' if not(bool(self.state_all[0]))]
-        [self.span_dis.click() for i in '1' if not(bool(self.state_all[1]))]
-        [self.binaurp_dis_3.click()  for i in '1' if not(bool(self.state_all[2]))]
-        [self.Compress_dis.click() for i in '1' if not(bool(self.state_all[3]))]
-        [self.Expand_dis.click() for i in '1' if not(bool(self.state_all[4]))]
-        [self.clip_dis.click() for i in '1' if not(bool(self.state_all[5]))]
-        [self.Chrous_dis.click()  for i in '1' if not(bool(self.state_all[6]))]
-        [self.FreeVerb_dis.click() for i in '1' if not(bool(self.state_all[7]))]
+        self.frame_all_pre.setEnabled(True)
+       
+        if (bool(self.state_all[0])):self.Gate_en.click()  
+        if (bool(self.state_all[1])):self.span_en.click() 
+        if (bool(self.state_all[2])):self.binaurp_en_3.click()  
+        if (bool(self.state_all[3])):self.Compress_en.click() 
+        if (bool(self.state_all[4])):self.Expand_en.click() 
+        if (bool(self.state_all[5])):self.clip_en.click() 
+        if (bool(self.state_all[6])):self.Chrous_en.click()  
+        if (bool(self.state_all[7])):self.FreeVerb_en.click() 
+       
+        if not(bool(self.state_all[0])):self.Gate_dis.click()  
+        if not(bool(self.state_all[1])):self.span_dis.click() 
+        if not(bool(self.state_all[2])):self.binaurp_dis_3.click()  
+        if not(bool(self.state_all[3])):self.Compress_dis.click() 
+        if not(bool(self.state_all[4])):self.Expand_dis.click() 
+        if not(bool(self.state_all[5])):self.clip_dis.click() 
+        if not(bool(self.state_all[6])):self.Chrous_dis.click()  
+        if not(bool(self.state_all[7])):self.FreeVerb_dis.click() 
 
-        [self.DisableB.click() for i in '1' if not(bool(self.state_all[8]))]
-        [self.EnableB.click() for i in '1' if (bool(self.state_all[8]))]
+        if not(bool(self.state_all[8])):self.DisableB.click() 
+        if (bool(self.state_all[8])):self.EnableB.click() 
 
     def comex_bypass_call(self): 
         if (self.Compress_dis.isChecked() or self.Expand_dis.isChecked()):
@@ -920,8 +1035,6 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
     
     def add_preset_all(self, name):
         if name != '':
-                
-            self.add_preset_eq(self.eq_combo.currentText())
             self.allPreset[name] = {"gate": [self.Gate_en.isChecked(),
                                              self.Gate_dis.isChecked(),
                                              self.gate_amp.value(),
@@ -980,16 +1093,12 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
                                                  self.free_a.value(),
                                                  self.free_s.value(),
                                                  self.free_d.value(),
-                                                 self.free_b.value()],
-                            
-                                    'equilizer': [self.EnableB.isChecked(),
-                                                  self.DisableB.isChecked(),
-                                                  {self.eq_combo.currentText(): self.equilizer[self.eq_combo.currentText()]}]}
-            for i in range(self.eq_combo.count()):
-                if self.eq_combo.itemText(i) != name:
-                    self.eq_combo.addItem(name)
-            self.all_combo_pre.clear()
+                                                 self.free_b.value()]}
             
+            if name not in [self.all_p_combo.itemText(i) for i in range(self.all_p_combo.count())]:
+                self.all_p_combo.addItem(name)
+            self.all_combo_pre.clear()
+            print(json.dumps(self.allPreset, indent = 2))
     def add_preset_eq(self, name):
         if name != '':
             self.equilizer[name] = {"slider_values_eq" : [self.eq_sld.value(), 
@@ -1091,194 +1200,267 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
                                                   self.filter_type_s_30.value(),
                                                   self.filter_type_s_31.value(),
                                                   self.filter_type_s_32.value(),
-                                                  self.filter_type_s_33.value()]}
+                                                  self.filter_type_s_33.value()], 
+                              "butn_values_eq": [self.EnableB.isChecked(), self.DisableB.isChecked()]}
         
             self.eq_combo_pre.clear()
             for i in range(self.all_p_combo.count()):
                 if self.all_p_combo.itemText(i) != name:
                     self.all_p_combo.addItem(name)
+            print(self.equilizer)
     
-    def set_preset_all(self):
-        self.set_preset_eq('')
+    def set_preset_all(self, val):
         
-        self.gate_amp.setValue()
-        self.gate_fall.setValue()
-        self.gate_la.setValue()
-        self.gate_tresh.setValue()
-        self.gate_rise.setValue()            
-        
-        self.pan_sim_dial_2.setValue()
-        self.pan_spread_dial.setValue()
-        
-        self.azimuth_dial_5.setValue()
-        self.azimuth_span_2.setValue()
-        self.elev_dial3_2.setValue()
-        self.elev_span_d_2.setValue()  
-        
-        self.frame_gate.setValue()
-        self.frame_span.setValue()
-        self.frame_binaur.setValue()
-        self.frame_comp.setValue()
-        self.frame_expa.setValue()
-        self.frame_clip.setValue()
-        self.frame_chrous.setValue()
-        self.frame_free.setValue()
-        
-        self.comp_amp.setValue()
-        self.comp_fa.setValue()
-        self.comp_kn.setValue()
-        self.comp_la.setValue()
-        self.comp_rat.setValue()
-        self.comp_rise.setValue()
-        self.comp_tres.setValue()
-        
-        self.exp_amp.setValue()
-        self.exp_dt.setValue()
-        self.exp_la.setValue()
-        self.exp_ra.setValue()
-        self.exp_rat.setValue()
-        self.exp_ut.setValue()
-        self.exp_fall.setValue()  
-        
-        self.clip_amp.setValue()
-        self.clip_max.setValue()
-        self.clip_min.setValue()
-        
-        self.chor_d.setValue()
-        self.chor_b.setValue()
-        self.chor_f.setValue()
-        self.chor_amp.setValue()
-        
-        self.free_a.setValue()
-        self.free_s.setValue()
-        self.free_d.setValue()
-        self.free_b.setValue()
+        if val == 'reset' :
+            currentval_all = {"gate": [False,
+                                             True,
+                                             100,
+                                             0,
+                                             0,
+                                             0,
+                                             0
+                                           ],
+                                    "span": [
+                                      False,
+                                      True,
+                                      50,
+                                      0
+                                    ],
+                                    "binaur": [
+                                      False,
+                                      True,
+                                      50,
+                                      0,
+                                      50,
+                                      0
+                                    ],
+                                    "compress": [
+                                      False,
+                                      True,
+                                      100,
+                                      0,
+                                      0,
+                                      0,
+                                      0,
+                                      0,
+                                      -30
+                                    ],
+                                    "expand": [
+                                      False,
+                                      True,
+                                      100,
+                                      -30,
+                                      0,
+                                      0,
+                                      0,
+                                      -30,
+                                      0
+                                    ],
+                                    "clip": [
+                                      False,
+                                      True,
+                                      100,
+                                      0,
+                                      0
+                                    ],
+                                    "chrous": [
+                                      False,
+                                      True,
+                                      500,
+                                      0,
+                                      0,
+                                      100
+                                    ],
+                                    "freeverb": [
+                                      False,
+                                      True,
+                                      100,
+                                      0,
+                                      0,
+                                      0
+                                    ]
+                                  }
+        if val != 'reset':
+            currentval_all = self.allPreset[val]
 
-        self.Gate_dis.setValue()
-        self.span_dis.setValue()
-        self.binaurp_dis_3.setValue()
-        self.Compress_dis.setValue()
-        self.Expand_dis.setValue()
-        self.clip_dis.setValue()
-        self.Chrous_dis.setValue()
-        self.FreeVerb_dis.setValue()       
+        if currentval_all["gate"][0]: self.Gate_en.click()
+        if currentval_all["gate"][1]: self.Gate_dis.click()        
+        self.gate_amp.setValue(currentval_all["gate"][2])
+        self.gate_fall.setValue(currentval_all["gate"][3])
+        self.gate_la.setValue(currentval_all["gate"][4])
+        self.gate_tresh.setValue(currentval_all["gate"][5]) 
+        self.gate_rise.setValue(currentval_all["gate"][6])
+           
+        if currentval_all["span"][0]: self.span_en.click()
+        if currentval_all["span"][1]: self.span_dis.click()
+        self.pan_sim_dial_2.setValue(currentval_all["span"][2])
+        self.pan_spread_dial.setValue(currentval_all["span"][3])
         
+        if currentval_all["binaur"][0]: self.binaurp_en_3.click()
+        if currentval_all["binaur"][1]: self.binaurp_dis_3.click()
+        self.azimuth_dial_5.setValue(currentval_all["binaur"][2])
+        self.azimuth_span_2.setValue(currentval_all["binaur"][3])
+        self.elev_dial3_2.setValue(currentval_all["binaur"][4])
+        self.elev_span_d_2.setValue(currentval_all["binaur"][5])    
+        
+        if currentval_all["compress"][0]: self.Compress_en.click()
+        if currentval_all["compress"][1]: self.Compress_dis.click()
+        self.comp_amp.setValue(currentval_all["compress"][2])
+        self.comp_fa.setValue(currentval_all["compress"][3])
+        self.comp_kn.setValue(currentval_all["compress"][4])
+        self.comp_la.setValue(currentval_all["compress"][5])
+        self.comp_rat.setValue(currentval_all["compress"][6])
+        self.comp_rise.setValue(currentval_all["compress"][7])
+        self.comp_tres.setValue(currentval_all["compress"][8])
+        
+        if currentval_all["expand"][0]: self.Expand_en.click()
+        if currentval_all["expand"][1]: self.Expand_dis.click()
+        self.exp_amp.setValue((currentval_all["expand"][2]))
+        self.exp_dt.setValue((currentval_all["expand"][3]))
+        self.exp_la.setValue((currentval_all["expand"][4]))
+        self.exp_ra.setValue((currentval_all["expand"][5]))
+        self.exp_rat.setValue((currentval_all["expand"][6]))
+        self.exp_ut.setValue((currentval_all["expand"][7]))
+        self.exp_fall.setValue((currentval_all["expand"][8]))  
+        
+        if currentval_all["clip"][0]: self.clip_en.click()  
+        if currentval_all["clip"][1]: self.clip_dis.click()
+        self.clip_amp.setValue(currentval_all["clip"] [2])
+        self.clip_max.setValue(currentval_all["clip"] [3])
+        self.clip_min.setValue(currentval_all["clip"] [4])
+        
+        if currentval_all["chrous"][0]: self.Chrous_en.click()
+        if currentval_all["chrous"][1]: self.Chrous_dis.click()
+        self.chor_d.setValue(currentval_all["chrous"][2])
+        self.chor_b.setValue(currentval_all["chrous"][3])
+        self.chor_f.setValue(currentval_all["chrous"][4])
+        self.chor_amp.setValue(currentval_all["chrous"][5])
+        
+        if currentval_all["freeverb"][0]: self.FreeVerb_en.click()
+        if currentval_all["freeverb"][1]: self.FreeVerb_dis.click() 
+        self.free_a.setValue(currentval_all["freeverb"][2])
+        self.free_s.setValue(currentval_all["freeverb"][3])
+        self.free_d.setValue(currentval_all["freeverb"][4])
+        self.free_b.setValue(currentval_all["freeverb"][5])
 
-        self.Gate_en.setValue()
-        self.span_en.setValue()
-        self.binaurp_en_3.setValue()
-        self.Compress_en.setValue()
-        self.Expand_en.setValue()
-        self.clip_en.setValue()
-        self.Chrous_en.setValue()
-        self.FreeVerb_en.setValue()
-        
-        self.EnableB.setValue()
-        self.DisableB.setValue()
-        
-        
-    
     def set_preset_eq(self, val):
-        self.eq_sld.setValue()
-        self.eq_sld_2.setValue()
-        self.eq_sld_3.setValue()
-        self.eq_sld_4.setValue()
-        self.eq_sld_5.setValue()
-        self.eq_sld_6.setValue()
-        self.eq_sld_7.setValue()
-        self.eq_sld_8.setValue()
-        self.eq_sld_9.setValue()
-        self.eq_sld_10.setValue()
-        self.eq_sld_11.setValue()
-        self.eq_sld_12.setValue()
-        self.eq_sld_13.setValue()
-        self.eq_sld_14.setValue()
-        self.eq_sld_15.setValue()
-        self.eq_sld_16.setValue()
-        self.eq_sld_17.setValue()
-        self.eq_sld_18.setValue()
-        self.eq_sld_19.setValue()
-        self.eq_sld_20.setValue()
-        self.eq_sld_21.setValue()
-        self.eq_sld_22.setValue()
-        self.eq_sld_23.setValue()
-        self.eq_sld_24.setValue()
-        self.eq_sld_25.setValue()
-        self.eq_sld_26.setValue()
-        self.eq_sld_27.setValue()
-        self.eq_sld_28.setValue()
-        self.eq_sld_29.setValue()
-        self.eq_sld_30.setValue()
-        self.eq_sld_31.setValue()
-        self.eq_sld_32.setValue()
+        slider = [self.eq_sld, 
+                  self.eq_sld_2,
+                  self.eq_sld_3,
+                  self.eq_sld_4,
+                  self.eq_sld_5,
+                  self.eq_sld_6,
+                  self.eq_sld_7,
+                  self.eq_sld_8,
+                  self.eq_sld_9,
+                  self.eq_sld_10,
+                  self.eq_sld_11,
+                  self.eq_sld_12,
+                  self.eq_sld_13,
+                  self.eq_sld_14,
+                  self.eq_sld_15,
+                  self.eq_sld_16,
+                  self.eq_sld_17,
+                  self.eq_sld_18,
+                  self.eq_sld_19,
+                  self.eq_sld_20,
+                  self.eq_sld_21,
+                  self.eq_sld_22,
+                  self.eq_sld_23,
+                  self.eq_sld_24,
+                  self.eq_sld_25,
+                  self.eq_sld_26,
+                  self.eq_sld_27,
+                  self.eq_sld_28,
+                  self.eq_sld_29,
+                  self.eq_sld_30,
+                  self.eq_sld_31,
+                  self.eq_sld_32]
+    
+    
+        dial = [self.dial,
+                self.dial_2,
+                self.dial_3,
+                self.dial_4,
+                self.dial_5,
+                self.dial_6,
+                self.dial_7,
+                self.dial_8,
+                self.dial_9,
+                self.dial_10,
+                self.dial_11,
+                self.dial_12,
+                self.dial_13,
+                self.dial_14,
+                self.dial_15,
+                self.dial_16,
+                self.dial_17,
+                self.dial_18,
+                self.dial_19,
+                self.dial_20,
+                self.dial_21,
+                self.dial_22,
+                self.dial_23,
+                self.dial_24,
+                self.dial_25,
+                self.dial_26,
+                self.dial_27,
+                self.dial_28,
+                self.dial_29,
+                self.dial_30,
+                self.dial_31,
+                self.dial_32] 
+    
+    
+        filters = [self.filter_type_s__2,
+                   self.filter_type_s__3,
+                   self.filter_type_s__4,
+                   self.filter_type_s__5,
+                   self.filter_type_s__6,
+                   self.filter_type_s__7,
+                   self.filter_type_s__8,
+                   self.filter_type_s__9,
+                   self.filter_type_s_10,
+                   self.filter_type_s_11,
+                   self.filter_type_s_12,
+                   self.filter_type_s_13,
+                   self.filter_type_s_14,
+                   self.filter_type_s_15,
+                   self.filter_type_s_16,
+                   self.filter_type_s_17,
+                   self.filter_type_s_18,
+                   self.filter_type_s_19,
+                   self.filter_type_s_20,
+                   self.filter_type_s_21,
+                   self.filter_type_s_22,
+                   self.filter_type_s_23,
+                   self.filter_type_s_24,
+                   self.filter_type_s_25,
+                   self.filter_type_s_26,
+                   self.filter_type_s_27,
+                   self.filter_type_s_28,
+                   self.filter_type_s_29,
+                   self.filter_type_s_30,
+                   self.filter_type_s_31,
+                   self.filter_type_s_32,
+                   self.filter_type_s_33]
+      
+        if val == "reset":
+            currentval = {'slider_values_eq': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                          'dial_values_eq': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                          'filter_values_eq': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                          'butn_values_eq': [True, False]}
+        if val != 'reset':
+            currentval = self.equilizer[val]
+            
+        for s, d, f, sv, dv, fv in zip(slider, dial, filters, currentval["slider_values_eq"], currentval["dial_values_eq"], currentval["filter_values_eq"]):
+            s.setValue(sv)
+            d.setValue(dv)
+            f.setValue(fv)
         
+        if currentval["butn_values_eq"][0]: (self.EnableB.click())
+        if currentval["butn_values_eq"][1]: (self.DisableB.click())
         
-        self.dial.setValue()
-        self.dial_2.setValue()
-        self.dial_3.setValue()
-        self.dial_4.setValue()
-        self.dial_5.setValue()
-        self.dial_6.setValue()
-        self.dial_7.setValue()
-        self.dial_8.setValue()
-        self.dial_9.setValue()
-        self.dial_10.setValue()
-        self.dial_11.setValue()
-        self.dial_12.setValue()
-        self.dial_13.setValue()
-        self.dial_14.setValue()
-        self.dial_15.setValue()
-        self.dial_16.setValue()
-        self.dial_17.setValue()
-        self.dial_18.setValue()
-        self.dial_19.setValue()
-        self.dial_20.setValue()
-        self.dial_21.setValue()
-        self.dial_22.setValue()
-        self.dial_23.setValue()
-        self.dial_24.setValue()
-        self.dial_25.setValue()
-        self.dial_26.setValue()
-        self.dial_27.setValue()
-        self.dial_28.setValue()
-        self.dial_29.setValue()
-        self.dial_30.setValue()
-        self.dial_31.setValue()
-        self.dial_32.setValue()
-        
-        
-        self.filter_type_s__2.setValue()
-        self.filter_type_s__3.setValue()
-        self.filter_type_s__4.setValue()
-        self.filter_type_s__5.setValue()
-        self.filter_type_s__6.setValue()
-        self.filter_type_s__7.setValue()
-        self.filter_type_s__8.setValue()
-        self.filter_type_s__9.setValue()
-        self.filter_type_s_10.setValue()
-        self.filter_type_s_11.setValue()
-        self.filter_type_s_12.setValue()
-        self.filter_type_s_13.setValue()
-        self.filter_type_s_14.setValue()
-        self.filter_type_s_15.setValue()
-        self.filter_type_s_16.setValue()
-        self.filter_type_s_17.setValue()
-        self.filter_type_s_18.setValue()
-        self.filter_type_s_19.setValue()
-        self.filter_type_s_20.setValue()
-        self.filter_type_s_21.setValue()
-        self.filter_type_s_22.setValue()
-        self.filter_type_s_23.setValue()
-        self.filter_type_s_24.setValue()
-        self.filter_type_s_25.setValue()
-        self.filter_type_s_26.setValue()
-        self.filter_type_s_27.setValue()
-        self.filter_type_s_28.setValue()
-        self.filter_type_s_29.setValue()
-        self.filter_type_s_30.setValue()
-        self.filter_type_s_31.setValue()
-        self.filter_type_s_32.setValue()
-        self.filter_type_s_33.setValue()
 
 ################################################################################
 ################################################################################ 

@@ -1,5 +1,10 @@
 # Apollo
 # Required Packages
-1.PyQt5
-2.yodel
-3.tinytag
+Pyqt5
+tinytag
+pyo
+audioread
+pyqtgraph
+
+# to run basic UI without DSP Player install these packages
+$ pip install Pyqt5 tinytag mutagen 
