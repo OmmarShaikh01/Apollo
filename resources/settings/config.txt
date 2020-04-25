@@ -1,7 +1,6 @@
 {
   "file_path": [
-    "E:/musiccc",
-    "E:/musiccc/c"
+    "C:/Users/OMMAR/Music/SONGS SORTED"
   ],
   "file_format_selected": {
     ".wav": 1,
@@ -14,13 +13,14 @@
     ".flac": 1
   },
   "column_displayed": {
-    "Abs Path": 0,
+    "Track#": 1,
+    "File Path": 1,
     "File Name": 1,
     "Filesize": 1,
     "Album": 1,
-    "Albumartist": 1,
+    "Album Artist": 1,
     "Artist": 1,
-    "Audio Offset": 0,
+    "Audio Offset": 1,
     "Bitrate": 1,
     "Channels": 1,
     "Composer": 1,
@@ -33,6 +33,8 @@
     "Track": 1,
     "Track Total": 1,
     "Year": 1,
+    "Ratings": 1,
+    "Date Added": 1,
     "Priority": 1
   }
 }

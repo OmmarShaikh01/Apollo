@@ -1,5 +1,9 @@
 # Apollo
 # Required Packages
-1.PyQt5
-2.yodel
-3.tinytag
+Pyqt5
+tinytag
+pyo
+audioread
+pyqtgraph
+
+$ pip install Pyqt5 tinytag pyo audioread pyqtgraph
