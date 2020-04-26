@@ -49,7 +49,7 @@ class settings_main_window(preferences_ui.Ui_preferences_window, QtWidgets.QMain
 ################################################################################
 
     def read_config(self, flag = ''):
-        with open(os.path.split(os.getcwd())[0]+'\\resources\\settings\\config.txt') as config:
+        with open('resources\settings\config.txt') as config:
             self.config_dict = json.load(config)
         self.general_tab_dict = {"application": {"startup_mode": 2, "bx1": 1, "bx2": 1, "bx3": 1, "bx4": 1},
                                 "file_types": {".aac": [1, 34],".aiff": [1, 34],".alac": [1, 34],".mp3": [1, 34],".ogg": [1, 34],".wma": [1, 34],".wav": [1, 34],".flac": [1, 34],},

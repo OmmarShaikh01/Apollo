@@ -6,12 +6,12 @@ import os
 import threading
 import tinytag
 import mutagen
+import random
 
 import file_explorer
 import preferences
 from main_window_ui import Ui_MainWindow
-from custom_qt_widgets import custom_playlist_display_widget
-
+from add_new_play_DB_ui import Ui_add_play_db
 
 class main_window_player(Ui_MainWindow, QtWidgets.QMainWindow):
 
@@ -19,13 +19,33 @@ class main_window_player(Ui_MainWindow, QtWidgets.QMainWindow):
         super(main_window_player, self).__init__()
         self.setupUi(self)
         (threading.Thread(target = self.populate_trees, args = ())).start()
+        self.variable_declaration()
         self.all_actions()
         self.button_actions()
+        self.layout_initilizer()
+    
+    def layout_initilizer(self):
+        [self.comboBox.addItem(keys) for (keys, val) in self.playlist_lut_main.items()]
+        
+    def variable_declaration(self):
+        self.Ui_add_play_obj = Ui_add_play_db()
+        self.FileBrowser_obj = file_explorer.FileBrowser()
+        self.settings_main_window_obj = preferences.settings_main_window()
+        self.playlist_lut = {}
+        self.playlist_lut_main = {'Default Playlist': {}}
     
     
     def all_actions(self):
-        self.actionAdd_Files_to_librayr.triggered.connect(self.file_exp)
-        self.actionSettings.triggered.connect(self.settings_caller)
+        self.actionAdd_Files_to_librayr.triggered.connect(lambda: self.FileBrowser_obj.show())
+        self.actionSettings.triggered.connect(lambda: self.settings_main_window_obj.show())
+        
+        self.FileBrowser_obj.buttonBox.accepted.connect(self.populate_trees)
+        
+        self.Ui_add_play_obj.lineEdit.returnPressed.connect(lambda: (self.add_new_playlist(self.Ui_add_play_obj.lineEdit.text())))
+        self.Ui_add_play_obj.buttonBox.accepted.connect(lambda: (self.add_new_playlist(self.Ui_add_play_obj.lineEdit.text())))
+        
+        self.comboBox.currentTextChanged.connect(lambda: (self.playlist_loader(self.comboBox.currentText())))
+        
         self.actionRescan.triggered.connect(self.populate_trees)
         self.toolButton.pressed.connect(self.search_library)
         self.lineEdit.textChanged.connect(self.search_library)
@@ -197,27 +217,12 @@ class main_window_player(Ui_MainWindow, QtWidgets.QMainWindow):
                 json.dump(data, json_file)
 
 
-    def wrapper_second_window(self, cls):# wraps and displays second window
-        self.ui = cls()
-        self.ui.show()
 
-
-    def file_exp(self):
-        """displays the file explorer"""
-        self.wrapper_second_window(file_explorer.FileBrowser)
-
-    
-    def settings_caller(self):
-        """displays the preferences"""
-        self.wrapper_second_window(preferences.settings_main_window)
-
-    
     def trial(self):
         print("trial")
 
 ############## Music Library Tab Functions #####################################
-################################################################################
-   
+################################################################################  
     
     def table_view_music_functions(self):
         # Atribute Declaration
@@ -332,9 +337,9 @@ class main_window_player(Ui_MainWindow, QtWidgets.QMainWindow):
         self.lv_1 = QtWidgets.QMenu()
         
         
-        (self.lv_1).addAction("PLay Now").triggered.connect(lambda: (self.playlist_gen('append')))
+        (self.lv_1).addAction("Play Now").triggered.connect(lambda: (self.playlist_gen('add')))
         (self.lv_1).addAction("Queue Next").triggered.connect(lambda: (self.playlist_gen("queue")))
-        (self.lv_1).addAction("Queue Random")
+        (self.lv_1).addAction("Queue Random").triggered.connect(lambda: (self.playlist_gen("queue_rand")))
         self.lv_1_04 = self.lv_1.addMenu("Add To Playlist")
         (self.lv_1.addSection(''))
         self.lv_1_05 = self.lv_1.addMenu("Play (more)")
@@ -345,21 +350,22 @@ class main_window_player(Ui_MainWindow, QtWidgets.QMainWindow):
         (self.lv_1).addAction("Delete")
         self.lv_1_10 = self.lv_1.addMenu("Send To")
         self.lv_1_11 = self.lv_1.addMenu("Search")
-
         
-        (self.lv_1_04).addAction("Add To New Playlist")
-        (self.lv_1_04).addAction("Add To Current Playlist")
+        
+        (self.lv_1_04).addAction("Add To New Playlist").triggered.connect(lambda: (self.Ui_add_play_obj).show())
+        (self.lv_1_04).addAction("Add To Current Playlist").triggered.connect(lambda: (self.playlist_add()))
         (self.lv_1_04.addSection(''))
-        (self.lv_1_04).addAction("Default Playlist")
-        
+        # (self.lv_1_04).addAction("Default Playlist").triggered.connect(lambda: (self.playlist_saver('Default Playlist')))
+        [(self.lv_1_04).addAction(keys).triggered.connect(lambda: (self.playlist_saver(keys))) for (keys, val) in self.playlist_lut_main.items()]
+
         
         (self.lv_1_05).addAction("Bypass Filters")
         self.lv_1_05_1 = self.lv_1_05.addMenu("Output To")
         (self.lv_1_05.addSection(''))
-        (self.lv_1_05).addAction("Play Shuffle")
-        (self.lv_1_05).addAction("Play Similar")
-        (self.lv_1_05).addAction("Play Album")
-        (self.lv_1_05).addAction("Play Artist")
+        # (self.lv_1_05).addAction("Play Shuffle")
+        (self.lv_1_05).addAction("Play Similar").triggered.connect(lambda: (self.play_sim()))
+        (self.lv_1_05).addAction("Play Album").triggered.connect(lambda: (self.play_sim_al()))
+        (self.lv_1_05).addAction("Play Artist").triggered.connect(lambda: (self.play_sim_ar()))
         (self.lv_1_05.addSection(''))
         (self.lv_1_05).addAction("Queue Album")
         (self.lv_1_05).addAction("Queue Album")
@@ -395,43 +401,99 @@ class main_window_player(Ui_MainWindow, QtWidgets.QMainWindow):
 
 
 
-########### Playlist  functions ################################################
+########### Now Playing functions ##############################################
 ################################################################################    
+    def play_sim(self):
+        genre = ((self.tableView_music.model()).index((self.tableView_music.selectedIndexes())[1].row(), 14)).data() 
+        a = [[((self.tableView_music.model()).index(i, col)).data() for col in [1, 0, 13, 6, 16]] for i in range((self.tableView_music.model()).rowCount()) if (str(((self.tableView_music.model()).index(i, 14)).data())).lower() == (genre).lower()]
+        self.playlist_lut = {}
+        model = QtGui.QStandardItemModel()
+        model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
+        for i in a:
+            self.playlist_lut[i[0]] = i
+            model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
+        self.play_list_view.setModel(model)
+            
+    def play_sim_ar(self):
+        genre = ((self.tableView_music.model()).index((self.tableView_music.selectedIndexes())[1].row(), 6)).data() 
+        a = [[((self.tableView_music.model()).index(i, col)).data() for col in [1, 0, 13, 6, 16]] for i in range((self.tableView_music.model()).rowCount()) if (str(((self.tableView_music.model()).index(i, 6)).data())).lower() == (genre).lower()]
+        self.playlist_lut = {}
+        model = QtGui.QStandardItemModel()
+        model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
+        for i in a:
+            self.playlist_lut[i[0]] = i
+            model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
+        self.play_list_view.setModel(model)
+    
+    def play_sim_al(self):
+        genre = ((self.tableView_music.model()).index((self.tableView_music.selectedIndexes())[1].row(), 4)).data() 
+        a = [[((self.tableView_music.model()).index(i, col)).data() for col in [1, 0, 13, 6, 16]] for i in range((self.tableView_music.model()).rowCount()) if (str(((self.tableView_music.model()).index(i, 4)).data())).lower() == (genre).lower()]
+        self.playlist_lut = {}
+        model = QtGui.QStandardItemModel()
+        model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
+        for i in a:
+            self.playlist_lut[i[0]] = i
+            model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
+        self.play_list_view.setModel(model)
     
     def playlist_gen(self, flag):
-        a = [[((self.tableView_music.model()).index(i.row(), col)).data() for col in [1, 6, 16, 13, 8, 19]] for i in (self.tableView_music.selectedIndexes())[::23]]
-        if flag == 'append':
-            self.tracks_list.clear()
+        a = [[((self.tableView_music.model()).index(i.row(), col)).data() for col in [1, 0, 13, 6, 16]] for i in (self.tableView_music.selectedIndexes())[::23]]
+        if flag == 'add':
+            self.playlist_lut = {}
+            model = QtGui.QStandardItemModel()
+            model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
             for i in a:
-                self.playlist_listV_pop(i)
-        
-        if flag == 'queue':  
+                self.playlist_lut[i[0]] = i
+                model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
+            self.play_list_view.setModel(model)
+            
+        if flag == 'queue':
+            model = self.play_list_view.model()
+            if model == None:
+                model = QtGui.QStandardItemModel()
+                model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
+                self.play_list_view.setModel(model)
             for i in a:
-                self.playlist_listV_pop(i)            
-    
-    def playlist_listV_pop(self, data):
+                try:
+                    self.playlist_lut[i[0]]
+                except:
+                    self.playlist_lut[i[0]] = i
+                    model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
         
-        custom_playlist_display_widget_ob = custom_playlist_display_widget()
-        
-        #pixmap
-        self.playlist_pop_pixmap(data, custom_playlist_display_widget_ob)
-        # artist
-        custom_playlist_display_widget_ob.label_2.setText(str(data[1]))
-        # title
-        custom_playlist_display_widget_ob.label_3.setText(str(data[2]))
-        # duration
-        custom_playlist_display_widget_ob.label_4.setText(str(data[3]))
-        # bitrate
-        custom_playlist_display_widget_ob.label_5.setText(str(data[4]))
-        # rating
-        custom_playlist_display_widget_ob.label_6.setText(str(data[5]))
+        if flag == 'queue_rand':  
+            for i in a:
+                try:
+                    self.playlist_lut[i[0]]
+                except:
+                    self.playlist_lut[i[0]] = i        
+            temp = [val for (key,val) in self.playlist_lut.items()]
+            random.shuffle(temp)
+            
+            self.playlist_lut = {}
+            model = QtGui.QStandardItemModel()
+            model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
+            for i in temp:
+                self.playlist_lut[i[0]] = i
+                model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
+            self.play_list_view.setModel(model)
+       
+        if flag == "remove": 
+            for i in a:
+                try:
+                    del self.playlist_lut[i[0]]
+                except: pass
+                
+            temp = [val for (key,val) in self.playlist_lut.items()]
+            random.shuffle(temp)
+            
+            self.playlist_lut = {}
+            model = QtGui.QStandardItemModel()
+            model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
+            for i in temp:
+                self.playlist_lut[i[0]] = i
+                model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
+            self.play_list_view.setModel(model)          
 
-        myQListWidgetItem = QtWidgets.QListWidgetItem(self.tracks_list)
-        myQListWidgetItem.setSizeHint(custom_playlist_display_widget_ob.sizeHint())
-        self.tracks_list.addItem(myQListWidgetItem)
-        self.tracks_list.setItemWidget(myQListWidgetItem, custom_playlist_display_widget_ob)
-
-    
     
     def playlist_pop_pixmap(self, data, custom_playlist_display_widget_ob):
         # pixmap
@@ -460,10 +522,87 @@ class main_window_player(Ui_MainWindow, QtWidgets.QMainWindow):
             custom_playlist_display_widget_ob.label.setPixmap(pixmap)
             custom_playlist_display_widget_ob.label.setScaledContents(True)
             # print(e)         
+    
+    
+    def tag_editor(self):
+        track = ((self.tableView_music.model()).index((self.tableView_music.selectedIndexes())[1].row(), 0)).data()
 
 
+############## Playlist functions ##############################################
+################################################################################   
 
 
+    def add_new_playlist(self, name):
+        if name != '' :
+            self.Ui_add_play_obj.lineEdit.clear()
+            a = [((self.tableView_music.model()).index(i.row(), 0)).data() for i in (self.tableView_music.selectedIndexes())[::23]]
+            
+            playlist_lut = {}
+            for i in a:
+                playlist_lut[i] = i          
+            self.playlist_lut_main[name] = playlist_lut
+            self.comboBox.clear()
+            [self.comboBox.addItem(keys) for (keys, val) in self.playlist_lut_main.items()]            
+            self.Ui_add_play_obj.close()
+    
+    def playlist_add(self):
+        a = [((self.tableView_music.model()).index(i.row(), 0)).data() for i in (self.tableView_music.selectedIndexes())[::23]]
+        playlist_lut = self.playlist_lut_main[self.comboBox.currentText()]
+        
+        for i in a:
+            try:
+                playlist_lut[i]
+            except:
+                playlist_lut[i] = i
+        model = QtGui.QStandardItemModel()       
+        if os.path.isfile("resources/settings/library_data.txt"):
+            with open('resources/settings/library_data.txt', 'r', encoding = 'utf-8') as lib_f:
+                file_data = lib_f.readlines()
+                self.library_lut = [eval(i) for i in file_data]
+        
+        for (key, val) in playlist_lut.items():
+            model.appendRow([QtGui.QStandardItem(str(i)) for i in self.library_lut[int(val)]])
+            
+        self.playlist_view.setModel(model)
+   
+    def playlist_saver(self, name):
+        
+        if name != '' :
+            a = [((self.tableView_music.model()).index(i.row(), 0)).data() for i in (self.tableView_music.selectedIndexes())[::23]]
+            playlist_lut = self.playlist_lut_main[name]
+            
+            for i in a:
+                try:
+                    playlist_lut[i]
+                except:
+                    playlist_lut[i] = i
+                    
+            self.playlist_lut_main[name] = playlist_lut
+            model = QtGui.QStandardItemModel()       
+            if os.path.isfile("resources/settings/library_data.txt"):
+                with open('resources/settings/library_data.txt', 'r', encoding = 'utf-8') as lib_f:
+                    file_data = lib_f.readlines()
+                    self.library_lut = [eval(i) for i in file_data]
+            
+            for (key, val) in playlist_lut.items():
+                model.appendRow([QtGui.QStandardItem(str(i)) for i in self.library_lut[int(val)]])
+            if name == self.comboBox.currentText():
+                self.playlist_view.setModel(model)            
+        
+    def playlist_loader(self, name):
+        if name != '':
+            playlist_lut = self.playlist_lut_main[name]
+            model = QtGui.QStandardItemModel()
+            if os.path.isfile("resources/settings/library_data.txt"):
+                with open('resources/settings/library_data.txt', 'r', encoding = 'utf-8') as lib_f:
+                    file_data = lib_f.readlines()
+                    self.library_lut = [eval(i) for i in file_data]
+            
+            for (key, val) in playlist_lut.items():
+                model.appendRow([QtGui.QStandardItem(str(i)) for i in self.library_lut[int(val)]])
+                
+            self.playlist_view.setModel(model)        
+        
 ################################################################################
 ################################################################################
 
