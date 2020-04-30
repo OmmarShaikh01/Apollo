@@ -2,9 +2,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 import re 
 import os 
 import json 
-import tinytag 
 import sys 
-import time
 import threading
 import file_explorer_ui
     
@@ -101,31 +99,6 @@ class FileBrowser(file_explorer_ui.Ui_MainWindow_file_exp, QtWidgets.QMainWindow
         self.model_list.setItem(row, col, item)
         self.listView.setModel(self.model_list)    
     
-    
-    def music_metadata_reader(self, filename):
-        try:
-            t1 = time.monotonic()
-            dicto = {}
-            with open(filename) as json_file:
-                data = json.load(json_file)["music_files"]
-                count = 0
-                for dictonary in data:
-                    for item,direct in zip(dictonary.values(),dictonary.keys()) :
-                        for file in item:
-                            dicto[count] = {'file_path': (f"{direct}/{file}"),
-                                            'meta_tags': (tinytag.TinyTag.get((f"{direct}/{file}"))).as_dict(),
-                                            "ratings": 0,
-                                            'date_added': time.ctime()
-                                            }
-                            count += 1
-                        self.label_12.setText(str(direct))
-            with open("resources/settings/Music_library_data.txt", 'w') as json_file:
-                json.dump(dicto, json_file, indent = 2)
-                json_file.close()    
-            print(time.monotonic() - t1)
-        except Exception as e:
-            print(e)
-    
     def folder_scanner(self):
         try:
             self.pushButton.setEnabled(False)
@@ -135,10 +108,11 @@ class FileBrowser(file_explorer_ui.Ui_MainWindow_file_exp, QtWidgets.QMainWindow
                 stringlist = data["file_path"]
                 format_accepted = set([key for (key,value) in data["file_format_selected"].items() if value == 1 ])
                 all_items = []; temp = []; temp1 = []
-            for path in stringlist:                
+            for path in stringlist:
                 file_bulk = os.walk(path)
                 self.label_12.setText("Scanning Library")
                 for (directoy, sub_dir, files)in file_bulk:
+                    self.label_12.setText(directoy)
                     temp = []
                     for item in files:
                         if format_accepted.intersection(set(re.findall('\..{3,5}$', item))) != set():
@@ -147,7 +121,6 @@ class FileBrowser(file_explorer_ui.Ui_MainWindow_file_exp, QtWidgets.QMainWindow
                         temp1.append(directoy)
                         all_items.append({directoy : temp})
             self.settings_file_update(all_items, flag="music_files", owr=True, filename = "resources/settings/music_listing.txt")
-            self.music_metadata_reader(filename = "resources/settings/music_listing.txt")
             self.label_12.setText("Scanning Library Completed")
             self.pushButton.setEnabled(True)
         except Exception as e:
