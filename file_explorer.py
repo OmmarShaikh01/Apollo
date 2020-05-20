@@ -1,12 +1,16 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
-import re 
-import os 
-import json 
-import sys 
+
+import json
 import threading
+import re 
+import sys 
+
 import file_explorer_ui
+import lib_up 
+
     
 class FileBrowser(file_explorer_ui.Ui_MainWindow_file_exp, QtWidgets.QMainWindow):
+   
     def __init__(self, *args):
         super(FileBrowser, self).__init__()
         self.setupUi(self)
@@ -14,12 +18,21 @@ class FileBrowser(file_explorer_ui.Ui_MainWindow_file_exp, QtWidgets.QMainWindow
         self.treeView.customContextMenuRequested.connect(self.context_menu)        
         self.populate()
         self.context_list_view()
-        self.buttonBox.accepted.connect(lambda:(self.scan_folder_ok, self.close()))
+        self.buttonBox.accepted.connect(lambda:(self.scan_folder_ok))
         self.buttonBox.rejected.connect(self.cancle)
-        self.pushButton.pressed.connect(lambda: (self.thread_initilizer(self.folder_scanner, (), 'file_parser_thread')))        
+        self.pushButton.pressed.connect(lambda: self.folder_scanner())
+   
     
-    def customfunct(self):
-        print(threading.enumerate())
+    def folder_scanner(self):
+        self.label_12.setText("Scanning Directories Dont Close Window")
+        try:
+            thread = (threading.Thread(target = (lib_up.Library_database_mang()).database_scan_init,
+                                       name = 'database_scan_init',
+                                       kwargs = {"label" : self.label_12,"scan_b": self.pushButton,},
+                                       daemon = True))
+            thread.start()
+        except Exception as e:
+            print(e)
     
     
     def populate(self):
@@ -30,7 +43,6 @@ class FileBrowser(file_explorer_ui.Ui_MainWindow_file_exp, QtWidgets.QMainWindow
         self.treeView.setRootIndex(self.model.index(path))
         self.treeView.setSortingEnabled(True)
         self.model_list = QtGui.QStandardItemModel()
-
 
     def context_menu(self):    
         menu = QtWidgets.QMenu()
@@ -49,7 +61,8 @@ class FileBrowser(file_explorer_ui.Ui_MainWindow_file_exp, QtWidgets.QMainWindow
             self.settings_file_update(file_path, "file_path")    
     
     
-    def settings_file_update(self, string, flag = None, owr = False, emp = False, filename = 'resources/settings/config.txt'):
+    def settings_file_update(self, string, flag = None, owr = False, emp = False,
+                             filename = 'resources/settings/config.txt'):
         with open(filename) as json_file:
             data = json.load(json_file)
             if string not in data[flag] and not (owr):
@@ -98,34 +111,7 @@ class FileBrowser(file_explorer_ui.Ui_MainWindow_file_exp, QtWidgets.QMainWindow
         item.setEditable(False)
         self.model_list.setItem(row, col, item)
         self.listView.setModel(self.model_list)    
-    
-    def folder_scanner(self):
-        try:
-            self.pushButton.setEnabled(False)
-            self.scan_folder_ok() 
-            with open('resources/settings/config.txt') as json_file:
-                data = json.load(json_file)
-                stringlist = data["file_path"]
-                format_accepted = set([key for (key,value) in data["file_format_selected"].items() if value == 1 ])
-                all_items = []; temp = []; temp1 = []
-            for path in stringlist:
-                file_bulk = os.walk(path)
-                self.label_12.setText("Scanning Library")
-                for (directoy, sub_dir, files)in file_bulk:
-                    self.label_12.setText(directoy)
-                    temp = []
-                    for item in files:
-                        if format_accepted.intersection(set(re.findall('\..{3,5}$', item))) != set():
-                            temp.append(item)
-                    if  directoy not in temp1 and temp != []:       
-                        temp1.append(directoy)
-                        all_items.append({directoy : temp})
-            self.settings_file_update(all_items, flag="music_files", owr=True, filename = "resources/settings/music_listing.txt")
-            self.label_12.setText("Scanning Library Completed")
-            self.pushButton.setEnabled(True)
-        except Exception as e:
-            print(e)
-            
+
     def scan_folder_ok(self):
         index = 0
         string = []
@@ -138,18 +124,14 @@ class FileBrowser(file_explorer_ui.Ui_MainWindow_file_exp, QtWidgets.QMainWindow
         self.settings_file_update(string, flag="file_path", owr=True)    
     
     
-    def thread_initilizer(self, fun, args, name):   
-        thread_obj = threading.Thread(target = fun, name = name, args = args)
-        thread_obj.start()    
-    
-    
     def cancle(self):
         self.close()    
+    
+    def cancleEvent(self, event):
+        (thrds._stop() for thrds in ((set(threading.enumerate())) - (set([threading.main_thread()]))))
 
 if __name__ == "__main__":
-
     app = QtWidgets.QApplication(sys.argv) 
     file_browser_app = FileBrowser()
     file_browser_app.show()
     app.exec_()
-

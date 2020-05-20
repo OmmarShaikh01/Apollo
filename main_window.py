@@ -1,396 +1,193 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, QtSql
+import tinytag
+import mutagen
+from beets import library
+import sqlite3 as sql
+
 import json
 import re
 import time
 import os
 import threading
-import tinytag
-import mutagen
 import random
+import datetime
+import hashlib 
 
+from add_new_play_DB_ui import Ui_add_play_db
+from main_window_ui import Ui_MainWindow
 import file_explorer
 import preferences
-from main_window_ui import Ui_MainWindow
-from add_new_play_DB_ui import Ui_add_play_db
+
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.monotonic()
+        result = method(*args, **kw)
+        te = time.monotonic()
+        if 'log_time' in kw:
+            name = kw.get('log_name', method.__name__.upper())
+            kw['log_time'][name] = int((te - ts) * 1000)
+        else:
+            print ('%r %2.2f s' % (method.__name__, (te - ts)))
+        return result
+    return timed
+
+def threadit(method):
+    def thread_call(*args, **kw):
+        print(args, kw)
+        thread = threading.Thread(target = method, args = args, kwargs = kw)
+        thread.start()
+    return thread_call
 
 class main_window_player(Ui_MainWindow, QtWidgets.QMainWindow):
 
     def __init__(self):
         super(main_window_player, self).__init__()
+        self.main()
+
+    def main(self):
         self.setupUi(self)
-        (threading.Thread(target = self.populate_trees, args = ())).start()
-        self.variable_declaration()
-        self.all_actions()
-        self.button_actions()
-        self.layout_initilizer()
-    
-    def layout_initilizer(self):
-        [self.comboBox.addItem(keys) for (keys, val) in self.playlist_lut_main.items()]
-        
-    def variable_declaration(self):
-        self.Ui_add_play_obj = Ui_add_play_db()
+        self.global_decs()
         self.FileBrowser_obj = file_explorer.FileBrowser()
+        self.Ui_add_play_obj = Ui_add_play_db()
         self.settings_main_window_obj = preferences.settings_main_window()
-        self.playlist_lut = {}
-        self.playlist_lut_main = {'Default Playlist': {}}
-    
-    
+        self.all_actions()
+
+
+##########################       MISC  FUNCTIONS       #########################
+    def global_decs(self):
+        self.global_conn = QtSql.QSqlDatabase.addDatabase('QSQLITE')
+        self.global_conn.setDatabaseName('library.db')
+        if self.global_conn.open():
+            print("open")
+
     def all_actions(self):
-        self.actionAdd_Files_to_librayr.triggered.connect(lambda: self.FileBrowser_obj.show())
-        self.actionSettings.triggered.connect(lambda: self.settings_main_window_obj.show())
-        
-        self.FileBrowser_obj.buttonBox.accepted.connect(self.populate_trees)
-        
-        self.Ui_add_play_obj.lineEdit.returnPressed.connect(lambda: (self.add_new_playlist(self.Ui_add_play_obj.lineEdit.text())))
-        self.Ui_add_play_obj.buttonBox.accepted.connect(lambda: (self.add_new_playlist(self.Ui_add_play_obj.lineEdit.text())))
-        
-        self.comboBox.currentTextChanged.connect(lambda: (self.playlist_loader(self.comboBox.currentText())))
-        
-        self.actionRescan.triggered.connect(self.populate_trees)
-        self.toolButton.pressed.connect(self.search_library)
-        self.lineEdit.textChanged.connect(self.search_library)
         self.table_view_music_functions()
-      
-
-    def button_actions(self):
-        self.play_button.pressed.connect(self.trial)
-        self.skip_back.pressed.connect(self.trial)
-        self.skip_track_back.pressed.connect(self.trial)
-        self.stop.pressed.connect(self.trial)
-        self.pause.pressed.connect(self.trial)
-        self.skip_track_fwd.pressed.connect(self.trial)
-        self.skip_ford.pressed.connect(self.trial)
-        self.shuffle_btn.pressed.connect(self.trial)
-        self.mute_btn.pressed.connect(self.trial)
-        self.volume_btn.pressed.connect(self.trial)  
-
-### button functions ###########################################################
-################################################################################
-
-
-
-### search functions ###########################################################
-################################################################################
-
-    def searching_alg(self, search_text = "", string = ""):
-        match = [bool(re.search(search_text,string.capitalize())),
-                 bool(re.search(search_text,string.upper())),
-        bool(re.search(search_text,string.lower())),
-        bool(re.search(search_text,string.title()))]
-        match_fin = [int(i) for i in match]
-        return sum(match_fin)
-
-    def search_library(self):
-        search_text = self.lineEdit.text()
-        if search_text == '': 
-            self.lib_refresh()
-
-        else:
-            self.lib_refresh()
-            self.model_data = self.tableView_music.model()       
-            data = [ i for i in range(self.model_data.columnCount()) if self.model_data.headerData(i, QtCore.Qt.Orientation(1)) == "Priority"][0]
-            for rows in range(self.model_data.rowCount()):
-                count = 20
-                for cols in [2, 3, 5, 6, 17]:
-                    if self.searching_alg(search_text, self.model_data.index(rows, cols).data()) >= 1:
-                        count -= 1
-                        self.table_model.setData(self.model_data.index(rows, data), str(count))
-                if not (count in [19, 18, 17, 16, 15]):
-                    self.tableView_music.setRowHidden(rows, True)
-            self.tableView_music.setModel(self.model_data)
-            self.tableView_music.sortByColumn(data, QtCore.Qt.AscendingOrder)
-            self.tableView_music.scrollToTop()
-
-
-### populate tree functions ####################################################
-################################################################################
     
-    def populate_cond_check(self): 
-        with open('resources/settings/music_listing.txt') as lib_f:
-            libf_data = json.load(lib_f)['music_files']
-            if os.path.isfile("resources/settings/library_data.txt"):
-                with open('resources/settings/library_data.txt', 'r', encoding = 'utf-8') as lib_fj:
-                    file_data = json.load(lib_fj)            
-            if sum([len(i.values()) for i in libf_data]) == len(file_data.keys()):
-                self.populate_from_DB()
-            else:
-                self.populate_from_DB_cal()
+        self.actionAdd_Files_to_librayr.triggered.connect(lambda: self.FileBrowser_obj.show())
+        self.actionRescan.triggered.connect(lambda: self.database_initializedModel())
 
+        self.Ui_add_play_obj.lineEdit.returnPressed.connect(lambda: (self.playlist_add_new(self.Ui_add_play_obj.lineEdit.text())))
+        self.Ui_add_play_obj.buttonBox.accepted.connect(lambda: (self.playlist_add_new(self.Ui_add_play_obj.lineEdit.text())))
+        self.Ui_add_play_obj.buttonBox.rejected.connect(lambda: self.Ui_add_play_obj.close())
+        
+        self.comboBox.currentTextChanged.connect(lambda: self.cbox_playlist_loader())
+        self.tabWidget.currentChanged.connect(lambda: self.models_declaration())
+        
+#########################       LIBRARY VIEW FUNCTIONS       ###################
 
-    def populate_from_DB(self):
-        t1 = time.monotonic()
-        if os.path.isfile("resources/settings/library_data.txt"):
-            with open('resources/settings/library_data.txt', 'r', encoding = 'utf-8') as lib_f:
-                self.file_data = json.load(lib_f)
-                for key,val in self.file_data.items():
-                    self.table_model.appendRow([QtGui.QStandardItem(str(i)) for i in val])
-        print(time.monotonic() - t1)
-
-
-    def populate_from_DB_cal(self):
-        t1 = time.monotonic()
-        with open('resources/settings/music_listing.txt') as lib_f, open('resources/settings/library_data.txt', 'w', encoding = 'utf-8') as lib_data:
-            libf_data = json.load(lib_f)['music_files']
-            lib_dic = {}
-            track = 0
-            for item in libf_data:
-                for (direc, files) in item.items():
-                    for file in files:
-                        track += 1
-                        path = os.path.join(direc, file)
-                        a = (tinytag.TinyTag.get(path))
-                        data = [str(track), 
-                                str(a._filehandler.name), 
-                                str(os.path.split(a._filehandler.name)[1]), 
-                                str(a.album), 
-                                str(a.albumartist), 
-                                str(a.artist), 
-                                str(a.title), 
-                                str(a.genre), 
-                                str(a.composer), 
-                                
-                                str(f"{(int(a.duration // 60))}.{(int(a.duration % 60))} Min"), 
-                                str(f'{a.audio_offset}'), 
-                                str(f'{int(a.bitrate)} Kbps'), 
-                                str(f'{a.channels}'), 
-                                str(f'{round(( a.filesize / 1000000),2)} Mb'), 
-                                str(f'{a.samplerate} Hz'), 
-                                
-                                str(a.disc), 
-                                str(a.disc_total), 
-                                str(a.track), 
-                                str(a.track_total), 
-                                str(a.year), 
-                                str(0), 
-                                str(time.ctime()), 
-                                str(0), 
-                                str(20)]                  
-                        self.table_model.appendRow([QtGui.QStandardItem(str(i)) for i in data])
-                        lib_dic[a._filehandler.name] = data
-            json.dump(lib_dic, lib_data, indent = 2)
-        print(time.monotonic() - t1)
-   
-
-########### misc functions #####################################################
-################################################################################   
-    
-    
-    def pixmap_setter(self, fname, obj, scale):
-        # pixmap
-        try:
-            try:
-                meta_image = ((mutagen.File(fname)).pictures[0]).data
-            except Exception as e: pass #print(e)
-            
-            try:
-                meta_image = ((mutagen.File(fname)).get("APIC:")).data
-            except Exception as e: pass #print(e)            
-            
-            try:
-                meta_image = ((mutagen.File(fname)).get("APIC:Cover (front)")).data
-            except Exception as e: pass #print(e)
-                
-            pixmap = QtGui.QPixmap()
-            pixmap.loadFromData(meta_image)
-            pixmap = pixmap.scaled(scale[0], scale[1])
-            obj.setPixmap(pixmap)
-            obj.setScaledContents(True)
-            
-        except Exception as e:
-            pixmap = QtGui.QPixmap()
-            pixmap = pixmap.scaled(scale[0], scale[1])
-            obj.setPixmap(pixmap)
-            obj.setScaledContents(True)
-            # print(e)
-            
-            
-    def file_to_data_typ(self, filename, flagf = "read", string = None, key = None):
-
-        """
-        used for I/O in json files
-        filename<string>
-        flagf<string(read/write)>
-        <string> is data to be written to a file
-        <key> is the part to where the data needs to go
-        """
-
-        if flagf == "read":
-            with open(filename) as json_file:
-                data = json.load(json_file)
-            return(data)
-
-        if flagf == "write":
-            with open(filename) as json_file:
-                data = json.load(json_file)
-                if string not in data[key] :
-                    data[key].append(string)
-            with open(filename, 'w') as json_file:
-                json.dump(data, json_file)
-
-
-
-    def trial(self):
-        print("trial")
-
-############## Music Library Tab Functions #####################################
-################################################################################  
-    
     def table_view_music_functions(self):
         # Atribute Declaration
         (self.tableView_music.horizontalHeader()).setSectionsMovable(True)
         self.tableView_music.setShowGrid(False)        
-        
+
         # Style sheet Declartion
         self.tableView_music.setStyleSheet(("QTableView { selection-background-color: rgb(255,245,213); selection-color: black; }"))
+        self.now_playing_table.setStyleSheet(("QTableView { selection-background-color: rgb(255,245,213); selection-color: black; }"))
+        self.playlist_table.setStyleSheet(("QTableView { selection-background-color: rgb(255,245,213); selection-color: black; }"))
         
         # table views double click binding
-        self.tableView_music.doubleClicked.connect(lambda: self.handleSelectionChanged(((self.tableView_music.model()).index((self.tableView_music.currentIndex().row()), 1)).data(), 'dc'))
-
+        self.tableView_music.doubleClicked.connect(lambda: (self.lib_item_doubleclk(), self.models_declaration()))
+        header = self.tableView_music.horizontalHeader()
+        header.sortIndicatorChanged.connect(lambda:(header.sortIndicatorSection()))
+        
         # table views context menu
         self.tableView_music.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.tableView_music.customContextMenuRequested.connect(self.context_menu_tableView_music)      
-   
+        
+        #library startup sequence
+        self.database_initializedModel()
     
-    def populate_trees(self):
-        """
-        this functin populates the table widget nd when called again delets the current row and rescans the
-        library
-        """
-        self.table_model = QtGui.QStandardItemModel()
-        with open("resources/settings/config.txt") as json_file:
-            dicto = (json.load(json_file))["column_displayed"]
-        count = 0
+    
+    def models_declaration(self):
+        self.library_model = QtSql.QSqlQueryModel()
+        self.library_model.setQuery("SELECT * FROM library")
 
-        for j in dicto.keys():
-            self.table_model.setHorizontalHeaderItem(count, QtGui.QStandardItem(str(j)))
-            count += 1
+        while self.library_model.canFetchMore():
+            self.library_model.fetchMore(QtCore.QModelIndex())
+        self.tableView_music.setModel(self.library_model)
+        
+        self.now_play_model = QtSql.QSqlQueryModel()
+        self.now_play_model.setQuery("SELECT * FROM now_playing")
 
-        for i,j in zip(dicto.values(), dicto.keys()):
-            if not (bool(i)):
-                self.tableView_music.setColumnHidden(count, True)
-            count += 1
-        self.tableView_music.setModel(self.table_model)
-        self.populate_cond_check()    
-    
-    
-    def lib_refresh(self):
-        if True:
-            self.tableView_music.clearSelection()
-            model = self.tableView_music.model()
+        while self.now_play_model.canFetchMore():
+            self.now_play_model.fetchMore(QtCore.QModelIndex())
+        self.now_playing_table.setModel(self.now_play_model)        
+        
+        playlist = self.comboBox.currentText()
+        self.playlist_model = QtSql.QSqlQueryModel()
+        self.playlist_model.setQuery(f"SELECT * FROM {playlist}")
 
-            # returns header data
-            data = [ i for i in range(model.columnCount()) if model.headerData(i, QtCore.Qt.Orientation(1)) == "Priority"][0]
-            for row in range(model.rowCount()):
-                self.tableView_music.setRowHidden(row, False)
-                if model.index(row, data).data() != "20":
-                    self.table_model.setData(model.index(row, data), 20)
+        while self.playlist_model.canFetchMore():
+            self.playlist_model.fetchMore(QtCore.QModelIndex())
+        self.playlist_table.setModel(self.playlist_model)        
+        
+    def database_initializedModel(self):
+        self.playlist_cbox_update()
+        self.models_declaration()
+        self.fields = [self.library_model.headerData(i, 1) for i in range(69)]
+        self.headers = [((i.replace("_", " ")).title()) for i in self.fields]
+        self.fields_flags = {i: 1 for i in self.fields}
+    
+    def lib_item_doubleclk(self):
+        meta_info = QtGui.QStandardItemModel()
+        for i in range(self.tableView_music.model().columnCount()):
+            header = (self.tableView_music.model().headerData(i, 1)).lower()
+            if header == "path":
+                path = (((self.tableView_music.model()).index((self.tableView_music.currentIndex().row()), i)).data())
+                self.pixmap_setter(fname = path, obj = self.pixmap_cov, scale = (300, 300))
 
-    
-    def handleSelectionChanged(self, data, flag):
-        if flag == 'dc':    
-            try:
-                data = data
-                self.meta_data_getter(data)
-                self.meta_image_getter(data)            
-            except Exception as e: pass # print(e)        
+            if header in ['album', 'artist']:
+                data = (((self.tableView_music.model()).index((self.tableView_music.currentIndex().row()), i)).data())
+                meta_info.appendRow(QtGui.QStandardItem(f"{(header.title())}: {data}"))
+        self.file_meta_info_list.setModel(meta_info)
 
-    
-    
-    def meta_image_getter(self, data):     
-        try:
-            try:
-                meta_image = ((mutagen.File(data)).pictures[0]).data
-            except Exception as e: pass #print(e)
-            
-            try:
-                meta_image = ((mutagen.File(data)).get("APIC:")).data
-            except Exception as e: pass #print(e)            
-            
-            try:
-                meta_image = ((mutagen.File(data)).get("APIC:Cover (front)")).data
-            except Exception as e: pass #print(e)
-            
-            
-            pixmap = QtGui.QPixmap()
-            pixmap.loadFromData(meta_image)
-            pixmap = pixmap.scaled(300, 300)
-            self.pixmap_cov.setPixmap(pixmap)
-            self.pixmap_cov.setScaledContents(True)
-            
-        except Exception as e:
-            pixmap = QtGui.QPixmap()
-            pixmap = pixmap.scaled(300, 300)
-            self.pixmap_cov.setPixmap(pixmap)
-            self.pixmap_cov.setScaledContents(True)
-    
-    
-    def meta_data_getter(self, data):          
-        meta_info = (tinytag.TinyTag.get(data)).as_dict()
-        meta_info = [str(f'Artist: {meta_info["artist"]}'),
-                     str(f'Title: {meta_info["title"]}'),
-                     str(f'Album: {meta_info["album"]}'),
-                     str(f'Album Artist: {meta_info["albumartist"]}'),
-                     str(f'Composer: {meta_info["composer"]}'),
-                     str(f'Genre: {meta_info["genre"]}'),
-                     str(f'Samplerate: {meta_info["samplerate"]} Hz'),
-                     str(f'Bitrate: {int(meta_info["bitrate"])} Kbps'),
-                     str(f'Channels: {meta_info["channels"]} Channels'),
-                     str(f'Duration: {(("{0}.{1} Min".format(str(int( meta_info["duration"] // 60)), str(int( meta_info["duration"] % 60)))))}'),
-                     str(f'Year: {meta_info["year"]}')]
-        file_meta_model = QtGui.QStandardItemModel()
-        file_meta_model.appendColumn([QtGui.QStandardItem(str(i)) for i in meta_info])
-        self.file_meta_info_list.setModel(file_meta_model) 
-        self.tableView_music.clearSelection()      
 
-    
     def context_menu_tableView_music(self):    
-        
+
         self.lv_1 = QtWidgets.QMenu()
-        
-        
-        (self.lv_1).addAction("Play Now").triggered.connect(lambda: (self.playlist_gen('add')))
-        (self.lv_1).addAction("Queue Next").triggered.connect(lambda: (self.playlist_gen("queue")))
-        (self.lv_1).addAction("Queue Random").triggered.connect(lambda: (self.playlist_gen("queue_rand")))
+
+        (self.lv_1).addAction("Play Now").triggered.connect( lambda: self.lib_view_play(0, "id", self.tableView_music, self.now_playing_table))
+        (self.lv_1).addAction("Queue Next").triggered.connect( lambda: self.lib_view_queue(0, "id", self.tableView_music, self.now_playing_table))
+        (self.lv_1).addAction("Queue Random").triggered.connect( lambda: self.lib_view_queue(0, "id", self.tableView_music, self.now_playing_table, flag = "shuffle"))
         self.lv_1_04 = self.lv_1.addMenu("Add To Playlist")
         (self.lv_1.addSection(''))
-        self.lv_1_05 = self.lv_1.addMenu("Play (more)")
-        (self.lv_1).addAction("Edit")
-        self.lv_1_07 = self.lv_1.addMenu("Auto-Tags")
+        self.lv_1_05 = self.lv_1.addMenu("Play (more)$")
+        (self.lv_1).addAction("Edit$")
+        self.lv_1_07 = self.lv_1.addMenu("Auto-Tags$")
         self.lv_1_08 = self.lv_1.addMenu("Ratings")
         (self.lv_1.addSection(''))
-        (self.lv_1).addAction("Delete")
-        self.lv_1_10 = self.lv_1.addMenu("Send To")
+        (self.lv_1).addAction("Delet$e")
+        self.lv_1_10 = self.lv_1.addMenu("Send To$")
         self.lv_1_11 = self.lv_1.addMenu("Search")
-        
-        
-        (self.lv_1_04).addAction("Add To New Playlist").triggered.connect(lambda: (self.Ui_add_play_obj).show())
-        (self.lv_1_04).addAction("Add To Current Playlist").triggered.connect(lambda: (self.playlist_add()))
-        (self.lv_1_04.addSection(''))
-        # (self.lv_1_04).addAction("Default Playlist").triggered.connect(lambda: (self.playlist_saver('Default Playlist')))
-        [(self.lv_1_04).addAction(keys).triggered.connect(lambda: (self.playlist_saver(keys))) for (keys, val) in self.playlist_lut_main.items()]
+        self.lv_1_12 = self.lv_1.addMenu("Displayed Fields")
 
-        
+        (self.lv_1_04).addAction("Add To New Playlist").triggered.connect(lambda: (self.Ui_add_play_obj).show())
+        (self.lv_1_04).addAction("Add To Current Playlist").triggered.connect(lambda: (self.playlist_add_current()))
+        (self.lv_1_04.addSection(''))
+        [(self.lv_1_04).addAction(keys).triggered.connect(lambda: (self.playlist_saver(keys))) for keys in self.playlist_cbox_update()]
+
+
         (self.lv_1_05).addAction("Bypass Filters")
         self.lv_1_05_1 = self.lv_1_05.addMenu("Output To")
         (self.lv_1_05.addSection(''))
-        # (self.lv_1_05).addAction("Play Shuffle")
-        (self.lv_1_05).addAction("Play Similar").triggered.connect(lambda: (self.play_sim()))
-        (self.lv_1_05).addAction("Play Album").triggered.connect(lambda: (self.play_sim_al()))
-        (self.lv_1_05).addAction("Play Artist").triggered.connect(lambda: (self.play_sim_ar()))
+        (self.lv_1_05).addAction("Play Shuffle").triggered.connect( lambda: self.lib_view_play(0, "id", self.tableView_music, self.now_playing_table, flag = 'shuffle'))
+        (self.lv_1_05).addAction("Play Similar").triggered.connect( lambda: self.lib_view_play(13, "genre", self.tableView_music, self.now_playing_table))
+        (self.lv_1_05).addAction("Play Album").triggered.connect( lambda: self.lib_view_play(8, "album", self.tableView_music, self.now_playing_table))
+        (self.lv_1_05).addAction("Play Artist").triggered.connect( lambda: self.lib_view_play(5, "artist", self.tableView_music, self.now_playing_table))
         (self.lv_1_05.addSection(''))
-        (self.lv_1_05).addAction("Queue Album")
-        (self.lv_1_05).addAction("Queue Album")
-        
-        (self.lv_1_08).addAction("0   Stars")
-        (self.lv_1_08).addAction("1   Stars")
-        (self.lv_1_08).addAction("1.5 Stars")
-        (self.lv_1_08).addAction("2   Stars")
-        (self.lv_1_08).addAction("2.5 Stars")
-        (self.lv_1_08).addAction("3   Stars")
-        (self.lv_1_08).addAction("3.5 Stars")
-        (self.lv_1_08).addAction("4   Stars")
-        (self.lv_1_08).addAction("4.5 Stars")
-        (self.lv_1_08).addAction("5   Stars")
+        (self.lv_1_05).addAction("Queue Album").triggered.connect( lambda: self.lib_view_queue(8, "artist", self.tableView_music, self.now_playing_table))
+        (self.lv_1_05).addAction("Queue AlbumArtist").triggered.connect( lambda: self.lib_view_queue(5, "artist", self.tableView_music, self.now_playing_table))
+
+        (self.lv_1_08).addAction("0   Stars").triggered.connect( lambda: self.lib_view_ratings_update(0))
+        (self.lv_1_08).addAction("1   Stars").triggered.connect( lambda: self.lib_view_ratings_update(1))
+        (self.lv_1_08).addAction("1.5 Stars").triggered.connect( lambda: self.lib_view_ratings_update(1.5))
+        (self.lv_1_08).addAction("2   Stars").triggered.connect( lambda: self.lib_view_ratings_update(2))
+        (self.lv_1_08).addAction("2.5 Stars").triggered.connect( lambda: self.lib_view_ratings_update(2.5))
+        (self.lv_1_08).addAction("3   Stars").triggered.connect( lambda: self.lib_view_ratings_update(3))
+        (self.lv_1_08).addAction("3.5 Stars").triggered.connect( lambda: self.lib_view_ratings_update(3.5))
+        (self.lv_1_08).addAction("4   Stars").triggered.connect( lambda: self.lib_view_ratings_update(4))
+        (self.lv_1_08).addAction("4.5 Stars").triggered.connect( lambda: self.lib_view_ratings_update(4.5))
+        (self.lv_1_08).addAction("5   Stars").triggered.connect( lambda: self.lib_view_ratings_update(5))
 
         (self.lv_1_10).addAction("Audio Fx")
         self.lv_1_10_1 = (self.lv_1_10).addMenu("File (Move)")
@@ -399,224 +196,304 @@ class main_window_player(Ui_MainWindow, QtWidgets.QMainWindow):
         (self.lv_1_10).addAction("File Converter")
         (self.lv_1_10).addAction("File Rescan")
         (self.lv_1_10).addAction("Analysis")
-        
-        (self.lv_1_11).addAction('Find Artist')
-        (self.lv_1_11).addAction('Find Similar')
-        (self.lv_1_11).addAction('Locate in Playlist')
-        (self.lv_1_11).addAction('Locate in Library')
-        (self.lv_1_11).addAction('Locate in File Explorer')
-        (self.lv_1_11).addAction('Locate in Directory')
-        
+
+        (self.lv_1_11).addAction('Find Artist').triggered.connect( lambda: self.lib_view_search_query(field = "artist"))
+        (self.lv_1_11).addAction('Find Similar').triggered.connect( lambda: self.lib_view_search_query(field = 'similar'))
+        (self.lv_1_11).addAction('Locate in Playlist').triggered.connect( lambda: self.lib_view_search_query(field = 'in_playlist'))
+        (self.lv_1_11).addAction('Locate in Now Playing').triggered.connect( lambda: self.lib_view_search_query(field = 'in_now_play'))
+        (self.lv_1_11).addAction('Locate in File Explorer').triggered.connect( lambda: self.lib_view_search_query(field = 'in_file_exp'))
+
+        flags = self.fields_flags
+        for (key,val) in flags.items():
+            aa = (self.lv_1_12.addAction(str(key).title()))
+            aa.setCheckable(True)
+            aa.setChecked(bool(val))
+            aa.triggered.connect(lambda: self.display_fields_box_check (self.lv_1_12.actions()))
         cursor = QtGui.QCursor()
-        self.lv_1.exec_(cursor.pos())         
+        self.lv_1.exec_(cursor.pos())
 
+    def display_fields_box_check(self, actions):
+        for index, (i,j) in enumerate(zip(self.fields_flags.keys(), actions)):
+            self.fields_flags[i] = int(j.isChecked())
+            if not(bool(j.isChecked())): self.tableView_music.hideColumn(index)
+            if (bool(j.isChecked())): self.tableView_music.showColumn(index)
 
-
-########### Now Playing functions ##############################################
-################################################################################    
-    def play_sim(self):
-        genre = ((self.tableView_music.model()).index((self.tableView_music.selectedIndexes())[1].row(), 14)).data() 
-        a = [[((self.tableView_music.model()).index(i, col)).data() for col in [1, 0, 13, 6, 16]] for i in range((self.tableView_music.model()).rowCount()) if (str(((self.tableView_music.model()).index(i, 14)).data())).lower() == (genre).lower()]
-        self.playlist_lut = {}
-        model = QtGui.QStandardItemModel()
-        model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
-        for i in a:
-            self.playlist_lut[i[0]] = i
-            model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
-        self.play_list_view.setModel(model)
-            
-    def play_sim_ar(self):
-        genre = ((self.tableView_music.model()).index((self.tableView_music.selectedIndexes())[1].row(), 6)).data() 
-        a = [[((self.tableView_music.model()).index(i, col)).data() for col in [1, 0, 13, 6, 16]] for i in range((self.tableView_music.model()).rowCount()) if (str(((self.tableView_music.model()).index(i, 6)).data())).lower() == (genre).lower()]
-        self.playlist_lut = {}
-        model = QtGui.QStandardItemModel()
-        model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
-        for i in a:
-            self.playlist_lut[i[0]] = i
-            model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
-        self.play_list_view.setModel(model)
-    
-    def play_sim_al(self):
-        genre = ((self.tableView_music.model()).index((self.tableView_music.selectedIndexes())[1].row(), 4)).data() 
-        a = [[((self.tableView_music.model()).index(i, col)).data() for col in [1, 0, 13, 6, 16]] for i in range((self.tableView_music.model()).rowCount()) if (str(((self.tableView_music.model()).index(i, 4)).data())).lower() == (genre).lower()]
-        self.playlist_lut = {}
-        model = QtGui.QStandardItemModel()
-        model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
-        for i in a:
-            self.playlist_lut[i[0]] = i
-            model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
-        self.play_list_view.setModel(model)
-    
-    def playlist_gen(self, flag):
-        a = [[((self.tableView_music.model()).index(i.row(), col)).data() for col in [1, 0, 13, 6, 16]] for i in (self.tableView_music.selectedIndexes())[::23]]
-        if flag == 'add':
-            self.playlist_lut = {}
-            model = QtGui.QStandardItemModel()
-            model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
-            for i in a:
-                self.playlist_lut[i[0]] = i
-                model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
-            self.play_list_view.setModel(model)
-            
-        if flag == 'queue':
-            model = self.play_list_view.model()
-            if model == None:
-                model = QtGui.QStandardItemModel()
-                model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
-                self.play_list_view.setModel(model)
-            for i in a:
-                try:
-                    self.playlist_lut[i[0]]
-                except:
-                    self.playlist_lut[i[0]] = i
-                    model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
-        
-        if flag == 'queue_rand':  
-            for i in a:
-                try:
-                    self.playlist_lut[i[0]]
-                except:
-                    self.playlist_lut[i[0]] = i        
-            temp = [val for (key,val) in self.playlist_lut.items()]
-            random.shuffle(temp)
-            
-            self.playlist_lut = {}
-            model = QtGui.QStandardItemModel()
-            model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
-            for i in temp:
-                self.playlist_lut[i[0]] = i
-                model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
-            self.play_list_view.setModel(model)
-       
-        if flag == "remove": 
-            for i in a:
-                try:
-                    del self.playlist_lut[i[0]]
-                except: pass
-                
-            temp = [val for (key,val) in self.playlist_lut.items()]
-            random.shuffle(temp)
-            
-            self.playlist_lut = {}
-            model = QtGui.QStandardItemModel()
-            model.setHorizontalHeaderLabels(['File Path', 'Cover', 'Duration', 'Artist', 'Title'])
-            for i in temp:
-                self.playlist_lut[i[0]] = i
-                model.appendRow([QtGui.QStandardItem(str(j)) for j in i])
-            self.play_list_view.setModel(model)          
-
-    
-    def playlist_pop_pixmap(self, data, custom_playlist_display_widget_ob):
+    def pixmap_setter(self, fname, obj, scale):
         # pixmap
         try:
             try:
-                meta_image = ((mutagen.File(data)).pictures[0]).data
-            except Exception as e: pass #print(e)
-            
+                if os.path.splitext(fname)[1] != ".mp3":
+                    meta_image = ((mutagen.File(fname)).pictures[0]).data
+            except Exception as e: pass # print(e)
+
             try:
-                meta_image = ((mutagen.File(data)).get("APIC:")).data
-            except Exception as e: pass #print(e)            
-            
+                meta_image = ((mutagen.File(fname)).get("APIC:")).data
+            except Exception as e: pass # print(e)            
+
             try:
-                meta_image = ((mutagen.File(data)).get("APIC:Cover (front)")).data
-            except Exception as e: pass #print(e)
-                
+                meta_image = ((mutagen.File(fname)).get("APIC:Cover (front)")).data
+            except Exception as e:  pass # print(e)
+
             pixmap = QtGui.QPixmap()
             pixmap.loadFromData(meta_image)
-            pixmap = pixmap.scaled(400, 400)
-            custom_playlist_display_widget_ob.label.setPixmap(pixmap)
-            custom_playlist_display_widget_ob.label.setScaledContents(True)
-            
+            pixmap = pixmap.scaled(scale[0], scale[1])
+            obj.setPixmap(pixmap)
+            obj.setScaledContents(True)
+
         except Exception as e:
             pixmap = QtGui.QPixmap()
-            pixmap = pixmap.scaled(400, 400)
-            custom_playlist_display_widget_ob.label.setPixmap(pixmap)
-            custom_playlist_display_widget_ob.label.setScaledContents(True)
-            # print(e)         
+            pixmap = pixmap.scaled(scale[0], scale[1])
+            obj.setPixmap(pixmap)
+            obj.setScaledContents(True)
+            # print(e)
     
     
-    def tag_editor(self):
-        track = ((self.tableView_music.model()).index((self.tableView_music.selectedIndexes())[1].row(), 0)).data()
-
-
-############## Playlist functions ##############################################
-################################################################################   
-
-
-    def add_new_playlist(self, name):
-        if name != '' :
-            self.Ui_add_play_obj.lineEdit.clear()
-            a = [((self.tableView_music.model()).index(i.row(), 1)).data() for i in (self.tableView_music.selectedIndexes())[::23]]
-            
-            playlist_lut = {}
-            for i in a:
-                playlist_lut[i] = i          
-            self.playlist_lut_main[name] = playlist_lut
-            self.comboBox.clear()
-            [self.comboBox.addItem(keys) for (keys, val) in self.playlist_lut_main.items()]            
-            self.Ui_add_play_obj.close()
+    def item_set_creator(self, data):
+        item = ''
+        for i in data: 
+            item = f"{item}, '{i}'"
+        item = f"({item[1:]})"
+        return item
     
-    def playlist_add(self):
-        a = [((self.tableView_music.model()).index(i.row(), 1)).data() for i in (self.tableView_music.selectedIndexes())[::23]]
-        playlist_lut = self.playlist_lut_main[self.comboBox.currentText()]
+    @timeit
+    def view_refresher(self, view, table):
+        query_model = QtSql.QSqlQueryModel()
+        query_model.setQuery(f"SELECT * FROM {table}")
         
-        for i in a:
+        while query_model.canFetchMore():
+            query_model.fetchMore(QtCore.QModelIndex())         
+        view.setModel(query_model)     
+    
+    def colum_sort_hint_sorter(self, num, table, query_model):
+        dic = {0: 'id',1: 'path_id',2: 'path',3: 'album_id',4: 'title',5: 'artist',6: 'rating',7: 'artist_sort',
+               8: 'artist_credit',9: 'album',10: 'albumartist',11: 'albumartist_sort',12: 'albumartist_credit',13: 'genre',14: 'lyricist',
+               15: 'composer',16: 'composer_sort',17: 'arranger',18: 'grouping',19: 'year',20: 'month',21: 'day',
+               22: 'track',23: 'tracktotal',24: 'disc',25: 'disctotal',26: 'lyrics',27: 'comments',28: 'bpm',
+               29: 'comp',30: 'mb_trackid',31: 'mb_albumid',32: 'mb_artistid',33: 'mb_albumartistid',34: 'mb_releasetrackid',
+               35: 'albumtype',36: 'label',37: 'acoustid_fingerprint',38: 'acoustid_id',39: 'mb_releasegroupid',40: 'asin',
+               41: 'catalognum',42: 'script',43: 'language',44: 'country',45: 'albumstatus',46: 'media',47: 'albumdisambig',
+               48: 'releasegroupdisambig',49: 'disctitle',50: 'encoder',51: 'rg_track_gain',52: 'rg_track_peak',53: 'rg_album_gain',
+               54: 'rg_album_peak',55: 'r128_track_gain',56: 'r128_album_gain',57: 'original_year',58: 'original_month',
+               59: 'original_day',60: 'initial_key',61: 'length',62: 'bitrate',63: 'format',64: 'samplerate',65: 'bitdepth',
+               66: 'channels',67: 'mtime',68: 'added',69: 'file_size'}
+        sql = f"SELECT * FROM {table} ORDER BY {dic[num]}"
+        query_model.setQuery(sql)
+        while query_model.canFetchMore():
+            query_model.fetchMore(QtCore.QModelIndex())
+            
+################################      CONTEX MENU FUNCTIONS       ##################################
+    
+    @timeit
+    def lib_view_play(self, col, col_name, library_view, now_palying_view, flag = None):
+        query = QtSql.QSqlQuery()
+        lib_mod = self.library_model
+        now_play_mod = self.now_play_model
+        try:
+            query.exec_("DROP VIEW now_playing")
+        except Exception as e:
+            print(e)
+    
+        if flag != "shuffle":
+            rows = [(lib_mod.index(i.row(), col).data())for i in library_view.selectedIndexes()[::70]]
+            rows = set(rows)
+            ids = ""
+            for data in rows:
+                ids = f"{ids},'{data}'" 
+            ids = f"({ids[1:]})"        
+            query.exec_(f"CREATE VIEW now_playing AS SELECT * FROM library WHERE {col_name} IN {ids}")
+            
+        if flag == "shuffle":
+            query.exec_(f"CREATE VIEW now_playing AS SELECT * FROM library ORDER BY random()")
+    
+        now_play_mod.setQuery("SELECT * FROM now_playing")
+        while now_play_mod.canFetchMore():
+            now_play_mod.fetchMore(QtCore.QModelIndex()) 
+        now_palying_view.setModel(now_play_mod)      
+
+    @timeit
+    def lib_view_queue(self, col, col_name, lib_view, now_play_view, flag = None):
+        try:
+            query = QtSql.QSqlQuery()
+            lib_mod = self.library_model
+            now_play_mod = self.now_play_model
+            prev = []
             try:
-                playlist_lut[i]
-            except:
-                playlist_lut[i] = i
-        model = QtGui.QStandardItemModel()       
-        if os.path.isfile("resources/settings/library_data.txt"):
-            with open('resources/settings/library_data.txt', 'r', encoding = 'utf-8') as lib_f:
-                file_data = json.load(lib_f)
-                
-        
-        for (key, val) in playlist_lut.items():
-            model.appendRow([QtGui.QStandardItem(str(i)) for i in file_data[val]])
-            
-        self.playlist_view.setModel(model)
-   
-    def playlist_saver(self, name):
-        
-        if name != '' :
-            a = [((self.tableView_music.model()).index(i.row(), 1)).data() for i in (self.tableView_music.selectedIndexes())[::23]]
-            playlist_lut = self.playlist_lut_main[name]
-            
-            for i in a:
                 try:
-                    playlist_lut[i]
-                except:
-                    playlist_lut[i] = i
-                    
-            self.playlist_lut_main[name] = playlist_lut
-            model = QtGui.QStandardItemModel()       
-            if os.path.isfile("resources/settings/library_data.txt"):
-                with open('resources/settings/library_data.txt', 'r', encoding = 'utf-8') as lib_f:
-                    file_data = json.load(lib_f)
-                    
+                    query.exec_(f"SELECT id FROM now_playing")
+                    while query.next():
+                        prev.append((query.record()).value("id"))
+                except: pass                
+                query.exec_("DROP VIEW now_playing")
+            except Exception as e:
+                print(e)
+            rows = set([(lib_mod.index(i.row(), col).data())for i in lib_view.selectedIndexes()[::70]])
+            ids = ""
+            for data in rows:
+                ids = f"{ids},'{data}'" 
+            ids = f"({ids[1:]})"
             
-            for (key, val) in playlist_lut.items():
-                model.appendRow([QtGui.QStandardItem(str(i)) for i in file_data[val]])
-            if name == self.comboBox.currentText():
-                self.playlist_view.setModel(model)            
+            if flag != 'shuffle':
+                query.exec_(f"CREATE VIEW now_playing AS SELECT * FROM library WHERE {col_name} IN {ids} OR id in {self.item_set_creator(prev)}")
+            if flag == 'shuffle':
+                query.exec_(f"CREATE VIEW now_playing AS SELECT * FROM library WHERE id IN {ids} ORDER BY random()")
+    
+            now_play_mod.setQuery("SELECT * FROM now_playing")
+            while now_play_mod.canFetchMore():
+                now_play_mod.fetchMore(QtCore.QModelIndex()) 
+            now_play_view.setModel(now_play_mod)             
+   
+        except:
+            self.lib_view_playnow()
+   
+    @timeit
+    def lib_view_ratings_update(self, num):
+        query = QtSql.QSqlQuery()
+        model = self.library_model
+        rows = set([(model.index(i.row(), 0).data())for i in self.tableView_music.selectedIndexes()[::70]])
+        ids = ""
+        for data in rows:
+            ids = f"{ids},'{data}'" 
+        ids = f"({ids[1:]})"
+        query.exec_(f"UPDATE library SET rating = {num} WHERE id IN {ids}")
         
-    def playlist_loader(self, name):
-        if name != '':
-            playlist_lut = self.playlist_lut_main[name]
-            model = QtGui.QStandardItemModel()
-            if os.path.isfile("resources/settings/library_data.txt"):
-                with open('resources/settings/library_data.txt', 'r', encoding = 'utf-8') as lib_f:
-                    file_data = json.load(lib_f)
+        model.setQuery("SELECT * FROM library")
+        while model.canFetchMore():
+            model.fetchMore(QtCore.QModelIndex())          
+        self.tableView_music.setModel(model)
+    
+    @timeit
+    def lib_view_search_query(self, field):
+        rows = set([i.row()for i in self.tableView_music.selectedIndexes()[::70]])
+        data = []
+     
+        if (field == "artist"):
+            query_model = self.library_model
+            for row in rows:
+                data.extend([(query_model.index(row, 5).data()), (query_model.index(row, 8).data())])
+            data = set(data) - set([' ', ''])
+            sel = f"SELECT * FROM library WHERE artist IN {self.item_set_creator(data)}"
+            
+            query_model.setQuery(sel)
+            while query_model.canFetchMore():
+                query_model.fetchMore(QtCore.QModelIndex())         
+            self.tableView_music.setModel(query_model)
+            
+        if (field == 'similar'):
+            query_model = self.library_model
+            for row in rows:
+                data.extend([(query_model.index(row, 13).data())])
+            data = set(data) - set([' ', ''])
+            sel = f"SELECT * FROM library WHERE genre IN {self.item_set_creator(data)}"
+            query_model.setQuery(sel)           
+            while query_model.canFetchMore():
+                query_model.fetchMore(QtCore.QModelIndex())         
+            self.tableView_music.setModel(query_model)
+            
+        if (field == 'in_playlist'):
+            query_model = self.playlist_model
+            play = self.comboBox.currentText()
+            for row in rows:
+                data.extend([(query_model.index(row, 0).data())])
+            data = set(data)
+            sel = f"SELECT * FROM {play} WHERE id IN {self.item_set_creator(data)}"
+            query_model.setQuery(sel)
+            
+            while query_model.canFetchMore():
+                query_model.fetchMore(QtCore.QModelIndex())         
+            self.playlist_table.setModel(query_model)   
+            
+            
+        if (field == 'in_now_play'):
+            query_model = self.now_play_model
+            self.tabWidget.setCurrentIndex(1)
+            for row in rows:
+                data.extend([(query_model.index(row, 0).data())])
+            data = set(data)
+            sel = f"SELECT * FROM now_playing WHERE id IN {self.item_set_creator(data)}"
+            query_model.setQuery(sel)
 
+            while query_model.canFetchMore():
+                query_model.fetchMore(QtCore.QModelIndex())         
+            self.now_playing_table.setModel(query_model)
             
-            for (key, val) in playlist_lut.items():
-                model.appendRow([QtGui.QStandardItem(str(i)) for i in file_data[val]])
-                
-            self.playlist_view.setModel(model)        
-        
+        if (field == 'in_file_exp'):
+            item = rows[0]
+
+
+    
+    @timeit
+    def playlist_cbox_update(self):
+        query = QtSql.QSqlQuery()
+        query.exec_("SELECT name FROM sqlite_master WHERE type = 'view' and name != 'now_playing'")
+        items = []
+        while query.next():
+            items.append((query.record()).value('name'))
+        self.comboBox.clear()
+        self.comboBox.addItems(items)
+        return items
+    
+    @timeit
+    def playlist_add_current(self):
+        name = self.comboBox.currentText()
+        self.playlist_saver(name)
+        self.cbox_playlist_loader()
+    
+    @timeit
+    def playlist_add_new(self, name):
+        if (re.match(r'[A-Za-z_-]', name) and not(re.match(r'library', name)) and not(re.match(r'now_playing', name))):
+            try:
+                query = QtSql.QSqlQuery()
+                model = self.tableView_music.model()
+                rows = [(model.index(i.row(), 0).data())for i in self.tableView_music.selectedIndexes()[::70]]
+                rows = set(rows)
+                ids = ""
+                for data in rows:
+                    ids = f"{ids},'{data}'" 
+                ids = f"({ids[1:]})"
+                query.exec_(f"CREATE VIEW {name} AS SELECT * FROM library WHERE id IN {ids}")
+            except:
+                pass
+            self.Ui_add_play_obj.close()
+            self.playlist_cbox_update()
+    
+    @timeit
+    def playlist_saver(self, name):
+        if (re.match(r'[A-Za-z_-]', name) and not(re.match(r'library', name)) and not(re.match(r'now_playing', name))):
+            try:
+                query = QtSql.QSqlQuery()
+                model = self.tableView_music.model()
+                prev = []
+                try:
+                    try:
+                        query.exec_(f"SELECT id FROM {name}")
+                        while query.next():
+                            prev.append((query.record()).value("id"))
+                    except:
+                        pass                
+                    query.exec_(f"DROP VIEW {name}")
+                except Exception as e:
+                    print(e)
+                rows = [(model.index(i.row(), 0).data())for i in self.tableView_music.selectedIndexes()[::70]]
+                rows.extend(prev)
+                rows = set(rows)
+                ids = ""
+                for data in rows:
+                    ids = f"{ids},'{data}'" 
+                ids = f"({ids[1:]})"
+                query.exec_(f"CREATE VIEW {name} AS SELECT * FROM library WHERE id IN {ids}")
+            except:
+                pass
+    
+    def cbox_playlist_loader(self): 
+        playlist = self.comboBox.currentText()
+        self.playlist_model.setQuery(f"SELECT * FROM {playlist}")
+
+        while self.playlist_model.canFetchMore():
+            self.playlist_model.fetchMore(QtCore.QModelIndex())
+        self.playlist_table.setModel(self.playlist_model)
+    
 ################################################################################
 ################################################################################
-
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)

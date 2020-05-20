@@ -1,6 +1,7 @@
 {
   "file_path": [
-    "E:/musiccc"
+    "E:/musc",
+    "C:/Users/OMMAR/Music/SONGS SORTED"
   ],
   "file_format_selected": {
     ".wav": 1,
