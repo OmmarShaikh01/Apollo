@@ -3,7 +3,8 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 import json
 import threading
 import re 
-import sys 
+import sys
+import functools
 
 import file_explorer_ui
 import lib_up 
@@ -18,7 +19,6 @@ class FileBrowser(file_explorer_ui.Ui_MainWindow_file_exp, QtWidgets.QMainWindow
         self.treeView.customContextMenuRequested.connect(self.context_menu)        
         self.populate()
         self.context_list_view()
-        self.buttonBox.accepted.connect(lambda:(self.scan_folder_ok))
         self.buttonBox.rejected.connect(self.cancle)
         self.pushButton.pressed.connect(lambda: self.folder_scanner())
    
@@ -44,6 +44,7 @@ class FileBrowser(file_explorer_ui.Ui_MainWindow_file_exp, QtWidgets.QMainWindow
         self.treeView.setSortingEnabled(True)
         self.model_list = QtGui.QStandardItemModel()
 
+
     def context_menu(self):    
         menu = QtWidgets.QMenu()
         open = menu.addAction("Add Folder to library")
@@ -51,6 +52,7 @@ class FileBrowser(file_explorer_ui.Ui_MainWindow_file_exp, QtWidgets.QMainWindow
         cursor = QtGui.QCursor()
         menu.exec_(cursor.pos())
     
+
     def open_file(self):
         index = self.treeView.currentIndex()
         file_path = self.model.filePath(index)

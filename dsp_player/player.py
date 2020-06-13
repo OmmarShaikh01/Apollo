@@ -130,12 +130,11 @@ class Decoder:
             try:
                 data = self.reader.queue.get()
                 if hasattr(self,"osci"):
-                    print(type(data))
-                    if data == "EOF":
+                    if (type(data) == type("EOF")):
                         self.osci.stop()
                         return None
                     if (type(data) != type("EOF")):
-                        self.osci.play()
+                        self.osci.out()
                         
             except queue.Empty:
                 print(f"<{__name__}> {e}")
@@ -159,7 +158,7 @@ class Decoder:
         self.table_update()
         self.server.setCallback(self.table_update)
         freq = self.dtable.getRate()
-        self.osci = pyo.Osc(table=self.dtable, freq=freq)
+        self.osci = pyo.Osc(table=self.dtable, freq=freq).out()
         return self.osci
       
 

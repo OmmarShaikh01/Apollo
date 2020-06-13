@@ -1,4 +1,4 @@
-from beets import library
+import mutagen
 import sqlite3 as sql
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers.polling import PollingObserver as Observer
@@ -9,6 +9,81 @@ import os
 import threading
 import datetime
 import hashlib
+import functools
+
+Column_lut ={'acoustid_fingerprint': 18,
+             'acoustid_id': 19,
+             'added': 15,
+             'album': 6,
+             'albumartist': 7,
+             'albumartistsort': 67,
+             'albumsort': 68,
+             'arranger': 69,
+             'artist': 4,
+             'artistsort': 70,
+             'asin': 48,
+             'author': 49,
+             'barcode': 50,
+             'bitrate': 10,
+             'bitrate_mode': 22,
+             'bpm': 17,
+             'catalognumber': 51,
+             'channels': 9,
+             'compilation': 52,
+             'composer': 53,
+             'composersort': 71,
+             'conductor': 42,
+             'copyright': 43,
+             'date': 44,
+             'discnumber': 45,
+             'discsubtitle': 46,
+             'encodedby': 47,
+             'encoder_settings': 23,
+             'filename': 3,
+             'filesize': 13,
+             'filetype': 14,
+             'frame_offset': 24,
+             'genre': 8,
+             'id': 0,
+             'isrc': 30,
+             'language': 31,
+             'layer': 25,
+             'length': 12,
+             'lyricist': 32,
+             'media': 33,
+             'mode': 26,
+             'mood': 34,
+             'musicbrainz_albumartistid': 54,
+             'musicbrainz_albumid': 55,
+             'musicbrainz_albumstatus': 56,
+             'musicbrainz_albumtype': 57,
+             'musicbrainz_artistid': 58,
+             'musicbrainz_discid': 59,
+             'musicbrainz_releasegroupid': 60,
+             'musicbrainz_releasetrackid': 61,
+             'musicbrainz_trackid': 62,
+             'musicbrainz_trmid': 63,
+             'musicbrainz_workid': 64,
+             'musicip_fingerprint': 65,
+             'musicip_puid': 66,
+             'organization': 35,
+             'originaldate': 36,
+             'padding': 27,
+             'path': 2,
+             'path_id': 1,
+             'performer': 37,
+             'protected': 28,
+             'ratings': 16,
+             'releasecountry': 38,
+             'replaygain_gain': 20,
+             'replaygain_peak': 21,
+             'sample_rate': 11,
+             'sketchy': 29,
+             'title': 5,
+             'titlesort': 72,
+             'tracknumber': 39,
+             'version': 40,
+             'website': 41}
 
 def timeit(method):
     def timed(*args, **kw):
@@ -31,6 +106,13 @@ def database_connector_wrap(funct):
         conn.close()            
         return out
     return database_connector_exec
+
+def exception(func, *args, **kwargs):
+    try:
+        result = func(*args, **kwargs)
+    except:
+        return None
+    return result
 
 class ChangesEventHandler(FileSystemEventHandler):
    
@@ -197,14 +279,14 @@ class Library_database_mang():
     @database_connector_wrap
     def database_scan_init(self, *args, **kwargs):
         conn = kwargs["conn"]
-        self.obj = kwargs["label"]
-        self.button = kwargs["scan_b"]
-        self.button.setEnabled(False)
+        self.obj = kwargs["label"] if ("label" in kwargs) else None
+        self.button = kwargs["scan_b"] if ("scan_b" in kwargs) else None
+        if (self.button is not None): self.button.setEnabled(False)
         self.database_table_creator(conn)
-        self.database_insert_values(conn)
+        self.directory_scanner(conn)
         self.library_stat_query(conn)
-        self.obj.setText("Scanning Directories Completed")
-        self.button.setEnabled(True)
+        if (self.obj is not None): self.obj.setText("Scanning Directories Completed")
+        if (self.button is not None): self.button.setEnabled(True)
         
     @timeit
     def database_table_creator(self, conn = None, *args, **kwargs):
@@ -212,244 +294,603 @@ class Library_database_mang():
         CREATES TABLES ON FIRST STARTUP
         """
         try:
-            conn.execute(f"""
-                        CREATE TABLE IF NOT EXISTS library (
-                        id                 TEXT UNIQUE PRIMARY KEY,
-                        path_id                 TEXT UNIQUE,
-                        path               TEXT,
-                        album_id           TEXT,
-    
-                        title             TEXT,
-                        artist            TEXT,
-                        rating            INTEGER,
-                        artist_sort       TEXT,
-                        artist_credit     TEXT,
-                        album             TEXT,
-                        albumartist       TEXT,
-                        albumartist_sort  TEXT,
-                        albumartist_credit TEXT,
-                        genre             TEXT,
-                        lyricist          TEXT,
-                        composer          TEXT,
-                        composer_sort     TEXT,
-                        arranger          TEXT,
-                        grouping          TEXT,
-                        year           INTEGER,
-                        month          INTEGER,
-                        day            INTEGER,
-                        track          INTEGER,
-                        tracktotal     INTEGER,
-                        disc           INTEGER,
-                        disctotal      INTEGER,
-                        lyrics            TEXT,
-                        comments          TEXT,
-                        bpm            INTEGER,
-                        comp           BOOLEAN,
-                        mb_trackid        TEXT,
-                        mb_albumid        TEXT,
-                        mb_artistid       TEXT,
-                        mb_albumartistid  TEXT,
-                        mb_releasetrackid TEXT,
-                        albumtype         TEXT,
-                        label             TEXT,
-                        acoustid_fingerprint TEXT,
-                        acoustid_id       TEXT,
-                        mb_releasegroupid TEXT,
-                        asin              TEXT,
-                        catalognum        TEXT,
-                        script            TEXT,
-                        language          TEXT,
-                        country           TEXT,
-                        albumstatus       TEXT,
-                        media             TEXT,
-                        albumdisambig     TEXT,
-                        releasegroupdisambig TEXT,
-                        disctitle         TEXT,
-                        encoder           TEXT,
-                        rg_track_gain        FLOAT,
-                        rg_track_peak        FLOAT,
-                        rg_album_gain        FLOAT,
-                        rg_album_peak        FLOAT,
-                        r128_track_gain      INTEGER,
-                        r128_album_gain      INTEGER,
-                        original_year    INTEGER,
-                        original_month   INTEGER,
-                        original_day     INTEGER,
-                        initial_key          TEXT,
-    
-                        length      INTEGER,
-                        bitrate     INTEGER,
-                        format         TEXT,
-                        samplerate  INTEGER,
-                        bitdepth    INTEGER,
-                        channels    INTEGER,
-                        mtime       INTEGER,
-                        added       INTEGER,
-                        file_size   INTEGER)
-                        """)
+            conn.execute("""
+            CREATE TABLE IF NOT EXISTS
+            library(
+            id TEXT,
+            path_id TEXT,
+            path TEXT,
+            filename TEXT,
+            artist TEXT,
+            title TEXT,
+            album TEXT,
+            albumartist TEXT,
+            genre TEXT,
+            
+            channels INTEGER,
+            bitrate INTEGER,
+            sample_rate INTEGER,
+            length INTEGER,
+            filesize INTEGER,
+            filetype TEXT,
+            added INTEGER,
+            ratings INTEGER,
+            bpm INTEGER,
+            
+            acoustid_fingerprint TEXT,
+            acoustid_id TEXT,
+            replaygain_gain TEXT,
+            replaygain_peak TEXT,
+            bitrate_mode TEXT,
+            encoder_settings TEXT,
+            frame_offset TEXT,
+            layer TEXT,
+            mode TEXT,
+            padding TEXT,
+            protected TEXT,
+            sketchy TEXT,
+            
+            isrc TEXT,
+            language TEXT,
+            lyricist TEXT,
+            media TEXT,
+            mood TEXT,
+            organization TEXT,
+            originaldate TEXT,
+            performer TEXT,
+            releasecountry TEXT,
+            tracknumber INTEGER,
+            version TEXT,
+            website TEXT,
+            conductor TEXT,
+            copyright TEXT,
+            date TEXT,
+            discnumber INTEGER,
+            discsubtitle TEXT,
+            encodedby TEXT,
+            asin TEXT,
+            author TEXT,
+            barcode INTEGER,
+            catalognumber INTEGER,
+            compilation TEXT,
+            composer TEXT,
+            
+            musicbrainz_albumartistid TEXT,
+            musicbrainz_albumid TEXT,
+            musicbrainz_albumstatus TEXT,
+            musicbrainz_albumtype TEXT,
+            musicbrainz_artistid TEXT,
+            musicbrainz_discid TEXT,
+            musicbrainz_releasegroupid TEXT,
+            musicbrainz_releasetrackid TEXT,
+            musicbrainz_trackid TEXT,
+            musicbrainz_trmid TEXT,
+            musicbrainz_workid TEXT,
+            musicip_fingerprint TEXT,
+            musicip_puid TEXT,
+            
+            albumartistsort TEXT,
+            albumsort TEXT,
+            arranger TEXT,
+            artistsort TEXT,
+            composersort TEXT,
+            titlesort TEXT
+            )
+            """)
+            
+            conn.execute("""
+            CREATE VIEW now_playing AS
+            SELECT 
+            NULL AS id,
+            NULL AS path_id,
+            NULL AS path,
+            NULL AS filename,
+            NULL AS artist,
+            NULL AS title,
+            NULL AS album,
+            NULL AS albumartist,
+            NULL AS genre,
+            
+            NULL AS channels,
+            NULL AS bitrate,
+            NULL AS sample_rate,
+            NULL AS length,
+            NULL AS filesize,
+            NULL AS filetype,
+            NULL AS added,
+            NULL AS ratings,
+            NULL AS bpm,
+            
+            NULL AS acoustid_fingerprint,
+            NULL AS acoustid_id,
+            NULL AS replaygain_gain,
+            NULL AS replaygain_peak,
+            NULL AS bitrate_mode,
+            NULL AS encoder_settings,
+            NULL AS frame_offset,
+            NULL AS layer,
+            NULL AS mode,
+            NULL AS padding,
+            NULL AS protected,
+            NULL AS sketchy,
+            
+            NULL AS isrc,
+            NULL AS language,
+            NULL AS lyricist,
+            NULL AS media,
+            NULL AS mood,
+            NULL AS organization,
+            NULL AS originaldate,
+            NULL AS performer,
+            NULL AS releasecountry,
+            NULL AS tracknumber,
+            NULL AS version,
+            NULL AS website,
+            NULL AS conductor,
+            NULL AS copyright,
+            NULL AS date,
+            NULL AS discnumber,
+            NULL AS discsubtitle,
+            NULL AS encodedby,
+            NULL AS asin,
+            NULL AS author,
+            NULL AS barcode,
+            NULL AS catalognumber,
+            NULL AS compilation,
+            NULL AS composer,
+            
+            NULL AS musicbrainz_albumartistid,
+            NULL AS musicbrainz_albumid,
+            NULL AS musicbrainz_albumstatus,
+            NULL AS musicbrainz_albumtype,
+            NULL AS musicbrainz_artistid,
+            NULL AS musicbrainz_discid,
+            NULL AS musicbrainz_releasegroupid,
+            NULL AS musicbrainz_releasetrackid,
+            NULL AS musicbrainz_trackid,
+            NULL AS musicbrainz_trmid,
+            NULL AS musicbrainz_workid,
+            NULL AS musicip_fingerprint,
+            NULL AS musicip_puid,
+            
+            NULL AS albumartistsort,
+            NULL AS albumsort,
+            NULL AS arranger,
+            NULL AS artistsort,
+            NULL AS composersort,
+            NULL AS titlesort
+            """)
+            
+            conn.execute("""
+            CREATE VIEW search_query AS
+            SELECT 
+            NULL AS id,
+            NULL AS path_id,
+            NULL AS path,
+            NULL AS filename,
+            NULL AS artist,
+            NULL AS title,
+            NULL AS album,
+            NULL AS albumartist,
+            NULL AS genre, 
+            
+            NULL AS channels,
+            NULL AS bitrate,
+            NULL AS sample_rate,
+            NULL AS length,
+            NULL AS filesize,
+            NULL AS filetype,
+            NULL AS added,
+            NULL AS ratings,
+            NULL AS bpm,
+            
+            NULL AS acoustid_fingerprint,
+            NULL AS acoustid_id,
+            NULL AS replaygain_gain,
+            NULL AS replaygain_peak,
+            NULL AS bitrate_mode,
+            NULL AS encoder_settings,
+            NULL AS frame_offset,
+            NULL AS layer,
+            NULL AS mode,
+            NULL AS padding,
+            NULL AS protected,
+            NULL AS sketchy,
+            
+            NULL AS isrc,
+            NULL AS language,
+            NULL AS lyricist,
+            NULL AS media,
+            NULL AS mood,
+            NULL AS organization,
+            NULL AS originaldate,
+            NULL AS performer,
+            NULL AS releasecountry,
+            NULL AS tracknumber,
+            NULL AS version,
+            NULL AS website,
+            NULL AS conductor,
+            NULL AS copyright,
+            NULL AS date,
+            NULL AS discnumber,
+            NULL AS discsubtitle,
+            NULL AS encodedby,
+            NULL AS asin,
+            NULL AS author,
+            NULL AS barcode,
+            NULL AS catalognumber,
+            NULL AS compilation,
+            NULL AS composer,
+            
+            NULL AS musicbrainz_albumartistid,
+            NULL AS musicbrainz_albumid,
+            NULL AS musicbrainz_albumstatus,
+            NULL AS musicbrainz_albumtype,
+            NULL AS musicbrainz_artistid,
+            NULL AS musicbrainz_discid,
+            NULL AS musicbrainz_releasegroupid,
+            NULL AS musicbrainz_releasetrackid,
+            NULL AS musicbrainz_trackid,
+            NULL AS musicbrainz_trmid,
+            NULL AS musicbrainz_workid,
+            NULL AS musicip_fingerprint,
+            NULL AS musicip_puid,
+            
+            NULL AS albumartistsort,
+            NULL AS albumsort,
+            NULL AS arranger,
+            NULL AS artistsort,
+            NULL AS composersort,
+            NULL AS titlesort
+            """)
+            
+            conn.execute("""
+            CREATE VIEW playlist AS
+            SELECT 
+            NULL AS id,
+            NULL AS path_id,
+            NULL AS path,
+            NULL AS filename,
+            NULL AS artist,
+            NULL AS title,
+            NULL AS album,
+            NULL AS albumartist,
+            NULL AS genre,
+            
+            NULL AS channels,
+            NULL AS bitrate,
+            NULL AS sample_rate,
+            NULL AS length,
+            NULL AS filesize,
+            NULL AS filetype,
+            NULL AS added,
+            NULL AS ratings,
+            NULL AS bpm,
+            
+            NULL AS acoustid_fingerprint,
+            NULL AS acoustid_id,
+            NULL AS replaygain_gain,
+            NULL AS replaygain_peak,
+            NULL AS bitrate_mode,
+            NULL AS encoder_settings,
+            NULL AS frame_offset,
+            NULL AS layer,
+            NULL AS mode,
+            NULL AS padding,
+            NULL AS protected,
+            NULL AS sketchy,
+            
+            NULL AS isrc,
+            NULL AS language,
+            NULL AS lyricist,
+            NULL AS media,
+            NULL AS mood,
+            NULL AS organization,
+            NULL AS originaldate,
+            NULL AS performer,
+            NULL AS releasecountry,
+            NULL AS tracknumber,
+            NULL AS version,
+            NULL AS website,
+            NULL AS conductor,
+            NULL AS copyright,
+            NULL AS date,
+            NULL AS discnumber,
+            NULL AS discsubtitle,
+            NULL AS encodedby,
+            NULL AS asin,
+            NULL AS author,
+            NULL AS barcode,
+            NULL AS catalognumber,
+            NULL AS compilation,
+            NULL AS composer,
+            
+            NULL AS musicbrainz_albumartistid,
+            NULL AS musicbrainz_albumid,
+            NULL AS musicbrainz_albumstatus,
+            NULL AS musicbrainz_albumtype,
+            NULL AS musicbrainz_artistid,
+            NULL AS musicbrainz_discid,
+            NULL AS musicbrainz_releasegroupid,
+            NULL AS musicbrainz_releasetrackid,
+            NULL AS musicbrainz_trackid,
+            NULL AS musicbrainz_trmid,
+            NULL AS musicbrainz_workid,
+            NULL AS musicip_fingerprint,
+            NULL AS musicip_puid,
+            
+            NULL AS albumartistsort,
+            NULL AS albumsort,
+            NULL AS arranger,
+            NULL AS artistsort,
+            NULL AS composersort,
+            NULL AS titlesort
+            """)
+            
             conn.commit()
         except Exception as e:
             print("sql_table_alter:",e)   
 
+
     @timeit
-    def database_insert_values(self, conn = None, *args, **kwargs):
-        """
-        SCANS THE PATH ON A NEW THREAD AND A NEW CONNECTION IS CREATED AND DATA IS COMMITED WHEN ALL QUERIES ARE DONE
-        """
+    def directory_scanner(self, conn):
+        cur = conn.cursor()
         with open('resources/settings/config.txt') as json_file:
             data = json.load(json_file)
         stringlist = data["file_path"]
-        for paths in stringlist:
-            self.directory_scanner(paths, conn)
-    
-    @timeit
-    def directory_scanner(self, root, conn):      
-        for dire,subd,files in os.walk(root):
-            if files != []:
-                self.threaded_parser(files, dire, conn)
+        for root in stringlist:        
+            for dire,subd,files in os.walk(root):
+                if files != []:
+                    for file in files:
+                        fname = os.path.abspath(os.path.join(dire, file))
+                        if os.path.splitext(fname)[1] not in ['', '.jpg', ".wav", '.ini', '.png', ".txt"]:
+                            self.parser(fname, cur)
                 conn.commit()
-        
     
-    @timeit
-    def threaded_parser(self, files, dire, conn):
-        cur = conn.cursor()
-        sql = f"""
-        INSERT INTO library
-        (id, path_id, path, album_id, title, artist, rating, 
-        artist_sort, artist_credit, album, albumartist, albumartist_sort, albumartist_credit, 
-        genre, lyricist, composer, composer_sort, arranger, grouping, 
-        year, month, day, track, tracktotal, disc, 
-        disctotal, lyrics, comments, bpm, comp, mb_trackid, 
-        mb_albumid, mb_artistid, mb_albumartistid, mb_releasetrackid, albumtype, label, 
-        acoustid_fingerprint, acoustid_id, mb_releasegroupid, asin, catalognum, script,
-        language, country, albumstatus, media, albumdisambig, releasegroupdisambig,
-        disctitle, encoder, rg_track_gain, rg_track_peak, rg_album_gain, rg_album_peak,
-        r128_track_gain, r128_album_gain, original_year,original_month,original_day,initial_key,
-        length, bitrate, format, samplerate, bitdepth, channels,
-        mtime, added, file_size)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
-        ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
-        ?,?,?,?,?,?,?,?,?,?)
-        """        
-        for file in files:
-            fname = os.path.abspath(os.path.join(dire, file))
-            self.scanning_label_setter(self.obj, fname)
-            result = (self.file_parser(fname, cur))
+    def parser(self, path, cur):
+        def trial(dic, key):
             try:
-                if len(result) == 70:
-                    cur.execute(sql, result)
-            except Exception as e:
-                print(e)
-    
-    def file_parser(self, fname, cur):
-        if os.path.splitext(fname)[1] not in ['', '.jpg', ".wav", '.ini', '.png', ".txt"]:
-            path_hashv = (hashlib.md5(fname.encode())).hexdigest()
+                if key == "bitrate_mode":
+                    result = str(dic[key]).replace("BitrateMode.", "")
+                else: result = dic[key]
+            except:
+                result = None    
+            return result    
+
+        try:
+            self.scanning_label_setter(self.obj, path)
+            path_hashv = (hashlib.md5(path.encode())).hexdigest()
             cur.execute('SELECT id FROM library WHERE path_id LIKE ?', (f"%{path_hashv}%", ))
-            
             if not (cur.fetchall()): 
-                item_info = library.Item.from_path(fname)
-                temp = ((item_info.get("artist")) + os.path.split(item_info.get("path").decode())[1]).encode()
-                hashv = (hashlib.md5(temp)).hexdigest() 
-                cur.execute('SELECT id FROM library WHERE id LIKE ?', (f"%{hashv}%", ))
-               
+                muta_obj = mutagen.File(path, easy = True)
+                t = time.gmtime()        
+                muta_dict = {'id': None,
+                             'path_id': path_hashv,
+                             'path': path,   
+                             'filename': os.path.split(muta_obj.filename)[1],
+                             'artist': muta_obj.get('artist'),
+                             'title': muta_obj.get('title'),
+                             'album': muta_obj.get('album'),
+                             'albumartist': muta_obj.get('albumartist'),             
+                             'genre': muta_obj.get('genre'),
+                             
+                             'channels': trial(muta_obj.info.__dict__, 'channels'),
+                             'bitrate': trial(muta_obj.info.__dict__, 'bitrate'),
+                             'sample_rate': trial(muta_obj.info.__dict__, 'sample_rate'),
+                             'length': str(datetime.timedelta(seconds = trial(muta_obj.info.__dict__, 'length'))),
+                             'filesize': os.stat(path).st_size,
+                             'filetype': (os.path.splitext(path)[1][1:]).upper(), 
+                             'added': datetime.datetime.now(),
+                             'ratings': 0,
+                             'bpm': muta_obj.get('bpm'),             
+                             
+                             'acoustid_fingerprint': muta_obj.get('acoustid_fingerprint'),
+                             'acoustid_id': muta_obj.get('acoustid_id'),             
+                             'replaygain_gain': muta_obj.get('replaygain_*_gain'),
+                             'replaygain_peak': muta_obj.get('replaygain_*_peak'),             
+                             'bitrate_mode': trial(muta_obj.info.__dict__, 'bitrate_mode'),
+                             'encoder_settings': trial(muta_obj.info.__dict__, 'encoder_settings'),
+                             'frame_offset': trial(muta_obj.info.__dict__, 'frame_offset'),
+                             'layer': trial(muta_obj.info.__dict__, 'layer'),
+                             'mode': trial(muta_obj.info.__dict__, 'mode'),
+                             'padding': trial(muta_obj.info.__dict__, 'padding'),
+                             'protected': trial(muta_obj.info.__dict__, 'protected'),
+                             'sketchy': trial(muta_obj.info.__dict__, 'sketchy'),
+                             
+                             'isrc': muta_obj.get('isrc'),
+                             'language': muta_obj.get('language'),
+                             'lyricist': muta_obj.get('lyricist'),
+                             'media': muta_obj.get('media'),
+                             'mood': muta_obj.get('mood'),
+                             'organization': muta_obj.get('organization'),
+                             'originaldate': muta_obj.get('originaldate'),
+                             'performer': muta_obj.get('performer'),
+                             'releasecountry': muta_obj.get('releasecountry'),             
+                             'tracknumber': muta_obj.get('tracknumber'),
+                             'version': muta_obj.get('version'),
+                             'website': muta_obj.get('website'),
+                             'conductor': muta_obj.get('conductor'),
+                             'copyright': muta_obj.get('copyright'),
+                             'date': muta_obj.get('date'),
+                             'discnumber': muta_obj.get('discnumber'),
+                             'discsubtitle': muta_obj.get('discsubtitle'),
+                             'encodedby': muta_obj.get('encodedby'),             
+                             'asin': muta_obj.get('asin'),
+                             'author': muta_obj.get('author'),
+                             'barcode': muta_obj.get('barcode'),
+                             'catalognumber': muta_obj.get('catalognumber'),
+                             'compilation': muta_obj.get('compilation'),
+                             'composer': muta_obj.get('composer'),             
+                             
+                             'musicbrainz_albumartistid': muta_obj.get('musicbrainz_albumartistid'),
+                             'musicbrainz_albumid': muta_obj.get('musicbrainz_albumid'),
+                             'musicbrainz_albumstatus': muta_obj.get('musicbrainz_albumstatus'),
+                             'musicbrainz_albumtype': muta_obj.get('musicbrainz_albumtype'),
+                             'musicbrainz_artistid': muta_obj.get('musicbrainz_artistid'),
+                             'musicbrainz_discid': muta_obj.get('musicbrainz_discid'),
+                             'musicbrainz_releasegroupid': muta_obj.get('musicbrainz_releasegroupid'),
+                             'musicbrainz_releasetrackid': muta_obj.get('musicbrainz_releasetrackid'),
+                             'musicbrainz_trackid': muta_obj.get('musicbrainz_trackid'),
+                             'musicbrainz_trmid': muta_obj.get('musicbrainz_trmid'),
+                             'musicbrainz_workid': muta_obj.get('musicbrainz_workid'),
+                             'musicip_fingerprint': muta_obj.get('musicip_fingerprint'),
+                             'musicip_puid': muta_obj.get('musicip_puid'),
+                             
+                             'albumartistsort': muta_obj.get('albumartistsort'),
+                             'albumsort': muta_obj.get('albumsort'),
+                             'arranger': muta_obj.get('arranger'),
+                             'artistsort': muta_obj.get('artistsort'),
+                             'composersort': muta_obj.get('composersort'),
+                             'titlesort': muta_obj.get('titlesort'),             
+                             }
+                for k, v in muta_dict.items(): 
+                    if type(list()) == type(v):
+                        muta_dict[k] = v[0]
+                    if v == None:
+                        muta_dict[k] = ""
+                muta_dict["id"] = hashlib.md5((muta_dict["artist"].lower() + muta_dict["title"].lower() + muta_dict["album"].lower()).encode()).hexdigest()
+                
+                cur.execute('SELECT id FROM library WHERE id LIKE ?', (f"%{muta_dict['id']}%", ))
                 if not cur.fetchall():
-                    query = {}
-                    for i in item_info.items(): query[i[0]] = i[1]                    
-                    query["id"] = hashv
-                    query['path_id'] = path_hashv
-                    a = time.gmtime()
-                    query['added'] = f"{a.tm_year}-{a.tm_mon}-{a.tm_mday} {a.tm_hour}:{a.tm_min}:{a.tm_sec}"
-                    query['path'] = fname
-                    query['length'] = str(datetime.timedelta(seconds=int(query['length'])))
-                    query['file_size'] = item_info.try_filesize()
-                    query['rating'] = 0                    
-                    sql = (query['id'], query['path_id'], query['path'], query['album_id'], query['title'], query['artist'],query['rating'], 
-                           query['artist_sort'], query['artist_credit'], query['album'], query['albumartist'], query['albumartist_sort'], query['albumartist_credit'], 
-                           query['genre'], query['lyricist'], query['composer'], query['composer_sort'], query['arranger'], query['grouping'], 
-                           query['year'], query['month'], query['day'], query['track'], query['tracktotal'], query['disc'], 
-                           query['disctotal'], query['lyrics'], query['comments'], query['bpm'], query['comp'], query['mb_trackid'], 
-                           query['mb_albumid'], query['mb_artistid'], query['mb_albumartistid'], query['mb_releasetrackid'], query['albumtype'], query['label'], 
-                           query['acoustid_fingerprint'], query['acoustid_id'], query['mb_releasegroupid'], query['asin'], query['catalognum'], query['script'],
-                           query['language'], query['country'], query['albumstatus'], query['media'], query['albumdisambig'], query['releasegroupdisambig'],
-                           query['disctitle'], query['encoder'], query['rg_track_gain'], query['rg_track_peak'], query['rg_album_gain'], query['rg_album_peak'],
-                           query['r128_track_gain'], query['r128_album_gain'], query['original_year'],query['original_month'],query['original_day'],query['initial_key'],
-                           query['length'], query['bitrate'], query['format'], query['samplerate'], query['bitdepth'], query['channels'],
-                           query['mtime'], query['added'], query['file_size'])
-                    return sql
-                else:
-                    return ()
+                    sql = """
+                        INSERT INTO library(
+                        id,
+                        path_id,
+                        path,
+                        filename,
+                        artist,
+                        title,
+                        album,
+                        albumartist,
+                        genre,
             
-            else:
-                return ()            
-        
-        else:
-            return ()
+                        channels,
+                        bitrate,
+                        sample_rate,
+                        length,
+                        filesize,
+                        filetype,
+                        added,
+                        ratings,
+                        bpm,
+            
+                        acoustid_fingerprint,
+                        acoustid_id,
+                        replaygain_gain,
+                        replaygain_peak,
+                        bitrate_mode,
+                        encoder_settings,
+                        frame_offset,
+                        layer,
+                        mode,
+                        padding,
+                        protected,
+                        sketchy,
+            
+                        isrc,
+                        language,
+                        lyricist,
+                        media,
+                        mood,
+                        organization,
+                        originaldate,
+                        performer,
+                        releasecountry,
+                        tracknumber,
+                        version,
+                        website,
+                        conductor,
+                        copyright,
+                        date,
+                        discnumber,
+                        discsubtitle,
+                        encodedby,
+                        asin,
+                        author,
+                        barcode,
+                        catalognumber,
+                        compilation,
+                        composer,
+            
+                        musicbrainz_albumartistid,
+                        musicbrainz_albumid,
+                        musicbrainz_albumstatus,
+                        musicbrainz_albumtype,
+                        musicbrainz_artistid,
+                        musicbrainz_discid,
+                        musicbrainz_releasegroupid,
+                        musicbrainz_releasetrackid,
+                        musicbrainz_trackid,
+                        musicbrainz_trmid,
+                        musicbrainz_workid,
+                        musicip_fingerprint,
+                        musicip_puid,
+            
+                        albumartistsort,
+                        albumsort,
+                        arranger,
+                        artistsort,
+                        composersort,
+                        titlesort) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
+                        ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
+                        ?,?,?,?,?)
+                        """                    
+                    cur.execute(sql, list(muta_dict.values()))
+        except Exception as e:
+            print(e)
 
-    def library_stat_query(self, conn = None, *args, **kwargs):
-        try:
-            cur = conn.cursor()
-            sql = f"SELECT  round(SUM(file_size)/1000000000.0,4)||' Gb' AS 'Size in Gb' FROM library"
-            cur.execute(sql)
-            size = cur.fetchone()[0]
-        except Exception as e:
-            print(e)        
-        
-        try:
-            sql = f"SELECT sum(substr(length,-8,2) * 360) + sum(substr(length,-2,2) * 60) + sum(substr(length,-5,2)) AS 'Total Playtime' FROM library"
-            cur.execute(sql)
-            play_time = str(datetime.timedelta(seconds=cur.fetchone()[0]))
-        except Exception as e:
-            print(e)   
-        
-        try:
-            sql = f"SELECT count(DISTINCT album) FROM library"
-            cur.execute(sql)
-            albums = cur.fetchone()[0]
-        except Exception as e:
-            print(e)           
-        
-        try:
-            sql = f"SELECT count(DISTINCT id) FROM library"
-            cur.execute(sql)
-            items = cur.fetchone()[0]        
-        except Exception as e:
-            print(e)           
-        
-        try:
-            sql = f"SELECT count(DISTINCT artist) from library"
-            cur.execute(sql)
-            artists = cur.fetchone()[0]
-        except Exception as e:
-            print(e)   
-        
-        print(size, play_time, items, albums, artists)
-
+    
     def scanning_label_setter(self, obj, text):
-        obj.setText(str(text))
+        if (self.obj is not None): obj.setText(str(text))
     
-class LIbrary_database_queries():
     
-    def __init__(self, *args):
-        pass
-    
-    @timeit
-    def library_search_query(self, search, cur):
-        search = f"%{search}%"
-        sql = f"SELECT * FROM library WHERE title LIKE ?  OR artist LIKE ? OR album LIKE ? OR albumartist LIKE ?"
-        cur.execute(sql, [search, search, search, search])
-        result = cur.fetchall()
-        print(result)
-        
-    
-    @timeit
-    def library_select_query(self, search, cur):
-        search = [search] if type(search) != type(list()) else search
-        temp = "".join([",?" for i in range(len(search))])
-        temp = temp[1:]
-        sql = f"SELECT * FROM library WHERE id in ({temp})"
-        cur.execute(sql, search)
-        result = cur.fetchall()
-        print(result)
+    @database_connector_wrap
+    def library_stat_query(self, *args, **kwargs):
+        conn = kwargs["conn"]
+        if conn:
+            try:
+                cur = conn.cursor()
+                sql = f"SELECT  round(SUM(filesize)/1000000000.0,4)||' Gb' AS 'Size in Gb' FROM library"
+                cur.execute(sql)
+                size = cur.fetchone()[0]
+            except Exception as e:
+                size = 0
+                print(e)        
+            
+            try:
+                sql = f"SELECT sum(substr(length,1,1))*360 + sum(substr(length,3,2))*60 +sum(substr(length,6,2)) FROM library"
+                cur.execute(sql)
+                play_time = str(datetime.timedelta(seconds=cur.fetchone()[0]))
+            except Exception as e:
+                play_time = 0
+                print(e)   
+            
+            try:
+                sql = f"SELECT count(DISTINCT album) FROM library"
+                cur.execute(sql)
+                albums = cur.fetchone()[0]
+            except Exception as e:
+                albums = 0
+                print(e)           
+            
+            try:
+                sql = f"SELECT count(DISTINCT id) FROM library"
+                cur.execute(sql)
+                items = cur.fetchone()[0]        
+            except Exception as e:
+                items = 0        
+                print(e)           
+            
+            try:
+                sql = f"SELECT count(DISTINCT artist) from library"
+                cur.execute(sql)
+                artists = cur.fetchone()[0]
+            except Exception as e:
+                artists = 0
+                print(e)   
+            
+            out = f"Library Size: {size}, Play time: {play_time}, Files: {items}, Albums:{albums}, Artists:{artists}"
+            return out
 
 if __name__ == "__main__":
     (Library_database_mang()).database_scan_init()

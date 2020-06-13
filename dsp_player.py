@@ -1,6 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pyo
-import dsp_player_ui
 import subprocess as sp
 import pyqtgraph as pg
 import numpy as np
@@ -12,6 +11,8 @@ import threading
 import pyo
 import queue
 
+from main_window_ui import Ui_MainWindow
+
 def tryit(method):
     def try_ex(*args, **kwargs):
         try:
@@ -20,10 +21,10 @@ def tryit(method):
             print(f"<{method.__name__}> {e}")        
     return try_ex
         
-def input_switcher(dec1, dec2, fader, env = 5):
+def input_switcher(dec1, dec2, server, fader, env = 5):
     def delete():
         del dec1
-        
+    s = server
     osc2 = dec2.play()
     s.setCallback(lambda: (dec1.table_update(), dec2.table_update()))
     pyo.CallAfter(lambda: (s.setCallback(lambda: dec2.table_update()),delete()), time = (5 + 0.95))
@@ -45,7 +46,6 @@ def RateLimited(maxPerSecond):
         return rateLimitedFunction
     return decorate
 
-
 class QueueReaderThread(threading.Thread):
     """A thread that consumes data from a filehandle and sends the data
     over a Queue.
@@ -56,26 +56,25 @@ class QueueReaderThread(threading.Thread):
         super(QueueReaderThread, self).__init__()
         self.file_h = av.open(path)
         self.duration = self.file_h.duration
-        self.daemon = True
+        self.daemon = False
         self.queue = queue.Queue(200)
+        self.decoder_thread_comm = queue.Queue(20)
         self.flag = "EXE"
         print(f"<{self.name}> Created")
     
     @RateLimited(2)   
     def fseek(self, time): # sync calls to stop crashes
-        lock = threading.RLock()
-        with lock:
-            try:         
-                self.file_h.seek(time*1000000)
-                self.file_gen = self.file_h.decode(audio = 0)
-                self.flag = "EXE"
-                self.EOF = False
-                data = next(self.file_gen)
-                with self.queue.mutex:
-                    self.queue.queue.clear()            
-                self.queue.put(data.to_ndarray())
-            except Exception as e:
-                print(f"<{self.name}><fseek> {e}")
+        try:         
+            self.file_h.seek(time*1000000)
+            self.file_gen = self.file_h.decode(audio = 0)
+            self.flag = "EXE"
+            self.EOF = False
+            data = next(self.file_gen)
+            with self.queue.mutex:
+                self.queue.queue.clear()            
+            self.queue.put(data.to_ndarray())
+        except Exception as e:
+            print(f"<{self.name}><fseek> {e}")
 
       
     def run(self):
@@ -97,10 +96,21 @@ class QueueReaderThread(threading.Thread):
     
     def end(self):
         self.flag = "END"
+    
+    def pause(self):
+        """ pauses the execution of the thread """        
+        while True:
+            time.sleep(0.5)
+            try:
+                start = self.decoder_thread_comm.get()
+                if start == "START":
+                    break
+            except Exception as e:
+                print(f"<{self.name}><pause> {e}")            
+      
         
 class Decoder:
     """"""
-    
     def __init__(self, server, sr = 44100):
         self.pos = 0
         self.sr = sr
@@ -137,8 +147,7 @@ class Decoder:
             try:
                 data = self.reader.queue.get()
                 if hasattr(self,"osci"):
-                    print(type(data))
-                    if data == "EOF":
+                    if (type(data) == type("EOF")):
                         self.osci.stop()
                         return None
                     if (type(data) != type("EOF")):
@@ -170,29 +179,24 @@ class Decoder:
         return self.osci
 
 
-class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
+class Dsp_player(Ui_MainWindow, QtWidgets.QMainWindow):
 
     def __init__(self):
         super(Dsp_player, self).__init__()
+        self.setupUi(self)
         
+    def startup_dsp(self):
         self.CHUNK = 2048
         self.buffer = int(2048/4)
-
-        self.setupUi(self)
         self.button_action_decl()
         self.variable_dec()
         self.server_booted()
-
         
-    
     def variable_dec(self):
         self.equilizer = {}
         self.allPreset = {}
-        self.play_list = ["C:\\Users\\OMMAR\\Music\\SONGS SORTED\\1000\\250-500\\2-06 Lightning Strikes.mp3",
-                          "C:\\Users\\OMMAR\\Music\\SONGS SORTED\\1000\\250-500\\2-12 I'll Be Back (feat. ROOKIES) - FrkMusic.Club.mp3",
-                          "C:\\Users\\OMMAR\\Music\\SONGS SORTED\\1000\\250-500\\2-03 Youth Dem (Turn Up) [feat. Snoop Lion].mp3", ]
-        self.src_input_fader_fade = 0 # seconds
-
+        self.src_input_fader_fade = 0
+        
 ################################################################################
 #########################  button_action_decl  ################################# 
 ################################################################################     
@@ -361,14 +365,6 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         # Misc
         self.process.clicked.connect(lambda:(self.output_switch.setVoice(1), self.process_out.play(), self.enable_all()))
         self.bypass.clicked.connect(lambda:(self.output_switch.setVoice(0), self.process_out.stop(),  self.disabler_all()))
-        
-        self.toolb_play.clicked.connect(self.play_track)
-        self.toolb_pause.clicked.connect(self.pause_track)
-        self.toolb_stop.clicked.connect(self.stop_track)
-        self.toolb_prev.clicked.connect(self.prev_track)
-        self.toolb_next.clicked.connect(self.next_track)
-        self.toolb_seekb.clicked.connect(self.seekb_track)
-        self.toolb_seekf.clicked.connect(self.seekf_track)
     
 ################################################################################
 #########################  audio setup ######################################### 
@@ -397,17 +393,13 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         audio_setup['def-out'] =in_dev[pyo.pa_get_default_input()]
         
         
+    @tryit
     def server_booted(self):
-        #try:
-            #pass
         self.audio_server = pyo.Server(buffersize = self.buffer).boot()
         self.audio_server.setVerbosity(7)
-
         self.server_on()
         self.audio_server.setAmp(0.010)
         self.audio_pipe_init()
-        #except:
-            #print("server_booted")
             
     def server_on(self):    
         try:
@@ -420,49 +412,15 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         try:
             if not (self.audio_server.stop()):
                 self.label.setText("Server Stoped ........")
-                self.close()
         except AttributeError:
             self.label.setText("No Server is Initilized")
             
     def trial(self):
         print('trial')
     
-################################################################################
-########################  PlayBack functions  ##################################
-################################################################################
-    def play_track(self, path):
-        dec = Decoder(self.audio_server)
-        dec.fopen(self.play_list[0])
-        osc = dec.play()        
-        self.src_input = osc
-        
-    def pause_track(self):
-        pass
-    
-    def stop_track(self):
-        pass
-    
-    def next_track(self):
-        file = self.play_list.pop()
-        print(file)
-    
-    def prev_track(self):
-        pass
-    
-    def seekf_track(self, sec = 5):
-        pass
-    
-    def seekb_track(self, sec = 5):
-        pass    
-################################################################################
-################################################################################ 
-################################################################################     
-
-
-
-
 ########################## Audio pipeline ######################################
 ################################################################################
+        
     def pre_plot_declaration(self):
         self.master_vu_meter_graph.plot()
         self.master_vu_meter_graph.setXRange(0, 2)
@@ -481,8 +439,7 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
   
     def audio_pipe_init(self):
         self.pre_plot_declaration()
-        self.src_input = pyo.Sine(0)
-        self.process_in = self.src_input
+        self.process_in = pyo.InputFader(pyo.Sine(0))
         
         # audio procerssing pipeline declaration
         self.gate_filter_pipe()
@@ -492,12 +449,13 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.chrous_filter_pipe()
         self.freeverb_filter_pipe()
         self.eq_filter_pipe()
+        self.disabler_all()
         
         # audio procerssing pipeline ended and output switch declaration
-        self.output_switch = pyo.Selector([self.src_input, self.process_out], 0)
+        self.output_switch = pyo.Selector([self.process_in, self.process_out], 0)
         self.peak_amp = pyo.PeakAmp(self.output_switch, function = self.master_peak_plotter)
         self.output_switch.out()
-        self.disabler_all()
+        
 
     def gate_filter_pipe(self): 
         self.gate_filter_in = self.process_in
@@ -548,9 +506,9 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
         self.filter_input_line = self.output_switch_free
     
     def eq_filter_pipe(self):
-        self.eq_in = self.parametric_eq(self.src_input)
+        self.eq_in = self.parametric_eq(self.process_in)
         self.eq_stop()
-        self.eq_bypass = pyo.Selector([self.eq_in, self.src_input], 0)
+        self.eq_bypass = pyo.Selector([self.eq_in, self.process_in], 0)
         self.output_switch_eq = pyo.Selector([self.eq_bypass, self.filter_input_line], 1)
         self.process_out = self.output_switch_eq
 
@@ -624,71 +582,7 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
                                                       self.dial_31.setValue(self.dial_m_eq_2.value()),
                                                       self.dial_32.setValue(self.dial_m_eq_2.value())))
         
-        self.filter_type_s__1.valueChanged.connect(lambda:(self.filter_type_s__2.setValue(self.filter_type_s__1.value()), 
-                                                           self.filter_type_s__3.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s__4.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s__5.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s__6.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s__7.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s__8.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s__9.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_10.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_11.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_12.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_13.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_14.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_15.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_16.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_17.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_18.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_19.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_20.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_21.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_22.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_23.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_24.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_25.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_26.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_27.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_28.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_29.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_30.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_31.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_32.setValue(self.filter_type_s__1.value()),
-                                                           self.filter_type_s_33.setValue(self.filter_type_s__1.value())))
         
-        self.filter_type_s__2.valueChanged.connect(lambda : self.e_1.setType(self.filter_type_s__2.value())) 
-        self.filter_type_s__3.valueChanged.connect(lambda : self.e_2.setType(self.filter_type_s__3.value()))
-        self.filter_type_s__4.valueChanged.connect(lambda : self.e_3.setType(self.filter_type_s__4.value()))
-        self.filter_type_s__5.valueChanged.connect(lambda : self.e_4.setType(self.filter_type_s__5.value()))
-        self.filter_type_s__6.valueChanged.connect(lambda : self.e_5.setType(self.filter_type_s__6.value()))
-        self.filter_type_s__7.valueChanged.connect(lambda : self.e_6.setType(self.filter_type_s__7.value()))
-        self.filter_type_s__8.valueChanged.connect(lambda : self.e_7.setType(self.filter_type_s__8.value()))
-        self.filter_type_s__9.valueChanged.connect(lambda : self.e_8.setType(self.filter_type_s__9.value()))
-        self.filter_type_s_10.valueChanged.connect(lambda : self.e_9.setType(self.filter_type_s_10.value()))
-        self.filter_type_s_11.valueChanged.connect(lambda : self.e10.setType(self.filter_type_s_11.value()))
-        self.filter_type_s_12.valueChanged.connect(lambda : self.e11.setType(self.filter_type_s_12.value()))
-        self.filter_type_s_13.valueChanged.connect(lambda : self.e12.setType(self.filter_type_s_13.value()))
-        self.filter_type_s_14.valueChanged.connect(lambda : self.e13.setType(self.filter_type_s_14.value()))
-        self.filter_type_s_15.valueChanged.connect(lambda : self.e14.setType(self.filter_type_s_15.value()))
-        self.filter_type_s_16.valueChanged.connect(lambda : self.e15.setType(self.filter_type_s_16.value()))
-        self.filter_type_s_17.valueChanged.connect(lambda : self.e16.setType(self.filter_type_s_17.value()))
-        self.filter_type_s_18.valueChanged.connect(lambda : self.e17.setType(self.filter_type_s_18.value()))
-        self.filter_type_s_19.valueChanged.connect(lambda : self.e18.setType(self.filter_type_s_19.value()))
-        self.filter_type_s_20.valueChanged.connect(lambda : self.e19.setType(self.filter_type_s_20.value()))
-        self.filter_type_s_21.valueChanged.connect(lambda : self.e20.setType(self.filter_type_s_21.value()))
-        self.filter_type_s_22.valueChanged.connect(lambda : self.e21.setType(self.filter_type_s_22.value()))
-        self.filter_type_s_23.valueChanged.connect(lambda : self.e22.setType(self.filter_type_s_23.value()))
-        self.filter_type_s_24.valueChanged.connect(lambda : self.e23.setType(self.filter_type_s_24.value()))
-        self.filter_type_s_25.valueChanged.connect(lambda : self.e24.setType(self.filter_type_s_25.value()))
-        self.filter_type_s_26.valueChanged.connect(lambda : self.e25.setType(self.filter_type_s_26.value()))
-        self.filter_type_s_27.valueChanged.connect(lambda : self.e26.setType(self.filter_type_s_27.value()))
-        self.filter_type_s_28.valueChanged.connect(lambda : self.e27.setType(self.filter_type_s_28.value()))
-        self.filter_type_s_29.valueChanged.connect(lambda : self.e28.setType(self.filter_type_s_29.value()))
-        self.filter_type_s_30.valueChanged.connect(lambda : self.e29.setType(self.filter_type_s_30.value()))
-        self.filter_type_s_31.valueChanged.connect(lambda : self.e30.setType(self.filter_type_s_31.value()))
-        self.filter_type_s_32.valueChanged.connect(lambda : self.e31.setType(self.filter_type_s_32.value()))
-        self.filter_type_s_33.valueChanged.connect(lambda : self.e32.setType(self.filter_type_s_33.value()))
         
 
         self.eq_sld.valueChanged.connect(lambda : (self.e_1.setMul(self.eq_sld.value()/100)))
@@ -1331,41 +1225,7 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
                                                   self.dial_29.value(),
                                                   self.dial_30.value(),
                                                   self.dial_31.value(),
-                                                  self.dial_32.value()], 
-                              
-                              
-                              "filter_values_eq" : [self.filter_type_s__2.value(),
-                                                  self.filter_type_s__3.value(),
-                                                  self.filter_type_s__4.value(),
-                                                  self.filter_type_s__5.value(),
-                                                  self.filter_type_s__6.value(),
-                                                  self.filter_type_s__7.value(),
-                                                  self.filter_type_s__8.value(),
-                                                  self.filter_type_s__9.value(),
-                                                  self.filter_type_s_10.value(),
-                                                  self.filter_type_s_11.value(),
-                                                  self.filter_type_s_12.value(),
-                                                  self.filter_type_s_13.value(),
-                                                  self.filter_type_s_14.value(),
-                                                  self.filter_type_s_15.value(),
-                                                  self.filter_type_s_16.value(),
-                                                  self.filter_type_s_17.value(),
-                                                  self.filter_type_s_18.value(),
-                                                  self.filter_type_s_19.value(),
-                                                  self.filter_type_s_20.value(),
-                                                  self.filter_type_s_21.value(),
-                                                  self.filter_type_s_22.value(),
-                                                  self.filter_type_s_23.value(),
-                                                  self.filter_type_s_24.value(),
-                                                  self.filter_type_s_25.value(),
-                                                  self.filter_type_s_26.value(),
-                                                  self.filter_type_s_27.value(),
-                                                  self.filter_type_s_28.value(),
-                                                  self.filter_type_s_29.value(),
-                                                  self.filter_type_s_30.value(),
-                                                  self.filter_type_s_31.value(),
-                                                  self.filter_type_s_32.value(),
-                                                  self.filter_type_s_33.value()], 
+                                                  self.dial_32.value()],
                               "butn_values_eq": [self.EnableB.isChecked(), self.DisableB.isChecked()]}
         
             self.eq_combo_pre.clear()
@@ -1575,53 +1435,17 @@ class Dsp_player(dsp_player_ui.Ui_Dsp_player_mainwindow, QtWidgets.QMainWindow):
                 self.dial_30,
                 self.dial_31,
                 self.dial_32] 
-    
-    
-        filters = [self.filter_type_s__2,
-                   self.filter_type_s__3,
-                   self.filter_type_s__4,
-                   self.filter_type_s__5,
-                   self.filter_type_s__6,
-                   self.filter_type_s__7,
-                   self.filter_type_s__8,
-                   self.filter_type_s__9,
-                   self.filter_type_s_10,
-                   self.filter_type_s_11,
-                   self.filter_type_s_12,
-                   self.filter_type_s_13,
-                   self.filter_type_s_14,
-                   self.filter_type_s_15,
-                   self.filter_type_s_16,
-                   self.filter_type_s_17,
-                   self.filter_type_s_18,
-                   self.filter_type_s_19,
-                   self.filter_type_s_20,
-                   self.filter_type_s_21,
-                   self.filter_type_s_22,
-                   self.filter_type_s_23,
-                   self.filter_type_s_24,
-                   self.filter_type_s_25,
-                   self.filter_type_s_26,
-                   self.filter_type_s_27,
-                   self.filter_type_s_28,
-                   self.filter_type_s_29,
-                   self.filter_type_s_30,
-                   self.filter_type_s_31,
-                   self.filter_type_s_32,
-                   self.filter_type_s_33]
       
         if val == "reset":
             currentval = {'slider_values_eq': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                           'dial_values_eq': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                          'filter_values_eq': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           'butn_values_eq': [True, False]}
         if val != 'reset':
             currentval = self.equilizer[val]
             
-        for s, d, f, sv, dv, fv in zip(slider, dial, filters, currentval["slider_values_eq"], currentval["dial_values_eq"], currentval["filter_values_eq"]):
+        for s, d, f, sv, dv, fv in zip(slider, dial, currentval["slider_values_eq"], currentval["dial_values_eq"]):
             s.setValue(sv)
             d.setValue(dv)
-            f.setValue(fv)
         
         if currentval["butn_values_eq"][0]: (self.EnableB.click())
         if currentval["butn_values_eq"][1]: (self.DisableB.click())
@@ -1634,5 +1458,6 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     main_window = Dsp_player()
+    main_window.startup_dsp()
     main_window.show()
     sys.exit(app.exec_())

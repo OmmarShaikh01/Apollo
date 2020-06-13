@@ -24,9 +24,10 @@ def timeit(method):
             name = kw.get('log_name', method.__name__.upper())
             kw['log_time'][name] = int((te - ts) * 1000)
         else:
-            print ('%r %2.2f s' % (method.__name__, (te - ts)))
+            print ('%r %2.2f s \n\n' % (method.__name__, (te - ts)))
         return result
     return timed
+
 
 def threadit(method):
     def thread_call(*args, **kw):
@@ -35,10 +36,26 @@ def threadit(method):
         thread.start()
     return thread_call
 
-json_pprint = lambda val: print(json.dumps(val, indent = 2))
+
+def json_pprint(val):
+    try:
+        print(json.dumps(val, indent = 2))
+    except Exception as exc:
+        print(val)
+
+@timeit
+def search_query_handler(method, *args, **kw):
+    try:
+        print (method.__name__)
+        result = method(*args, **kw)
+    except Exception as exc:
+        print("Something went wrong with the request: %s" % exc)
+    else:
+        json_pprint(result)
+
 
 class musicbrainz_bindings():
-    """"""
+    """"""     
 
     def __init__(self):
         """Constructor"""
@@ -50,17 +67,53 @@ class musicbrainz_bindings():
         email = "ommarshaikh17@gmail.com"
         mb.set_useragent(app, version, contact = email)
         mb.set_rate_limit(limit_or_interval = 1.0, new_requests = 10)
-        mb.set_format(fmt="json")
-
+        mb.set_format(fmt="xml")
+        result = self.connector()
+        json_pprint(result)
     
     def connector(self):
         self.conn = sql.connect("library.db")
         self.cur = self.conn.cursor()
-        self.cur.execute("select * from library where id = '3c70fa9f4650fc6dfd6112a3023f795b' ")
-        for values in  self.cur.fetchall():
-            pass
+        self.cur.execute("select * from library where title = ''")
+        result = {key:self.value_binder(values) for key, values in  enumerate(self.cur.fetchall())}
+        return result
+        
     
-
+    def value_binder(self, values):
+        dic = {0: 'id',1: 'path_id',2: 'path',3: 'album_id',4: 'title',5: 'artist',6: 'rating',7: 'artist_sort',
+               8: 'artist_credit',9: 'album',10: 'albumartist',11: 'albumartist_sort',12: 'albumartist_credit',13: 'genre',14: 'lyricist',
+               15: 'composer',16: 'composer_sort',17: 'arranger',18: 'grouping',19: 'year',20: 'month',21: 'day',
+               22: 'track',23: 'tracktotal',24: 'disc',25: 'disctotal',26: 'lyrics',27: 'comments',28: 'bpm',
+               29: 'comp',30: 'mb_trackid',31: 'mb_albumid',32: 'mb_artistid',33: 'mb_albumartistid',34: 'mb_releasetrackid',
+               35: 'albumtype',36: 'label',37: 'acoustid_fingerprint',38: 'acoustid_id',39: 'mb_releasegroupid',40: 'asin',
+               41: 'catalognum',42: 'script',43: 'language',44: 'country',45: 'albumstatus',46: 'media',47: 'albumdisambig',
+               48: 'releasegroupdisambig',49: 'disctitle',50: 'encoder',51: 'rg_track_gain',52: 'rg_track_peak',53: 'rg_album_gain',
+               54: 'rg_album_peak',55: 'r128_track_gain',56: 'r128_album_gain',57: 'original_year',58: 'original_month',
+               59: 'original_day',60: 'initial_key',61: 'length',62: 'bitrate',63: 'format',64: 'samplerate',65: 'bitdepth',
+               66: 'channels',67: 'mtime',68: 'added',69: 'file_size'}
+        result = {k: v for k, v in zip(dic.values(), values)}
+        return result
+    
+    
+    def missing_fields_processor(self, data):
+        try:
+            data = os.path.split(data)[1]
+            data = data.replace("Unknown Artist", "")
+            data = data.split("-")
+            if len(data) == 1:
+                if re.search(r"[a-z]{1}[A-Z]{1}", data[0]):
+                    temp = re.search(r"[a-z]{1}[A-Z]{1}", data[0])
+                    data = [data[0][: temp.start()+1], os.path.splitext(data[0][temp.end()-1:])[0]]
+                else:
+                    data = data[0][re.match("(\d\d.{0,1})", data[0]).end():]
+                    data = os.path.splitext(data.strip())[0]
+                    return data
+            if len(data) == 2:
+                data = [data[0].strip(), os.path.splitext(data[1].strip())[0]]
+                
+            return data
+        except Exception as e:
+            return data    
 
 class file_properties_main(Ui_MainWindow, QtWidgets.QMainWindow):
 
