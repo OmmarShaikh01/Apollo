@@ -124,7 +124,7 @@ class Main_window(Ui_MainWindow, QtWidgets.QMainWindow):
         self.playlist_view.horizontalHeader().sortIndicatorChanged.connect(lambda: (self.playlist_sort_hint()))
         
         self.file_explorer_object = FileBrowser()
-        self.file_explorer_object.buttonBox.accepted.connect(lambda: self.models_declaration())
+        self.file_explorer_object.buttonBox.accepted.connect(lambda: (self.models_declaration(), self.file_explorer_object.close()))
         self.rescanA.triggered.connect(lambda: self.models_declaration())
         self.add_folders_to_libA.triggered.connect(lambda: self.menu_bar_actions(1))
 
@@ -686,75 +686,57 @@ class Playback_queue():
         return QueueIterator(self)
     
     def __getitem__(self, index):
-        return self.playing_queue[index]
+        return self.current()
        
     def put(self, data):
         self.playing_queue[self.pointer_put] = data
         self.pointer_put += 1
     
-    def get(self, index = None):
-        if index != None:
-            if (index <= self.size):
-                return self.playing_queue[index]
-            else:
-                raise KeyError 
-        else:
-            try:
-                data = self.playing_queue[self.pointer_get]
-                self.pointer_get += 1
-                return data
-            except KeyError:
-                if self.circ:
-                    self.pointer_get = 0
-                else:
-                    return ("EOF")
-    
     def current(self):
         data = self.playing_queue[self.pointer_get]
         return (self.pointer_get, data)
     
-    def next(self):
+    def _next(self):
         try:
             if self.pointer_get != (len(self.playing_queue) - 1):
                 self.pointer_get += 1
-                data = self.playing_queue[self.pointer_get]
-                return (self.pointer_get, data)
+                data = self.current()
+                return data
             elif self.pointer_get == (len(self.playing_queue) - 1):
                 if self.circ:
                     self.pointer_get = 0
-                    data = self.playing_queue[self.pointer_get]
-                    return (self.pointer_get, data)                    
+                    data = self.current()
+                    return data                   
                 else:
-                    return ("EOF")                 
+                    return (self.pointer_get,"EOF")                 
             else:
-                return ("EOF")            
+                return (self.pointer_get,"EOF")            
         except KeyError:
             if self.circ:
                 self.pointer_get = 0
             else:
-                return ("EOF")
+                return (self.pointer_get,"EOF")
         
     def prev(self):
         try:
             if self.pointer_get != 0:
                 self.pointer_get -= 1
-                data = self.playing_queue[self.pointer_get]
-                return (self.pointer_get, data)
+                data = self.current()
+                return data
             elif self.pointer_get == 0:
                 if self.circ:
                     self.pointer_get = (len(self.playing_queue) - 1)
-                    data = self.playing_queue[self.pointer_get]
-                    return (self.pointer_get, data)                    
+                    data = self.current()
+                    return data                
                 else:
-                    return ("EOF")
-                
+                    return (self.pointer_get,"EOF")
             else:
-                return ("EOF") 
+                return (self.pointer_get,"EOF") 
         except KeyError:
             if self.circ:
                 self.pointer_get = (len(self.playing_queue) - 1)
             else:
-                return ("EOF")          
+                return (self.pointer_get,"EOF")          
     
     def Setcircular(self, bl):
         self.circ = bl

@@ -4,7 +4,7 @@ import subprocess as sp
 import pyqtgraph as pg
 import numpy as np
 import time, json, random
-import av
+import av, io
 import utils
 import time, sys
 import threading
@@ -13,38 +13,6 @@ import queue
 
 from main_window_ui import Ui_MainWindow
 
-def tryit(method):
-    def try_ex(*args, **kwargs):
-        try:
-            return method(*args, **kwargs)
-        except Exception as e:
-            print(f"<{method.__name__}> {e}")        
-    return try_ex
-        
-def input_switcher(dec1, dec2, server, fader, env = 5):
-    def delete():
-        del dec1
-    s = server
-    osc2 = dec2.play()
-    s.setCallback(lambda: (dec1.table_update(), dec2.table_update()))
-    pyo.CallAfter(lambda: (s.setCallback(lambda: dec2.table_update()),delete()), time = (5 + 0.95))
-    fader.setInput(osc2, env)
-
-
-def RateLimited(maxPerSecond):
-    minInterval = 1.0 / float(maxPerSecond)
-    def decorate(func):
-        lastTimeCalled = [0.0]
-        def rateLimitedFunction(*args,**kargs):
-            elapsed = time.time() - lastTimeCalled[0]
-            leftToWait = minInterval - elapsed
-            if leftToWait>0:
-                time.sleep(leftToWait)
-            ret = func(*args,**kargs)
-            lastTimeCalled[0] = time.time()
-            return ret
-        return rateLimitedFunction
-    return decorate
 
 class QueueReaderThread(threading.Thread):
     """A thread that consumes data from a filehandle and sends the data
@@ -52,81 +20,158 @@ class QueueReaderThread(threading.Thread):
     """
     
     @utils.timeit
-    def __init__(self, path):
+    def __init__(self, channels, rate, path = "E:\\music\\file_example_MP3_700KB.mp3"):
         super(QueueReaderThread, self).__init__()
         self.file_h = av.open(path)
         self.duration = self.file_h.duration
+        self.channels = channels
+        self.sample_rate = rate
+        self.decoder_vars()
         self.daemon = False
-        self.queue = queue.Queue(200)
-        self.decoder_thread_comm = queue.Queue(20)
-        self.flag = "EXE"
+        self.queue_init()
         print(f"<{self.name}> Created")
     
-    @RateLimited(2)   
+    def decoder_vars(self):
+        self.bit_depth = 16
+        codec_dic = {16: {"codec": "pcm_s16le",
+                          "format": "s16",
+                          "file": "wav",
+                          "data_type": "int16",}}
+        
+        codec_dic = codec_dic[self.bit_depth]
+        self.data_type = codec_dic["data_type"]
+        self.io_buffer = io.BytesIO()
+        self.out = av.open(self.io_buffer, 'w', codec_dic["file"])
+        self.out_stream = self.out.add_stream(codec_dic["codec"])
+        
+        # resampler object details how we want to change frame information
+        self.audio_resampler = av.AudioResampler(
+            format = av.AudioFormat(codec_dic["format"]).packed,
+            layout = self.channels,
+            rate = self.sample_rate
+        )
+        
+        
+    @utils.tryit
+    def data_extractor(self, frame, flag = None):
+        if  flag == None:
+            self.queue.put(frame.to_ndarray(), True, 0.1)
+        else:
+            # clears the buffer for new data entry
+            self.io_buffer.seek(0)
+            self.io_buffer.truncate()
+            self.io_buffer.flush()
+      
+            frame.pts = None  # pts is presentation time-stamp. Not relevant here
+            frame = self.audio_resampler.resample(frame)  # get current working frame and re-sample it for encoding
+            for p in self.out_stream.encode(frame):  # encode the re-sampled frame
+                self.out.mux(p)
+             
+            data_buffer = np.frombuffer(self.io_buffer.getbuffer().tobytes(), dtype = self.data_type)            
+            data_dic = {}
+            for i in range(self.channels):
+                data_dic[i] = data_buffer[i::self.channels]
+            data = list(data_dic.values())
+            self.queue.put(data, True, 0.1)
+
+    
+    def queue_init(self):
+        try:
+            self.queue = queue.Queue(200)
+            self.file_gen = self.file_h.decode(audio = 0)
+            data = next(self.file_gen)
+            with self.queue.mutex:
+                self.queue.queue.clear()
+            self.queue.put(data.to_ndarray(), True, 0.1)
+        except Exception as e:
+            print(f"<{self.name}><fseek> {e}")
+            
+    
+    @utils.RateLimited(2)   
     def fseek(self, time): # sync calls to stop crashes
         try:         
             self.file_h.seek(time*1000000)
             self.file_gen = self.file_h.decode(audio = 0)
-            self.flag = "EXE"
-            self.EOF = False
             data = next(self.file_gen)
             with self.queue.mutex:
-                self.queue.queue.clear()            
-            self.queue.put(data.to_ndarray())
+                self.queue.queue.clear()
+            self.queue.put(data.to_ndarray(), True, 0.1)
         except Exception as e:
             print(f"<{self.name}><fseek> {e}")
 
-      
     def run(self):
-        while self.flag != "END":
-            self.EOF = False
-            if self.flag == "EXE":
-                if not(self.EOF):
-                    try:
-                        self.file_gen = self.file_h.decode(audio = 0)
-                        for data in self.file_gen:
-                            self.queue.put(data.to_ndarray())
-                        print("Stream > EOF")
-                    except av.EOFError:
-                        self.EOF = True
-                        self.queue.put("EOF")
-                    except Exception as e:
-                        print(f"<{self.name}><run> {e}")
-                        continue
-    
-    def end(self):
-        self.flag = "END"
-    
-    def pause(self):
-        """ pauses the execution of the thread """        
         while True:
-            time.sleep(0.5)
-            try:
-                start = self.decoder_thread_comm.get()
-                if start == "START":
-                    break
-            except Exception as e:
-                print(f"<{self.name}><pause> {e}")            
-      
+            if not hasattr(self, 'stream_state'):
+                self.stream_state = "PLAY"
+                
+            if self.stream_state == "END":
+                return None
+            
+            elif self.stream_state == "LOOP":
+                time.sleep(0.2)
+                continue
+            
+            elif self.stream_state == "PLAY":
+                try:
+                    data = next(self.file_gen)
+                    self.queue.put(data.to_ndarray(), True, 0.1)
+                except StopIteration:
+                    self.stream_state = "LOOP"
+                except av.EOFError:
+                    continue
+                except Exception as e:
+                    print(f"<{self.name}><run> {e}")
+                    continue
+            
+            elif self.stream_state == "PAUSE":
+                time.sleep(0.2)
+            elif self.stream_state == "STOP":
+                time.sleep(0.2)    
+            else:
+                time.sleep(0.2)
+
+    
+    def Pause(self):
+        self.stream_state = "PAUSE"
         
+    def Stop(self):
+        self.fseek(0)
+        self.stream_state = "STOP"
+    
+    def Play(self):
+        self.stream_state = "PLAY"
+        
+    def isPaused(self):
+        return self.stream_state == "PAUSE"
+    
+    def isStop(self):
+        self.stream_state == "STOP"
+    
+    def Kill(self):
+        self.stream_state = "END"
+        
+    def file_format(self):
+        return self.file_h.format.name
+    
 class Decoder:
     """"""
-    def __init__(self, server, sr = 44100):
+    def __init__(self, server, sr = 48000, chans = 2):
         self.pos = 0
         self.sr = sr
-        self.pdata = (self.sr * 100)
         self.server = server
-        self.channels = 2
+        self.channels = chans
+        self.executionslot = []
         
-        
-    @tryit    
+    @utils.tryit    
     def fopen(self, path):
-        self.reader = QueueReaderThread(path)
+        self.reader = QueueReaderThread(self.channels, self.sr, path)
         self.duration = int(self.reader.duration / 1000000)
-        self.dtable = pyo.DataTable(size = 4410000, chnls = self.channels)
-
-
-    @tryit
+        if self.reader.file_format() == 'mp3':
+            self.dtable = pyo.DataTable(size = (self.sr * 100), chnls = self.channels)
+            self.pdata = (self.sr * 100)
+            self.original_pdata = (self.sr * 100)
+            
+    @utils.tryit
     def data_to_list(self, data):
         if self.channels == 1:
             data = data[0].tolist()
@@ -137,27 +182,22 @@ class Decoder:
             return (data,len(data[0]))
    
    
-    @tryit   
+    @utils.tryit   
     def table_update(self):
+        self.current_time = (time.monotonic() - self.start_time)
+        [i() for i in self.executionslot]
+        if not self.reader.queue.empty():
+            try:
+                data = self.reader.queue.get()
+            except Exception as e:
+                print(f"<{__name__}> {e}")
+        else:
+            return None
+        
         try:
             if self.pdata <= 0:
                 self.pos = 0
-                self.pdata = (self.sr * 100)
-                
-            try:
-                data = self.reader.queue.get()
-                if hasattr(self,"osci"):
-                    if (type(data) == type("EOF")):
-                        self.osci.stop()
-                        return None
-                    if (type(data) != type("EOF")):
-                        self.osci.play()
-                        
-            except queue.Empty:
-                print(f"<{__name__}> {e}")
-                self.server.setCallback(lambda:'')
-                return None
-            
+                self.pdata = self.original_pdata
             if type(data) != None:
                 data,lent = self.data_to_list(data)
                 table = pyo.DataTable(lent, self.channels, data)
@@ -165,12 +205,11 @@ class Decoder:
                 self.pos += lent
                 self.pdata -= lent
         except Exception as e:
-            self.server.setCallback(lambda:'')
             print(f"<{__name__}> {e}")            
-     
         
-    @tryit
+    @utils.tryit
     def play(self):
+        self.start_time = time.monotonic()
         self.reader.start()
         self.table_update()
         self.server.setCallback(self.table_update)
@@ -178,16 +217,37 @@ class Decoder:
         self.osci = pyo.Osc(table=self.dtable, freq=freq)
         return self.osci
 
-
+    def decoder_stopper(self):
+        self.server.setCallback(lambda: "")
+        self.decoder_stopped = True
+    
+    def decoder_isStopped(self):
+        return self.decoder_stopped
+    
+    def decoder_restarter(self):
+        self.start_time = time.monotonic()
+        self.reader.fseek(0)
+        self.table_update()
+        self.server.setCallback(self.table_update)
+        freq = self.dtable.getRate()
+        self.osci = pyo.Osc(table=self.dtable, freq=freq)        
+    
+    def kill_decoder(self):
+        self.reader.Kill()
+        self.osci.stop()
+        
 class Dsp_player(Ui_MainWindow, QtWidgets.QMainWindow):
 
     def __init__(self):
         super(Dsp_player, self).__init__()
         self.setupUi(self)
-        
+    
+    
     def startup_dsp(self):
         self.CHUNK = 2048
-        self.buffer = int(2048/4)
+        self.Gbuffer = int(2048/4)
+        self.Gsamples = 44100
+        self.Gchannels = 2
         self.button_action_decl()
         self.variable_dec()
         self.server_booted()
@@ -196,175 +256,7 @@ class Dsp_player(Ui_MainWindow, QtWidgets.QMainWindow):
         self.equilizer = {}
         self.allPreset = {}
         self.src_input_fader_fade = 0
-        
-################################################################################
-#########################  button_action_decl  ################################# 
-################################################################################     
-    def button_action_decl(self): 
-        self.gate_btns_dec()    
-        self.span_btns_dec()    
-        self.binpan_btns_dec()    
-        self.comp_btns_dec()
-        self.expand_btns_dec()    
-        self.clip_btns_dec()    
-        self.chrous_btns_dec()    
-        self.free_btns_dec()    
-        self.equi_btns_dec()
-        self.misc_btns_dec()
-            
-    
-    def gate_btns_dec(self):    
-        # Gate
-        self.gate_amp.valueChanged.connect(lambda : (self.gate_filter_out.setMul(self.gate_amp.value() / 100)))
-        self.gate_tresh.valueChanged.connect(lambda : (self.gate_filter_out.setThresh(self.gate_tresh.value() / 10)))
-        self.gate_la.valueChanged.connect(lambda : (self.gate_filter_out.setLookAhead(self.gate_la.value() / 100)))
-        self.gate_rise.valueChanged.connect(lambda : (self.gate_filter_out.setRiseTime(self.gate_rise.value() / 1000)))
-        self.gate_fall.valueChanged.connect(lambda : (self.gate_filter_out.setFallTime(self.gate_fall.value() / 1000)))
-        
-        self.Gate_en.pressed.connect(lambda: (self.gate_en_dis(True), self.gate_filter_out.play(), self.output_switch_gate.setVoice(1)))
-        self.Gate_dis.pressed.connect(lambda: (self.gate_en_dis(False), self.gate_filter_out.stop(), self.output_switch_gate.setVoice(0)))
-    
-    
-    def span_btns_dec(self):    
-        # Simple panning
-        self.span_en.pressed.connect(lambda:
-                                     (self.binaurp_dis_3.setChecked(True),
-                                      self.pan_out_simp.play(), 
-                                      self.panner_en_dis(True, "simp"),
-                                      self.output_switch_pan.setVoice(0),
-                                      self.panner_bypass.setVoice(1))) # calls panning simple function with panning enabled
-        self.span_dis.pressed.connect(lambda:
-                                      (self.panner_en_dis(False, "simp"),
-                                       self.pan_out_simp.stop(), 
-                                       self.panner_bypass_call())) # calls panning simple function with panning disabled        
-        self.pan_sim_dial_2.valueChanged.connect(lambda: self.pan_out_simp.setPan(self.pan_sim_dial_2.value() / 100))# calls panning simple function to set panning
-        self.pan_spread_dial.valueChanged.connect(lambda: self.pan_out_simp.setSpread(self.pan_spread_dial.value() / 100))# calls panning simple function to set spread  
-    
-    
-    def binpan_btns_dec(self):    
-        # binaura panning
-        self.binaurp_en_3.pressed.connect(lambda:
-                                          (self.span_dis.setChecked(True),
-                                           self.pan_out_bin.play(), 
-                                           self.panner_en_dis(True, "binaur"),
-                                           self.output_switch_pan.setVoice(1),
-                                           self.panner_bypass.setVoice(1))) # calls panning binaural function with panning enabled
-        self.binaurp_dis_3.pressed.connect(lambda: (self.panner_en_dis(False,  "binaur"), self.pan_out_bin.stop(),self.panner_bypass_call())) # calls panning binaural function with panning disabled
-        self.azimuth_dial_5.valueChanged.connect(lambda: self.pan_out_bin.setAzimuth(self.azimuth_dial_5.value() / 100)) # calls panning biaural function to set azimuth
-        self.azimuth_span_2.valueChanged.connect(lambda: self.pan_out_bin.setAzispan(self.azimuth_span_2.value() / 100)) # calls panning biaural function to set azimuth span
-        self.elev_dial3_2.valueChanged.connect(lambda: self.pan_out_bin.setElevation(self.elev_dial3_2.value() / 100)) # calls panning biaural function to set elevation
-        self.elev_span_d_2.valueChanged.connect(lambda: self.pan_out_bin.setElespan(self.elev_span_d_2.value() / 100)) # calls panning biaural function to set elevation span
-   
-   
-    def comp_btns_dec(self):
-        # Compressor
-        self.Compress_en.pressed.connect(lambda: (self.com_ex_en_dis(True, "comp"),
-                                                  self.output_switch_comex.setVoice(0),
-                                                  self.compress_f.play())) 
-        self.Compress_dis.pressed.connect(lambda: (self.com_ex_en_dis(False, "comp"), 
-                                                   self.compress_f.play(),
-                                                   self.comex_bypass_call())) 
-        
-        self.comp_amp.valueChanged.connect(lambda : (self.compress_f.setMul(self.comp_amp.value() / 100)))
-        self.comp_tres.valueChanged.connect(lambda : (self.compress_f.setThresh(self.comp_tres.value() / 10)))
-        self.comp_rat.valueChanged.connect(lambda : (self.compress_f.setRatio(self.comp_rat.value() / 100)))
-        self.comp_rise.valueChanged.connect(lambda : (self.compress_f.setRiseTime(self.comp_rise.value() / 1000)))        
-        self.comp_fa.valueChanged.connect(lambda : (self.compress_f.setFallTime(self.comp_fa.value() / 1000)))        
-        self.comp_la.valueChanged.connect(lambda : (self.compress_f.setLookAhead(self.comp_la.value() / 10)))
-        self.comp_kn.valueChanged.connect(lambda : (self.compress_f.setKnee(self.comp_kn.value() / 100)))
-    
-    
-    def expand_btns_dec(self):    
-        # Expand
-        self.Expand_en.pressed.connect(lambda: (self.com_ex_en_dis(True, "expd"),
-                                                self.output_switch_comex.setVoice(1),
-                                                self.expand_f.play())) 
-        self.Expand_dis.pressed.connect(lambda: (self.com_ex_en_dis(False, "expd"),
-                                                 self.expand_f.play(),
-                                                 self.comex_bypass_call()))
-        
-        self.exp_amp.valueChanged.connect(lambda : (self.expand_f.setMul(self.exp_amp.value() / 100)))
-        self.exp_dt.valueChanged.connect(lambda : (self.expand_f.setDownThresh(self.exp_dt.value() / 10)))
-        self.exp_ut.valueChanged.connect(lambda : (self.expand_f.setUpThresh(self.exp_ut.value() / 10)))
-        self.exp_la.valueChanged.connect(lambda : (self.expand_f.setLookAhead(self.exp_la.value() / 10)))
-        self.exp_rat.valueChanged.connect(lambda : (self.expand_f.setRatio(self.exp_rat.value() / 1000)))
-        self.exp_ra.valueChanged.connect(lambda : (self.expand_f.setRiseTime(self.exp_ra.value() / 1000)))
-        self.exp_fall.valueChanged.connect(lambda : (self.expand_f.setFallTime(self.exp_fall.value() / 1000)))     
-    
-    
-    def clip_btns_dec(self):    
-        # Clip
-        self.clip_en.pressed.connect(lambda :
-                                     (self.clip_en_dis(True),
-                                      self.clip_fil_out.play(), 
-                                      self.output_switch_clip.setVoice(1) ))
-        
-        self.clip_dis.pressed.connect(lambda : (self.clip_en_dis(False), 
-                                                self.clip_fil_out.stop(), 
-                                                self.output_switch_clip.setVoice(0)))
-        self.clip_amp.valueChanged.connect(lambda : (self.clip_fil_out.setMul(self.clip_amp.value()/100)))
-        self.clip_max.valueChanged.connect(lambda : (self.clip_fil_out.setMax(self.clip_max.value()/100)))
-        self.clip_min.valueChanged.connect(lambda : (self.clip_fil_out.setMin(self.clip_min.value()/100)))
-    
-    
-    def chrous_btns_dec(self):    
-        # Chrous
-        self.Chrous_en.pressed.connect(lambda : (self.chrous_en_dis(True), 
-                                                 self.chor_fil_out.play(), 
-                                                 self.output_switch_chor.setVoice(1)))
-            
-        self.Chrous_dis.pressed.connect(lambda : (self.chrous_en_dis(False),
-                                                  self.chor_fil_out.stop(), 
-                                                  self.output_switch_chor.setVoice(0)))
-        
-        self.chor_amp.valueChanged.connect(lambda : (self.chor_fil_out.setMul(self.chor_amp.value() / 100)))
-        self.chor_f.valueChanged.connect(lambda : (self.chor_fil_out.setFeedback(self.chor_f.value() / 100)))
-        self.chor_d.valueChanged.connect(lambda : (self.chor_fil_out.setDepth(self.chor_d.value() / 100)))
-        self.chor_b.valueChanged.connect(lambda : (self.chor_fil_out.setBal(self.chor_b.value() / 100)))              
-    
-    
-    def free_btns_dec(self):    
-        # Freeverb
-        self.FreeVerb_en.pressed.connect(lambda : (self.freeverb_en_dis(True), 
-                                                   self.free_fil_out.play(), 
-                                                   self.output_switch_free.setVoice(1)))
-        self.FreeVerb_dis.pressed.connect(lambda : (self.freeverb_en_dis(False), 
-                                                    self.free_fil_out.stop(), 
-                                                    self.output_switch_free.setVoice(0)))
-        
-        self.free_a.valueChanged.connect(lambda : (self.free_fil_out.setMul(self.free_a.value() / 100)))
-        self.free_s.valueChanged.connect(lambda : (self.free_fil_out.setSize(self.free_s.value() / 100)))
-        self.free_d.valueChanged.connect(lambda : (self.free_fil_out.setDamp(self.free_d.value() / 100)))
-        self.free_b.valueChanged.connect(lambda : (self.free_fil_out.setBal(self.free_b.value() / 100)))
-        
-        self.server_on_toolB.pressed.connect(self.server_on)
-        self.server_off_toolB.pressed.connect(self.server_off)    
-        self.amp_dial.valueChanged.connect(lambda : (self.audio_server.setAmp(self.amp_dial.value() / 100)))
-        
-        self.add_all.pressed.connect(lambda:(self.add_preset_all(self.all_combo_pre.text())))
-        self.add_eq.pressed.connect(lambda:(self.add_preset_eq(self.eq_combo_pre.text())))
-        
-        self.all_combo_pre.returnPressed.connect(lambda:(self.add_preset_all(self.all_combo_pre.text())))
-        self.eq_combo_pre.returnPressed.connect(lambda:(self.add_preset_eq(self.eq_combo_pre.text())))
-        
-        self.reset_eq.pressed.connect(lambda: self.set_preset_eq('reset'))
-        self.eq_combo.currentTextChanged.connect(lambda: self.set_preset_eq(self.eq_combo.currentText()))
-        
-        self.reset_all.pressed.connect(lambda: self.set_preset_all('reset'))
-        self.all_p_combo.currentTextChanged.connect(lambda: self.set_preset_all(self.all_p_combo.currentText()))        
-    
-    
-    def equi_btns_dec(self):
-        # Equlizer
-        self.EnableB.pressed.connect(lambda: (self.eq_en_dis(True), self.output_switch_eq.setVoice(0), self.eq_start())) # calls Eq player function with Eq enabled
-        self.DisableB.pressed.connect(lambda: (self.eq_en_dis(False), self.output_switch_eq.setVoice(1), self.eq_stop())) # calls Eq player function with Eq disabled
-          
-   
-   
-    def misc_btns_dec(self):
-        # Misc
-        self.process.clicked.connect(lambda:(self.output_switch.setVoice(1), self.process_out.play(), self.enable_all()))
-        self.bypass.clicked.connect(lambda:(self.output_switch.setVoice(0), self.process_out.stop(),  self.disabler_all()))
+
     
 ################################################################################
 #########################  audio setup ######################################### 
@@ -393,31 +285,32 @@ class Dsp_player(Ui_MainWindow, QtWidgets.QMainWindow):
         audio_setup['def-out'] =in_dev[pyo.pa_get_default_input()]
         
         
-    @tryit
+    @utils.tryit
     def server_booted(self):
-        self.audio_server = pyo.Server(buffersize = self.buffer).boot()
+        self.audio_server = pyo.Server(buffersize = self.Gbuffer, sr = self.Gsamples).boot()
         self.audio_server.setVerbosity(7)
         self.server_on()
-        self.audio_server.setAmp(0.010)
+        self.audio_server.setAmp(0.10)
         self.audio_pipe_init()
-            
+        # catch last user state
+        self.bypass.click()        
+           
+    @utils.tryit 
     def server_on(self):    
         try:
             if self.audio_server.start():
                 self.label.setText("Server Started ........")
         except AttributeError:
             self.label.setText("No Server is Initilized")
-        
+    
+    @utils.tryit   
     def server_off(self):
         try:
             if not (self.audio_server.stop()):
                 self.label.setText("Server Stoped ........")
         except AttributeError:
             self.label.setText("No Server is Initilized")
-            
-    def trial(self):
-        print('trial')
-    
+
 ########################## Audio pipeline ######################################
 ################################################################################
         
@@ -436,7 +329,18 @@ class Dsp_player(Ui_MainWindow, QtWidgets.QMainWindow):
     def master_peak_plotter(self, *args):
         (l, r) = self.audio_server.getCurrentAmp()
         self.bg1.setOpts(height = [int(l*10000), int(r*10000)])
-  
+    
+    
+    def input_switcher(self, dec1, dec2, env = 5):
+        def delete():
+            del dec1
+        self.audio_server
+        osc2 = dec2.play()
+        self.audio_server.setCallback(lambda: (dec1.table_update(), dec2.table_update()))
+        pyo.CallAfter(lambda: (self.audio_server.setCallback(lambda: dec2.table_update()),delete()), time = (5 + 0.95))
+        self.process_in.setInput(osc2, env)    
+    
+    
     def audio_pipe_init(self):
         self.pre_plot_declaration()
         self.process_in = pyo.InputFader(pyo.Sine(0))
@@ -1232,7 +1136,7 @@ class Dsp_player(Ui_MainWindow, QtWidgets.QMainWindow):
             for i in range(self.all_p_combo.count()):
                 if self.all_p_combo.itemText(i) != name:
                     self.all_p_combo.addItem(name)
-            print(self.equilizer)
+            # print(self.equilizer)
     
     def set_preset_all(self, val):
         
@@ -1453,7 +1357,173 @@ class Dsp_player(Ui_MainWindow, QtWidgets.QMainWindow):
 
 ################################################################################
 ################################################################################ 
+        
+    def button_action_decl(self): 
+        self.gate_btns_dec()    
+        self.span_btns_dec()    
+        self.binpan_btns_dec()    
+        self.comp_btns_dec()
+        self.expand_btns_dec()    
+        self.clip_btns_dec()    
+        self.chrous_btns_dec()    
+        self.free_btns_dec()    
+        self.equi_btns_dec()
+        self.misc_btns_dec()
+            
+    
+    def gate_btns_dec(self):    
+        # Gate
+        self.gate_amp.valueChanged.connect(lambda : (self.gate_filter_out.setMul(self.gate_amp.value() / 100)))
+        self.gate_tresh.valueChanged.connect(lambda : (self.gate_filter_out.setThresh(self.gate_tresh.value() / 10)))
+        self.gate_la.valueChanged.connect(lambda : (self.gate_filter_out.setLookAhead(self.gate_la.value() / 100)))
+        self.gate_rise.valueChanged.connect(lambda : (self.gate_filter_out.setRiseTime(self.gate_rise.value() / 1000)))
+        self.gate_fall.valueChanged.connect(lambda : (self.gate_filter_out.setFallTime(self.gate_fall.value() / 1000)))
+        
+        self.Gate_en.pressed.connect(lambda: (self.gate_en_dis(True), self.gate_filter_out.play(), self.output_switch_gate.setVoice(1)))
+        self.Gate_dis.pressed.connect(lambda: (self.gate_en_dis(False), self.gate_filter_out.stop(), self.output_switch_gate.setVoice(0)))
+    
+    
+    def span_btns_dec(self):    
+        # Simple panning
+        self.span_en.pressed.connect(lambda:
+                                     (self.binaurp_dis_3.setChecked(True),
+                                      self.pan_out_simp.play(), 
+                                      self.panner_en_dis(True, "simp"),
+                                      self.output_switch_pan.setVoice(0),
+                                      self.panner_bypass.setVoice(1))) # calls panning simple function with panning enabled
+        self.span_dis.pressed.connect(lambda:
+                                      (self.panner_en_dis(False, "simp"),
+                                       self.pan_out_simp.stop(), 
+                                       self.panner_bypass_call())) # calls panning simple function with panning disabled        
+        self.pan_sim_dial_2.valueChanged.connect(lambda: self.pan_out_simp.setPan(self.pan_sim_dial_2.value() / 100))# calls panning simple function to set panning
+        self.pan_spread_dial.valueChanged.connect(lambda: self.pan_out_simp.setSpread(self.pan_spread_dial.value() / 100))# calls panning simple function to set spread  
+    
+    
+    def binpan_btns_dec(self):    
+        # binaura panning
+        self.binaurp_en_3.pressed.connect(lambda:
+                                          (self.span_dis.setChecked(True),
+                                           self.pan_out_bin.play(), 
+                                           self.panner_en_dis(True, "binaur"),
+                                           self.output_switch_pan.setVoice(1),
+                                           self.panner_bypass.setVoice(1))) # calls panning binaural function with panning enabled
+        self.binaurp_dis_3.pressed.connect(lambda: (self.panner_en_dis(False,  "binaur"), self.pan_out_bin.stop(),self.panner_bypass_call())) # calls panning binaural function with panning disabled
+        self.azimuth_dial_5.valueChanged.connect(lambda: self.pan_out_bin.setAzimuth(self.azimuth_dial_5.value() / 100)) # calls panning biaural function to set azimuth
+        self.azimuth_span_2.valueChanged.connect(lambda: self.pan_out_bin.setAzispan(self.azimuth_span_2.value() / 100)) # calls panning biaural function to set azimuth span
+        self.elev_dial3_2.valueChanged.connect(lambda: self.pan_out_bin.setElevation(self.elev_dial3_2.value() / 100)) # calls panning biaural function to set elevation
+        self.elev_span_d_2.valueChanged.connect(lambda: self.pan_out_bin.setElespan(self.elev_span_d_2.value() / 100)) # calls panning biaural function to set elevation span
+   
+   
+    def comp_btns_dec(self):
+        # Compressor
+        self.Compress_en.pressed.connect(lambda: (self.com_ex_en_dis(True, "comp"),
+                                                  self.output_switch_comex.setVoice(0),
+                                                  self.compress_f.play())) 
+        self.Compress_dis.pressed.connect(lambda: (self.com_ex_en_dis(False, "comp"), 
+                                                   self.compress_f.play(),
+                                                   self.comex_bypass_call())) 
+        
+        self.comp_amp.valueChanged.connect(lambda : (self.compress_f.setMul(self.comp_amp.value() / 100)))
+        self.comp_tres.valueChanged.connect(lambda : (self.compress_f.setThresh(self.comp_tres.value() / 10)))
+        self.comp_rat.valueChanged.connect(lambda : (self.compress_f.setRatio(self.comp_rat.value() / 100)))
+        self.comp_rise.valueChanged.connect(lambda : (self.compress_f.setRiseTime(self.comp_rise.value() / 1000)))        
+        self.comp_fa.valueChanged.connect(lambda : (self.compress_f.setFallTime(self.comp_fa.value() / 1000)))        
+        self.comp_la.valueChanged.connect(lambda : (self.compress_f.setLookAhead(self.comp_la.value() / 10)))
+        self.comp_kn.valueChanged.connect(lambda : (self.compress_f.setKnee(self.comp_kn.value() / 100)))
+    
+    
+    def expand_btns_dec(self):    
+        # Expand
+        self.Expand_en.pressed.connect(lambda: (self.com_ex_en_dis(True, "expd"),
+                                                self.output_switch_comex.setVoice(1),
+                                                self.expand_f.play())) 
+        self.Expand_dis.pressed.connect(lambda: (self.com_ex_en_dis(False, "expd"),
+                                                 self.expand_f.play(),
+                                                 self.comex_bypass_call()))
+        
+        self.exp_amp.valueChanged.connect(lambda : (self.expand_f.setMul(self.exp_amp.value() / 100)))
+        self.exp_dt.valueChanged.connect(lambda : (self.expand_f.setDownThresh(self.exp_dt.value() / 10)))
+        self.exp_ut.valueChanged.connect(lambda : (self.expand_f.setUpThresh(self.exp_ut.value() / 10)))
+        self.exp_la.valueChanged.connect(lambda : (self.expand_f.setLookAhead(self.exp_la.value() / 10)))
+        self.exp_rat.valueChanged.connect(lambda : (self.expand_f.setRatio(self.exp_rat.value() / 1000)))
+        self.exp_ra.valueChanged.connect(lambda : (self.expand_f.setRiseTime(self.exp_ra.value() / 1000)))
+        self.exp_fall.valueChanged.connect(lambda : (self.expand_f.setFallTime(self.exp_fall.value() / 1000)))     
+    
+    
+    def clip_btns_dec(self):    
+        # Clip
+        self.clip_en.pressed.connect(lambda :
+                                     (self.clip_en_dis(True),
+                                      self.clip_fil_out.play(), 
+                                      self.output_switch_clip.setVoice(1) ))
+        
+        self.clip_dis.pressed.connect(lambda : (self.clip_en_dis(False), 
+                                                self.clip_fil_out.stop(), 
+                                                self.output_switch_clip.setVoice(0)))
+        self.clip_amp.valueChanged.connect(lambda : (self.clip_fil_out.setMul(self.clip_amp.value()/100)))
+        self.clip_max.valueChanged.connect(lambda : (self.clip_fil_out.setMax(self.clip_max.value()/100)))
+        self.clip_min.valueChanged.connect(lambda : (self.clip_fil_out.setMin(self.clip_min.value()/100)))
+    
+    
+    def chrous_btns_dec(self):    
+        # Chrous
+        self.Chrous_en.pressed.connect(lambda : (self.chrous_en_dis(True), 
+                                                 self.chor_fil_out.play(), 
+                                                 self.output_switch_chor.setVoice(1)))
+            
+        self.Chrous_dis.pressed.connect(lambda : (self.chrous_en_dis(False),
+                                                  self.chor_fil_out.stop(), 
+                                                  self.output_switch_chor.setVoice(0)))
+        
+        self.chor_amp.valueChanged.connect(lambda : (self.chor_fil_out.setMul(self.chor_amp.value() / 100)))
+        self.chor_f.valueChanged.connect(lambda : (self.chor_fil_out.setFeedback(self.chor_f.value() / 100)))
+        self.chor_d.valueChanged.connect(lambda : (self.chor_fil_out.setDepth(self.chor_d.value() / 100)))
+        self.chor_b.valueChanged.connect(lambda : (self.chor_fil_out.setBal(self.chor_b.value() / 100)))              
+    
+    
+    def free_btns_dec(self):    
+        # Freeverb
+        self.FreeVerb_en.pressed.connect(lambda : (self.freeverb_en_dis(True), 
+                                                   self.free_fil_out.play(), 
+                                                   self.output_switch_free.setVoice(1)))
+        self.FreeVerb_dis.pressed.connect(lambda : (self.freeverb_en_dis(False), 
+                                                    self.free_fil_out.stop(), 
+                                                    self.output_switch_free.setVoice(0)))
+        
+        self.free_a.valueChanged.connect(lambda : (self.free_fil_out.setMul(self.free_a.value() / 100)))
+        self.free_s.valueChanged.connect(lambda : (self.free_fil_out.setSize(self.free_s.value() / 100)))
+        self.free_d.valueChanged.connect(lambda : (self.free_fil_out.setDamp(self.free_d.value() / 100)))
+        self.free_b.valueChanged.connect(lambda : (self.free_fil_out.setBal(self.free_b.value() / 100)))
+        
+        self.server_on_toolB.pressed.connect(self.server_on)
+        self.server_off_toolB.pressed.connect(self.server_off)    
+        self.amp_dial.valueChanged.connect(lambda : (self.audio_server.setAmp(self.amp_dial.value() / 100)))
+        
+        self.add_all.pressed.connect(lambda:(self.add_preset_all(self.all_combo_pre.text())))
+        self.add_eq.pressed.connect(lambda:(self.add_preset_eq(self.eq_combo_pre.text())))
+        
+        self.all_combo_pre.returnPressed.connect(lambda:(self.add_preset_all(self.all_combo_pre.text())))
+        self.eq_combo_pre.returnPressed.connect(lambda:(self.add_preset_eq(self.eq_combo_pre.text())))
+        
+        self.reset_eq.pressed.connect(lambda: self.set_preset_eq('reset'))
+        self.eq_combo.currentTextChanged.connect(lambda: self.set_preset_eq(self.eq_combo.currentText()))
+        
+        self.reset_all.pressed.connect(lambda: self.set_preset_all('reset'))
+        self.all_p_combo.currentTextChanged.connect(lambda: self.set_preset_all(self.all_p_combo.currentText()))        
+    
+    
+    def equi_btns_dec(self):
+        # Equlizer
+        self.EnableB.pressed.connect(lambda: (self.eq_en_dis(True), self.output_switch_eq.setVoice(0), self.eq_start())) # calls Eq player function with Eq enabled
+        self.DisableB.pressed.connect(lambda: (self.eq_en_dis(False), self.output_switch_eq.setVoice(1), self.eq_stop())) # calls Eq player function with Eq disabled
 
+    def misc_btns_dec(self):
+        # Misc
+        self.process.clicked.connect(lambda:(self.output_switch.setVoice(1), self.process_out.play(), self.enable_all()))
+        self.bypass.clicked.connect(lambda:(self.output_switch.setVoice(0), self.process_out.stop(),  self.disabler_all()))    
+
+        
+    
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
@@ -1461,3 +1531,4 @@ if __name__ == "__main__":
     main_window.startup_dsp()
     main_window.show()
     sys.exit(app.exec_())
+

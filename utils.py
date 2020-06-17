@@ -50,3 +50,18 @@ def tryit(method):
         except Exception as e:
             print(f"<{method.__name__}> {e}")        
     return try_ex
+    
+def RateLimited(maxPerSecond, env = 1):
+    minInterval = env / float(maxPerSecond)
+    def decorate(func):
+        lastTimeCalled = [0.0]
+        def rateLimitedFunction(*args,**kargs):
+            elapsed = time.time() - lastTimeCalled[0]
+            leftToWait = minInterval - elapsed
+            if leftToWait>0:
+                time.sleep(leftToWait)
+            ret = func(*args,**kargs)
+            lastTimeCalled[0] = time.time()
+            return ret
+        return rateLimitedFunction
+    return decorate
