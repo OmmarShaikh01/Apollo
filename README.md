@@ -12,7 +12,8 @@ These instructions will get you a copy of the project up and running on your loc
 3. [Mutagen](https://mutagen.readthedocs.io/en/latest/api/index.html)
 4. [Watchdogs](https://pythonhosted.org/watchdog/)
 5. [PyAV](https://pyav.org/docs/develop/index.html)
-6. [Pyqtgraph]()
+6. [Pyqtgraph](https://pyqtgraph.readthedocs.io/en/latest/)
+8. [FFmpeg](https://ffmpeg.org/download.html)
 7. [Musicbrainz](https://python-musicbrainzngs.readthedocs.io/en/v0.7.1/)
 
 ### Installing
@@ -20,8 +21,5 @@ These instructions will get you a copy of the project up and running on your loc
 A step by step series of examples that tell you how to get a development env running
 1. Create a virtual env of python 3.8  `venv --copies <dest>` 
 2. Upgrade venv pip `python -m pip install --upgrade pip` 
-3. Run `python -m module_install.py` inside the venv
-### or
-```
-$ python -m pip install PyQt5 pyo mutagen watchdog av pyqtgraph musicbrainzngs
-```
+3. Download [FFmpeg](https://ffmpeg.org/download.html) and add `ffmpeg.exe` to system variables 
+4. Run `python -m module_install.py` or `python -m pip install PyQt5 pyo mutagen watchdog av pyqtgraph musicbrainzngs` inside the venv
