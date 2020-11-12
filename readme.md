@@ -3,7 +3,7 @@
 - ## Description
 
 - ## Screenshots
-    ![MainWindow](examples/mainwindow.png?raw=true "Title")
+    ![MainWindow](/examples/mainwindow.png?raw=true "Title")
     
 - ## System Information
     1. Python >=3.8
