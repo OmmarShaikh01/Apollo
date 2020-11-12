@@ -1,0 +1,5 @@
+# ignore all compiled binaries
+**__pycache__
+
+#ignores all db files
+*.db
