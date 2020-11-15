@@ -3,3 +3,6 @@
 
 #ignores all db files
 *.db
+
+#ignores all config files: default config is embedded in code
+*.cfg

@@ -28,12 +28,14 @@ class LibraryManager():
     >>> library_manager.connect("database.db")
     """
     
-    def __init__(self):
+    def __init__(self, db):
         """
-        Initilizes the Databse Driver and returns a QSqlDatabase Driver and
-        Initilizes the fields for the Database Tables 
+        Initilizes the Databse Driver and connects to DB and Initilizes the
+        fields for the Database Tables
         """
-        self.db_driver = QSqlDatabase.addDatabase("QSQLITE")   
+        self.db_driver = QSqlDatabase.addDatabase("QSQLITE")
+        self.connect(db)
+        
         self.db_fields = ["file_id", "path_id","file_name","file_path","album",
                           "albumartist","artist","author","bpm","compilation",
                           "composer","conductor","date","discnumber","discsubtitle",
@@ -88,7 +90,7 @@ class LibraryManager():
         query.bindValue(":tablename", "library")
         query.exec_()
         if not query.next():
-            query_library = self.create_library_table("library")
+            query_library = self.create_library_table()
         
         
     def create_library_table(self):

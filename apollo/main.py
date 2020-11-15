@@ -89,26 +89,52 @@ class UI_setup(Apollo_MainWindow, QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.CONF_MANG = ConfigManager()     
+        
         self._setup()
         self._uxsetup()
         self.refresh_theme()
-    
+        self.apollo_PSB_LBT_addtrack.pressed.connect(self.refresh_theme)
+        
+        
     def _setup(self):
         self.apollo_HDLBD_nowplayong_queue.setText("Current Queue")
     
-    def _uxsetup(self):...
+    def _uxsetup(self):
+        self.apollo_TABWG_main.currentChanged.connect(lambda index: self._hideFooter(index))
         
     def refresh_theme(self):
-        self.setStyleSheet(Qtstyle().stylesheet())
+        self.setStyleSheet(Qtstyle.stylesheet())
 
-class Apollo():
+    def _hideFooter(self, index):
+        """
+        hides the footer playback controller is tab index is 1
+        """
+        if index == 1:
+            self.apollo_FR_footer.hide()
+        elif self.apollo_FR_footer.isHidden():
+            self.apollo_FR_footer.show()
+        else:
+            pass
+     
+class ApolloTabs(UI_setup):
+    
+    def __init__(self):
+        super().__init__()
+        
+    def LoadDB(self):
+        dbname = self.CONF_MANG.Getvalue('DBNAME')
+        self.LIB_MANG = LibraryManager(dbname)
+    
+class ApolloExecute:
     
     def __init__(self, style = "Fusion"):
         super().__init__()
         self.app = QtWidgets.QApplication(sys.argv)
         self.app.setStyle(style)
-        self.UI = UI_setup()
+        self.UI = ApolloTabs()
         self.UI.show()
+        self.Execute()
         
     def Execute(self): 
         sys.exit(self.app.exec_())
@@ -116,24 +142,4 @@ class Apollo():
     
 if __name__ == "__main__":
     import sys
-    
-    app = Apollo()
-    
-    # app = QtWidgets.QApplication([])
-    # ui = UI_setup()
-    
-    # inst = LibraryManager()
-    # inst.connect("apollo//db//apollo.db")
-    # table = inst.GetTableModle("library")
-    # inst.SetTableModle(ui.apollo_TBV_LBT_maintable, table)
-    # ui.apollo_LEDT_LBT_main_search.returnPressed.connect(lambda: inst.TableSearch(ui.apollo_LEDT_LBT_main_search, ui.apollo_TBV_LBT_maintable))
-    
-    # ui.show()
-    # app.exec_()
-
-    # timer = QtCore.QTimer()
-    # timer.setInterval(300)    
-    # timer.timeout.connect(lambda: app.refresh_theme())
-    # timer.start()    
-    
-    app.Execute()
+    app = ApolloExecute() 

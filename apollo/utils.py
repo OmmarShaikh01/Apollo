@@ -1,5 +1,9 @@
 import time, json, os
 
+import apollo
+
+parent_dir = apollo.__path__[0]
+
 def exe_time(method):
     def timed(*args, **kw):
         """
@@ -44,9 +48,21 @@ class ConfigManager:
     >>> inst.Setvariable("VALUE", config, "ROOT/SUB/SUB1")
     """
     
-    def __init__(self):...
+    def __init__(self):
+        self.config_dict = self.openConfig()
     
-    def openConfig(self, file):
+    def deafult_settings(self):
+        """
+        Initilizes the default launch config
+        """
+        config = {
+            "DBNAME": os.path.join(parent_dir, 'db', 'default.db'),
+            "APPTHEMES": os.listdir(os.path.join(parent_dir, "resources", "qtstyle", "themes")),
+        }
+        
+        return config
+    
+    def openConfig(self, file = "config.cfg"):
         """
         Opens the config file and loads the ssettings JSON
         
@@ -57,7 +73,7 @@ class ConfigManager:
         self.config_dict = {}
         if not os.path.isfile(file):
             with open(file, "w") as FP:
-                json.dump({}, FP, indent = 4)
+                json.dump(self.deafult_settings(), FP, indent = 4)
         else:
             try:
                 with open(file) as FP:
@@ -69,7 +85,7 @@ class ConfigManager:
         return self.config_dict
                 
                 
-    def writeConfig(self, data, file):
+    def writeConfig(self, file = "config.cfg"):
         """
         Writes Data to the Config File
         
@@ -81,10 +97,10 @@ class ConfigManager:
                 File Name To write Into
         """
         with open(file, "w") as FP:
-            json.dump(data, FP, indent = 4)
+            json.dump(self.config_dict, FP, indent = 4)
      
 
-    def Getvalue(self, config, path):
+    def Getvalue(self, config = None, path = ""):
         """
         Recursively Traverses the path and gets the value
         
@@ -95,6 +111,9 @@ class ConfigManager:
             path: String, List
                 Path used to traverse the dict
         """
+        if config == None:
+            config = self.config_dict
+            
         if isinstance(path, str):
             path = path.split("/")
         if len(path) >= 1 and not("" in path):
@@ -108,7 +127,7 @@ class ConfigManager:
             return config
 
         
-    def Setvalue(self, value, config, path):
+    def Setvalue(self, value, config = None, path = ''):
         """
         Recursively Traverses the path and Sets the value
         
@@ -121,7 +140,10 @@ class ConfigManager:
             
             path: String, List
                 Path used to traverse the dict
-        """        
+        """
+        if config == None:
+            config = self.config_dict
+            
         if isinstance(path, str):
             path = path.split("/")
             

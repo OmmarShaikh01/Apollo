@@ -11,6 +11,7 @@ interactive-04: 3:1 AA contrast, Selected elements, Active elements, Accent icon
 danger: Danger button background, 3:1 AA contrast 
 ui-01: Container background on ui-background, Secondary page background
 ui-02: Container background on ui-01, `Light` variant background
+ui-02-alt: Container background on ui-01, `Light` variant background
 ui-03: Subtle border, Tertiary background
 ui-04: 3:1 aa element contrast, Medium contrast border
 ui-05: 4.5:1 aa element contrast, High contrast border, Emphasis elements
@@ -112,7 +113,7 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
 /*Pixmap Qlabel*/
     QWidget#apollo_PIXLB_albumcover,
     QWidget#apollo_PIXLB_NPQ_albumcover{
-        background-color: #161616;
+        background-color: #393939;
         margin: 4px;
     }
 
