@@ -44,8 +44,8 @@ class ConfigManager:
     Manages the Configuration Parameters of Apollo
     
     >>> inst = ConfigManager()
-    >>> inst.Getvariable(config, "ROOT/SUB/SUB1")
-    >>> inst.Setvariable("VALUE", config, "ROOT/SUB/SUB1")
+    >>> inst.Getvariable("ROOT/SUB/SUB1")
+    >>> inst.Setvariable("VALUE", "ROOT/SUB/SUB1")
     """
     
     def __init__(self):
@@ -168,6 +168,4 @@ class ConfigManager:
             
 if __name__ == "__main__":
     inst = ConfigManager()
-    config = inst.openConfig("config.cfg")
-    inst.Getvalue(config, "children/children")
-    print(json.dumps(config, indent = 4))
+    inst.Getvalue("children/children")

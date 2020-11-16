@@ -25,6 +25,7 @@ class Qtstyle:
                 placeholders and the hex values to replace them with
         """    
         
+        # Add the active theme to the config
         CONF_MANG = ConfigManager()
         CONF_MANG.Setvalue(theme, "ACTIVETHEME")
         CONF_MANG.writeConfig("config.cfg")

@@ -33,8 +33,6 @@ class LibraryManager():
         Initilizes the Databse Driver and connects to DB and Initilizes the
         fields for the Database Tables
         """
-        self.db_driver = QSqlDatabase.addDatabase("QSQLITE")
-        self.connect(db)
         
         self.db_fields = ["file_id", "path_id","file_name","file_path","album",
                           "albumartist","artist","author","bpm","compilation",
@@ -45,12 +43,20 @@ class LibraryManager():
                           "title","tracknumber","version","website","album_gain",
                           "bitrate","bitrate_mode","channels","encoder_info","encoder_settings",
                           "frame_offset","layer","mode","padding","protected","sample_rate",
-                          "track_gain","track_peak"]
+                          "track_gain","track_peak"]        
+        
+        self.db_driver = QSqlDatabase.addDatabase("QSQLITE")
+        if self.connect(db):
+            pass
+        else:
+            raise Exception("Startup Checks Failed")
         
     def connect(self, db):
         """
         Uses the Database Driver to create a connection with a local
         database
+        
+        >>> library_manager.connect("default.db")
         
         :Args:
             
@@ -63,8 +69,7 @@ class LibraryManager():
         """
         self.db_driver.setDatabaseName(db)
         if self.db_driver.open():
-            self.startupchecks()
-            return True
+            return self.startupchecks()
         else:
             raise ConnectionError()
 
@@ -73,6 +78,9 @@ class LibraryManager():
         """
         Uses the Database Driver to commit and close a connection with a
         local database
+        
+        >>> library_manager.close_connection()
+        
         """        
         self.db_driver.commit()
         self.db_driver.close()
@@ -85,16 +93,33 @@ class LibraryManager():
         Performs validation test for Table avalibility and structure.
         Creates the table or the view if it doesnt exist.
         """
+        status = False
+        # checks for existance of library table
         query = QSqlQuery()
         query.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = :tablename ")
         query.bindValue(":tablename", "library")
         query.exec_()
         if not query.next():
-            query_library = self.create_library_table()
+            status = self.create_library_table()
+        else:
+            status = True
         
-        
+        # checks for existaqnce of nowplaying view
+        query = QSqlQuery()
+        query.prepare("SELECT name FROM sqlite_master WHERE type = 'view' AND name = :viewname ")
+        query.bindValue(":viewname", "nowplaying")
+        query.exec_()
+        if not query.next():
+            status = self.create_empty_view("nowplaying")        
+        else:
+            status = True
+            
+        return status
+    
     def create_library_table(self):
-        """Creates the main Library table with yhe valid column fields"""
+        """
+        Creates the main Library table with yhe valid column fields
+        """
         query = QSqlQuery()
         querystate = query.prepare(f"""
         CREATE TABLE IF NOT EXISTS library(
@@ -157,6 +182,8 @@ class LibraryManager():
         """
         Creates an empty view as an placeholder for display
         
+        >>> library_manager.create_empty_view("Example")
+        
         :Args:
             view_name: String
                 Valid view name from (now_playing)
@@ -171,7 +198,7 @@ class LibraryManager():
         if query_exe == False and querystate == False:
             raise Exception(f"<{view_name}> View Not Created")
         else:
-            return query 
+            return True 
 
 
     def create_view(self, view_name, field, data):
@@ -195,10 +222,9 @@ class LibraryManager():
         
         query_exe = query.exec_()
         if query_exe == False and querystate == False:
-            print(querystate, query.executedQuery())
             raise Exception(f"<{view_name}> View Not Created \nERROR {query.lastError().text()}")
         else:
-            return query 
+            return True 
            
             
     def drop_table(self, tablename):
@@ -245,6 +271,8 @@ class LibraryManager():
         Walks the root directory and scans the directory for media files.
         It also fetches the metadata of the media file and runs an insert query
         on the database with the metadata.
+        
+        >>> library_manager.ll.scan_directory(papentDir, [".mp3", ".m4a", ".flac"])
         
         :Args:
             path: String
@@ -600,6 +628,8 @@ class LibraryManager():
     def TableSearch(self, Line_Edit, View):
         """
         Applies a filter to the QSqlTableModel and refreshes it.
+        
+        >>> library_manager.TableSearch(QLineEdit, QTableView)
         
         :Args:
             Line_Edit: QtWidgets.QLineEdit

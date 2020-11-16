@@ -85,7 +85,9 @@ from apollo.db.library_manager import LibraryManager
 from apollo.utils import ConfigManager
 
 class UI_setup(Apollo_MainWindow, QtWidgets.QMainWindow):
-    
+    """
+    Controls the startup and UX operation of the application
+    """
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -103,7 +105,11 @@ class UI_setup(Apollo_MainWindow, QtWidgets.QMainWindow):
     def _uxsetup(self):
         self.apollo_TABWG_main.currentChanged.connect(lambda index: self._hideFooter(index))
         
+        
     def refresh_theme(self):
+        """
+        Gets a stylesheet and sets it as the current theme
+        """
         self.setStyleSheet(Qtstyle.stylesheet())
 
     def _hideFooter(self, index):
@@ -118,16 +124,56 @@ class UI_setup(Apollo_MainWindow, QtWidgets.QMainWindow):
             pass
      
 class ApolloTabs(UI_setup):
+    """
+    Interface between all the tabs in Apollo. 
+    """
     
     def __init__(self):
         super().__init__()
+        self.LoadDB()
+        self.LibraryTab = LibraryTab(self)
         
     def LoadDB(self):
-        dbname = self.CONF_MANG.Getvalue('DBNAME')
+        """
+        Connects to the databse and returns Manager Object to communicate with
+        """
+        dbname = self.CONF_MANG.Getvalue(path = 'DBNAME')
         self.LIB_MANG = LibraryManager(dbname)
     
-class ApolloExecute:
+    def _BindingLineSearch(self, LEDT, TBV):
+        """Binds the LineEdit text to a search term and searches in DB and refreshes table"""
+        LEDT.returnPressed.connect(lambda: self.LIB_MANG.TableSearch(LEDT, TBV))
+        LEDT.textChanged.connect(lambda : self._BindingLineClear(LEDT, TBV))
     
+    def _BindingLineClear(self, LEDT, TBV):
+        """Binds the LineEdit Clear to refresh table"""
+        if LEDT.text() == "":
+            self.LIB_MANG.TableSearch(LEDT, TBV)
+    
+class LibraryTab:
+    
+    def __init__(self, UI = ApolloTabs):
+        self.UI = UI
+        self.init_table()
+        self.ElementsBindings()
+        
+    def init_table(self):
+        """
+        initilizes table with database values
+        """
+        table = self.UI.LIB_MANG.GetTableModle("library")
+        self.UI.LIB_MANG.SetTableModle(self.UI.apollo_TBV_LBT_maintable, table)
+
+    def ElementsBindings(self):
+        """
+        Binds and connects UI Signals to internal functions.
+        """
+        self.UI._BindingLineSearch(self.UI.apollo_LEDT_LBT_main_search, self.UI.apollo_TBV_LBT_maintable)
+    
+class ApolloExecute:
+    """
+    Executes Apollo
+    """
     def __init__(self, style = "Fusion"):
         super().__init__()
         self.app = QtWidgets.QApplication(sys.argv)
