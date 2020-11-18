@@ -62,7 +62,7 @@ class ConfigManager:
         
         return config
     
-    def openConfig(self, file = "config.cfg"):
+    def openConfig(self, file =  os.path.join(parent_dir,"config.cfg")):
         """
         Opens the config file and loads the ssettings JSON
         
@@ -85,7 +85,7 @@ class ConfigManager:
         return self.config_dict
                 
                 
-    def writeConfig(self, file = "config.cfg"):
+    def writeConfig(self, file = os.path.join(parent_dir,"config.cfg")):
         """
         Writes Data to the Config File
         
