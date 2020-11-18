@@ -43,6 +43,32 @@ class Test_PlayingQueue(unittest.TestCase):
         self.PlayingQueue.RemoveElements(Start = 3)
         self.assertEqual([0, 0, 1], self.PlayingQueue.GetQueue())        
         
+    def test_IncrementPointer(self):
+        self.PlayingQueue.AddElements([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        
+        # Test Normal Indexing of queue
+        self.PlayingQueue.IncrementPointer(3)
+        self.assertAlmostEqual(3, self.PlayingQueue.GetCurrent())
+        self.assertAlmostEqual(4, self.PlayingQueue.GetNext())
+        
+        # Test Circular Indexing of queue
+        self.PlayingQueue.SetCircular(True)
+        self.PlayingQueue.IncrementPointer(6)
+        self.assertEqual(0, self.PlayingQueue.GetCurrent())
+        
+        self.PlayingQueue.IncrementPointer(3)
+        self.assertEqual(3, self.PlayingQueue.GetCurrent())
+        self.PlayingQueue.SetCircular(False)
+        
+        # Test for non circular out of bounds
+        try:
+            self.PlayingQueue.IncrementPointer(4)
+        except IndexError:
+            self.assertTrue(True)
+        else:
+            self.assertTrue(False, msg = "Out of Bound Index Test Failed")
+            
+            
         
 if  __name__ == "__main__":
     unittest.main()

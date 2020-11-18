@@ -39,6 +39,7 @@ def dedenter(string = '', indent_size = 4):
     return (string.strip("\n"))
 
 
+cfg = os.path.join(parent_dir,"config.cfg")
 class ConfigManager:
     """
     Manages the Configuration Parameters of Apollo
@@ -62,7 +63,7 @@ class ConfigManager:
         
         return config
     
-    def openConfig(self, file =  os.path.join(parent_dir,"config.cfg")):
+    def openConfig(self, file = cfg):
         """
         Opens the config file and loads the ssettings JSON
         
@@ -81,11 +82,10 @@ class ConfigManager:
             except json.JSONDecodeError:
                 with open(file, "w") as FP:
                     json.dump({}, FP, indent = 4)                
-                
         return self.config_dict
                 
                 
-    def writeConfig(self, file = os.path.join(parent_dir,"config.cfg")):
+    def writeConfig(self, file = cfg):
         """
         Writes Data to the Config File
         

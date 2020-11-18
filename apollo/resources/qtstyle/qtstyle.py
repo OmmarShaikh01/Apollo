@@ -28,7 +28,7 @@ class Qtstyle:
         # Add the active theme to the config
         CONF_MANG = ConfigManager()
         CONF_MANG.Setvalue(theme, "ACTIVETHEME")
-        CONF_MANG.writeConfig("config.cfg")
+        CONF_MANG.writeConfig()
         
         theme = cls.theme(theme)
         with open(os.path.join(parent_dir, "resources", "qtstyle", "stylesheet.txt")) as style:
