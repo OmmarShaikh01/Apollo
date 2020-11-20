@@ -78,7 +78,7 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
     QWidget#apollo_FR_footer,
     QWidget#apollo_FR_NPQ_footer{
         background-color: #262626;
-        border-top: 2px solid #161616;
+        border: 0px solid Transparent;
         color: #f4f4f4;
     }
 

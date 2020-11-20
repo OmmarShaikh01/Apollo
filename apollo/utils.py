@@ -164,6 +164,220 @@ class ConfigManager:
         else:
             return None
 
+
+class PlayingQueue:
+    """
+    PlayingQueue is used as a track queue to manage track Playback.
+    Base datatype used as the queue is an List and related operations of lists.
+    """
+    
+    # management of index scaling when indexes are modified
+    def __init__(self, circ = False):
+        self.PlayingQueue = []
+        self.CurrentIndex = 0
+        self.IsCircular = circ
+        self.index_pos = []
+    
+    
+    def __len__(self):
+        return len(self.PlayingQueue)
+    
+    def __repr__(self):
+        return str(self.PlayingQueue)
+        
+    def AddElements(self, element: list, Index = None):
+        """
+        Adds Elements to the playing Queue according to the index
+        
+        :Args:
+            element: List
+                A list of a single or multiple elements to add
+            Index: Int
+                Index to add elements to
+        """
+        #element insertion to an empty queue
+        if Index == None:
+            self.PlayingQueue.extend(element)
+        
+        # element insertion at an index
+        else:
+            if Index > len(self.PlayingQueue):
+                self.PlayingQueue.extend(element)
+            else:
+                for offset, item in enumerate(element):
+                    self.PlayingQueue.insert((Index + offset), item)
+                # index scaling when elements are added
+                if self.CurrentIndex >= Index:
+                    self.CurrentIndex += len(element)                
+
+        return True
+    
+    
+    def AddNext(self, element):
+        """
+        Adds Elements to the playing Queue after currest position
+        :Args:
+            element: List
+                A list of a single or multiple elements to add
+        """
+        self.AddElements(element, Index = self.GetPointer() + 1)    
+    
+        
+    def RemoveElements(self, Index = None, Start = None, End = None):
+        """
+        Removes a single element Or Elements between an Range Of indexs
+        
+        :Args:
+            Index: Int
+                index of the element to pop
+            Start: Int
+                Start position of the slice
+            End: Int
+                End Position of the slice
+        """
+        # removing single element from an index
+        if Index != None and (Start == None or End == None):
+            self.PlayingQueue.pop(Index)
+            if  self.CurrentIndex > Index:
+                self.CurrentIndex -= 1
+            elif self.CurrentIndex == Index:
+                self.JumpPos(0)
+            else:
+                pass
+                
+        # slice removal
+        if Start != None and End != None:
+            if End >= len(self.PlayingQueue):
+                del self.PlayingQueue[Start:]
+                if Start <= self.CurrentIndex:
+                    self.JumpPos(0)
+            else:
+                del self.PlayingQueue[Start: End]              
+                if Start == self.CurrentIndex or self.CurrentIndex == End:
+                    self.JumpPos(0)
+                elif Start < self.CurrentIndex < End:
+                    self.JumpPos(0)
+                elif End < self.CurrentIndex:
+                    offset = (End - Start)
+                    self.CurrentIndex -= offset
+                    
+        # Only start Args given
+        if Start != None and End == None:
+            del self.PlayingQueue[Start:]
+            if Start <= self.CurrentIndex:
+                self.JumpPos(0)            
+        
+        # Complete dump of queue
+        if Index == None and Start == None and End == None:
+            self.PlayingQueue = []
+            self.CurrentIndex = 0
+            
+        # index scaling when elements are removed
+        
+        
+        return True
+
+
+    def IncrementPointer(self, by = 1):
+        """
+        Increments the index with an given offset
+        
+        :Args:
+            by: Int
+                offset to incerment index
+        """
+        
+        if (self.CurrentIndex + by) < len(self.PlayingQueue):
+            self.CurrentIndex += by
+        else:
+            # Circular Indexing of queue
+            if self.IsCircular:
+                self.CurrentIndex = 0
+            # Normal Indexing of queue
+            else:
+                self.CurrentIndex = 0
+                raise IndexError()
+        return self.CurrentIndex
+                
+    
+                
+    def DecrementPointer(self, by = 1):
+        """
+        Decrements the index with an given offset
+        
+        :Args:
+            by: Int
+                offset to Decerment index
+        """        
+        if (self.CurrentIndex - by) >= 0:
+            self.CurrentIndex -= by
+        else:
+            # Circular Indexing of queue
+            if self.IsCircular:
+                self.CurrentIndex = len(self.PlayingQueue) - 1
+            # Normal Indexing of queue
+            else:
+                self.CurrentIndex = 0
+                raise IndexError()
+            
+        return self.CurrentIndex
+        
+       
+    def JumpPos(self, Pos):
+        """
+        Random access of queue
+        
+        :Args:
+            Pos: Int
+                index to jump to 
+        """
+        if Pos in range(len(self.PlayingQueue)):
+            self.CurrentIndex = Pos
+    
+        
+    def SetCircular(self, bool_):
+        """
+        Enables and disables endpoint Circling of a list
+        
+        :Args:
+            bool_: Boolean
+        """
+        self.IsCircular = bool_
+    
+       
+    def GetPointer(self):
+        return self.CurrentIndex
+    
+        
+    def GetCurrent(self):
+        """
+        Gets the current value at index
+        """
+        if self.CurrentIndex != None:
+            return self.PlayingQueue[self.CurrentIndex]
+    
+    
+    def GetNext(self):
+        """
+        gets the next value 
+        """
+        self.IncrementPointer()
+        return self.GetCurrent()
+    
+        
+    def GetPrevious(self):
+        """
+        Gets the previous value
+        """
+        self.DecrementPointer()
+        return self.GetCurrent()    
+    
+        
+    def GetQueue(self):
+        """
+        Returns the complete queue
+        """
+        return self.PlayingQueue
         
             
 if __name__ == "__main__":

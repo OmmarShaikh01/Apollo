@@ -1,14 +1,12 @@
 import sys
 import os
 import re
-import sqlite3 as sql
-import threading
 import datetime
 import re
 import hashlib
 
 import mutagen
-from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
+from PyQt5.QtSql import QSqlDatabase, QSqlQuery
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 
@@ -199,11 +197,12 @@ class LibraryManager():
             raise Exception(f"<{view_name}> View Not Created")
         else:
             return True 
-
-
+    
     def create_view(self, view_name, field, data):
         """
         Creates an view by selection data from a valid field
+        
+        >>> library_manager.create_view("Viewname", "File_id", [1,2,3,4])
         
         :Args:
             view_name: String
@@ -212,17 +211,19 @@ class LibraryManager():
                 Valid field to select data from
             data: List
                 Valid data to select and filter out Rows from the table
-        """        
+        """
+        QSqlQuery(f"DROP VIEW IF EXISTS {view_name}").exec_()
         query = QSqlQuery()
         placeholders =  ", ".join([f"'{v}'"for v in data])
         querystate = query.prepare(f"""
         CREATE VIEW IF NOT EXISTS {view_name} AS
         SELECT * FROM library WHERE {field} IN ({placeholders})
+        ORDER BY NULL
         """)
         
         query_exe = query.exec_()
         if query_exe == False and querystate == False:
-            raise Exception(f"<{view_name}> View Not Created \nERROR {query.lastError().text()}")
+            raise Exception(f"<{view_name}> View Not Created \nERROR: {query.lastError().text()}")
         else:
             return True 
            
@@ -249,7 +250,9 @@ class LibraryManager():
     def drop_view(self, viewname):
         """
         Drops the view from the database
-
+        
+        >>> library_manager.drop_view("viewname")
+        
         :Args:
             viewname: String
                 Name of the view to be dropped
@@ -272,7 +275,7 @@ class LibraryManager():
         It also fetches the metadata of the media file and runs an insert query
         on the database with the metadata.
         
-        >>> library_manager.ll.scan_directory(papentDir, [".mp3", ".m4a", ".flac"])
+        >>> library_manager.scan_directory(papentDir, [".mp3", ".m4a", ".flac"])
         
         :Args:
             path: String
@@ -550,21 +553,24 @@ class LibraryManager():
             return 0     
      
      
-    def SetTable_horizontalHeader(self, View):
+    def SetTable_horizontalHeader(self, View, Labels):
         """
-        Sets the table header in an appropriate format thet replaces the
-        underscore with space and swaps the string to title case. 
+        Sets the table header 
         
+        >>> library_manager.SetTable_horizontalHeader(View, [1, 2, 3])
+
         :Args:
             View: QtWidgets.QTableView
-                Table object to modify the header 
+                Table object to modify the header
+                
+            Labels: List
+                Labels to set as TableHeader
         """
         
         header = View.horizontalHeader().model()
-        for col in range(header.columnCount()):
-            col_label = header.headerData(col, Qt.Horizontal)
-            data = (col_label.replace("_", " ").title())
-            header.setHeaderData(col, Qt.Horizontal, data)
+        Labels = Labels[:header.columnCount()]
+        for col, data in enumerate(Labels):
+            header.setHeaderData(col, Qt.Horizontal, data.replace("_", " ").title())
           
           
     def GetTable_horizontalHeader(self, View):
@@ -586,43 +592,64 @@ class LibraryManager():
             
     def GetTableModle(self, tablename): 
         """
-        Gets the QSqlTableModel for the given Table In the DB
+        Gets the TableData for the given Table In the DB
+        
+        >>> library_manager.GetTableModle("Table") 
         
         :Args:
             tablename: String
-                Table name the table the model points to
+                Table name for the model to points to
         """
-        tablemodel = QSqlTableModel()
-        tablemodel.setTable(tablename)
-        return tablemodel 
+        TableModel = QtGui.QStandardItemModel()
+        query = QSqlQuery()
+        if tablename in ["library", 'nowplaying']:
+            Row = 0
+            Cols = range(len(self.db_fields))                     
+            querystate = query.prepare(f" SELECT * FROM {tablename}")
+        else:
+            pass
+        
+        query_exe = query.exec_()
+        if query_exe == False and querystate == False:
+            raise Exception(f"<{tablename}> View Not Created")
+        
+        while query.next():
+            for Column in Cols:
+                item = QtGui.QStandardItem(str(query.value(Column)))
+                TableModel.setItem(Row, Column, item)
+            Row += 1
+        return TableModel 
     
     
-    def SetTableModle(self, View, Table): 
+    def SetTableModle(self, View, Table, Header = None): 
         """
         Sets the QTableView with the QSqlTableModel 
+        
+        >>> library_manager.SetTableModle(View, Table, db_fields) 
         
         :Args:
             View: QTableView
                 view for the table to be displayed in
             
-            Table: QSqlTableModel
+            Table: TableModel
                 table with the data
         """
         View.setModel(Table)
-        self.SetTable_horizontalHeader(View)
-        Table.select()
+        if  Header == None:
+            Header = list(range(Table.columnCount()))
+        self.SetTable_horizontalHeader(View, Header)
       
-       
-    def RefreshData(self, View):
+    
+    def Refresh_TableModelData(self, View):
         """
-        Refreshes the QTableModel
+        Refreshes the TableModel
         
         :Args:
             parent_view: QTableView
                 View containing the model
         """        
-        table_model = View.model()
-        table_model.select()        
+        Table = self.GetTableModle(View.property("DB_Table"))
+        self.SetTableModle(View, Table, View.property("DB_Columns"))  
 
     
     def TableSearch(self, Line_Edit, View):
@@ -642,29 +669,46 @@ class LibraryManager():
             Unable to execute multiple statements at a time
         """
         Text = Line_Edit.text().strip()
-        model = View.model()
-        model.setFilter(f"""
-        album LIKE '%{Text}%'
-        OR albumartist LIKE '%{Text}%'
-        OR artist LIKE '%{Text}%'
-        OR author LIKE '%{Text}%'
-        OR composer LIKE '%{Text}%'
-        OR performer LIKE '%{Text}%'
-        OR title LIKE '%{Text}%'
-        OR lower(album) LIKE '%{Text}%'
-        OR lower(albumartist) LIKE '%{Text}%'
-        OR lower(artist) LIKE '%{Text}%'
-        OR lower(author) LIKE '%{Text}%'
-        OR lower(composer) LIKE '%{Text}%'
-        OR lower(performer) LIKE '%{Text}%'
-        OR lower(title) LIKE '%{Text}%'
-        """)
-        ERROR = model.lastError().text()
-        if  ERROR != "":
-            Line_Edit.clear()
-            model.setFilter('')
-            self.RefreshData(View)
-            raise Exception(ERROR)
+        TableModel = QtGui.QStandardItemModel()
+        tablename = View.property("DB_Table")
+        query = QSqlQuery()
+        
+        if tablename in ["library", 'nowplaying']:
+            Cols = range(len(self.db_fields))
+            Row = 0            
+            querystate = query.prepare(f"""
+            SELECT * FROM {tablename}
+            WHERE
+            album LIKE '%{Text}%'
+            OR albumartist LIKE '%{Text}%'
+            OR artist LIKE '%{Text}%'
+            OR author LIKE '%{Text}%'
+            OR composer LIKE '%{Text}%'
+            OR performer LIKE '%{Text}%'
+            OR title LIKE '%{Text}%'
+            OR lower(album) LIKE '%{Text}%'
+            OR lower(albumartist) LIKE '%{Text}%'
+            OR lower(artist) LIKE '%{Text}%'
+            OR lower(author) LIKE '%{Text}%'
+            OR lower(composer) LIKE '%{Text}%'
+            OR lower(performer) LIKE '%{Text}%'
+            OR lower(title) LIKE '%{Text}%'
+            """)
+        else:
+            pass
+        
+        query_exe = query.exec_()
+        if query_exe == False and querystate == False:
+            raise Exception(f"<{tablename}> View Not Created")
+        
+        while query.next():
+            for Column in Cols:
+                item = QtGui.QStandardItem(str(query.value(Column)))
+                TableModel.setItem(Row, Column, item)
+            Row += 1
+            
+        self.SetTableModle(View, TableModel, View.property("DB_Columns")) 
+
         
     def TableSearchAdvanced(self, query, View):
         """
@@ -688,7 +732,7 @@ class LibraryManager():
         ERROR = model.lastError().text()
         if  ERROR != "":
             model.setFilter('')
-            self.RefreshData(View)
+            self.Refresh_TableModelData(View)
             raise Exception(ERROR)    
             
         

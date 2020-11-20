@@ -100,7 +100,12 @@ class ApolloStartup(Apollo_MainWindow, QtWidgets.QMainWindow):
         
     def _setup(self):
         self.apollo_HDLBD_nowplayong_queue.setText("Current Queue")
-    
+        self.apollo_TBV_LBT_maintable.horizontalHeader().setSectionsMovable(True)
+        self.apollo_TBV_LBT_grouptable.horizontalHeader().setSectionsMovable(True)
+        self.apollo_TBV_NPQ_maintable.horizontalHeader().setSectionsMovable(True)
+        
+        
+        
     def _uxsetup(self):
         self.apollo_TABWG_main.currentChanged.connect(lambda index: self._hideFooter(index))
         

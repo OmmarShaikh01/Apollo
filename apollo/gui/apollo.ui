@@ -30,371 +30,466 @@
     <property name="spacing">
      <number>0</number>
     </property>
-    <item row="1" column="0">
-     <widget class="QFrame" name="apollo_FR_footer">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>32</height>
-       </size>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <property name="horizontalSpacing">
-        <number>8</number>
-       </property>
-       <property name="verticalSpacing">
-        <number>0</number>
-       </property>
-       <item row="1" column="4">
-        <widget class="QPushButton" name="apollo_PSB_skipback">
-         <property name="minimumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>OO</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>383</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="1" column="5">
-        <widget class="QPushButton" name="apollo_PSB_seekb">
-         <property name="minimumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>OO</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QPushButton" name="apollo_PSB_pause">
-         <property name="minimumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>OO</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QPushButton" name="apollo_PSB_seekf">
-         <property name="minimumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>OO</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="6">
-        <widget class="QPushButton" name="apollo_PSB_skipfront">
-         <property name="minimumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>OO</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="7">
-        <widget class="QPushButton" name="apollo_PSB_stop">
-         <property name="minimumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>OO</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="8">
-        <widget class="QPushButton" name="apollo_PSB_play">
-         <property name="minimumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>OO</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="12">
-        <widget class="QPushButton" name="apollo_PSB_playstyle">
-         <property name="minimumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>OO</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1" colspan="12">
-        <widget class="QSlider" name="apollo_HSLD_position">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="11">
-        <widget class="QSlider" name="apollo_HSLD_volume_main">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>84</width>
-           <height>15</height>
-          </size>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="10">
-        <widget class="QPushButton" name="apollo_PSB_volume_main">
-         <property name="minimumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>OO</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="9">
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>382</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="0" rowspan="2">
-        <widget class="QLabel" name="apollo_PIXLB_albumcover">
-         <property name="minimumSize">
-          <size>
-           <width>55</width>
-           <height>55</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>55</width>
-           <height>55</height>
-          </size>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
-         <property name="text">
-          <string>TextLabel</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
     <item row="0" column="0">
-     <widget class="QSplitter" name="splitter">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-        <horstretch>1</horstretch>
-        <verstretch>1</verstretch>
-       </sizepolicy>
-      </property>
+     <widget class="QSplitter" name="splitter_2">
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Vertical</enum>
       </property>
       <property name="handleWidth">
        <number>0</number>
       </property>
-      <widget class="QTabWidget" name="apollo_TABWG_main">
+      <widget class="QSplitter" name="splitter">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>1</horstretch>
-         <verstretch>0</verstretch>
+         <horstretch>0</horstretch>
+         <verstretch>1</verstretch>
         </sizepolicy>
        </property>
-       <property name="currentIndex">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="handleWidth">
         <number>0</number>
        </property>
-       <property name="tabBarAutoHide">
-        <bool>false</bool>
-       </property>
-       <widget class="QWidget" name="apollo_WDG_LBT_frame">
-        <attribute name="title">
-         <string>Library</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QSplitter" name="apollo_VSP_LBT_splitter">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="handleWidth">
-            <number>0</number>
-           </property>
-           <widget class="QFrame" name="apollo_FR_LBT_group">
-            <layout class="QVBoxLayout" name="verticalLayout">
-             <property name="spacing">
-              <number>0</number>
+       <widget class="QTabWidget" name="apollo_TABWG_main">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <property name="tabBarAutoHide">
+         <bool>false</bool>
+        </property>
+        <widget class="QWidget" name="apollo_WDG_LBT_frame">
+         <attribute name="title">
+          <string>Library</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QSplitter" name="apollo_VSP_LBT_splitter">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="handleWidth">
+             <number>0</number>
+            </property>
+            <widget class="QFrame" name="apollo_FR_LBT_group">
+             <layout class="QVBoxLayout" name="verticalLayout">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QToolButton" name="apollo_TLB_LBT_grouptool">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>2</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>...</string>
+                </property>
+                <property name="popupMode">
+                 <enum>QToolButton::MenuButtonPopup</enum>
+                </property>
+                <property name="toolButtonStyle">
+                 <enum>Qt::ToolButtonTextBesideIcon</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTableView" name="apollo_TBV_LBT_grouptable">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="editTriggers">
+                 <set>QAbstractItemView::NoEditTriggers</set>
+                </property>
+                <property name="showDropIndicator" stdset="0">
+                 <bool>false</bool>
+                </property>
+                <property name="dragDropOverwriteMode">
+                 <bool>false</bool>
+                </property>
+                <property name="selectionBehavior">
+                 <enum>QAbstractItemView::SelectRows</enum>
+                </property>
+                <property name="textElideMode">
+                 <enum>Qt::ElideNone</enum>
+                </property>
+                <property name="showGrid">
+                 <bool>false</bool>
+                </property>
+                <property name="sortingEnabled">
+                 <bool>true</bool>
+                </property>
+                <property name="wordWrap">
+                 <bool>false</bool>
+                </property>
+                <property name="cornerButtonEnabled">
+                 <bool>false</bool>
+                </property>
+                <attribute name="horizontalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+                <attribute name="verticalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+                <attribute name="verticalHeaderDefaultSectionSize">
+                 <number>24</number>
+                </attribute>
+                <attribute name="verticalHeaderMinimumSectionSize">
+                 <number>24</number>
+                </attribute>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="apollo_FR_LBT_groupsearch">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLineEdit" name="apollo_LEDT_LBT_groupsearch">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>24</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>24</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QFrame" name="apollo_FR_LBT_frame_maintable">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>1</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QTableView" name="apollo_TBV_LBT_maintable">
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="editTriggers">
+                 <set>QAbstractItemView::NoEditTriggers</set>
+                </property>
+                <property name="showDropIndicator" stdset="0">
+                 <bool>false</bool>
+                </property>
+                <property name="dragDropOverwriteMode">
+                 <bool>false</bool>
+                </property>
+                <property name="selectionBehavior">
+                 <enum>QAbstractItemView::SelectRows</enum>
+                </property>
+                <property name="textElideMode">
+                 <enum>Qt::ElideNone</enum>
+                </property>
+                <property name="showGrid">
+                 <bool>false</bool>
+                </property>
+                <property name="sortingEnabled">
+                 <bool>true</bool>
+                </property>
+                <property name="wordWrap">
+                 <bool>false</bool>
+                </property>
+                <property name="cornerButtonEnabled">
+                 <bool>false</bool>
+                </property>
+                <attribute name="verticalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+                <attribute name="verticalHeaderDefaultSectionSize">
+                 <number>24</number>
+                </attribute>
+                <attribute name="verticalHeaderMinimumSectionSize">
+                 <number>24</number>
+                </attribute>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="apollo_FR_LBT_buttons_maintable">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QPushButton" name="apollo_PSB_LBT_addtrack">
+                   <property name="minimumSize">
+                    <size>
+                     <width>32</width>
+                     <height>32</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>30</width>
+                     <height>32</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>OO</string>
+                   </property>
+                   <property name="flat">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="apollo_PSB_LBT_subtrack">
+                   <property name="minimumSize">
+                    <size>
+                     <width>32</width>
+                     <height>32</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>30</width>
+                     <height>32</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>OO</string>
+                   </property>
+                   <property name="flat">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="apollo_PSB_LBT_options">
+                   <property name="minimumSize">
+                    <size>
+                     <width>32</width>
+                     <height>32</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>30</width>
+                     <height>32</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>OO</string>
+                   </property>
+                   <property name="flat">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="apollo_LEDT_LBT_main_search">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>24</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>24</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="apollo_PSB_LBT_tablesearch">
+                   <property name="minimumSize">
+                    <size>
+                     <width>32</width>
+                     <height>32</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>30</width>
+                     <height>32</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>OO</string>
+                   </property>
+                   <property name="flat">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="apollo_WDG_NPQ_frame">
+         <attribute name="title">
+          <string>Now Playing</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item row="1" column="0">
+           <widget class="QFrame" name="apollo_FR_NPQ_footer">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_5">
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -407,336 +502,316 @@
              <property name="bottomMargin">
               <number>0</number>
              </property>
-             <item>
-              <widget class="QToolButton" name="apollo_TLB_LBT_grouptool">
+             <property name="horizontalSpacing">
+              <number>8</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>0</number>
+             </property>
+             <item row="1" column="0">
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>383</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="1" column="1">
+              <widget class="QPushButton" name="apollo_PSB_NPQ_pause">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>OO</string>
+               </property>
+               <property name="flat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QPushButton" name="apollo_PSB_NPQ_seekf">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>OO</string>
+               </property>
+               <property name="flat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3">
+              <widget class="QPushButton" name="apollo_PSB_NPQ_skipback">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>OO</string>
+               </property>
+               <property name="flat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="4">
+              <widget class="QPushButton" name="apollo_PSB_NPQ_seekb">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>OO</string>
+               </property>
+               <property name="flat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="5">
+              <widget class="QPushButton" name="apollo_PSB_NPQ_skipfront">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>OO</string>
+               </property>
+               <property name="flat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="6">
+              <widget class="QPushButton" name="apollo_PSB_NPQ_stop">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>OO</string>
+               </property>
+               <property name="flat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="9">
+              <widget class="QPushButton" name="apollo_PSB_NPQ_volume_main">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>OO</string>
+               </property>
+               <property name="flat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="7">
+              <widget class="QPushButton" name="apollo_PSB_NPQ_play">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>OO</string>
+               </property>
+               <property name="flat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="8">
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>382</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="1" column="11">
+              <widget class="QPushButton" name="apollo_PSB_NPQ_playstyle">
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>OO</string>
+               </property>
+               <property name="flat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0" colspan="12">
+              <widget class="QSlider" name="apollo_HSLD_NPQ_position">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="10">
+              <widget class="QSlider" name="apollo_HSLD_NPQ_volume_main">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>2</horstretch>
+                 <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>0</width>
-                 <height>32</height>
+                 <width>84</width>
+                 <height>15</height>
                 </size>
                </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>32</height>
-                </size>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
                </property>
-               <property name="text">
-                <string>...</string>
-               </property>
-               <property name="popupMode">
-                <enum>QToolButton::MenuButtonPopup</enum>
-               </property>
-               <property name="toolButtonStyle">
-                <enum>Qt::ToolButtonTextBesideIcon</enum>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QTableView" name="apollo_TBV_LBT_grouptable">
-               <property name="frameShape">
-                <enum>QFrame::NoFrame</enum>
-               </property>
-               <property name="selectionBehavior">
-                <enum>QAbstractItemView::SelectRows</enum>
-               </property>
-               <property name="showGrid">
-                <bool>false</bool>
-               </property>
-               <property name="sortingEnabled">
-                <bool>true</bool>
-               </property>
-               <property name="wordWrap">
-                <bool>false</bool>
-               </property>
-               <property name="cornerButtonEnabled">
-                <bool>false</bool>
-               </property>
-               <attribute name="horizontalHeaderVisible">
-                <bool>false</bool>
-               </attribute>
-               <attribute name="verticalHeaderVisible">
-                <bool>false</bool>
-               </attribute>
-               <attribute name="verticalHeaderDefaultSectionSize">
-                <number>24</number>
-               </attribute>
-               <attribute name="verticalHeaderMinimumSectionSize">
-                <number>24</number>
-               </attribute>
-              </widget>
-             </item>
-             <item>
-              <widget class="QFrame" name="apollo_FR_LBT_groupsearch">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <layout class="QHBoxLayout" name="horizontalLayout">
-                <property name="spacing">
-                 <number>0</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QLineEdit" name="apollo_LEDT_LBT_groupsearch">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                    <horstretch>1</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>24</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>16777215</width>
-                    <height>24</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
               </widget>
              </item>
             </layout>
            </widget>
-           <widget class="QFrame" name="apollo_FR_LBT_frame_maintable">
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="apollo_PIXLB_NPQ_albumcover">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>1</horstretch>
-              <verstretch>0</verstretch>
+              <verstretch>1</verstretch>
              </sizepolicy>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-             <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QTableView" name="apollo_TBV_LBT_maintable">
-               <property name="frameShape">
-                <enum>QFrame::NoFrame</enum>
-               </property>
-               <property name="selectionBehavior">
-                <enum>QAbstractItemView::SelectRows</enum>
-               </property>
-               <property name="showGrid">
-                <bool>false</bool>
-               </property>
-               <property name="sortingEnabled">
-                <bool>true</bool>
-               </property>
-               <property name="wordWrap">
-                <bool>false</bool>
-               </property>
-               <property name="cornerButtonEnabled">
-                <bool>false</bool>
-               </property>
-               <attribute name="verticalHeaderVisible">
-                <bool>false</bool>
-               </attribute>
-               <attribute name="verticalHeaderDefaultSectionSize">
-                <number>24</number>
-               </attribute>
-               <attribute name="verticalHeaderMinimumSectionSize">
-                <number>24</number>
-               </attribute>
-              </widget>
-             </item>
-             <item>
-              <widget class="QFrame" name="apollo_FR_LBT_buttons_maintable">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_2">
-                <property name="spacing">
-                 <number>0</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QPushButton" name="apollo_PSB_LBT_addtrack">
-                  <property name="minimumSize">
-                   <size>
-                    <width>32</width>
-                    <height>32</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>30</width>
-                    <height>32</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>OO</string>
-                  </property>
-                  <property name="flat">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="apollo_PSB_LBT_subtrack">
-                  <property name="minimumSize">
-                   <size>
-                    <width>32</width>
-                    <height>32</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>30</width>
-                    <height>32</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>OO</string>
-                  </property>
-                  <property name="flat">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="apollo_PSB_LBT_options">
-                  <property name="minimumSize">
-                   <size>
-                    <width>32</width>
-                    <height>32</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>30</width>
-                    <height>32</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>OO</string>
-                  </property>
-                  <property name="flat">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="apollo_LEDT_LBT_main_search">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                    <horstretch>1</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>24</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>16777215</width>
-                    <height>24</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="apollo_PSB_LBT_tablesearch">
-                  <property name="minimumSize">
-                   <size>
-                    <width>32</width>
-                    <height>32</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>30</width>
-                    <height>32</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>OO</string>
-                  </property>
-                  <property name="flat">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-            </layout>
+            <property name="minimumSize">
+             <size>
+              <width>55</width>
+              <height>55</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
            </widget>
-          </widget>
-         </item>
-        </layout>
+          </item>
+         </layout>
+        </widget>
        </widget>
-       <widget class="QWidget" name="apollo_WDG_NPQ_frame">
-        <attribute name="title">
-         <string>Now Playing</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_6">
+       <widget class="QFrame" name="apollo_FR_nowplaying_queue">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>300</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -752,18 +827,83 @@
          <property name="spacing">
           <number>0</number>
          </property>
-         <item row="1" column="0">
-          <widget class="QFrame" name="apollo_FR_NPQ_footer">
+         <item row="2" column="0">
+          <widget class="QTableView" name="apollo_TBV_NPQ_maintable">
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+           <property name="showDropIndicator" stdset="0">
+            <bool>false</bool>
+           </property>
+           <property name="dragDropOverwriteMode">
+            <bool>false</bool>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+           <property name="textElideMode">
+            <enum>Qt::ElideNone</enum>
+           </property>
+           <property name="showGrid">
+            <bool>false</bool>
+           </property>
+           <property name="sortingEnabled">
+            <bool>true</bool>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+           <property name="cornerButtonEnabled">
+            <bool>false</bool>
+           </property>
+           <attribute name="verticalHeaderVisible">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="verticalHeaderDefaultSectionSize">
+            <number>24</number>
+           </attribute>
+           <attribute name="verticalHeaderMinimumSectionSize">
+            <number>24</number>
+           </attribute>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="apollo_HDLBD_nowplayong_queue">
+           <property name="minimumSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QFrame" name="apollo_FR_NPQ_buttons_maintable">
            <property name="minimumSize">
             <size>
              <width>0</width>
              <height>32</height>
             </size>
            </property>
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>32</height>
+            </size>
            </property>
-           <layout class="QGridLayout" name="gridLayout_5">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="spacing">
+             <number>0</number>
+            </property>
             <property name="leftMargin">
              <number>0</number>
             </property>
@@ -776,37 +916,18 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <property name="horizontalSpacing">
-             <number>8</number>
-            </property>
-            <property name="verticalSpacing">
-             <number>0</number>
-            </property>
-            <item row="1" column="0">
-             <spacer name="horizontalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>383</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="1">
-             <widget class="QPushButton" name="apollo_PSB_NPQ_pause">
+            <item>
+             <widget class="QPushButton" name="apollo_PSB_NPQ_addtrack">
               <property name="minimumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>30</width>
+                <height>32</height>
                </size>
               </property>
               <property name="text">
@@ -817,18 +938,18 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="2">
-             <widget class="QPushButton" name="apollo_PSB_NPQ_seekf">
+            <item>
+             <widget class="QPushButton" name="apollo_PSB_NPQ_subtrack">
               <property name="minimumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>30</width>
+                <height>32</height>
                </size>
               </property>
               <property name="text">
@@ -839,18 +960,18 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="3">
-             <widget class="QPushButton" name="apollo_PSB_NPQ_skipback">
+            <item>
+             <widget class="QPushButton" name="apollo_PSB_NPQ_options">
               <property name="minimumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>30</width>
+                <height>32</height>
                </size>
               </property>
               <property name="text">
@@ -861,231 +982,73 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="4">
-             <widget class="QPushButton" name="apollo_PSB_NPQ_seekb">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>OO</string>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="5">
-             <widget class="QPushButton" name="apollo_PSB_NPQ_skipfront">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>OO</string>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="6">
-             <widget class="QPushButton" name="apollo_PSB_NPQ_stop">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>OO</string>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="9">
-             <widget class="QPushButton" name="apollo_PSB_NPQ_volume_main">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>OO</string>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="7">
-             <widget class="QPushButton" name="apollo_PSB_NPQ_play">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>OO</string>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="8">
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>382</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="11">
-             <widget class="QPushButton" name="apollo_PSB_NPQ_playstyle">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>OO</string>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0" colspan="12">
-             <widget class="QSlider" name="apollo_HSLD_NPQ_position">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="10">
-             <widget class="QSlider" name="apollo_HSLD_NPQ_volume_main">
+            <item>
+             <widget class="QLineEdit" name="apollo_LEDT_NPQ_main_search">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>1</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
               <property name="minimumSize">
                <size>
-                <width>84</width>
-                <height>15</height>
+                <width>0</width>
+                <height>24</height>
                </size>
               </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>24</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="apollo_PSB_NPQ_tablesearch">
+              <property name="minimumSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>30</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>OO</string>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
            </layout>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="apollo_PIXLB_NPQ_albumcover">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>1</horstretch>
-             <verstretch>1</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>55</width>
-             <height>55</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
-           </property>
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </widget>
-      <widget class="QFrame" name="apollo_FR_nowplaying_queue">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+      <widget class="QFrame" name="apollo_FR_footer">
        <property name="minimumSize">
         <size>
-         <width>300</width>
-         <height>0</height>
+         <width>0</width>
+         <height>55</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>55</height>
         </size>
        </property>
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_4">
+       <layout class="QGridLayout" name="gridLayout">
         <property name="leftMargin">
          <number>0</number>
         </property>
@@ -1098,197 +1061,282 @@
         <property name="bottomMargin">
          <number>0</number>
         </property>
-        <property name="spacing">
+        <property name="horizontalSpacing">
+         <number>8</number>
+        </property>
+        <property name="verticalSpacing">
          <number>0</number>
         </property>
-        <item row="2" column="0">
-         <widget class="QTableView" name="apollo_TBV_NPQ_maintable">
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
-          </property>
-          <property name="selectionBehavior">
-           <enum>QAbstractItemView::SelectRows</enum>
-          </property>
-          <property name="showGrid">
-           <bool>false</bool>
-          </property>
-          <property name="sortingEnabled">
-           <bool>true</bool>
-          </property>
-          <property name="wordWrap">
-           <bool>false</bool>
-          </property>
-          <property name="cornerButtonEnabled">
-           <bool>false</bool>
-          </property>
-          <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
-          </attribute>
-          <attribute name="verticalHeaderDefaultSectionSize">
-           <number>24</number>
-          </attribute>
-          <attribute name="verticalHeaderMinimumSectionSize">
-           <number>24</number>
-          </attribute>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="apollo_HDLBD_nowplayong_queue">
+        <item row="1" column="4">
+         <widget class="QPushButton" name="apollo_PSB_skipback">
           <property name="minimumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>TextLabel</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QFrame" name="apollo_FR_NPQ_buttons_maintable">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>32</height>
+            <width>40</width>
+            <height>40</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>16777215</width>
-            <height>32</height>
+            <width>40</width>
+            <height>40</height>
            </size>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QPushButton" name="apollo_PSB_NPQ_addtrack">
-             <property name="minimumSize">
-              <size>
-               <width>32</width>
-               <height>32</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>30</width>
-               <height>32</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>OO</string>
-             </property>
-             <property name="flat">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="apollo_PSB_NPQ_subtrack">
-             <property name="minimumSize">
-              <size>
-               <width>32</width>
-               <height>32</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>30</width>
-               <height>32</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>OO</string>
-             </property>
-             <property name="flat">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="apollo_PSB_NPQ_options">
-             <property name="minimumSize">
-              <size>
-               <width>32</width>
-               <height>32</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>30</width>
-               <height>32</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>OO</string>
-             </property>
-             <property name="flat">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="apollo_LEDT_NPQ_main_search">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>1</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>24</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>24</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="apollo_PSB_NPQ_tablesearch">
-             <property name="minimumSize">
-              <size>
-               <width>32</width>
-               <height>32</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>30</width>
-               <height>32</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>OO</string>
-             </property>
-             <property name="flat">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <property name="text">
+           <string>OO</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>383</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="5">
+         <widget class="QPushButton" name="apollo_PSB_seekb">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>OO</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QPushButton" name="apollo_PSB_pause">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>OO</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QPushButton" name="apollo_PSB_seekf">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>OO</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="6">
+         <widget class="QPushButton" name="apollo_PSB_skipfront">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>OO</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="7">
+         <widget class="QPushButton" name="apollo_PSB_stop">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>OO</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="8">
+         <widget class="QPushButton" name="apollo_PSB_play">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>OO</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="12">
+         <widget class="QPushButton" name="apollo_PSB_playstyle">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>OO</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="12">
+         <widget class="QSlider" name="apollo_HSLD_position">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="11">
+         <widget class="QSlider" name="apollo_HSLD_volume_main">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>84</width>
+            <height>15</height>
+           </size>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="10">
+         <widget class="QPushButton" name="apollo_PSB_volume_main">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>OO</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="9">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>382</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="0" rowspan="2">
+         <widget class="QLabel" name="apollo_PIXLB_albumcover">
+          <property name="minimumSize">
+           <size>
+            <width>55</width>
+            <height>55</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>55</width>
+            <height>55</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
          </widget>
         </item>
        </layout>
