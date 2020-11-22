@@ -76,6 +76,7 @@
 # and displays menu on primary screen irrespective of screen
 
 ##########################################################################################
+
 import sys
     
 from PyQt5 import QtWidgets, QtGui, QtCore
@@ -91,7 +92,10 @@ class ApolloExecute:
         self.app = QtWidgets.QApplication(sys.argv)
         self.app.setStyle(style)
         self.UI = ApolloTabFunctions()
+        self.app.setStyleSheet(self.UI.GetAppTheme())
+        self.UI.apollo_PSB_LBT_subtrack.pressed.connect(lambda: self.app.setStyleSheet(self.UI.GetAppTheme()))
         self.UI.show()
+        
         
     def Execute(self): 
         sys.exit(self.app.exec_())
@@ -99,3 +103,4 @@ class ApolloExecute:
     
 if __name__ == "__main__":
     app = ApolloExecute() 
+    app.Execute()

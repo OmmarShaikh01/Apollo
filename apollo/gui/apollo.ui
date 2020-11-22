@@ -158,7 +158,7 @@
                  <enum>QAbstractItemView::SelectRows</enum>
                 </property>
                 <property name="textElideMode">
-                 <enum>Qt::ElideNone</enum>
+                 <enum>Qt::ElideRight</enum>
                 </property>
                 <property name="showGrid">
                  <bool>false</bool>
@@ -284,7 +284,7 @@
                  <enum>QAbstractItemView::SelectRows</enum>
                 </property>
                 <property name="textElideMode">
-                 <enum>Qt::ElideNone</enum>
+                 <enum>Qt::ElideRight</enum>
                 </property>
                 <property name="showGrid">
                  <bool>false</bool>
@@ -845,7 +845,7 @@
             <enum>QAbstractItemView::SelectRows</enum>
            </property>
            <property name="textElideMode">
-            <enum>Qt::ElideNone</enum>
+            <enum>Qt::ElideRight</enum>
            </property>
            <property name="showGrid">
             <bool>false</bool>

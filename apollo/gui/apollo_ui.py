@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'apollo.ui'
+# Form implementation generated from reading ui file '.\apollo.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
@@ -76,7 +76,7 @@ class Ui_MainWindow(object):
         self.apollo_TBV_LBT_grouptable.setProperty("showDropIndicator", False)
         self.apollo_TBV_LBT_grouptable.setDragDropOverwriteMode(False)
         self.apollo_TBV_LBT_grouptable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.apollo_TBV_LBT_grouptable.setTextElideMode(QtCore.Qt.ElideNone)
+        self.apollo_TBV_LBT_grouptable.setTextElideMode(QtCore.Qt.ElideRight)
         self.apollo_TBV_LBT_grouptable.setShowGrid(False)
         self.apollo_TBV_LBT_grouptable.setSortingEnabled(True)
         self.apollo_TBV_LBT_grouptable.setWordWrap(False)
@@ -123,7 +123,7 @@ class Ui_MainWindow(object):
         self.apollo_TBV_LBT_maintable.setProperty("showDropIndicator", False)
         self.apollo_TBV_LBT_maintable.setDragDropOverwriteMode(False)
         self.apollo_TBV_LBT_maintable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.apollo_TBV_LBT_maintable.setTextElideMode(QtCore.Qt.ElideNone)
+        self.apollo_TBV_LBT_maintable.setTextElideMode(QtCore.Qt.ElideRight)
         self.apollo_TBV_LBT_maintable.setShowGrid(False)
         self.apollo_TBV_LBT_maintable.setSortingEnabled(True)
         self.apollo_TBV_LBT_maintable.setWordWrap(False)
@@ -298,7 +298,7 @@ class Ui_MainWindow(object):
         self.apollo_TBV_NPQ_maintable.setProperty("showDropIndicator", False)
         self.apollo_TBV_NPQ_maintable.setDragDropOverwriteMode(False)
         self.apollo_TBV_NPQ_maintable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.apollo_TBV_NPQ_maintable.setTextElideMode(QtCore.Qt.ElideNone)
+        self.apollo_TBV_NPQ_maintable.setTextElideMode(QtCore.Qt.ElideRight)
         self.apollo_TBV_NPQ_maintable.setShowGrid(False)
         self.apollo_TBV_NPQ_maintable.setSortingEnabled(True)
         self.apollo_TBV_NPQ_maintable.setWordWrap(False)

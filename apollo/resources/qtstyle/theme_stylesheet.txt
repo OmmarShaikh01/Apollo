@@ -69,7 +69,6 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
 /* BackGround ------------------------------------------------------------ */ 
     QWidget#centralwidget{
         background-color: #161616;
-        border: 0px solid Transparent;
         padding: 0px;
         color: #f4f4f4;
     }
@@ -116,7 +115,6 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
         background-color: #393939;
         margin: 4px;
     }
-
 
 /*Tab Headers*/
     QWidget#apollo_HDLBD_nowplayong_queue{
@@ -361,6 +359,7 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
     QColumnView::item{
         max-height: 24px;
         border-bottom: 1px solid #393939;
+        padding: 2px;
     }
 
     QTreeView::item:pressed,
@@ -484,8 +483,6 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
         padding-right: 2px;
         image: url(":/qss_icons/rc/arrow_up.png");
     }
-
-
 
 /* QTabWiget -------------------------------------------------------------- */
     QTabWidget {
@@ -621,6 +618,97 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
     QSlider::add-page:vertical:active {
         background: #4589ff;
         border: 1px solid #4589ff;
+    }
+
+/* QMenu ------------------------------------------------------------------ */
+    QMenu {
+        border: 1px solid #161616;
+        color: #c6c6c6;
+        margin: 0px;
+    }
+
+    QMenu::separator {
+        height: 1px;
+        background-color: #393939;
+        color: #c6c6c6;
+    }
+
+    QMenu::icon {
+        margin: 0px;
+        padding-left: 8px;
+    }
+
+    QMenu::item{
+        background-color: #393939;
+        padding: 4px 24px 4px 24px;
+        color: #f4f4f4;
+        /* Reserve space for selection border */
+        border-bottom: 1px solid #161616;
+    }
+
+    QMenu::item:pressed {
+        background: #393939;
+        color: #f4f4f4;
+        border-bottom: 1px solid #6f6f6f;
+    }
+
+    QMenu::item:selected:active {
+        background: #393939;
+        color: #f4f4f4;
+        border-bottom: 1px solid #0f62fe;
+    }
+
+    QMenu::item:selected:!active {
+        background: #262626;
+        border-bottom: 1px solid #6f6f6f;
+        color: #f4f4f4;
+    }
+
+    QMenu::indicator {
+        width: 12px;
+        height: 12px;
+        padding-left: 6px;
+        /* non-exclusive indicator = check box style indicator (see QActionGroup::setExclusive) */
+        /* exclusive indicator = radio button style indicator (see QActionGroup::setExclusive) */
+    }
+
+    QMenu::indicator:non-exclusive:unchecked {
+        image: url(":/qss_icons/rc/checkbox_unchecked.png");
+    }
+
+    QMenu::indicator:non-exclusive:unchecked:selected {
+        image: url(":/qss_icons/rc/checkbox_unchecked_disabled.png");
+    }
+
+    QMenu::indicator:non-exclusive:checked {
+        image: url(":/qss_icons/rc/checkbox_checked.png");
+    }
+
+    QMenu::indicator:non-exclusive:checked:selected {
+        image: url(":/qss_icons/rc/checkbox_checked_disabled.png");
+    }
+
+    QMenu::indicator:exclusive:unchecked {
+        image: url(":/qss_icons/rc/radio_unchecked.png");
+    }
+
+    QMenu::indicator:exclusive:unchecked:selected {
+        image: url(":/qss_icons/rc/radio_unchecked_disabled.png");
+    }
+
+    QMenu::indicator:exclusive:checked {
+        image: url(":/qss_icons/rc/radio_checked.png");
+    }
+
+    QMenu::indicator:exclusive:checked:selected {
+        image: url(":/qss_icons/rc/radio_checked_disabled.png");
+    }
+
+    QMenu::right-arrow {
+        margin: 5px;
+        image: url(":/qss_icons/rc/arrow_right.png");
+        height: 12px;
+        width: 12px;
     }
 
 /* Primary QPushButton */
@@ -1390,7 +1478,6 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
         border: 1px solid Transparent;
         padding: 8px;
     }
-
 
 /* Footer Buttons --------------------------------------------------*/
     

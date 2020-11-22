@@ -26,7 +26,7 @@ class LibraryManager():
     >>> library_manager.connect("database.db")
     """
     
-    def __init__(self, db):
+    def __init__(self, db = None):
         """
         Initilizes the Databse Driver and connects to DB and Initilizes the
         fields for the Database Tables
@@ -42,13 +42,13 @@ class LibraryManager():
                           "bitrate","bitrate_mode","channels","encoder_info","encoder_settings",
                           "frame_offset","layer","mode","padding","protected","sample_rate",
                           "track_gain","track_peak"]        
-        
-        self.db_driver = QSqlDatabase.addDatabase("QSQLITE")
-        if self.connect(db):
-            pass
-        else:
-            raise Exception("Startup Checks Failed")
-        
+        if db != None:
+            if not self.connect(db):
+                raise Exception("Startup Checks Failed")
+    
+    def IsConneted(self):
+        return self.db_driver.isOpen()
+    
     def connect(self, db):
         """
         Uses the Database Driver to create a connection with a local
@@ -65,6 +65,7 @@ class LibraryManager():
         :Errors:
             ConnectionError: if database fails to connect or fails checks 
         """
+        self.db_driver = QSqlDatabase.addDatabase("QSQLITE")
         self.db_driver.setDatabaseName(db)
         if self.db_driver.open():
             return self.startupchecks()
@@ -98,7 +99,7 @@ class LibraryManager():
         query.bindValue(":tablename", "library")
         query.exec_()
         if not query.next():
-            status = self.create_library_table()
+            status = self.Create_LibraryTable()
         else:
             status = True
         
@@ -108,13 +109,13 @@ class LibraryManager():
         query.bindValue(":viewname", "nowplaying")
         query.exec_()
         if not query.next():
-            status = self.create_empty_view("nowplaying")        
+            status = self.Create_EmptyView("nowplaying")        
         else:
             status = True
             
         return status
     
-    def create_library_table(self):
+    def Create_LibraryTable(self):
         """
         Creates the main Library table with yhe valid column fields
         """
@@ -176,11 +177,11 @@ class LibraryManager():
             return True         
     
     
-    def create_empty_view(self, view_name):
+    def Create_EmptyView(self, view_name):
         """
         Creates an empty view as an placeholder for display
         
-        >>> library_manager.create_empty_view("Example")
+        >>> library_manager.Create_EmptyView("Example")
         
         :Args:
             view_name: String
@@ -198,23 +199,23 @@ class LibraryManager():
         else:
             return True 
     
-    def create_view(self, view_name, field, data):
+    def CreateView(self, view_name, field, Selector):
         """
-        Creates an view by selection data from a valid field
+        Creates an view from library Table by selection data from a valid field
         
-        >>> library_manager.create_view("Viewname", "File_id", [1,2,3,4])
+        >>> library_manager.CreateView("Viewname", "File_id", [1,2,3,4])
         
         :Args:
             view_name: String
                 Valid view name from (now_playing)
             field: String
                 Valid field to select data from
-            data: List
-                Valid data to select and filter out Rows from the table
+            Selector: List
+                Valid Selector to select and filter out Rows from the table
         """
-        QSqlQuery(f"DROP VIEW IF EXISTS {view_name}").exec_()
+        self.DropView(view_name)
         query = QSqlQuery()
-        placeholders =  ", ".join([f"'{v}'"for v in data])
+        placeholders =  ", ".join([f"'{v}'"for v in Selector])
         querystate = query.prepare(f"""
         CREATE VIEW IF NOT EXISTS {view_name} AS
         SELECT * FROM library WHERE {field} IN ({placeholders})
@@ -227,8 +228,30 @@ class LibraryManager():
         else:
             return True 
            
+    def ExeQuery(self, Query):
+        """
+        Executes an QSqlQuery and returns the query to get results
+        
+        >>> library_manager.ExeQuery(query)
+        
+        :Args:
+            Query: QSqlQuery,String
+                Query to execute
+        """
+        if isinstance(Query, str):
+            QueryStr = Query
+            Query = QSqlQuery()
+            QueryPrep = Query.prepare(QueryStr)
+        else:
+            QueryPrep = True
             
-    def drop_table(self, tablename):
+        QueryEXE = Query.exec_()
+        if QueryEXE == False or QueryPrep == False:
+            raise Exception(f"QueryCreated: {QueryPrep} \nError:{Query.lastError().text()}")
+        else:
+            return Query
+        
+    def DropTable(self, tablename):
         """
         Drops the table from the database
         
@@ -247,7 +270,7 @@ class LibraryManager():
             return query 
         
         
-    def drop_view(self, viewname):
+    def DropView(self, viewname):
         """
         Drops the view from the database
         
@@ -290,7 +313,7 @@ class LibraryManager():
                     path = os.path.join(dirc, file)
                     file_list.append(path)
         metadata_dict = self.scan_file(file_list)
-        query = self.insert_metadata_batch(metadata_dict)
+        query = self.BatchInsert_Metadata(metadata_dict)
         if not query.execBatch():
             raise Exception(query.lastError().text())
             
@@ -442,7 +465,7 @@ class LibraryManager():
         return metadata
  
  
-    def insert_metadata_batch(self, metadata):
+    def BatchInsert_Metadata(self, metadata):
         """
         Creates the insert query for all the metadata adn returns query object. 
         
@@ -605,14 +628,17 @@ class LibraryManager():
         if tablename in ["library", 'nowplaying']:
             Row = 0
             Cols = range(len(self.db_fields))                     
-            querystate = query.prepare(f" SELECT * FROM {tablename}")
+            querystate = query.prepare(f"SELECT * FROM {tablename}")
         else:
             pass
         
         query_exe = query.exec_()
         if query_exe == False and querystate == False:
-            raise Exception(f"<{tablename}> View Not Created")
+            raise Exception(f"<{tablename}> Table Doesnt Exists")
         
+        if tablename == "library":
+            # print(item.text())        
+            print(1)
         while query.next():
             for Column in Cols:
                 item = QtGui.QStandardItem(str(query.value(Column)))
@@ -737,11 +763,6 @@ class LibraryManager():
             
         
 if __name__ == "__main__":
-    pass
+    from apollo.utils import ConfigManager
     
     
-    
-    
-
-            
-
