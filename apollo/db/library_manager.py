@@ -520,6 +520,7 @@ class LibraryManager():
         if query.next():
             value = query.value(0)
             value = "0" if value == "" else datetime.timedelta(seconds = value)
+            
             return value
         else:
             return "0"
@@ -631,14 +632,11 @@ class LibraryManager():
             querystate = query.prepare(f"SELECT * FROM {tablename}")
         else:
             pass
-        
+
         query_exe = query.exec_()
         if query_exe == False and querystate == False:
             raise Exception(f"<{tablename}> Table Doesnt Exists")
         
-        if tablename == "library":
-            # print(item.text())        
-            print(1)
         while query.next():
             for Column in Cols:
                 item = QtGui.QStandardItem(str(query.value(Column)))
