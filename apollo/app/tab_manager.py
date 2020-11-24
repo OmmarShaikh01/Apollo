@@ -123,14 +123,65 @@ class LibraryTab:
         """
         Context menu Bindings for the Library Tab MainTable
         """
-        
+        MainTBV = self.UI.apollo_TBV_LBT_maintable
+        # Main Menu
         lv_1 = QtWidgets.QMenu()
         
-        (lv_1).addAction("Play Now").triggered.connect(lambda: self.UI._PlayNow(TBV = self.UI.apollo_TBV_LBT_maintable))
-        (lv_1).addAction("Queue Next").triggered.connect(lambda: self.UI._QueueNext(TBV = self.UI.apollo_TBV_LBT_maintable))
-        (lv_1).addAction("Queue Last").triggered.connect(lambda: self.UI._QueueLast(TBV = self.UI.apollo_TBV_LBT_maintable))
+        (lv_1).addAction("Play Now").triggered.connect(lambda: self.UI._PlayNow(TBV = MainTBV))
+        (lv_1).addAction("Queue Next").triggered.connect(lambda: self.UI._QueueNext(TBV = MainTBV))
+        (lv_1).addAction("Queue Last").triggered.connect(lambda: self.UI._QueueLast(TBV = MainTBV))
+        
+        # Play More Menu
+        lv_1_1 = (lv_1).addMenu("Play More >")
+        (lv_1_1).addAction("Try On Auto-DJ")
+        (lv_1_1).addSeparator() # ----------------------------------------------
+        
+        (lv_1_1).addMenu("Output To >")
+        (lv_1_1).addSeparator() # ----------------------------------------------
+        
+        (lv_1_1).addAction("Play All Shuffled")
+        (lv_1_1).addSeparator() # ----------------------------------------------
+        
+        (lv_1_1).addAction("Play Artist")
+        (lv_1_1).addAction("Play Similar")
+        (lv_1_1).addSeparator() # ----------------------------------------------
+        
+        (lv_1_1).addAction("Play Album Now")
+        (lv_1_1).addAction("Queue Album Next")
+        (lv_1_1).addAction("Queue Album Last")
+        (lv_1_1).addSeparator() # ----------------------------------------------
+        
+        (lv_1_1).addAction("Play Genre")        
+        (lv_1).addSeparator() # ------------------------------------------------
+        
+        # Edit Action
+        (lv_1).addAction("Edit")
+
+        # Ratings Menu
+        lv_1_2 = (lv_1).addMenu("Rating >")
+        
+        # Add To Playlist Menu
+        lv_1_3 = (lv_1).addMenu("Add To Playlist >")
+        
+        # Send To Menu
+        lv_1_4 = (lv_1).addMenu("Send To >")
+        
+        # Delete Action
+        (lv_1).addAction("Delete")
+        (lv_1).addSeparator() # ------------------------------------------------
+
+        # Search Menu
+        lv_1_5 = (lv_1).addMenu("Search >")
+        lv_1_5.addAction("Search Similar Artist")
+        lv_1_5.addAction("Search Similar Album")
+        lv_1_5.addAction("Search Similar Genre")
+        (lv_1_5).addSeparator() # ----------------------------------------------
         
         
+        lv_1_5.addAction("Open In Browser")
+        lv_1_5.addAction("Locate In Explorer")
+        
+        # Execution        
         cursor = QtGui.QCursor()
         lv_1.exec_(cursor.pos()) 
         
@@ -172,9 +223,10 @@ class NowPlayingTab:
         data = self.UI.PlayQueue.GetQueue()
         self.UI.LIB_MANG.CreateView("nowplaying", "file_id", data)
         self.UI.LIB_MANG.Refresh_TableModelData(self.UI.apollo_TBV_NPQ_maintable)
-                
+            
                 
 if __name__ == "__main__":
     from apollo.app.apollo_exe import ApolloExecute
     app = ApolloExecute()
     app.Execute()
+

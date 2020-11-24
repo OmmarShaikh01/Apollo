@@ -629,7 +629,7 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
 
     QMenu::separator {
         height: 1px;
-        background-color: $ui-02;
+        background-color: $ui-background;
         color: $text-02;
     }
 
@@ -643,7 +643,6 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
         padding: 4px 24px 4px 24px;
         color: $text-01;
         /* Reserve space for selection border */
-        border-bottom: 1px solid $ui-background;
     }
 
     QMenu::item:pressed {

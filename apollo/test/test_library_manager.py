@@ -1,10 +1,11 @@
 import unittest
 import unittest.mock as mock
 import datetime
+import copy
 
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QTableView, QApplication
+from PyQt5.QtWidgets import QTableView, QApplication, QLineEdit 
 
 from apollo.db.library_manager import LibraryManager
 
@@ -201,29 +202,80 @@ class Test_LibraryManager(unittest.TestCase):
         
     def test_Tabletrackcount(self):
         # tests the TrackCount
-        self.assertEqual(10, self.Librarymanager.TableArtistcount("library"))        
+        self.assertEqual(10, self.Librarymanager.TableArtistcount("library"))
     
-class TestQT_LibraryManager(unittest.TestCase):
+    def test_horizontalHeader_functions(self):
+        _ = QApplication([])
         
-    QAPP_INSTANCE = None
-    
-    def setUp(self):
-        if self.QAPP_INSTANCE == None:
-            self.QAPP_INSTANCE = QApplication([])
-        
-        self.Librarymanager = LibraryManager(":memory:")
-        self.app = self.QAPP_INSTANCE
-            
-    def tearDown(self):
-        del self.app
-            
-    def test_SetTable_horizontalHeader(self):
         View = QTableView()
-        View.setModel(QStandardItemModel())
-        Labels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
-        View = self.Librarymanager.SetTable_horizontalHeader(View = View, Labels = Labels)
-        print(self.Librarymanager.GetTable_horizontalHeader(View))
+        Model = QStandardItemModel()
+        for Rows in range(10):
+            for index, Cols_field in enumerate(self.Librarymanager.db_fields):
+                item = QStandardItem(f"{Cols_field}X{index}")
+                Model.setItem(Rows, index, item)
+        View.setModel(Model)
+        Labels = self.Librarymanager.db_fields
+        self.Librarymanager.SetTable_horizontalHeader(View = View, Labels = Labels)
+        self.assertEqual(self.Librarymanager.db_fields, self.Librarymanager.GetTable_horizontalHeader(View))
         
+    def test_TableModel_functions(self):
+        _ = QApplication([])
         
-if __name__ == '__main__':
+        # data insertion into library table
+        DataTable = {}
+        for fields in self.Librarymanager.db_fields:
+            if fields in ["discnumber", "channels"]:
+                data = [Row for Row in range(10)]
+            else:
+                data = [f"{fields}X{Row}" for Row in range(10)]
+            DataTable[fields] = data
+        Query = self.Librarymanager.BatchInsert_Metadata(DataTable)
+        if not Query.execBatch():
+            raise Exception(Query.lastError().text())         
+
+        # creates an empty view and gets the table library from db
+        View = QTableView()
+        Table = self.Librarymanager.GetTableModle("library")
+        
+        # sets the tablemodel aqquired from Db 
+        self.Librarymanager.SetTableModle(View = View, Table = Table)
+        
+        # Tests fo data getter and setter for te Db an d View bindding
+        for index, column in enumerate(self.Librarymanager.db_fields):
+            data = [Table.index(rows, index).data() for rows in range(Table.rowCount())]
+            original = [str(i) for i in DataTable[column]]
+            self.assertEqual(original, data)
+        
+    def Test_BasicTablesearch(self): 
+        _ = QApplication([])
+            
+        # data insertion into library table
+        DataTable = {}
+        for fields in self.Librarymanager.db_fields:
+            if fields in ["discnumber", "channels"]:
+                data = [Row for Row in range(10)]
+            else:
+                data = [f"{fields}X{Row}" for Row in range(10)]
+            DataTable[fields] = data
+        Query = self.Librarymanager.BatchInsert_Metadata(DataTable)
+        if not Query.execBatch():
+            raise Exception(Query.lastError().text())         
+         
+        #get and sets data from the DB as a TableModel    
+        View = QTableView()
+        Table = self.Librarymanager.GetTableModle("library")
+        self.Librarymanager.SetTableModle(View = View, Table = Table)
+        
+        # creats the LineEdit and sets the search term
+        LEDT = QLineEdit()
+        LEDT.setText("fieldX5")
+        searchExpected = [values[5] for values in DataTable.values()]
+        self.Librarymanager.TableSearch(LEDT, View)
+        
+        # test the search query execution and table Updation
+        for rows in range(Table.rowCount()):
+            data = [Table.index(rows, index).data() for rows in range(Table.columnCount())]
+        self.assertEqual(searchExpected, data)
+        
+if __name__ == '__main__':    
     unittest.main()

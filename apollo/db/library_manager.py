@@ -292,7 +292,7 @@ class LibraryManager():
                 
     
     
-    def scan_directory(self, path, include = []):
+    def scan_directory(self, path, include = [], slot = None):
         """
         Walks the root directory and scans the directory for media files.
         It also fetches the metadata of the media file and runs an insert query
@@ -305,6 +305,8 @@ class LibraryManager():
                 Path of the root level directory
             include: List
                 List of file extentions to include
+            slot: Function
+                function that gets filepath as arg
         """
         file_list = []
         for (dirc, subdir, files) in os.walk(path):
@@ -312,24 +314,28 @@ class LibraryManager():
                 if os.path.splitext(file)[1] in include:
                     path = os.path.join(dirc, file)
                     file_list.append(path)
-        metadata_dict = self.scan_file(file_list)
+        metadata_dict = self.scan_file(file_list, slot = slot)
         query = self.BatchInsert_Metadata(metadata_dict)
         if not query.execBatch():
             raise Exception(query.lastError().text())
             
             
-    def scan_file(self, file_list):
+    def scan_file(self, file_list, slot = None):
         """
         Fetches Metadata of the files that have been scanned and returns a
         metadata dict.
         
         :Args:
             file_list: List
-                List of files scanned 
+                List of files scanned
+            slot: Function
+                function that gets filepath as arg
         """
         metadata_dict = {k: []for k in self.db_fields}
         filehash_list = []
-        for file in file_list:         
+        for file in file_list:
+            if slot != None:
+                slot(file)
             pathhash = (hashlib.md5(file.encode())).hexdigest()
             query = QSqlQuery(f"SELECT path_id FROM library WHERE path_id = '{pathhash}' ")
             query.exec_()
@@ -594,7 +600,7 @@ class LibraryManager():
         header = View.horizontalHeader().model()
         Labels = Labels[:header.columnCount()]
         for col, data in enumerate(Labels):
-            header.setHeaderData(col, Qt.Horizontal, data.replace("_", " ").title())
+            header.setHeaderData(col, Qt.Horizontal, str(data).replace("_", " ").title())
           
           
     def GetTable_horizontalHeader(self, View):
@@ -610,7 +616,7 @@ class LibraryManager():
         labels = []
         for col in range(header.columnCount()):
             col_label = header.headerData(col, Qt.Horizontal)
-            labels.append(col_label.replace(" ", "_").lower())
+            labels.append(str(col_label).replace(" ", "_").lower())
         return labels
 
             
@@ -762,5 +768,6 @@ class LibraryManager():
         
 if __name__ == "__main__":
     from apollo.utils import ConfigManager
-    
+    Inst = LibraryManager(ConfigManager().Getvalue(path = "DBNAME"))
+    Inst.scan_directory("E:\\music", [".mp3", "m4a", ".flac"], print)
     
