@@ -1,4 +1,7 @@
 import unittest
+import sys, os
+
+sys.path.append(os.path.split(os.path.abspath(__file__))[0].rsplit("\\", 2)[0])
 
 from apollo.utils import ConfigManager, PlayingQueue
 

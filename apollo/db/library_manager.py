@@ -4,6 +4,7 @@ import re
 import datetime
 import re
 import hashlib
+import json
 
 import mutagen
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery
@@ -199,7 +200,7 @@ class LibraryManager():
         else:
             return True 
     
-    def CreateView(self, view_name, field, Selector):
+    def CreateView(self, view_name, Selector, **kwargs):
         """
         Creates an view from library Table by selection data from a valid field
         
@@ -208,26 +209,94 @@ class LibraryManager():
         :Args:
             view_name: String
                 Valid view name from (now_playing)
-            field: String
+            FilterField: String
                 Valid field to select data from
             Selector: List
                 Valid Selector to select and filter out Rows from the table
+            ID: List
+                File_id to indexs from if provided
+            Shuffled: Bool
+                Query Type to use for selecting data
+            Normal: Bool
+                Query Type to use for selecting data           
+            Filter: Bool
+                Query Type to use for selecting data           
         """
         self.DropView(view_name)
         query = QSqlQuery()
-        placeholders =  ", ".join([f"'{v}'"for v in Selector])
-        querystate = query.prepare(f"""
-        CREATE VIEW IF NOT EXISTS {view_name} AS
-        SELECT * FROM library WHERE {field} IN ({placeholders})
-        ORDER BY NULL
-        """)
-        
-        query_exe = query.exec_()
-        if query_exe == False and querystate == False:
-            raise Exception(f"<{view_name}> View Not Created \nERROR: {query.lastError().text()}")
+        placeholders =  ", ".join([f"'{v}'"for v in Selector]) 
+        if kwargs.get("FilterField") == None:
+            Field = "file_id"
         else:
-            return True 
-           
+            Field = kwargs.get("FilterField")
+        
+        if kwargs.get("Filter") != None:
+            if kwargs.get("ID") != None:
+                ID = ", ".join([f"'{v}'"for v in kwargs.get("ID")])
+            else:
+                ID = ""
+                
+                
+            querystate = query.prepare(f"""
+            CREATE VIEW IF NOT EXISTS {view_name} AS 
+            SELECT * FROM library WHERE file_id IN (
+                SELECT file_id
+                FROM library
+                WHERE {Field} IN ({placeholders})
+                OR lower({Field}) IN ({placeholders})
+                OR file_id IN ({ID})
+            )
+            """)            
+            
+        if kwargs.get("Shuffled") != None:
+            querystate = query.prepare(f"""
+                CREATE VIEW IF NOT EXISTS {view_name} AS
+                SELECT * FROM library WHERE {Field} IN ({placeholders})
+                ORDER BY RANDOM()            
+                """)    
+        if kwargs.get("Normal") != None:
+            querystate = query.prepare(f"""
+                CREATE VIEW IF NOT EXISTS {view_name} AS
+                SELECT * FROM library WHERE {Field} IN ({placeholders})
+                """)                  
+            
+        query_exe = query.exec_()        
+        if query_exe == False and querystate == False:
+            msg = f"""
+            <{view_name}> View Not Created
+            PREPARE: {querystate}
+            EXE: {query_exe}
+            ERROR: {(query.lastError().text())}
+            QUERY: {query.lastQuery()}
+            """
+            msg = dedenter(msg, 12)
+            raise Exception(msg)
+        
+        # gets the data that has been applied and selected
+        return self.IndexSelector("nowplaying", "file_id")
+
+    def IndexSelector(self, view_name, Field):
+        """
+        Gets Field Data from a Table and View
+        
+        :Args:
+            view_name: String
+                Valid view name from (now_playing)
+            Field: String
+                Valid field to select data from
+        """
+        query = QSqlQuery()
+        querystate = query.prepare(f"SELECT {Field} FROM {view_name}")
+        query_exe = query.exec_()
+        
+        if query_exe == False and querystate == False:
+            raise Exception(f"<{query.lastQuery()}> Data retrieval Failed \nERROR: {query.lastError().text()}")
+        Indexes = []
+        while query.next():
+            value = query.value(0)
+            Indexes.append(value)
+        return Indexes 
+     
     def ExeQuery(self, Query):
         """
         Executes an QSqlQuery and returns the query to get results
@@ -291,7 +360,6 @@ class LibraryManager():
             return query 
                 
     
-    
     def scan_directory(self, path, include = [], slot = None):
         """
         Walks the root directory and scans the directory for media files.
@@ -315,10 +383,8 @@ class LibraryManager():
                     path = os.path.join(dirc, file)
                     file_list.append(path)
         metadata_dict = self.scan_file(file_list, slot = slot)
-        query = self.BatchInsert_Metadata(metadata_dict)
-        if not query.execBatch():
-            raise Exception(query.lastError().text())
-            
+        self.BatchInsert_Metadata(metadata_dict)
+    
             
     def scan_file(self, file_list, slot = None):
         """
@@ -470,7 +536,6 @@ class LibraryManager():
         metadata["file_path"] = muta_file.filename        
         return metadata
  
- 
     def BatchInsert_Metadata(self, metadata):
         """
         Creates the insert query for all the metadata adn returns query object. 
@@ -483,10 +548,18 @@ class LibraryManager():
         columns =", ".join(metadata.keys())
         placeholders =  ", ".join(["?" for i in range(len(metadata.keys()))])
 
+        self.db_driver.transaction()
+        QSqlQuery("PRAGMA synchronous = OFF").exec_()
+        QSqlQuery("PRAGMA journal_mode = MEMORY").exec_()
         query.prepare(f"""INSERT INTO library ({columns}) VALUES ({placeholders})""")
         for keys in metadata.keys():
             query.addBindValue(metadata.get(keys))
-        return query
+            
+        if not query.execBatch():
+            raise Exception(query.lastError().text())        
+            
+        self.db_driver.commit()
+    
       
       
     def TableSize(self, tablename):
@@ -620,57 +693,59 @@ class LibraryManager():
         return labels
 
             
-    def GetTableModle(self, tablename): 
+    def SetTableModle(self, Tablename, View, Headers = None) -> "QStandardItemModel": 
         """
         Gets the TableData for the given Table In the DB
         
         >>> library_manager.GetTableModle("Table") 
         
         :Args:
-            tablename: String
+            Tablename: String
                 Table name for the model to points to
         """
         TableModel = QtGui.QStandardItemModel()
         query = QSqlQuery()
-        if tablename in ["library", 'nowplaying']:
+        if Tablename in ["library", 'nowplaying']:
             Row = 0
             Cols = range(len(self.db_fields))                     
-            querystate = query.prepare(f"SELECT * FROM {tablename}")
+            querystate = query.prepare(f"SELECT * FROM {Tablename}")
         else:
-            pass
+            querystate = False
 
         query_exe = query.exec_()
         if query_exe == False and querystate == False:
-            raise Exception(f"<{tablename}> Table Doesnt Exists")
+            raise Exception(f"<{Tablename}> Table Doesnt Exists")
         
-        while query.next():
-            for Column in Cols:
-                item = QtGui.QStandardItem(str(query.value(Column)))
-                TableModel.setItem(Row, Column, item)
-            Row += 1
+        View.setProperty("DB_Table", Tablename)
+        View.setProperty("DB_Columns", self.db_fields)
+        Order = View.property("Order")
+        
+        # Table population by ordered method 
+        if Order != [] and Order != None:                            
+            while query.next():
+                for Column in Cols:
+                    Item = query.value(Column)
+                    if Column == 0:
+                        Row = Order.index(Item)
+                    TableModel.setItem(Row, Column, QtGui.QStandardItem(str(Item)))    
+        
+        # Table population by normal method             
+        else:                 
+            while query.next():
+                for Column in Cols:
+                    item = QtGui.QStandardItem(str(query.value(Column)))
+                    TableModel.setItem(Row, Column, item)
+                Row += 1
+            View.setProperty("Order", [])
+              
+        View.setModel(TableModel)
+        if  Headers == None:
+            Headers = list(range(TableModel.columnCount()))
+        self.SetTable_horizontalHeader(View, Headers)
         return TableModel 
-    
-    
-    def SetTableModle(self, View, Table, Header = None): 
-        """
-        Sets the QTableView with the QSqlTableModel 
-        
-        >>> library_manager.SetTableModle(View, Table, db_fields) 
-        
-        :Args:
-            View: QTableView
-                view for the table to be displayed in
-            
-            Table: TableModel
-                table with the data
-        """
-        View.setModel(Table)
-        if  Header == None:
-            Header = list(range(Table.columnCount()))
-        self.SetTable_horizontalHeader(View, Header)
       
     
-    def Refresh_TableModelData(self, View):
+    def Refresh_TableModelData(self, View) -> "QStandardItemModel":
         """
         Refreshes the TableModel
         
@@ -678,13 +753,14 @@ class LibraryManager():
             parent_view: QTableView
                 View containing the model
         """        
-        Table = self.GetTableModle(View.property("DB_Table"))
-        self.SetTableModle(View, Table, View.property("DB_Columns"))  
-
+        Table = View.property("DB_Table")
+        return self.SetTableModle(Table, View, View.property("DB_Columns"))      
+            
     
     def TableSearch(self, Line_Edit, View):
         """
         Applies a filter to the QSqlTableModel and refreshes it.
+        Searches in [album, albumartist, artist, author, composer, performer, title] Fields
         
         >>> library_manager.TableSearch(QLineEdit, QTableView)
         
@@ -703,9 +779,7 @@ class LibraryManager():
         tablename = View.property("DB_Table")
         query = QSqlQuery()
         
-        if tablename in ["library", 'nowplaying']:
-            Cols = range(len(self.db_fields))
-            Row = 0            
+        if tablename in ["library", 'nowplaying']:        
             querystate = query.prepare(f"""
             SELECT * FROM {tablename}
             WHERE
@@ -725,19 +799,22 @@ class LibraryManager():
             OR lower(title) LIKE '%{Text}%'
             """)
         else:
-            pass
+            querystate = False
         
         query_exe = query.exec_()
         if query_exe == False and querystate == False:
             raise Exception(f"<{tablename}> View Not Created")
         
+        Cols = range(len(self.db_fields))
+        Row = 0            
         while query.next():
             for Column in Cols:
                 item = QtGui.QStandardItem(str(query.value(Column)))
                 TableModel.setItem(Row, Column, item)
             Row += 1
             
-        self.SetTableModle(View, TableModel, View.property("DB_Columns")) 
+        View.setModel(TableModel)
+        self.SetTable_horizontalHeader(View, View.property("DB_Columns"))
 
         
     def TableSearchAdvanced(self, query, View):
@@ -767,7 +844,8 @@ class LibraryManager():
             
         
 if __name__ == "__main__":
+    pass
     from apollo.utils import ConfigManager
     Inst = LibraryManager(ConfigManager().Getvalue(path = "DBNAME"))
-    Inst.scan_directory("E:\\music", [".mp3", "m4a", ".flac"], print)
-    
+    #Inst.scan_directory("E:\\music", [".mp3", "m4a", ".flac",".wav"], lambda x: None)
+    a = Inst.CreateView("nowplaying", ["b77b77e6900ca65e8ba91d00c05b7fea", "2083f48bbecf0545216c349c3d2fe214", "23ed1fe1672fabb3e1de37d69a61b896"], Normal = True)
