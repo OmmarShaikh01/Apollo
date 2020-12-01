@@ -702,26 +702,39 @@ class LibraryManager():
         :Args:
             Tablename: String
                 Table name for the model to points to
+            View: TableView
+                view to set Modle into
+            Headers: List
+                List of all Labels to add to View Header
+                
+        :Return:
+            TableModel: if evrything passes
+            None: if Tablename is invalid
         """
+        # skips if tablename is invalid
+        if Tablename == None:
+            return None
+        
+        #  Runs a select query to return QueryPointer
         TableModel = QtGui.QStandardItemModel()
         query = QSqlQuery()
-        if Tablename in ["library", 'nowplaying']:
-            Row = 0
-            Cols = range(len(self.db_fields))                     
+        if Tablename in ["library", 'nowplaying']:                 
             querystate = query.prepare(f"SELECT * FROM {Tablename}")
         else:
             querystate = False
-
         query_exe = query.exec_()
         if query_exe == False and querystate == False:
             raise Exception(f"<{Tablename}> Table Doesnt Exists")
         
+        # Sets all the required Property forn the view
+        Cols = range(len(self.db_fields))
+        Row = 0
         View.setProperty("DB_Table", Tablename)
         View.setProperty("DB_Columns", self.db_fields)
         Order = View.property("Order")
-        
+    
         # Table population by ordered method 
-        if Order != [] and Order != None:                            
+        if isinstance(Order, list) and Order != []:                         
             while query.next():
                 for Column in Cols:
                     Item = query.value(Column)
@@ -730,18 +743,20 @@ class LibraryManager():
                     TableModel.setItem(Row, Column, QtGui.QStandardItem(str(Item)))    
         
         # Table population by normal method             
-        else:                 
+        else:                
             while query.next():
                 for Column in Cols:
                     item = QtGui.QStandardItem(str(query.value(Column)))
                     TableModel.setItem(Row, Column, item)
                 Row += 1
             View.setProperty("Order", [])
-              
+        
+        # Sets all the header labels    
         View.setModel(TableModel)
         if  Headers == None:
             Headers = list(range(TableModel.columnCount()))
         self.SetTable_horizontalHeader(View, Headers)
+        
         return TableModel 
       
     

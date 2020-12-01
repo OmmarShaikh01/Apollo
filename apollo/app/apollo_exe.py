@@ -83,6 +83,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
     
 from apollo.app.tab_manager import ApolloTabFunctions
 
+
 class ApolloExecute:
     """
     Executes Apollo
@@ -92,11 +93,11 @@ class ApolloExecute:
         self.app = QtWidgets.QApplication(sys.argv)
         self.app.setStyle(style)
         self.UI = ApolloTabFunctions()
+        self.UI.Init_SubTabs()
         self.app.setStyleSheet(self.UI.GetAppTheme())
         self.UI.apollo_PSB_LBT_subtrack.pressed.connect(lambda: self.app.setStyleSheet(self.UI.GetAppTheme()))
         self.UI.show()
-        
-        
+                
     def Execute(self): 
         sys.exit(self.app.exec_())
         

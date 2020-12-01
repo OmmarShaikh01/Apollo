@@ -10,12 +10,17 @@ from apollo.test.testUtilities import TesterObjects, TestSuit_main
 from PyQt5 import QtWidgets, QtGui, QtCore   
 
 # TODO
-# Remove all skips 
+#  Documnetation -> 1.12.2020
 
 class Test_ApolloTabFunctions_selection(TestCase):
-    """Tests for all methods that get data from indeses of selected items"""
-        
+    """
+    Class to test all the functions that get Indexes Of all the selected Items From Views and Tables
+    """
+    
     def setUp(self):
+        """
+        Initilizes the class and loads a Db in Memory
+        """
         self.TabInstance = ApolloTabFunctions()
         self.TabInstance.LoadDB(":memory:")
         
@@ -24,45 +29,42 @@ class Test_ApolloTabFunctions_selection(TestCase):
         
     def test_ColumnSelection_INDEX(self):
         """
-        Used to test the Indexing and returing of values From inside a TBV that have been selected
+        Tests the Indexing and returing of values From inside a TBV that have been selected
         either by using index
-        """        
+        
+        Expected Behaviour:
+        Takes A TableView and Column Index or FieldName as an input and returns all the
+        items that are selected in a Table.
+        """
         # checks for indexing at 0 column
         (RawTable, TableView) = TesterObjects.Gen_TableView()
         TableView.selectAll()
-        ResultTable = self.TabInstance._ColumnSelection(TableView, 0)
-        ExpectedTable = [row[0] for row in RawTable]
         
-        self.assertEqual(ExpectedTable, ResultTable)
+        with (self.subTest("Indexing Column using Integer index")):
+            ResultTable = self.TabInstance._ColumnSelection(TableView, 0)
+            ExpectedTable = [row[0] for row in RawTable]
+            self.assertEqual(ExpectedTable, ResultTable)
+            
+        with (self.subTest("Indexing Column using String Column Name")):
+            field = self.TabInstance.LIB_MANG.db_fields[5]
+            # checks for indexing at 0 column
+            ResultTable = self.TabInstance._ColumnSelection(TableView, field)
+            # index column same as the index of DB fields
+            ExpectedTable = [row[5] for row in RawTable]
+            self.assertEqual(ExpectedTable, ResultTable)        
         
-        # checks for Out of bounds indexing
-        ResultTable = self.TabInstance._ColumnSelection(TableView, 1000)
-        self.assertEqual(None, ResultTable)
+        with (self.subTest("Indexing Column using Out Of bounds")):        
+            # checks for Out of bounds indexing
+            ResultTable = self.TabInstance._ColumnSelection(TableView, 1000)
+            self.assertEqual(None, ResultTable)
 
 
-    def test_ColumnSelection_ColumnName(self):
-        """
-        Used to test the Indexing and returing of values From inside a TBV that have been selected
-        either by using ColumnName
-        """
-        cols = len(self.TabInstance.LIB_MANG.db_fields)
-        field = self.TabInstance.LIB_MANG.db_fields[5]
-        
-        # checks for indexing at 0 column
-        (RawTable, TableView) = TesterObjects.Gen_TableView((20, cols))
-        TableView.selectAll()
-        ResultTable = self.TabInstance._ColumnSelection(TableView, field)
-        # index column same as the index of DB fields
-        ExpectedTable = [row[5] for row in RawTable]
-        
-        self.assertEqual(ExpectedTable, ResultTable)
-        # checks for Out of bounds indexing
-        ResultTable = self.TabInstance._ColumnSelection(TableView, 1000)
-        self.assertEqual(None, ResultTable)
-        
     def test_GetSelectionIndexes(self):
         """
         Used to test Data retrival from a view of all the selected Indexes
+        
+        Expected Behaviour:
+        Takes A TableView as an input and returns all the items that are selected in a Table.
         """
         (RawTable, TableView) = TesterObjects.Gen_TableView()
         TableView.selectAll()
@@ -71,7 +73,9 @@ class Test_ApolloTabFunctions_selection(TestCase):
         
         
 class Test_ApolloTabFunctions_Queueing(TestCase):
-    """Tests for all track queuing and table Refreshes"""
+    """
+    Tests for all track queuing and table Refreshes
+    """
     
     def setUp(self):
         self.TabInstance = ApolloTabFunctions()
@@ -85,6 +89,9 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
     def test_PlayNow(self):
         """
         Test clearing the original queue and adding New Items to a queue
+        
+        Expected Behaviour:
+            Clears the Queue whenever new data is added and is indexed Using File_id
         """
         NUMROWS = 10
         View = TesterObjects.Gen_TableView_fromData(self.DataTable)
@@ -92,9 +99,11 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
         
         with (self.subTest("test adding 4 Items to an empty queue")):
             [View.selectRow(R) for R in range(4)]
+            
             # Adds items to an empty queue
             self.TabInstance.PlayNow(View)            
             View.clearSelection()
+            
             # gets result from DB as items dont need order
             Result = (self.TabInstance.LIB_MANG.IndexSelector("nowplaying","file_id"))
             Expected = self.DataTable["file_id"][:4] # checks with expected value
@@ -103,9 +112,11 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
             
         with (self.subTest("test readding last 4 Items to an filled queue")):
             [View.selectRow(R) for R in [6, 7, 8, 9]]
+            
             # Adds new items to an filled queue
             self.TabInstance.PlayNow(View)            
             View.clearSelection()
+            
             # gets result from DB as items dont need order 
             Result = (self.TabInstance.LIB_MANG.IndexSelector("nowplaying","file_id"))    
             Expected = self.DataTable["file_id"][6:]
@@ -115,6 +126,9 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
     def test_QueueNext(self):
         """
         Test adding New Items to a queue after the current pointer
+        
+        Expected Behaviour:
+            Adds Data After the Pointer in the Queue whenever new data is ready and is indexed Using File_id
         """
         NUMROWS = 10
         View = TesterObjects.Gen_TableView_fromData(self.DataTable)
@@ -146,6 +160,7 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
             # gets data from DataTable to check for data simmilarity
             Expected = ['file_idX0', 'file_idX4', 'file_idX5', 'file_idX6', 'file_idX7',
                         'file_idX8', 'file_idX9', 'file_idX1', 'file_idX2', 'file_idX3']
+            
             # order is important in which playqueue is arranged but not in Db            
             with (self.subTest("test Queuing 6 Items to an queue in DB")):
                 Result = (self.TabInstance.LIB_MANG.IndexSelector("nowplaying","file_id"))
@@ -158,6 +173,9 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
     def test_QueueLast(self):
         """
         Test adding new items at the end of the queue
+        
+        Expected Behaviour:
+            Adds Data at the end in the Queue whenever new data is ready and is indexed Using File_id
         """
         NUMROWS = 10
         View = TesterObjects.Gen_TableView_fromData(self.DataTable)
@@ -195,15 +213,23 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
             
             
     def test_PlayAllShuffled(self):
+        """
+        Test adding Shuffled items in the queue and clearing the queue
+        
+        Expected Behaviour:
+            Adds Shuffled Data in the Queue whenever new data is ready and is indexed Using File_id
+        """        
         NUMROWS = 10
         View = TesterObjects.Gen_TableView_fromData(self.DataTable)
         View.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         
         with (self.subTest("test Shuffle adding 4 Items to an empty queue")):
             [View.selectRow(R) for R in range(4)]
+            
             # Adds items to an empty queue
             self.TabInstance.PlayAllShuffled(View)            
             View.clearSelection()
+            
             # gets result from DB as items dont need order
             Result = (self.TabInstance.LIB_MANG.IndexSelector("nowplaying","file_id"))
             Expected = self.DataTable["file_id"][:4] # checks with expected value
@@ -212,9 +238,11 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
             
         with (self.subTest("test shuffle readding last 4 Items to an filled queue")):
             [View.selectRow(R) for R in [6, 7, 8, 9]]
+            
             # Adds new items to an filled queue
             self.TabInstance.PlayAllShuffled(View)            
             View.clearSelection()
+            
             # gets result from DB as items dont need order 
             Result = (self.TabInstance.LIB_MANG.IndexSelector("nowplaying","file_id"))    
             Expected = self.DataTable["file_id"][6:]
@@ -223,6 +251,12 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
             
     
     def test_PlayArtist(self):
+        """
+        Test adding Similar Artist items in the queue and clearing the queue
+        
+        Expected Behaviour:
+            Adds Data in the Queue whenever new data is ready and is indexed Using artist
+        """         
         NUMROWS = 10
         View = TesterObjects.Gen_TableView_fromData(self.DataTable)
         View.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
@@ -250,6 +284,12 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
 
     
     def test_PlayAlbumNow(self):
+        """
+        Test adding Similar Album items in the queue and clearing the queue
+        
+        Expected Behaviour:
+            Adds Data in the Queue whenever new data is ready and is indexed Using album
+        """ 
         NUMROWS = 10
         View = TesterObjects.Gen_TableView_fromData(self.DataTable)
         View.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
@@ -275,6 +315,13 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
             self.assertEqual(Expected, Result)
     
     def test_QueueAlbumNext(self):
+        """
+        Test adding Similar Album items in the queue
+        
+        Expected Behaviour:
+            Adds Data After the Pointer in the Queue whenever new data is ready and is indexed Using album
+        """
+        
         # test Stetup that creates a view with selected rows 
         NUMROWS = 10
         View = TesterObjects.Gen_TableView_fromData(self.DataTable)
@@ -306,6 +353,12 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
         
     
     def test_QueueAlbumLast(self):
+        """
+        Test adding Similar Album items in the queue
+        
+        Expected Behaviour:
+            Adds Data in the end of the Queue whenever new data is ready and is indexed Using album
+        """         
         # test Stetup that creates a view with selected rows 
         NUMROWS = 10
         View = TesterObjects.Gen_TableView_fromData(self.DataTable)
@@ -336,6 +389,12 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
                 self.assertEqual(Expected, Result)       
        
     def test_PlayGenre(self):
+        """
+        Test adding Similar genre items in the queue
+        
+        Expected Behaviour:
+            Adds Data in the Queue whenever new data is ready and is indexed Using genre
+        """        
         NUMROWS = 10
         View = TesterObjects.Gen_TableView_fromData(self.DataTable)
         View.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
@@ -363,6 +422,6 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
 if __name__ == "__main__":
     App = QtWidgets.QApplication([])
     Suite = TestSuit_main()
-    # Suite.AddTest(Test_ApolloTabFunctions_selection)
+    Suite.AddTest(Test_ApolloTabFunctions_selection)
     Suite.AddTest(Test_ApolloTabFunctions_Queueing)    
     Suite.Run(True)
