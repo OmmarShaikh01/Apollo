@@ -12,7 +12,6 @@ from PyQt5.QtWidgets import QTableView, QApplication, QLineEdit
 
 class Test_LibraryManager(TestCase):
     # TODO
-    # Writed tests for an ordered table and value assignment
     # write Tests for advanced query search
     # write tests for file parsing and scanning
     
@@ -252,6 +251,22 @@ class Test_LibraryManager(TestCase):
             data = [Table.index(rows, 0).data() for rows in range(Table.rowCount())]
             original = [str(i) for i in DataTable["file_id"]]
             self.assertEqual(Expected, data)        
+        
+    def test_SearchSimilarField(self):
+        """
+        Checks for filtering of the TableView and refreshes it.
+        Searches in [album, artist, genre] Fields
+        """        
+        # data insertion into library table
+        DataTable = TesterObjects.Gen_DbTable_Data(10)
+        self.Librarymanager.BatchInsert_Metadata(DataTable)
+        View = QTableView()
+        View.setProperty("DB_Table", "library")
+        View.setProperty("DB_Columns", self.Librarymanager.db_fields)
+        self.Librarymanager.SearchSimilarField(View, "album", ["albumX8", "albumX1"])
+        TableModel = View.model()
+        for Row in range(TableModel.rowCount()):
+            self.assertIn(TableModel.index(Row, 0).data(), ["file_idX8", "file_idX1"])
         
     def test_BasicTablesearch(self):
         """

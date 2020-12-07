@@ -1345,6 +1345,28 @@
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1366</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFiles">
+    <property name="title">
+     <string>Files</string>
+    </property>
+    <addaction name="actionAdd_Files_To_Library"/>
+   </widget>
+   <addaction name="menuFiles"/>
+  </widget>
+  <action name="actionAdd_Files_To_Library">
+   <property name="text">
+    <string>Add Files To Library</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

@@ -59,6 +59,7 @@ class ConfigManager:
         config = {
             "DBNAME": os.path.join(parent_dir, 'db', 'default.db'),
             "APPTHEMES": os.listdir(os.path.join(parent_dir, "resources", "qtstyle", "themes")),
+            "LIBRARY_GROUPORDER": "file_path",
         }
         
         return config

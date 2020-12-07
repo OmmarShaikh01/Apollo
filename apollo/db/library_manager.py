@@ -17,7 +17,6 @@ root_path = apollo.__path__
 
 
 ########################################################################################################################
-
 class LibraryManager():
     """
     Controls the database queries for table and view (creation, modification
@@ -42,13 +41,10 @@ class LibraryManager():
                           "title","tracknumber","version","website","album_gain",
                           "bitrate","bitrate_mode","channels","encoder_info","encoder_settings",
                           "frame_offset","layer","mode","padding","protected","sample_rate",
-                          "track_gain","track_peak"]        
+                          "track_gain","track_peak", "rating", "playcount"]        
         if db != None:
             if not self.connect(db):
                 raise Exception("Startup Checks Failed")
-    
-    def IsConneted(self):
-        return self.db_driver.isOpen()
     
     def connect(self, db):
         """
@@ -68,11 +64,13 @@ class LibraryManager():
         """
         self.db_driver = QSqlDatabase.addDatabase("QSQLITE")
         self.db_driver.setDatabaseName(db)
-        if self.db_driver.open():
+        if self.db_driver.open() and self.db_driver.isValid():
             return self.startupchecks()
         else:
             raise ConnectionError()
 
+    def IsConneted(self):
+        return self.db_driver.isOpen()
 
     def close_connection(self):
         """
@@ -169,7 +167,9 @@ class LibraryManager():
         protected TEXT,
         sample_rate TEXT,
         track_gain TEXT,
-        track_peak TEXT)
+        track_peak TEXT,
+        rating INTEGER,
+        playcount INTEGER)
         """)
         query_exe = query.exec_()
         if query_exe == False and querystate == False:
@@ -306,17 +306,28 @@ class LibraryManager():
         :Args:
             Query: QSqlQuery,String
                 Query to execute
+        :Returns:
+            QSqlQuery
         """
         if isinstance(Query, str):
             QueryStr = Query
             Query = QSqlQuery()
-            QueryPrep = Query.prepare(QueryStr)
-        else:
-            QueryPrep = True
+            if Query.prepare(QueryStr) == False :
+                msg = f"""
+                Query Build Failed
+                """
+                msg = dedenter(msg, 16)
+                raise Exception(msg)
             
-        QueryEXE = Query.exec_()
-        if QueryEXE == False or QueryPrep == False:
-            raise Exception(f"QueryCreated: {QueryPrep} \nError:{Query.lastError().text()}")
+        QueryExe = Query.exec_()
+        if QueryExe == False :
+            msg = f"""
+            EXE: {QueryExe}
+            ERROR: {(Query.lastError().text())}
+            Query: {Query.lastQuery()}
+            """
+            msg = dedenter(msg, 12)
+            raise Exception(msg)
         else:
             return Query
         
@@ -533,12 +544,15 @@ class LibraryManager():
             except Exception as e:
                 metadata[key] = ''
         metadata["file_name"] = os.path.split(muta_file.filename)[1]
-        metadata["file_path"] = muta_file.filename        
+        metadata["file_path"] = muta_file.filename
+        metadata["rating"] = muta_file.filename        
+        metadata["playcount"] = muta_file.filename        
+        
         return metadata
  
     def BatchInsert_Metadata(self, metadata):
         """
-        Creates the insert query for all the metadata adn returns query object. 
+        Batch Inserts data into library table
         
         :Args:
             metadata: Dict
@@ -697,7 +711,7 @@ class LibraryManager():
         """
         Gets the TableData for the given Table In the DB
         
-        >>> library_manager.GetTableModle("Table") 
+        >>> library_manager.SetTableModle(Tablename"Table", View = TableView, Headers = [1,2,3,4,5]) 
         
         :Args:
             Tablename: String
@@ -719,11 +733,15 @@ class LibraryManager():
         TableModel = QtGui.QStandardItemModel()
         query = QSqlQuery()
         if Tablename in ["library", 'nowplaying']:                 
-            querystate = query.prepare(f"SELECT * FROM {Tablename}")
-        else:
-            querystate = False
+            if not query.prepare(f"SELECT * FROM {Tablename}"):
+                msg = dedenter(f"""
+                Query(SELECT * FROM {Tablename})
+                Error: {query.lastError().text()} 
+                query failed to build""", 16)
+                raise Exception(msg)
+            
         query_exe = query.exec_()
-        if query_exe == False and querystate == False:
+        if query_exe == False:
             raise Exception(f"<{Tablename}> Table Doesnt Exists")
         
         # Sets all the required Property forn the view
@@ -785,9 +803,6 @@ class LibraryManager():
                 
             View: QtWidgets.QTableView
                 View that provides the model
-        
-        :Errors:
-            Unable to execute multiple statements at a time
         """
         Text = Line_Edit.text().strip()
         TableModel = QtGui.QStandardItemModel()
@@ -830,7 +845,46 @@ class LibraryManager():
             
         View.setModel(TableModel)
         self.SetTable_horizontalHeader(View, View.property("DB_Columns"))
-
+        
+        
+    def SearchSimilarField(self, View, Field, Indexes):
+        """
+        Applies a filter to the QtableView and refreshes it.
+        Searches in [album, artist, genre] Fields
+        
+        >>> library_manager.SearchSimilarField(TableView, String, List)
+        
+        :Args:
+            View: QtWidgets.QTableView
+                View that provides the model
+            Field:
+                Field to search data from
+            Indexes:
+                Selected Indexes
+        """
+        Tablename = View.property("DB_Table")
+        exp = "({0} LIKE '%{1}%') OR (lower({2}) LIKE '%{3}%')"
+        LikeExpression = [exp.format(Field, Upper, Field, Lower) for Upper, Lower in zip(Indexes, Indexes)]
+        LikeExpression = " OR ".join(LikeExpression)        
+        
+        Query = QSqlQuery()
+        if not (Query.prepare(f"SELECT * FROM {Tablename} WHERE {LikeExpression}")):
+            print(f"SELECT file_id FROM {Tablename} WHERE {LikeExpression}") 
+            raise Exception("Query Build Failed")
+        Query = self.ExeQuery(Query)
+        
+        TableModel = QtGui.QStandardItemModel()
+        Cols = range(len(self.db_fields))
+        Row = 0            
+        while Query.next():
+            for Column in Cols:
+                item = QtGui.QStandardItem(str(Query.value(Column)))
+                TableModel.setItem(Row, Column, item)
+            Row += 1
+            
+        View.setModel(TableModel)
+        self.SetTable_horizontalHeader(View, View.property("DB_Columns"))        
+            
         
     def TableSearchAdvanced(self, query, View):
         """
@@ -863,4 +917,4 @@ if __name__ == "__main__":
     from apollo.utils import ConfigManager
     Inst = LibraryManager(ConfigManager().Getvalue(path = "DBNAME"))
     #Inst.scan_directory("E:\\music", [".mp3", "m4a", ".flac",".wav"], lambda x: None)
-    a = Inst.CreateView("nowplaying", ["b77b77e6900ca65e8ba91d00c05b7fea", "2083f48bbecf0545216c349c3d2fe214", "23ed1fe1672fabb3e1de37d69a61b896"], Normal = True)
+    

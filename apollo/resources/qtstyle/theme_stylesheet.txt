@@ -1002,6 +1002,7 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
     
     QToolButton:checked {
         background-color: #393939;
+        border: 1px solid #161616;
     }
 
     QToolButton:checked:disabled {
@@ -1009,8 +1010,7 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
     }
 
     QToolButton:pressed {
-        margin: 1px;
-        background-color: #393939;
+        border-bottom: 1px solid #0f62fe;        
     }
 
     QToolButton:disabled {
@@ -1018,7 +1018,11 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
     }
 
     QToolButton:hover {
-        border-bottom: 1px solid #f4f4f4;
+        border-bottom: 1px solid #0f62fe;
+        border-left: 1px solid #353535;
+        border-right: 1px solid #353535;
+        border-top: 1px solid #353535;
+
     }
 
     QToolButton[popupMode="0"] {
@@ -1034,8 +1038,9 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
     }
 
     QToolButton[popupMode="1"]::menu-button:hover {
-        border-bottom: 1px solid #f4f4f4;
-        border-left: 1px solid #f4f4f4;
+        border-bottom: 1px solid #0f62fe;
+        border-left: 1px solid #353535;
+
         border-radius: 0;
     }
 
@@ -1046,7 +1051,7 @@ disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
     QToolButton::menu-button {
         padding: 2px;
         border-radius: 0px;
-        border-left: 1px solid #393939;
+        border-right: 0px solid #393939;
         width: 12px;
         outline: none;
     }
