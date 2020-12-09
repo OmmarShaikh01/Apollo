@@ -23,7 +23,7 @@ class ApolloTabFunctions(ApolloStartup):
         self.PlayQueue = PlayingQueue()
     
     
-    def Init_SubTabs(self):
+    def Init_SubTabs(self): # works
         self.LoadDB()
         self.MenuBarBindings()
                     
@@ -134,7 +134,7 @@ class ApolloTabFunctions(ApolloStartup):
         return list(Table.values())
    
    
-    def GetQueueIndexes(self, Data, **kwargs): # Just Routes Functions 
+    def GetQueueIndexes(self, Data, **kwargs): # Just Routes Functions no test needed
         """
         Refreshes the NowPlaying Table with Updated Values
         
@@ -339,7 +339,7 @@ class ApolloTabFunctions(ApolloStartup):
         [TableModel.removeRow(R) for R in Index]
         
     
-    def SetGroupMarkers(self, TBV, Field, SortTBV):
+    def SetGroupMarkers(self, TBV, Field, SortTBV): # works
         """
         Set the field Pointers for the Group Table that can Be used to Filter the MainTable
         
@@ -357,7 +357,7 @@ class ApolloTabFunctions(ApolloStartup):
         Query = self.LibraryManager.ExeQuery(f"""
         SELECT DISTINCT {Field}
         FROM {TableName}
-        WHERE {Field} != ""
+        WHERE  ({Field} NOT IN ("", " "))
         ORDER BY {Field}
         """)
         
@@ -381,13 +381,12 @@ class ApolloTabFunctions(ApolloStartup):
                 item.setTextAlignment(QtCore.Qt.AlignJustify)
                 TableModel.setItem(Row, item)
                 Row += 1
-            
         SortTBV.setProperty("GROUP_BY", Field)
         SortTBV.horizontalHeader().setStretchLastSection(True)
         SortTBV.setModel(TableModel)
             
        
-    def SearchSimilarField(self, TBV, Field):
+    def SearchSimilarField(self, TBV, Field): # works
         """
         Selects similar items from the table and only diaplays them
         
@@ -402,7 +401,7 @@ class ApolloTabFunctions(ApolloStartup):
         self.LibraryManager.SearchSimilarField(TBV, Field, Indexes)
    
    
-    def FilterTable_ByGroups(self, SortTBV, TBV):
+    def FilterTable_ByGroups(self, SortTBV, TBV): # works
         """
         Selects similar items from the Grouptable and only diaplays them
         
@@ -420,6 +419,7 @@ class ApolloTabFunctions(ApolloStartup):
         
 class LibraryTab:
     
+    
     def __init__(self, UI = None):
         if UI != None:
             self.UI = UI
@@ -432,6 +432,7 @@ class LibraryTab:
         self.Init_GroupTable()
         self.ElementsBindings()
         
+        
     def AssignObjects(self):
         """
         Assigns UI Objects TO Operate Upon
@@ -441,6 +442,7 @@ class LibraryTab:
         self.GroupTable = self.UI.apollo_TBV_LBT_grouptable
         self.GroupSearch = self.UI.apollo_LEDT_LBT_groupsearch
         
+     
     def Init_MainTableModel(self, tablename):
         """
         initilizes table with database values
@@ -450,12 +452,15 @@ class LibraryTab:
         self.MainTable.setProperty("DB_Columns", self.LibraryManager.db_fields)
         self.MainTable.setProperty("Order", [])
             
+           
     def Init_GroupTable(self):
         """
         Initilizes the Grouping table with Selectors
         """
         Field = self.UI.CONF_MANG.Getvalue(path = "LIBRARY_GROUPORDER")
         self.UI.SetGroupMarkers(self.MainTable, Field, self.GroupTable)
+        self.UI.apollo_TLB_LBT_grouptool.setText(f"Group By {Field.title().replace('_', ' ')}")
+        
         
     def ElementsBindings(self):
         """
@@ -549,6 +554,8 @@ class LibraryTab:
     def ContextMenu_GroupTable(self):
         """
         Context menu Bindings for the Library Tab GrourTable
+        
+        :Return: QMenu
         """
         def BindMenuActions(Element, Name, Method = lambda: ""):
             (Element).addAction(f"{Name}").triggered.connect(Method)
@@ -558,29 +565,29 @@ class LibraryTab:
         lv_1 = QtWidgets.QMenu()
         lv_1.aboutToShow.connect(lambda: lv_1.setMinimumWidth(self.UI.apollo_TLB_LBT_grouptool.width()))
         
-        BindMenuActions(lv_1, "Group By Artist", lambda :self.UI.SetGroupMarkers(self.MainTable,
-                                                                                 "artist",
-                                                                                 self.GroupTable))
+        BindMenuActions(lv_1, "Group By Artist", lambda:(\
+                        self.UI.SetGroupMarkers(self.MainTable, "artist", self.GroupTable),
+                        self.UI.apollo_TLB_LBT_grouptool.setText("Group By Artist")))
         
-        BindMenuActions(lv_1, "Group By Album", lambda :self.UI.SetGroupMarkers(self.MainTable,
-                                                                                "album",
-                                                                                self.GroupTable))
+        BindMenuActions(lv_1, "Group By Album", lambda :(\
+                        self.UI.SetGroupMarkers(self.MainTable, "album", self.GroupTable),
+                        self.UI.apollo_TLB_LBT_grouptool.setText("Group By Album")))
         
-        BindMenuActions(lv_1, "Group By Album Artist", lambda :self.UI.SetGroupMarkers(self.MainTable,
-                                                                                       "albumartist",
-                                                                                       self.GroupTable))
+        BindMenuActions(lv_1, "Group By Album Artist", lambda:(\
+                        self.UI.SetGroupMarkers(self.MainTable, "albumartist", self.GroupTable),
+                        self.UI.apollo_TLB_LBT_grouptool.setText("Group By Album Artist")))
         
-        BindMenuActions(lv_1, "Group By Genre", lambda :self.UI.SetGroupMarkers(self.MainTable,
-                                                                                "genre",
-                                                                                self.GroupTable))
+        BindMenuActions(lv_1, "Group By Genre", lambda :(\
+                        self.UI.SetGroupMarkers(self.MainTable, "genre", self.GroupTable),
+                        self.UI.apollo_TLB_LBT_grouptool.setText("Group By Genre")))
         
-        BindMenuActions(lv_1, "Group By Folder", lambda :self.UI.SetGroupMarkers(self.MainTable,
-                                                                                 "file_path",
-                                                                                 self.GroupTable))
+        BindMenuActions(lv_1, "Group By Folder", lambda: (\
+                        self.UI.SetGroupMarkers(self.MainTable,  "file_path",  self.GroupTable),
+                        self.UI.apollo_TLB_LBT_grouptool.setText("Group By Folder")))
         
         return lv_1     
         
-      
+   
 class NowPlayingTab:
     ## Issues
     

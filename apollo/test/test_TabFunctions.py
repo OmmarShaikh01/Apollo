@@ -454,7 +454,7 @@ class Test_ApolloTabFunctions_Queueing(TestCase):
             self.assertEqual(Expected, Result)     
                  
                  
-#class Test_ApolloTabFunctions_menubar(TestCase):
+class Test_ApolloTabFunctions_menubar(TestCase):
     """
     Tests all the functions inside menubar of the application
     """
@@ -511,7 +511,7 @@ if __name__ == "__main__":
     App = QtWidgets.QApplication([])
     Suite = TestSuit_main()
     Suite.AddTest(Test_ApolloTabFunctions_selection)
-    #Suite.AddTest(Test_ApolloTabFunctions_Queueing)
-    #Suite.AddTest(Test_ApolloTabFunctions_menubar)
-    #Suite.AddTest(Test_ApolloTabFunctions_MISC)    
+    Suite.AddTest(Test_ApolloTabFunctions_Queueing)
+    Suite.AddTest(Test_ApolloTabFunctions_menubar)
+    Suite.AddTest(Test_ApolloTabFunctions_MISC)    
     Suite.Run(True)

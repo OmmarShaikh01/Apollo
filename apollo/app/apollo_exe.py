@@ -94,13 +94,15 @@ class ApolloExecute:
         self.app.setStyle(style)
         self.UI = ApolloTabFunctions()
         self.UI.Init_SubTabs()
-        self.app.setStyleSheet(self.UI.GetAppTheme())
-        self.UI.apollo_PSB_LBT_subtrack.pressed.connect(lambda: self.app.setStyleSheet(self.UI.GetAppTheme()))
+        
+        resource, sheet = self.UI.GetAppTheme()
+        self.app.setStyleSheet(sheet)
+        
+        self.UI.apollo_PSB_LBT_subtrack.pressed.connect(lambda: self.app.setStyleSheet(self.UI.GetAppTheme()[1]))
         self.UI.show()
-                
+        
     def Execute(self): 
         sys.exit(self.app.exec_())
-        
     
 if __name__ == "__main__":
     app = ApolloExecute() 

@@ -38,33 +38,32 @@ def dedenter(string = '', indent_size = 4):
     string = ("\n".join([line[(indent_size):] for line in string]))
     return (string.strip("\n"))
 
-
-cfg = os.path.join(parent_dir,"config.cfg")
 class ConfigManager:
     """
     Manages the Configuration Parameters of Apollo
     
     >>> inst = ConfigManager()
     >>> inst.Getvariable("ROOT/SUB/SUB1")
-    >>> inst.Setvariable("VALUE", "ROOT/SUB/SUB1")
+    >>> inst.Setvariable(["VALUE"], "ROOT/SUB/SUB1")
     """
     
     def __init__(self):
-        self.config_dict = self.openConfig()
-    
+        self.file = os.path.join(parent_dir,"config.cfg")
+        self.config_dict = self.openConfig(self.file)
+        
     def deafult_settings(self):
         """
         Initilizes the default launch config
         """
         config = {
             "DBNAME": os.path.join(parent_dir, 'db', 'default.db'),
-            "APPTHEMES": os.listdir(os.path.join(parent_dir, "resources", "qtstyle", "themes")),
+            "APPTHEMES": [], 
             "LIBRARY_GROUPORDER": "file_path",
+            "ACTIVETHEME": "",
         }
-        
         return config
     
-    def openConfig(self, file = cfg):
+    def openConfig(self, file = None):
         """
         Opens the config file and loads the ssettings JSON
         
@@ -72,6 +71,9 @@ class ConfigManager:
             file: String
                 Config File path 
         """
+        if file == None:
+            file = self.file        
+        
         self.config_dict = {}
         if not os.path.isfile(file):
             with open(file, "w") as FP:
@@ -86,7 +88,7 @@ class ConfigManager:
         return self.config_dict
                 
                 
-    def writeConfig(self, file = cfg):
+    def writeConfig(self, file = None):
         """
         Writes Data to the Config File
         
@@ -97,11 +99,14 @@ class ConfigManager:
             file: String
                 File Name To write Into
         """
+        if file == None:
+            file = self.file
+            
         with open(file, "w") as FP:
             json.dump(self.config_dict, FP, indent = 4)
      
 
-    def Getvalue(self, config = None, path = ""):
+    def Getvalue(self, path = "", config = None):
         """
         Recursively Traverses the path and gets the value
         
@@ -117,21 +122,24 @@ class ConfigManager:
             
         if isinstance(path, str):
             path = path.split("/")
+            
         if len(path) >= 1 and not("" in path):
             index = path.pop(0)
             data = config.get(index)
+            
             if isinstance(data, dict):
-                return self.Getvalue(data, path)
+                return self.Getvalue(path, data)
             else:
                 return data
+            
         else:
             return config
 
         
-    def Setvalue(self, value, config = None, path = ''):
+    def Setvalue(self, value, path = '', config = None):
         """
         Recursively Traverses the path and Sets the value
-        
+        >>> self.Config_manager.Setvalue([File], "APPTHEMES") 
         :Args:
             value: Any
                 Value to replace or set 
@@ -144,10 +152,10 @@ class ConfigManager:
         """
         if config == None:
             config = self.config_dict
-            
+
         if isinstance(path, str):
             path = path.split("/")
-            
+
         if len(path) >= 1 and not("" in path):
             index = path.pop(0)
             if not config.get(index):
@@ -156,12 +164,12 @@ class ConfigManager:
             
             data = config.get(index)
             if isinstance(data, dict):
-                return self.Setvalue(value, data, path)
+                return self.Setvalue(value, path, data)
             else:
                 if isinstance(data, list):
                     config[index].append(value)
                 else:
-                    config[index] = value
+                    config[index] = [value]
         else:
             return None
 
