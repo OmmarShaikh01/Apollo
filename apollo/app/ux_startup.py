@@ -14,10 +14,12 @@ class ApolloStartup(Apollo_MainWindow, QtWidgets.QMainWindow):
         self.setupUi(self)
         self.CONF_MANG = ConfigManager()     
         self.SetFrameless()        
+        self.LoadIconPack()
         
         self._setup()
         self._uxsetup()
-        self.apollo_PSB_LBT_addtrack.pressed.connect(self.refresh_theme)    
+       
+        self.apollo_PSB_LBT_addtrack.pressed.connect(self.RefreshTheme)    
         
     def _setup(self):
         self.apollo_HDLBD_nowplayong_queue.setText("Current Queue")
@@ -47,7 +49,7 @@ class ApolloStartup(Apollo_MainWindow, QtWidgets.QMainWindow):
         # resets the cursor as an arrow 
         self.apollo_HSP_central.enterEvent = lambda event: self.centralwidget.setCursor(Qt.ArrowCursor)
         self.apollo_HDLBD_main_header.enterEvent = lambda event: self.centralwidget.setCursor(Qt.ArrowCursor)
-        
+
                         
     def ResizeEventFilter(self, event):        
         position_x, position_y = event.pos().x(), event.pos().y()
@@ -70,24 +72,28 @@ class ApolloStartup(Apollo_MainWindow, QtWidgets.QMainWindow):
             event.accept()
             
         
-    def refresh_theme(self):
+    def RefreshTheme(self):
         """
         Gets a stylesheet and sets it as the current theme
         """
-        resource, sheet = Theme().LoadStyleSheet()
-        with open(sheet) as FH:
-            self.setStyleSheet(FH.read())
-        
+        #resource, sheet = Theme().LoadStyleSheet()
+        #with open(sheet) as FH:
+            #self.setStyleSheet(FH.read())
+            
+        Sheet = Theme().GenStylesheet(eval(Theme().DefaultPallete())["THEME"])
+        self.setStyleSheet(Sheet)
         
     def GetAppTheme(self):
         """
         Gets an app stylesheet
         """
-        resource, sheet = Theme().LoadStyleSheet()
-        with open(sheet) as FH:
-            sheet = self.setStyleSheet(FH.read())
+        #resource, sheet = Theme().LoadStyleSheet()
+        #with open(sheet) as FH:
+            #sheet = self.setStyleSheet(FH.read())
             
-        return (resource, sheet)
+        Sheet = Theme().GenStylesheet(eval(Theme().DefaultPallete())["THEME"])
+        resource = 1
+        return (resource, Sheet)
 
 
     def _hideFooter(self, index):
@@ -100,12 +106,13 @@ class ApolloStartup(Apollo_MainWindow, QtWidgets.QMainWindow):
             self.apollo_FR_footer.show()
         else:
             pass
-        
+
         
     def SetFrameless(self):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.showMaximized()
         self.WINDOW_STATE = 1
+        
         
     def Maximize_Resizing(self):
         #  window is maximized
@@ -120,7 +127,27 @@ class ApolloStartup(Apollo_MainWindow, QtWidgets.QMainWindow):
             self.showMaximized()
             self.WINDOW_STATE = 1                  
         
+        
+    def LoadIconPack(self):
+        self.apollo_PSB_LBT_addtrack
+        
 if __name__ == "__main__":
+    from apollo.resources.apptheme import style
     from apollo.app.apollo_exe import ApolloExecute
-    app = ApolloExecute()
-    app.Execute()    
+    #app = ApolloExecute()
+    #app.Execute()    
+
+    from apollo.resources.apptheme import style
+    from apollo.test.testUtilities import TesterObjects
+
+    App = QtWidgets.QApplication([])
+    Inst = ApolloStartup()
+    Inst.RefreshTheme()
+    _, TableModel = TesterObjects.Gen_TableModel(size=(50,60))
+    
+    Inst.apollo_TBV_LBT_grouptable.setModel(TableModel)
+    Inst.apollo_TBV_LBT_maintable.setModel(TableModel)   
+    Inst.apollo_TBV_NPQ_maintable.setModel(TableModel)
+    
+    Inst.show()    
+    App.exec_()

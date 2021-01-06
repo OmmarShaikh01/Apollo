@@ -76,7 +76,8 @@ class Theme:
             resources = list(map(lambda File: os.path.join(ThemeDir, File), resources))
             if len(resources) == 2:
                 return resources
-                    
+       
+
     ############################################################################    
     # Resourece Generation Functions
     ############################################################################
@@ -109,14 +110,53 @@ class Theme:
         
     
     def ScanDir_Images(self, path, include = [".svg"]):
-        # works for no subdir
+        # works for only for files present in root directory
         Files = (os.listdir(path))
-        return Files    
+        return Files
     
-    def ImageOverlay(self, Image, Theme, Dest, Color: QtGui.QColor, size = (128, 128)):
+    def GenTheme_Icons(self, theme, Dest, ImgDir):
+        # create the root directory named as "png"
+        if not os.path.isdir(os.path.join(Dest, "png")):            
+            os.mkdir(os.path.join(Dest, "png"))
+            Dest = os.path.join(Dest, "png")
+            # Dest is <BaseDir//png>
+            
+        if not os.path.isdir(os.path.join(Dest, "24")):
+            os.mkdir(os.path.join(Dest, "24"))
+            
+        if not os.path.isdir(os.path.join(Dest, "32")):
+            os.mkdir(os.path.join(Dest, "32"))
+            
+        if not os.path.isdir(os.path.join(Dest, "48")):
+            os.mkdir(os.path.join(Dest, "48"))
+            
+        if not os.path.isdir(os.path.join(Dest, "64")):
+            os.mkdir(os.path.join(Dest, "64"))        
+            
+        # Scans all the SVG file to generate theme images
+        for Image in self.ScanDir_Images(ImgDir):
+            
+            # SVG image Abs Path
+            Image = os.path.join(ImgDir, Image)
+            for ThemeName in ["icon-01", "icon-02", "icon-03", "inverse-01", "disabled-02", "disabled-03"]:                
+                Colour = QtGui.QColor(theme.get(ThemeName))
+                
+                self.ImageOverlay(Image, ThemeName, os.path.join(Dest, "24"), Colour, 24)                                                               
+                self.ImageOverlay(Image, ThemeName, os.path.join(Dest, "32"), Colour, 32)                                                           
+                self.ImageOverlay(Image, ThemeName, os.path.join(Dest, "48"), Colour, 48)                                                                                
+                self.ImageOverlay(Image, ThemeName, os.path.join(Dest, "64"), Colour, 64)                
+        
+        ImgPath = []
+        for Dir, SDir, files in os.walk(Dest):
+            ImgPath.extend([os.path.join(Dir, file) for file in files])
+                        
+        return self.GenIconResource(ImgPath)
+    
+    
+    def ImageOverlay(self, Image, Theme, Dest, Color: QtGui.QColor, size = 64):
         
         """"""
-        Icon = QtGui.QIcon(Image).pixmap(QtCore.QSize(size[0], size[1]))
+        Icon = QtGui.QIcon(Image).pixmap(QtCore.QSize(size, size))
         
         Painter = QtGui.QPainter(Icon)
         Painter.setBrush(Color)
@@ -124,22 +164,13 @@ class Theme:
         Painter.setCompositionMode(Painter.CompositionMode_SourceIn)
         Painter.drawRect(Icon.rect())
         Painter.end()
-        
-        if not os.path.isdir(os.path.join(Dest, "png")):            
-            os.mkdir(os.path.join(Dest, "png"))
-        if not Icon.isNull():
+            
+        if not Icon.isNull():                
             name = os.path.splitext(os.path.split(Image)[1])[0]
-            Icon.save(os.path.join(Dest, "png", f"{name}_{size[0]}X{size[1]}_{Theme}.png"), "PNG")
-        return os.path.join(Dest, "png", f"{name}_{size[0]}X{size[1]}_{Theme}.png")
-        
-    def GenTheme_Icons(self, theme, Dest, ImgDir):
-        paths = []
-        for Image in self.ScanDir_Images(ImgDir):
-            Image = os.path.join(ImgDir, Image)            
-            for ThemeName in ["icon-01", "icon-02", "icon-03", "inverse-01", "disabled-02", "disabled-03"]:                
-                Path = self.ImageOverlay(Image, ThemeName, Dest, QtGui.QColor(theme.get(ThemeName)))
-                paths.append(Path)
-        return self.GenIconResource(paths)
+            path = os.path.join(Dest, f"{name}_{Theme}.png")
+            Icon.save(path)
+                
+        return path
                 
     def GenIconResource(self, Files):
         HEADER = """
@@ -147,7 +178,8 @@ class Theme:
             <qresource prefix="icon_pack">                       
         """
         
-        BODY = "\n".join([f"{' '*8}<file>{File}</file>" for File in Files])
+        Prep = lambda x: "\\".join(x.rsplit("\\", 2)[-2:])
+        BODY = "\n".join([f"{' '*8}<file>png\\{Prep(File)}</file>" for File in Files])
         
         FOOTER = """
             </qresource>
@@ -158,7 +190,7 @@ class Theme:
     
     def DefaultPallete(self):
         JSON = """
-                {
+            {
             "THEME":{
                 "ui-background" : "#161616",
                 "interactive-01" : "#0f62fe",
@@ -230,5 +262,5 @@ class Theme:
 if __name__ == "__main__":
     App = QtWidgets.QApplication([])
     Inst = Theme()
-    #Inst.GetAvaliableThemes()
+    Inst.GetAvaliableThemes()
     
