@@ -510,8 +510,8 @@ class Test_ApolloTabFunctions_MISC(TestCase):
 if __name__ == "__main__":
     App = QtWidgets.QApplication([])
     Suite = TestSuit_main()
-    Suite.AddTest(Test_ApolloTabFunctions_selection)
+    #Suite.AddTest(Test_ApolloTabFunctions_selection)
     Suite.AddTest(Test_ApolloTabFunctions_Queueing)
-    Suite.AddTest(Test_ApolloTabFunctions_menubar)
-    Suite.AddTest(Test_ApolloTabFunctions_MISC)    
+    #Suite.AddTest(Test_ApolloTabFunctions_menubar)
+    #Suite.AddTest(Test_ApolloTabFunctions_MISC)    
     Suite.Run(True)

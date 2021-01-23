@@ -1,14 +1,15 @@
 from unittest import TestCase
+from unittest.mock import MagicMock, Mock
 import datetime
 import sys, os
 
-sys.path.append(os.path.split(os.path.abspath(__file__))[0].rsplit("\\", 2)[0])
 from apollo.db.library_manager import LibraryManager
 from apollo.test.testUtilities import TesterObjects
 
 from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QTableView, QApplication, QLineEdit 
+from PyQt5.QtWidgets import QTableView, QApplication, QLineEdit
+
 
 class Test_LibraryManager(TestCase):
     # TODO
@@ -20,6 +21,8 @@ class Test_LibraryManager(TestCase):
         Connects to an In memory DB using a DB driver
         """
         self.Librarymanager = LibraryManager(':memory:')
+        self.maxDiff = None
+        # Creates a temporary table tpo query data from
         if self._testMethodName in ["test_TableSize", "test_TablePlaytime", "test_TableAlbumcount",
                                     "test_TableArtistcount", "test_Tabletrackcount"]:
             self.Librarymanager.BatchInsert_Metadata(TesterObjects.Gen_DbTable_Data(10))
@@ -27,17 +30,14 @@ class Test_LibraryManager(TestCase):
     def run(self, result=None):
         """
         reimplementation of run method to support skipping of the setup and teardown of tests
-        
         """
         testskip = ['test_Connect']
         if self._testMethodName in testskip:
             # replaces the setUp with an empty function and stores the original inside OrignalsetUp
             (OrignalsetUp, self.setUp) = (self.setUp, lambda : None)
-            
             try:
                 # Executes the test
                 super(Test_LibraryManager, self).run(result)
-                
             finally:
                 # replaces it to the original one
                 self.setUp = OrignalsetUp
@@ -64,7 +64,8 @@ class Test_LibraryManager(TestCase):
             structTable = []
             while Query.next():
                 structTable.append([Query.value(0), Query.value(1)])        
-            self.assertEqual(len(Library_Inst.db_fields), len(structTable), msg = "<library> table structure not valid")
+            self.assertEqual(len(Library_Inst.db_fields), len(structTable),
+                             msg = "<library> table structure not valid")
             
         ## checks if nowplaying table is set up correctly
         with (self.subTest(msg = "checks if nowplaying table is set up correctly")):        
@@ -72,7 +73,8 @@ class Test_LibraryManager(TestCase):
             structTable = []
             while Query.next():
                 structTable.append([Query.value(0), Query.value(1)])        
-            self.assertEqual(len(Library_Inst.db_fields), len(structTable), msg = "<nowplaying> table structure not valid")
+            self.assertEqual(len(Library_Inst.db_fields), len(structTable),
+                             msg = "<nowplaying> table structure not valid")
             
         # tests the closing of the DB
         with (self.subTest(msg = "tests the closing of the DB")):
@@ -210,6 +212,9 @@ class Test_LibraryManager(TestCase):
 
         # creates an empty QTableView and gets the table library from db
         View = QTableView()
+        View.setProperty("DB_Table", "library")
+        View.setProperty("DB_Columns", self.Librarymanager.db_fields)
+        View.setProperty("Order", [])            
         
         # sets the tablemodel aqquired from Db 
         Table = self.Librarymanager.SetTableModle("library", View)
@@ -241,6 +246,9 @@ class Test_LibraryManager(TestCase):
         
         # creates an empty QTableView and gets the table library from db
         View = QTableView()
+        View.setProperty("DB_Table", "library")
+        View.setProperty("DB_Columns", self.Librarymanager.db_fields)
+        
         Expected = ['file_idX5', 'file_idX6', 'file_idX7', 'file_idX8', 'file_idX9',
                     'file_idX0', 'file_idX1', 'file_idX2', 'file_idX3', 'file_idX4',]
         View.setProperty("Order", list(map(str, Expected)))
@@ -263,10 +271,16 @@ class Test_LibraryManager(TestCase):
         View = QTableView()
         View.setProperty("DB_Table", "library")
         View.setProperty("DB_Columns", self.Librarymanager.db_fields)
+        View.setProperty("Order", [])        
+        self.Librarymanager.SetTableModle("library", View)
+        
         self.Librarymanager.SearchSimilarField(View, "album", ["albumX8", "albumX1"])
         TableModel = View.model()
+        Result = []
         for Row in range(TableModel.rowCount()):
-            self.assertIn(TableModel.index(Row, 0).data(), ["file_idX8", "file_idX1"])
+            if not View.isRowHidden(Row):                
+                Result.append(TableModel.index(Row, 0).data())
+        self.assertEqual(Result, ['file_idX1', 'file_idX8'])
         
     def test_BasicTablesearch(self):
         """
@@ -281,6 +295,10 @@ class Test_LibraryManager(TestCase):
         
         # creates an empty QTableView and gets the table library from db
         View = QTableView()
+        View.setProperty("DB_Table", "library")
+        View.setProperty("DB_Columns", self.Librarymanager.db_fields)
+        View.setProperty("Order", [])
+        
         Table = self.Librarymanager.SetTableModle("library", View)
 
         # Runs the searcg query
@@ -289,13 +307,28 @@ class Test_LibraryManager(TestCase):
         Table = View.model()
         Result = []
         for Row in range(Table.rowCount()):
-            for Col in range(Table.columnCount()):
-                Result.append(Table.index(Row, Col).data())
+            if not View.isRowHidden(Row):                
+                Result.append(Table.index(Row, 0).data())
+       
+        # Queries the DB and Generates the FileId used to show valid rows 
+        self.assertEqual(['file_idX5'], Result)
         
-        expected = [str(values[5]) for values in DataTable.values()]
-        self.assertEqual(expected, Result)
-        
-        
+    def test_ClearView_Masks(self):
+        """
+        Test the function that clears the filter masks that are applied on searches 
+        """
+        View = QTableView()
+        TableModel = QStandardItemModel()
+        [TableModel.appendRow(QStandardItem(Row)) for Row in range(20)]
+        View.setModel(TableModel)
+        View.hideRow(1)
+        View.hideRow(3)        
+        View.hideRow(5)
+        self.Librarymanager.ClearView_Masks(View)        
+        self.assertFalse(View.isRowHidden(1))
+        self.assertFalse(View.isRowHidden(3))
+        self.assertFalse(View.isRowHidden(5))
+
 if __name__ == '__main__':
     from apollo.test.testUtilities import TestSuit_main
     App = QApplication([])

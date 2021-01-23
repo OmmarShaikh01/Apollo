@@ -1,8 +1,12 @@
-import unittest, datetime
+
+
+import unittest, datetime, os, sys
+sys.path.append(os.path.split(os.path.abspath(__file__))[0].rsplit("\\", 2)[0])
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from apollo.db.library_manager import LibraryManager 
+
 
 class TestSuit_main:
     """"""

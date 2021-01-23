@@ -1,4 +1,4 @@
-import time, json, os
+import time, json, os, threading
 
 import apollo
 
@@ -22,6 +22,14 @@ def exe_time(method):
         return result
     return timed
 
+def ThreadIt(method):
+    def Exe(*args, **kw):
+        """
+        Threads the function passed in as an argumnet
+        """
+        Thread = threading.Thread(target = method, args = args, kwargs = kw, name = method.__name__)
+        Thread.start()
+    return Exe
 
 def dedenter(string = '', indent_size = 4):
     """

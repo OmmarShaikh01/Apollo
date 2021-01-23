@@ -1,8 +1,11 @@
 # ignore all compiled binaries
-**__pycache__
+__pycache__/
 
 #ignores all db files
 **.db
 
 #ignores all config files: default config is embedded in code
 **.cfg
+
+#ignores all PNG Images
+**.png
