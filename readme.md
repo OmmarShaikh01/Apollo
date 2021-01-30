@@ -1,7 +1,7 @@
 # Apollo (Beta)
 
 - ## Description
-    Apollo
+
 - ## Screenshots
     ![MainWindow](/examples/mainwindow.PNG?raw=true "MainWindow")
     

@@ -1,5 +1,4 @@
 /*
-
 ---------------------------------------------------------------------------
     WARNING! All changes made in this file will be lost!
 ---------------------------------------------------------------------------
@@ -73,17 +72,15 @@ Issues:
 
 */
 
-
 /* BackGround ------------------------------------------------------------ */ 
     QWidget#centralwidget{
-        background-color: $ui-01;
+        background-color: $ui-background;
         padding: 0px;
         color: $text-01;
     }
-
     QWidget#apollo_FR_footer,
     QWidget#apollo_FR_NPQ_footer{
-        background-color: $ui-01;
+        background-color: $ui-background;
         border: 0px solid $ui-background;
         color: $text-01;
     }
@@ -99,22 +96,21 @@ Issues:
     }
 
     QWidget#frame_3,
-    QWidget#frame_2,
+    QWidget#frame_5,
     QWidget#frame{        
-        background-color: $ui-01;
-        border-bottom: 1px solid $ui-background;        
+        background-color: $ui-background;
+        border-top: 1px solid $ui-01;        
         min-height: 24px;
         min-width: 64px;
+        padding: 1px;
         color: $text-01;
     }
-
-
 
 /* Search Input Widgets --------------------------------------------------- */ 
     QWidget#apollo_LEDT_LBT_main_search,
     QWidget#apollo_LEDT_LBT_groupsearch,
     QWidget#apollo_LEDT_NPQ_main_search{
-        background-color: $ui-background;
+        background-color: $ui-01;
         border: 1px solid $ui-02;
         border-radius: 4px;
         color: $text-01;
@@ -126,21 +122,21 @@ Issues:
     QWidget#apollo_LEDT_NPQ_main_search:hover{
         border: 1px solid $interactive-04;
         min-height: 24px;        
-        }
+    }
 
 /*Pixmap Qlabel ------------------------------------------------------------*/
     QWidget#apollo_PIXLB_albumcover{    
-        background-color: $ui-background;
+        background-color: $ui-01;
         border: 1px solid $ui-02;        
     }
     QWidget#apollo_PIXLB_position,
     QWidget#apollo_PIXLB_NPQ_position{
-        background-color: $ui-background;    
+        background-color: $ui-01;    
         min-width: 16px;      
     }
 
     QWidget#apollo_PIXLB_NPQ_albumcover{
-        background-color: $ui-background;
+        background-color: $ui-01;
         border: 0px solid $ui-02; 
         margin-left: 0px;
         margin-right: 0px;
@@ -148,198 +144,17 @@ Issues:
     }
 
     QWidget#apollo_PIXLB_albumcover:hover{  
-        background-color: $ui-background;
+        background-color: $ui-01;
         border: 1px solid $interactive-04;        
     }
 
     QWidget#apollo_PIXLB_NPQ_albumcover:hover{
-        background-color: $ui-background;
+        background-color: $ui-01;
         border: 1px solid $interactive-04; 
         margin-left: 0px;
         margin-right: 0px;
         margin-top: 0px;       
     }
-
-/* QTreeView QListView QTableView ----------------------------------------- 
-    QTreeView:branch:selected, QTreeView:branch:hover {
-        background-color: transparent;
-    }
-
-    QTreeView:branch:has-siblings:!adjoins-item {
-        border-image: url(":/icon_pack/png/24/branch_line_icon-02.png");
-    }
-
-    QTreeView:branch:has-siblings:adjoins-item {
-        border-image: url(":/icon_pack/png/24/branch_more_icon-02.png");
-    }
-
-    QTreeView:branch:!has-children:!has-siblings:adjoins-item {
-        border-image: url(":/icon_pack/png/24/branch_end_icon-02.png");
-    }
-
-    QTreeView:branch:has-children:!has-siblings:closed,
-    QTreeView:branch:closed:has-children:has-siblings {
-        border-image: none;
-        image: url(":/icon_pack/png/24/branch_closed_icon-02.png");
-    }
-
-    QTreeView:branch:open:has-children:!has-siblings, 
-    QTreeView:branch:open:has-children:has-siblings {
-        border-image: none;
-        image: url(":/icon_pack/png/24/branch_open_icon-02.png");
-    }
-
-    QTreeView:branch:has-children:!has-siblings:closed:hover, 
-    QTreeView:branch:closed:has-children:has-siblings:hover {
-        image: url(":/icon_pack/png/24/branch_closed_icon-02.png");
-    }
-
-    QTreeView:branch:open:has-children:!has-siblings:hover, 
-    QTreeView:branch:open:has-children:has-siblings:hover {
-        image: url(":/icon_pack/png/24/branch_open_icon-02.png");
-    }
-
-    QTreeView::indicator:checked,
-    QListView::indicator:checked {
-        image: url(":/icon_pack/png/24/checkbox--checked_icon-02.png");
-    }
-
-    QTreeView::indicator:checked:hover, 
-    QTreeView::indicator:checked:focus, 
-    QTreeView::indicator:checked:pressed,
-    QListView::indicator:checked:hover,
-    QListView::indicator:checked:focus,
-    QListView::indicator:checked:pressed {
-        image: url(":/icon_pack/png/checkbox_checked.png");
-    }
-
-    QTreeView::indicator:unchecked,
-    QListView::indicator:unchecked {
-        image: url(":/icon_pack/png/checkbox_unchecked.png");
-    }
-
-    QTreeView::indicator:unchecked:hover, 
-    QTreeView::indicator:unchecked:focus, 
-    QTreeView::indicator:unchecked:pressed,
-    QListView::indicator:unchecked:hover,
-    QListView::indicator:unchecked:focus,
-    QListView::indicator:unchecked:pressed {
-        image: url(":/icon_pack/png/checkbox_unchecked_focus.png");
-    }
-
-    QTreeView::indicator:indeterminate,
-    QListView::indicator:indeterminate {
-        image: url(":/icon_pack/png/checkbox_indeterminate.png");
-    }
-
-    QTreeView::indicator:indeterminate:hover, 
-    QTreeView::indicator:indeterminate:focus,
-    QTreeView::indicator:indeterminate:pressed,
-    QListView::indicator:indeterminate:hover,
-    QListView::indicator:indeterminate:focus,
-    QListView::indicator:indeterminate:pressed {
-        image: url(":/icon_pack/png/checkbox_indeterminate_focus.png");
-    }
-
-    QTreeView,
-    QListView,
-    QTableView,
-    QColumnView {
-        background-color: $ui-01;        
-        color: $text-02;
-        gridline-color: none;
-    }
-
-    QTreeView:disabled,
-    QListView:disabled,
-    QTableView:disabled,
-    QColumnView:disabled {
-        background-color: $disabled-02;
-        color: $disabled-03;
-    }
-
-    QTreeView::item,
-    QListView::item,
-    QTableView::item,
-    QColumnView::item{
-        background-color: $ui-background;
-        max-height: 24px;
-        padding: 8px;
-        border: 0px solid transparent;
-        text-align: center;
-    }
-
-    QTreeView::item:alternate,
-    QListView::item:alternate,
-    QTableView::item:alternate,
-    QColumnView::item:alternate{
-        background-color: $ui-01;
-        max-height: 24px;
-        padding: 8px;
-        border: 0px solid transparent;
-        text-align: center;
-
-    }
-
-    QTreeView::item:pressed,
-    QListView::item:pressed,
-    QTableView::item:pressed,
-    QColumnView::item:pressed {
-        background-color: $ui-02;
-        color: $text-01;
-    }
-
-    QTreeView::item:selected:active,
-    QListView::item:selected:active,
-    QTableView::item:selected:active,
-    QColumnView::item:selected:active {
-        background-color: $ui-02;
-        color: $text-01;
-
-    }
-
-    QTreeView::item:selected:!active,
-    QListView::item:selected:!active,
-    QTableView::item:selected:!active,
-    QColumnView::item:selected:!active {
-        background-color: $ui-02;
-        color: $text-01;
-    }
-
-
-    QTreeView::item:alternate:pressed,
-    QListView::item:alternate:pressed,
-    QTableView::item:alternate:pressed,
-    QColumnView::item:alternate:pressed{
-        background-color: $ui-02-alt;
-        color: $text-01;
-    }
-
-    QTreeView::item:alternate:selected:active,
-    QListView::item:alternate:selected:active,
-    QTableView::item:alternate:selected:active,
-    QColumnView::item:alternate:selected:active{
-        background-color: $ui-02-alt;
-        color: $text-01;
-
-    }
-
-    QTreeView::item:alternate:selected:!active,
-    QListView::item:alternate:selected:!active,
-    QTableView::item:alternate:selected:!active,
-    QColumnView::item:alternate:selected:!active{
-        background-color: $ui-02-alt;
-        color: $text-02;
-    }
-
-
-    QTableCornerButton::section {
-        background-color: $ui-01;
-        border-right: 1px solid $ui-background;
-        border-bottom: 1px solid $ui-background;
-        border-radius: 0px;
-    }
-    */
 
 /* QTableView ------------------------------------------------------------ */
 
@@ -498,7 +313,7 @@ Issues:
 
 /* QSplitter -------------------------------------------------------------- */
     QSplitter::handle {
-        background-color: $ui-background;s
+        background-color: $ui-background;
     }
 
     QSplitter::handle:hover {
@@ -853,34 +668,96 @@ Issues:
         width: 20px;
     }
 
-/* Primary QPushButton */
-    QPushButton{
-        background-color: $interactive-01;
-        color: $text-04;
-        border: 0px solid Transparent;
-        padding: 8px;
+/* QToolButton ------------------------------------------------------------ */
+    QToolButton {
+        background-color: $ui-background;
+        color: $text-01;         
+        border-radius: 2px;
+        padding-bottom: 1px;
+        min-width: 32px;
+        min-width: 24px;
+        margin: 1px;
+        /* The subcontrols below are used only in the DelayedPopup mode */
+        /* The subcontrols below are used only in the MenuButtonPopup mode */
+        /* The subcontrol below is used only in the InstantPopup or DelayedPopup mode */
     }
 
-    QPushButton:disabled{
-        background-color: $disabled-02;
-        color: $disabled-03;
-        border: 1px solid Transparent;
-        padding: 8px;
+    
+    QToolButton:checked {
+        background-color: $ui-02;
+        border-top: 1px solid $ui-01;        
     }
 
-    QPushButton:hover{
-        background-color: $hover-primary;
-        color: $text-04;
-        border: 1px solid Transparent;
-        padding: 8px;
+    QToolButton:checked:disabled {
+        border: 1px solid $disabled-02;
     }
 
-    QPushButton:checked,
-    QPushButton:pressed{
-        background-color: $active-primary;
-        color: $text-04;
-        border: 1px solid Transparent;
-        padding: 8px;
+    QToolButton:pressed {
+        border-bottom: 1px solid $interactive-01;        
+    }
+
+    QToolButton:disabled {
+        border: none;
+    }
+
+    QToolButton:hover {
+        border-bottom: 1px solid $interactive-01;
+    }
+
+    QToolButton[popupMode="0"] {
+        padding-right: 2px;
+        border-top: 1px solid $ui-01;        
+    }
+
+    QToolButton[popupMode="1"] {
+        padding-right: 20px;
+    }
+
+    QToolButton[popupMode="1"]::menu-button {
+        border-left: 1px solid $ui-03;
+    }
+
+    QToolButton[popupMode="1"]::menu-button:hover {
+        border-bottom: 1px solid $interactive-01;
+        border-left: 1px solid $hover-ui;
+        border-radius: 0;
+    }
+
+    QToolButton[popupMode="2"] {
+        padding-right: 2px;
+    }
+
+    QToolButton::menu-button {
+        border-radius: 0px;
+        padding-bottom: 1px;        
+        width: 12px;
+        outline: none;
+    }
+
+    QToolButton::menu-button:hover {
+        border-bottom: 1px solid $ui-01;
+    }
+
+    QToolButton::menu-button:checked:hover {
+        border-bottom: 1px solid $ui-01;
+    }
+
+    QToolButton::menu-indicator {
+        image: url(":/icon_pack/png/24/caret--sort--down_icon-03.png");
+        height: 16px;
+        width: 16px;
+        top: 0;
+        left: -2px;
+    }
+
+    QToolButton::menu-arrow {
+        image: url(":/icon_pack/png/24/caret--sort--down_icon-03.png");
+        height: 16px;
+        width: 16px;
+    }
+
+    QToolButton::menu-arrow:hover {
+        image: url(":/icon_pack/png/24/caret--sort--down_icon-01.png");
     }
 
 /* Secondary QPushButton */
@@ -1007,98 +884,34 @@ Issues:
         padding: 8px;
     }
 
-/* QToolButton ------------------------------------------------------------ */
-    QToolButton {
-        background-color: $ui-background;
-        color: $text-01;       
-        border: none;      
-        border-radius: 4px;
-        padding-bottom: 1px;
-        min-width: 24px;
-        margin: 1px;
-        /* The subcontrols below are used only in the DelayedPopup mode */
-        /* The subcontrols below are used only in the MenuButtonPopup mode */
-        /* The subcontrol below is used only in the InstantPopup or DelayedPopup mode */
+/* Primary QPushButton */
+    QPushButton{
+        background-color: $interactive-01;
+        color: $text-04;
+        border: 0px solid Transparent;
+        padding: 8px;
     }
 
-    
-    QToolButton:checked {
-        background-color: $ui-02;
-        border-top: 1px solid $ui-01;        
+    QPushButton:disabled{
+        background-color: $disabled-02;
+        color: $disabled-03;
+        border: 1px solid Transparent;
+        padding: 8px;
     }
 
-    QToolButton:checked:disabled {
-        border: 1px solid $disabled-02;
+    QPushButton:hover{
+        background-color: $hover-primary;
+        color: $text-04;
+        border: 1px solid Transparent;
+        padding: 8px;
     }
 
-    QToolButton:pressed {
-        border-bottom: 1px solid $interactive-01;        
-    }
-
-    QToolButton:disabled {
-        border: none;
-    }
-
-    QToolButton:hover {
-        border-bottom: 1px solid $interactive-01;
-    }
-
-    QToolButton[popupMode="0"] {
-        padding-right: 2px;
-        border-top: 1px solid $ui-01;        
-    }
-
-    QToolButton[popupMode="1"] {
-        padding-right: 20px;
-    }
-
-    QToolButton[popupMode="1"]::menu-button {
-        border-left: 1px solid $ui-03;
-    }
-
-    QToolButton[popupMode="1"]::menu-button:hover {
-        border-bottom: 1px solid $interactive-01;
-        border-left: 1px solid $hover-ui;
-        border-radius: 0;
-    }
-
-    QToolButton[popupMode="2"] {
-        padding-right: 2px;
-    }
-
-    QToolButton::menu-button {
-        padding: 2px;
-        border-radius: 0px;
-        border-right: 0px solid $ui-03;
-        border-bottom: 1px solid $ui-01;        
-        width: 12px;
-        outline: none;
-    }
-
-    QToolButton::menu-button:hover {
-        border-bottom: 1px solid $ui-01;
-    }
-
-    QToolButton::menu-button:checked:hover {
-        border-bottom: 1px solid $ui-01;
-    }
-
-    QToolButton::menu-indicator {
-        image: url(":/icon_pack/png/24/caret--sort--down_icon-03.png");
-        height: 16px;
-        width: 16px;
-        top: 0;
-        left: -2px;
-    }
-
-    QToolButton::menu-arrow {
-        image: url(":/icon_pack/png/24/caret--sort--down_icon-03.png");
-        height: 16px;
-        width: 16px;
-    }
-
-    QToolButton::menu-arrow:hover {
-        image: url(":/icon_pack/png/24/caret--sort--down_icon-01.png");
+    QPushButton:checked,
+    QPushButton:pressed{
+        background-color: $active-primary;
+        color: $text-04;
+        border: 1px solid Transparent;
+        padding: 8px;
     }
 
 /* Library Tab Buttons */
@@ -1110,6 +923,7 @@ Issues:
     /* apollo_psb_pause --------------------------------------------------*/
         QPushButton#apollo_PSB_pause{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/pause_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1148,6 +962,7 @@ Issues:
     /* apollo_psb_play --------------------------------------------------*/
         QPushButton#apollo_PSB_play{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/play_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1186,6 +1001,7 @@ Issues:
     /* apollo_psb_playstyle --------------------------------------------------*/
         QPushButton#apollo_PSB_playstyle{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/query-queue_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1224,6 +1040,7 @@ Issues:
     /* apollo_psb_seekb --------------------------------------------------*/
         QPushButton#apollo_PSB_seekb{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/rewind--5_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1262,6 +1079,7 @@ Issues:
     /* apollo_psb_seekf --------------------------------------------------*/
         QPushButton#apollo_PSB_seekf{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/forward--5_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1300,6 +1118,7 @@ Issues:
     /* apollo_psb_skipback --------------------------------------------------*/
         QPushButton#apollo_PSB_skipback{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/skip--back_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1338,6 +1157,7 @@ Issues:
     /* apollo_psb_skipfront --------------------------------------------------*/
         QPushButton#apollo_PSB_skipfront{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/skip--forward_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1376,6 +1196,7 @@ Issues:
     /* apollo_psb_stop --------------------------------------------------*/
         QPushButton#apollo_PSB_stop{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/stop_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1414,6 +1235,7 @@ Issues:
     /* apollo_psb_volume_main --------------------------------------------------*/
         QPushButton#apollo_PSB_volume_main{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/volume--up_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1454,6 +1276,7 @@ Issues:
     /* apollo_psb_NPQ_pause --------------------------------------------------*/
         QPushButton#apollo_PSB_NPQ_pause{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/pause_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1492,6 +1315,7 @@ Issues:
     /* apollo_psb_NPQ_play --------------------------------------------------*/
         QPushButton#apollo_PSB_NPQ_play{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/play_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1530,6 +1354,7 @@ Issues:
     /* apollo_psb_NPQ_playstyle --------------------------------------------------*/
         QPushButton#apollo_PSB_NPQ_playstyle{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/query-queue_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1568,6 +1393,7 @@ Issues:
     /* apollo_psb_NPQ_seekb --------------------------------------------------*/
         QPushButton#apollo_PSB_NPQ_seekb{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/rewind--5_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1606,6 +1432,7 @@ Issues:
     /* apollo_psb_NPQ_seekf --------------------------------------------------*/
         QPushButton#apollo_PSB_NPQ_seekf{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/forward--5_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1644,6 +1471,7 @@ Issues:
     /* apollo_psb_NPQ_skipback --------------------------------------------------*/
         QPushButton#apollo_PSB_NPQ_skipback{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/skip--back_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1682,6 +1510,7 @@ Issues:
     /* apollo_psb_NPQ_skipfront --------------------------------------------------*/
         QPushButton#apollo_PSB_NPQ_skipfront{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/skip--forward_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1720,6 +1549,7 @@ Issues:
     /* apollo_psb_NPQ_stop --------------------------------------------------*/
         QPushButton#apollo_PSB_NPQ_stop{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/stop_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -1758,6 +1588,7 @@ Issues:
     /* apollo_psb_NPQ_volume_main --------------------------------------------------*/
         QPushButton#apollo_PSB_NPQ_volume_main{
             background-color: Transparent;
+            border-radius: 2px;
             background-image: url(':/icon_pack/png/32/volume--up_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;

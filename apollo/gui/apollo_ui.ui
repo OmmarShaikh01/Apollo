@@ -136,7 +136,7 @@ height: 24px;
              </property>
              <property name="minimumSize">
               <size>
-               <width>150</width>
+               <width>152</width>
                <height>0</height>
               </size>
              </property>
@@ -196,7 +196,7 @@ height: 24px;
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>0</width>
+                     <width>108</width>
                      <height>0</height>
                     </size>
                    </property>
@@ -326,6 +326,12 @@ height: 24px;
                <horstretch>1</horstretch>
                <verstretch>1</verstretch>
               </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>444</width>
+               <height>0</height>
+              </size>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout">
               <property name="spacing">
@@ -1013,7 +1019,7 @@ height: 24px;
           <number>0</number>
          </property>
          <item row="1" column="0">
-          <widget class="QFrame" name="frame_2">
+          <widget class="QFrame" name="frame_5">
            <property name="minimumSize">
             <size>
              <width>0</width>

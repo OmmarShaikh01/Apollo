@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:/Users/Ommar/AppData/Local/Temp/apollo_uiLUkeqG.ui'
+# Form implementation generated from reading ui file 'C:/Users/Ommar/AppData/Local/Temp/apollo_uimbcCuP.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -72,7 +72,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
         self.frame_2.setSizePolicy(sizePolicy)
-        self.frame_2.setMinimumSize(QtCore.QSize(150, 0))
+        self.frame_2.setMinimumSize(QtCore.QSize(152, 0))
         self.frame_2.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_2.setObjectName("frame_2")
@@ -93,7 +93,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.apollo_LEDT_LBT_groupsearch.sizePolicy().hasHeightForWidth())
         self.apollo_LEDT_LBT_groupsearch.setSizePolicy(sizePolicy)
-        self.apollo_LEDT_LBT_groupsearch.setMinimumSize(QtCore.QSize(0, 0))
+        self.apollo_LEDT_LBT_groupsearch.setMinimumSize(QtCore.QSize(108, 0))
         self.apollo_LEDT_LBT_groupsearch.setMaximumSize(QtCore.QSize(16777215, 24))
         self.apollo_LEDT_LBT_groupsearch.setText("")
         self.apollo_LEDT_LBT_groupsearch.setAlignment(QtCore.Qt.AlignCenter)
@@ -142,6 +142,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(1)
         sizePolicy.setHeightForWidth(self.frame_4.sizePolicy().hasHeightForWidth())
         self.frame_4.setSizePolicy(sizePolicy)
+        self.frame_4.setMinimumSize(QtCore.QSize(444, 0))
         self.frame_4.setObjectName("frame_4")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.frame_4)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -379,14 +380,14 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_2.setSpacing(0)
         self.gridLayout_2.setObjectName("gridLayout_2")
-        self.frame_21 = QtWidgets.QFrame(self.apollo_FR_nowplaying_queue)
-        self.frame_21.setMinimumSize(QtCore.QSize(0, 24))
-        self.frame_21.setObjectName("frame_21")
-        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.frame_21)
+        self.frame_5 = QtWidgets.QFrame(self.apollo_FR_nowplaying_queue)
+        self.frame_5.setMinimumSize(QtCore.QSize(0, 24))
+        self.frame_5.setObjectName("frame_5")
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.frame_5)
         self.horizontalLayout_3.setContentsMargins(0, 2, 0, 2)
         self.horizontalLayout_3.setSpacing(2)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.apollo_LEDT_NPQ_main_search = QtWidgets.QLineEdit(self.frame_21)
+        self.apollo_LEDT_NPQ_main_search = QtWidgets.QLineEdit(self.frame_5)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -399,7 +400,7 @@ class Ui_MainWindow(object):
         self.apollo_LEDT_NPQ_main_search.setClearButtonEnabled(True)
         self.apollo_LEDT_NPQ_main_search.setObjectName("apollo_LEDT_NPQ_main_search")
         self.horizontalLayout_3.addWidget(self.apollo_LEDT_NPQ_main_search)
-        self.apollo_TLB_NPQ_maintable = QtWidgets.QToolButton(self.frame_21)
+        self.apollo_TLB_NPQ_maintable = QtWidgets.QToolButton(self.frame_5)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -413,7 +414,7 @@ class Ui_MainWindow(object):
         self.apollo_TLB_NPQ_maintable.setArrowType(QtCore.Qt.NoArrow)
         self.apollo_TLB_NPQ_maintable.setObjectName("apollo_TLB_NPQ_maintable")
         self.horizontalLayout_3.addWidget(self.apollo_TLB_NPQ_maintable)
-        self.gridLayout_2.addWidget(self.frame_21, 1, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.frame_5, 1, 0, 1, 1)
         self.apollo_HDLBD_nowplayong_queue = QtWidgets.QLabel(self.apollo_FR_nowplaying_queue)
         self.apollo_HDLBD_nowplayong_queue.setMinimumSize(QtCore.QSize(150, 24))
         self.apollo_HDLBD_nowplayong_queue.setMaximumSize(QtCore.QSize(16777215, 24))
@@ -613,9 +614,9 @@ class Ui_MainWindow(object):
         self.apollo_PSB_play.setText(_translate("MainWindow", "OO"))
         self.apollo_PIXLB_albumcover.setText(_translate("MainWindow", "TextLabel"))
         self.apollo_PIXLB_position.setText(_translate("MainWindow", "TextLabel"))
-        
+
 
 if __name__ == "__main__":
     from apollo.app.apollo_main import ApolloExecute
-    app = ApolloExecute() 
+    app = ApolloExecute()
     app.Execute()

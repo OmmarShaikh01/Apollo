@@ -8,7 +8,7 @@
         # 4. FIL = Form Layout
         # 5. HSP = Horizontal Splitter
         # 6. VSP = Vertical Splitter
-        
+
     # Spacers
         # 1. VSPC = Vertical Spacer
         # 2. HSPC = Horizontal Spacer
@@ -71,15 +71,15 @@
         # 9. HLN = Horizontal Line
         # 10. VLN = Vertical Line
         # 11. GLWDG = Open Gl Widget
-        
+
 # Issues:
-    # QTToolButton : toolmenu doesnt support multi screen menu popups 
+    # QTToolButton : toolmenu doesnt support multi screen menu popups
     # and displays menu on primary screen irrespective of screen
 
 ##########################################################################################
 
 import sys
-    
+
 from PyQt5 import QtWidgets, QtGui, QtCore
 
 from apollo.app.apollo_TabBindings import ApolloTabBindings
@@ -89,12 +89,13 @@ from apollo.resources.apptheme import style
 
 class ApolloMain(ApolloTabBindings):
     """
-    Initilizes Apollo 
+    Initilizes Apollo
     """
     def __init__(self):
         """Constructor"""
-        super().__init__()     
-     
+        super().__init__()
+
+
 class ApolloExecute:
     """
     Executes Apollo
@@ -104,14 +105,15 @@ class ApolloExecute:
         self.app.setStyle(style)
         self.UI = ApolloMain()
         self.UI.show()
-        
-        #ThemeRefresh = lambda: self.UI.setStyleSheet(Theme().GenStylesheet(eval(Theme().DefaultPallete())["THEME"]))
-        #ThemeRefresh()        
-        #self.UI.apollo_PSB_play.pressed.connect(ThemeRefresh)
+
+        ThemeRefresh = lambda: self.app.setStyleSheet(Theme().GenStylesheet(eval(Theme().DefaultPallete())["THEME"]))
+        ThemeRefresh()
+        self.UI.apollo_PSB_play.pressed.connect(ThemeRefresh)
 
     def Execute(self):
         sys.exit(self.app.exec_())
-    
+
+
 if __name__ == "__main__":
-    app = ApolloExecute() 
+    app = ApolloExecute()
     app.Execute()

@@ -9,3 +9,7 @@ __pycache__/
 
 #ignores all PNG Images
 **.png
+
+## ignores project files 
+**.wpu
+**.wpr
