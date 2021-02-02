@@ -322,14 +322,14 @@ Issues:
     }
 
 /* QSlider ---------------------------------------------------------------- */
-    QSlider{
+    QSlider:horizontal{
         max-height: 10px;
     }
-    QSlider:disabled {
+    QSlider:disabled:horizontal{
         background: $disabled-02;
     }
 
-    QSlider:focus {
+    QSlider:focus:horizontal{
         border: $focus;
     }
 
@@ -350,8 +350,7 @@ Issues:
     }
 
     QSlider::sub-page:horizontal {
-        background: $ui-05;
-        border: 1px solid $ui-05;
+        background: $interactive-04;
         height: 4px;
         margin: 0px;
         border-radius: 2px;
@@ -362,11 +361,24 @@ Issues:
         border: 1px solid $interactive-04;
     }
 
+    QSlider:vertical{
+        min-height: 32px;
+        max-width: 8px;
+    }
+
+    QSlider:disabled:vertical{
+        background: $disabled-02;
+    }
+
+    QSlider:focus:vertical{
+        border: $focus;
+    }
+
     QSlider::groove:vertical {
         background: $ui-03;
         border: 1px solid $ui-03;
-        height: 2px;
         margin: 0px;
+        width: 8px;
         border-radius: 2px;
     }
 
@@ -375,15 +387,14 @@ Issues:
         border: 1px solid $ui-05;
         width: 8px;
         height: 8px;
-        margin: -4px 0px;
+        margin: 0px -4px 0px -4px;
         border-radius: 4px;
     }
 
     QSlider::add-page:vertical {
-        background: $ui-05;
-        border: 1px solid $ui-05;
-        height: 4px;
-        margin: 0px;
+        background: $interactive-04;
+        width: 8px;
+        margin: 0px;        
         border-radius: 4px;
     }
 
@@ -407,6 +418,7 @@ Issues:
             background-color: $ui-04;
             border: 1px solid $ui-background;
             border-radius: 2px;
+            min-width: 8px;
         }
 
         QScrollBar::handle:horizontal:hover {
@@ -917,6 +929,134 @@ Issues:
 /* Library Tab Buttons */
 
 /* NowPlaying Tab Buttons */
+
+/* Audio Tools Tab */
+    QWidget#apollo_WDG_ATOL_frame,
+    QWidget#apollo_WDG_ATOL_mixer{
+        background: $ui-background;
+        color: $text-01;
+    }
+
+    QWidget#apollo_HDLBD_ATOL_mixer{
+        background: $ui-background;
+        color: $text-01;
+        font-size: 12px;
+    }
+
+    QWidget#apollo_WDG_ATOL_frame,
+    QWidget#apollo_SCAR_mixer{
+        border: none;
+    }
+
+    /* apollo_HDLBD_ATOL_masterVU */
+
+        QWidget#apollo_HDLBD_ATOL_masterVU_Header{
+            background: $ui-02;
+            border: 1px solid $ui-background;
+            border-radius: 4px; 
+        }
+
+        QWidget#apollo_PIXLB_ATOL_masterVU_VU{
+            background: $ui-background;
+            border: 1px solid $ui-background;
+            border-radius: 4px; 
+        }
+
+        QWidget#apollo_FR_ATOL_masterVU{
+            background: $ui-02;
+            border: 1px solid $ui-background;
+            border-radius: 4px; 
+        }
+
+    /* apollo_FR_ATOL_masterCH */
+        QWidget#apollo_FR_ATOL_masterCH{
+            background: $ui-02;
+            border: 1px solid $ui-background;
+            border-radius: 4px;             
+        }
+
+        QWidget#apollo_PIXLB_ATOL_masterCH_VU{
+            background: $ui-background;
+            border-radius: 4px;
+            border: 0px;
+            margin-left: 4px;
+            margin-right: 4px;
+        }
+
+        QWidget#apollo_HDLBD_ATOL_masterCH_Header{
+            background: $ui-02;
+            border: 1px solid $ui-background;
+            border-radius: 4px; 
+        }
+
+        QWidget#apollo_FR_ATOL_masterCH_VU{
+            background: $ui-01;
+            border-radius: 16px;
+        }
+
+        QSlider#apollo_VSLD_ATOL_masterCH_vol_ctrl:vertical{
+            min-height: 32px;
+            max-width: 8px;
+        }
+
+        QSlider#apollo_VSLD_ATOL_masterCH_vol_ctrl:disabled:vertical{
+            background: $disabled-02;
+        }
+
+        QSlider#apollo_VSLD_ATOL_masterCH_vol_ctrl:focus:vertical{
+            border: $focus;
+        }
+
+        QSlider#apollo_VSLD_ATOL_masterCH_vol_ctrl::groove:vertical {
+            background: $ui-background;
+            width: 8px;
+            margin: 0px;        
+            border-radius: 4px;
+        }
+
+        QSlider#apollo_VSLD_ATOL_masterCH_vol_ctrl::handle:vertical {
+            background: $ui-05;
+            border: 1px solid $ui-05;
+            width: 8px;
+            height: 8px;
+            margin: 0px -4px 0px -4px;
+            border-radius: 4px;
+        }
+
+        QSlider#apollo_VSLD_ATOL_masterCH_vol_ctrl::add-page:vertical {
+            background: $interactive-04;
+            width: 8px;
+            margin: 0px;        
+            border-radius: 4px;
+        }
+
+        QSlider#apollo_VSLD_ATOL_masterCH_vol_ctrl::add-page:vertical:active {
+            background: $interactive-04;
+            border: 1px solid $interactive-04;
+        }
+
+        /* apollo_PSB_ATOL_masterCH_vol_bypass QPushButton */
+
+            QPushButton#apollo_PSB_ATOL_masterCH_vol_bypass{
+                background-color: Transparent;
+                color: $support-02;
+                border: 2px solid $support-02;
+                border-radius: 4px;
+            }
+
+            QPushButton#apollo_PSB_ATOL_masterCH_vol_bypass:disabled{
+                background-color: $disabled-02;
+                color: $disabled-03;
+                border: 2px solid Transparent;
+                border-radius: 4px;
+            }
+
+            QPushButton#apollo_PSB_ATOL_masterCH_vol_bypass:checked,
+            QPushButton#apollo_PSB_ATOL_masterCH_vol_bypass:pressed{
+                background-color: Transparent;                
+                color: $support-01;
+                border: 2px solid $support-01;
+            }
 
 /* Global Footer Buttons */
 

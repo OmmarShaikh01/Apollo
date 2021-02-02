@@ -8,8 +8,7 @@ from apollo.utils import PlayingQueue, exe_time
 from apollo.db.library_manager import LibraryManager
 from apollo.app.library_tab import LibraryTab
 from apollo.app.nowplaying_tab import NowPlayingTab
-from apollo.dsp.dsp_main import DSP_Main as DSPTab
-
+from apollo.dsp.dsp_main import ApolloDSP
 
 # Issues
 # 1. menu over tablestats update only when hovered
@@ -546,7 +545,7 @@ class ApolloTabBindings(Files_Utils):
         # initilizes Subtabs
         self.LibraryTab = LibraryTab(self)
         self.NowPlayingTab = NowPlayingTab(self)
-        self.DSPTab = DSPTab(self)
+        self.AudioToolsTab = ApolloDSP(UI = self)
 
 if __name__ == "__main__":
     from apollo.app.apollo_main import ApolloExecute

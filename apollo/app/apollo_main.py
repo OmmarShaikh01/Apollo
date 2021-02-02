@@ -58,6 +58,7 @@
         # 12. HSLD = Horizontal Slider
         # 13. VSLD = Vertical Slider
         # 14. KSEDT = Key Sequence Edit
+        # 15. DIAL = Dial
 
     # Display Widgets
         # 1. LAB = Label
