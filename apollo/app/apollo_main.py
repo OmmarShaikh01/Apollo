@@ -101,7 +101,7 @@ class ApolloExecute:
     """
     Executes Apollo
     """
-    def __init__(self, style = "Fusion"):
+    def __init__(self, style = "fusion"):
         self.app = QtWidgets.QApplication(sys.argv)
         self.app.setStyle(style)
         self.UI = ApolloMain()
