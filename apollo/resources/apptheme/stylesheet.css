@@ -949,7 +949,7 @@ Issues:
 
     QWidget#apollo_WDG_ATOL_mixer{
         background: $ui-01;
-        border-top: 24px solid $ui-background;
+        border-top: 0px solid $ui-background;
     }
 
     QWidget#apollo_WDG_ATOL_frame,
