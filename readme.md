@@ -7,8 +7,8 @@
 - Gapless playback: eliminates the timing related artifacts in transitions between consecutive audio tracks to provide a relatively uninterrupted listening experience.
 - ReplayGain: performs normalization of volume levels among individual tracks, equalizing their perceived loudness to achieve a more seamless playlist progression.
 - Library management: find, organize and rename music into particular folders and files based on any combination of audio tag values such as artist, album, track number, or other metadata. MusicBee can be configured to monitor and perform this task automatically for select libraries, while at the same time allowing users to take manual control on a case-by-case basis.
-- Look and feel customization: the layout and appearance of various player elements is open for     extensive modification, including adjustable key bindings.
-- MiniLyrics [ru] integration: for display and editing of song lyrics synchronized to audio files.
+- Look and feel customization: the layout and appearance of various player elements is open for extensive modification, including adjustable key bindings.
+- MiniLyrics integration: for display and editing of song lyrics synchronized to audio files.
 - Apollo supports the DirectSound, ASIO and WASAPI audio interfaces, and it uses 32-bit audio processing 
 - Auto DJ: a user-programmable playlist generator, expanding beyond capabilities of the default shuffle presets and settings.
 - Sleep & Shutdown modes, for scheduled exit with gradual volume fade out function.
