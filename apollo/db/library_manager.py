@@ -41,7 +41,7 @@ class DataBaseManager():
                           "title","tracknumber","version","website","album_gain",
                           "bitrate","bitrate_mode","channels","encoder_info","encoder_settings",
                           "frame_offset","layer","mode","padding","protected","sample_rate",
-                          "track_gain","track_peak", "rating", "playcount"]        
+                          "track_gain","track_peak", "rating", "playcount"]
 
     def connect(self, db): #Tested
         """
@@ -57,7 +57,7 @@ class DataBaseManager():
                 create a blank one
 
         :Errors:
-            ConnectionError: if database fails to connect or fails checks 
+            ConnectionError: if database fails to connect or fails checks
         """
         if not ((os.path.splitext(db)[1] in [".db"]) or (db == ":memory:")):
             return False
@@ -79,7 +79,7 @@ class DataBaseManager():
 
         >>> library_manager.close_connection()
 
-        """        
+        """
         self.db_driver.commit()
         self.db_driver.close()
         if not self.db_driver.isOpen():
@@ -107,7 +107,7 @@ class DataBaseManager():
         query.bindValue(":viewname", "nowplaying")
         query.exec_()
         if not query.next():
-            status = self.Create_EmptyView("nowplaying")        
+            status = self.Create_EmptyView("nowplaying")
         else:
             status = True
 
@@ -142,10 +142,10 @@ class DataBaseManager():
                 ERROR: {(Query.lastError().text())}
                 Query: {Query.lastQuery()}
                 """
-            msg = dedenter(msg, 12)
+            # msg = dedenter(msg, 12)
             raise Exception(msg)
         else:
-            return Query    
+            return Query
 
     def IndexSelector(self, view_name, Column):
         """
@@ -172,7 +172,7 @@ class DataBaseManager():
 ########################################################################################################################
 # Create, Drop, Insert Type Functions
 ########################################################################################################################
-        
+
     def Create_LibraryTable(self): # Tested
         """
         Creates the main Library table with yhe valid column fields
@@ -180,7 +180,7 @@ class DataBaseManager():
         query = QSqlQuery()
         querystate = query.prepare(f"""
         CREATE TABLE IF NOT EXISTS library(
-        file_id TEXT PRIMARY KEY, 
+        file_id TEXT PRIMARY KEY,
         path_id TEXT,
         file_name TEXT,
         file_path TEXT,
@@ -193,7 +193,7 @@ class DataBaseManager():
         composer TEXT,
         conductor TEXT,
         date TEXT,
-        discnumber INTEGER, 
+        discnumber INTEGER,
         discsubtitle TEXT,
         encodedby TEXT,
         genre TEXT,
@@ -205,8 +205,8 @@ class DataBaseManager():
         mood TEXT,
         organization TEXT,
         originaldate TEXT,
-        performer TEXT, 
-        releasecountry TEXT, 
+        performer TEXT,
+        releasecountry TEXT,
         replaygain_gain TEXT,
         replaygain_peak TEXT,
         title TEXT,
@@ -234,7 +234,7 @@ class DataBaseManager():
         if query_exe == False and querystate == False:
             raise Exception(f"Table Not Created")
         else:
-            return True         
+            return True
 
     def Create_EmptyView(self, view_name): # Tested
         """
@@ -256,7 +256,7 @@ class DataBaseManager():
         if query_exe == False and querystate == False:
             raise Exception(f"<{view_name}> View Not Created")
         else:
-            return True 
+            return True
 
     def CreateView(self, view_name, Selector, **kwargs): # Tested
         """
@@ -276,32 +276,32 @@ class DataBaseManager():
             Shuffled: Bool
                 Query Type to use for selecting data
             Normal: Bool
-                Query Type to use for selecting data           
+                Query Type to use for selecting data
             Filter: Bool
-                Query Type to use for selecting data           
+                Query Type to use for selecting data
         """
         # Drops thgiven view to create a new view
         self.DropView(view_name)
         query = QSqlQuery()
-        
+
         # creates a a query string of items needed to be selected
         FilterItems =  ", ".join([f"'{value}'"for value in Selector])
-        
+
         # sets the column used to look data from
         if kwargs.get("FilterField") == None:
             Field = "file_id"
         else:
             Field = kwargs.get("FilterField")
-        
+
         # a list of all file ID used for indexing
         if kwargs.get("Filter") != None:
             if kwargs.get("ID") != None:
                 ID = ", ".join([f"'{v}'"for v in kwargs.get("ID")])
             else:
                 ID = ""
-                
+
             querystate = query.prepare(f"""
-            CREATE VIEW IF NOT EXISTS {view_name} AS 
+            CREATE VIEW IF NOT EXISTS {view_name} AS
             SELECT * FROM library WHERE file_id IN (
             SELECT file_id
             FROM library
@@ -309,28 +309,27 @@ class DataBaseManager():
             OR lower({Field}) IN ({FilterItems})
             OR file_id IN ({ID})
             )
-            """)            
-            
+            """)
+
         # indexing items and shuffling the order
         elif kwargs.get("Shuffled") != None:
             querystate = query.prepare(f"""
             CREATE VIEW IF NOT EXISTS {view_name} AS
             SELECT * FROM library WHERE {Field} IN ({FilterItems})
-            ORDER BY RANDOM()            
+            ORDER BY RANDOM()
             """)
-            
+
         # normal filtering using the selected indexes
         elif kwargs.get("Normal") != None:
             querystate = query.prepare(f"""
             CREATE VIEW IF NOT EXISTS {view_name} AS
             SELECT * FROM library WHERE {Field} IN ({FilterItems})
             """)
-            
         else:
              pass
-         
+
         # Error handling and execution of the query
-        query_exe = query.exec_()        
+        query_exe = query.exec_()
         if query_exe == False and querystate == False:
             msg = f"""
                 <{view_name}> View Not Created
@@ -345,8 +344,6 @@ class DataBaseManager():
         # gets the data that has been applied and selected
         return self.IndexSelector("nowplaying", "file_id")
 
-    
-
     def DropTable(self, tablename):
         """
         Drops the table from the database
@@ -355,15 +352,15 @@ class DataBaseManager():
             table_name: String
                 Name of the table to be dropped
         :Error:
-            Exceptions are raised if the query fails 
-        """        
+            Exceptions are raised if the query fails
+        """
         query = QSqlQuery()
         querystate = query.prepare(f"DROP TABLE IF EXISTS {tablename}")
         query_exe = query.exec_()
         if query_exe == False and querystate == False:
             raise Exception(f"ERROR {query.lastError().text()}")
         else:
-            return query 
+            return query
 
     def DropView(self, viewname):
         """
@@ -375,15 +372,15 @@ class DataBaseManager():
             viewname: String
                 Name of the view to be dropped
         :Error:
-            Exceptions are raised if the query fails 
-        """            
+            Exceptions are raised if the query fails
+        """
         query = QSqlQuery()
         querystate = query.prepare(f"DROP VIEW IF EXISTS {viewname}")
         query_exe = query.exec_()
         if query_exe == False and querystate == False:
             raise Exception(f"ERROR {query.lastError().text()}")
         else:
-            return query 
+            return query
 
     def BatchInsert_Metadata(self, metadata):
         """
@@ -405,7 +402,7 @@ class DataBaseManager():
             query.addBindValue(metadata.get(keys))
 
         if not query.execBatch():
-            raise Exception(query.lastError().text())        
+            raise Exception(query.lastError().text())
 
         self.db_driver.commit()
 
@@ -421,7 +418,7 @@ class DataBaseManager():
         :Args:
             tablename: String
                 Name of the table or view to be queried
-        """         
+        """
         query = QSqlQuery(f"SELECT round(sum(filesize)/1024, 2) FROM {tablename}")
         query.exec_()
         if query.next():
@@ -441,7 +438,7 @@ class DataBaseManager():
         :Args:
             tablename: String
                 Name of the table or view to be queried
-        """           
+        """
         query = QSqlQuery(f"""
                           SELECT sum(substr(length,1,1))*360 + sum(substr(length,3,2))*60 +sum(substr(length,6,2))
                           FROM {tablename}""")
@@ -462,7 +459,7 @@ class DataBaseManager():
         :Args:
             tablename: String
                 Name of the table or view to be queried
-        """        
+        """
         query = QSqlQuery(f"SELECT count(DISTINCT album) FROM {tablename}")
         query.exec_()
         if query.next():
@@ -478,7 +475,7 @@ class DataBaseManager():
         :Args:
             tablename: String
                 Name of the table or view to be queried
-        """            
+        """
         query = QSqlQuery(f"SELECT count(DISTINCT artist) FROM {tablename}")
         query.exec_()
         if query.next():
@@ -494,20 +491,20 @@ class DataBaseManager():
         :Args:
             tablename: String
                 Name of the table or view to be queried
-        """            
+        """
         query = QSqlQuery(f"SELECT count(DISTINCT file_id) FROM {tablename}")
         query.exec_()
         if query.next():
             return (query.value(0))
         else:
-            return 0       
+            return 0
 
 class FileManager(DataBaseManager):
     """"""
     def __init__(self):
         """Constructor"""
         super().__init__()
-                
+
     def scan_directory(self, path, include = [], slot = None):
         """
         Walks the root directory and scans the directory for media files.
@@ -555,10 +552,10 @@ class FileManager(DataBaseManager):
             if not query.next():
                 filehash = self.file_hasher(file)
                 if filehash not in filehash_list:
-                    filehash_list.append(filehash)                
+                    filehash_list.append(filehash)
                     metadata = self.file_parser(file, metadata_dict)
                     metadata["path_id"] = pathhash
-                    metadata["file_id"] = filehash                    
+                    metadata["file_id"] = filehash
                     query = QSqlQuery(f"SELECT file_id FROM library WHERE file_id = '{filehash}' ")
                     query.exec_()
                     if not query.next():
@@ -582,20 +579,20 @@ class FileManager(DataBaseManager):
             hashval = (hashfun(bytes_)).hexdigest()
         return hashval
 
-    def file_parser(self, path, metadata_fields):        
+    def file_parser(self, path, metadata_fields):
         """
         Reads the file metadata and generates a metadata dict and returns it.
 
         :Args:
             path: String
-                Path of the file                
+                Path of the file
             metadata_fields: Dict
                 Fields that should be read
         """
         muta_file = mutagen.File(path, easy = True)
-        metadata = {}   
+        metadata = {}
         for key in metadata_fields:
-            try:                
+            try:
                 if key == "length":
                     value = muta_file.info.length
                     metadata[key] = str(datetime.timedelta(seconds = value))
@@ -668,31 +665,31 @@ class FileManager(DataBaseManager):
                 else:
                     value = muta_file.get(key)
                     if value != None:
-                        metadata[key] = value[0]                    
+                        metadata[key] = value[0]
                     else:
                         metadata[key] = ''
 
                 if metadata[key] == None:
-                    metadata[key] = ''  
+                    metadata[key] = ''
             except Exception as e:
                 metadata[key] = ''
         metadata["file_name"] = os.path.split(muta_file.filename)[1]
         metadata["file_path"] = muta_file.filename
-        metadata["rating"] = muta_file.filename        
-        metadata["playcount"] = muta_file.filename        
+        metadata["rating"] = muta_file.filename
+        metadata["playcount"] = muta_file.filename
 
         return metadata
-    
+
 class ModelView_Manager(FileManager):
     """"""
 
     def __init__(self):
         """Constructor"""
         super().__init__()
-        
+
     def SetTable_horizontalHeader(self, View, Labels):
         """
-        Sets the table header 
+        Sets the table header
 
         >>> library_manager.SetTable_horizontalHeader(View, [1, 2, 3])
 
@@ -712,12 +709,12 @@ class ModelView_Manager(FileManager):
     def GetTable_horizontalHeader(self, View):
         """
         Gets the table header and replaces the space with underscore
-        and swaps the string to lower case. 
+        and swaps the string to lower case.
 
         :Args:
             View: QtWidgets.QTableView
                 Table object to retrieve the header from
-        """        
+        """
         header = View.horizontalHeader().model()
         labels = []
         for col in range(header.columnCount()):
@@ -725,11 +722,11 @@ class ModelView_Manager(FileManager):
             labels.append(str(col_label).replace(" ", "_").lower())
         return labels
 
-    def SetTableModle(self, Tablename, View = QtWidgets.QTableView, Headers = None) -> "QStandardItemModel": 
+    def SetTableModle(self, Tablename, View = QtWidgets.QTableView, Headers = None) -> "QStandardItemModel":
         """
         Gets the TableData for the given Table In the DB
 
-        >>> library_manager.SetTableModle(Tablename"Table", View = TableView, Headers = [1,2,3,4,5]) 
+        >>> library_manager.SetTableModle(Tablename"Table", View = TableView, Headers = [1,2,3,4,5])
 
         :Args:
             Tablename: String
@@ -745,11 +742,11 @@ class ModelView_Manager(FileManager):
         """
         #  Runs a select query to return QueryPointer
         query = QSqlQuery()
-        if Tablename in ["library", 'nowplaying']:                 
+        if Tablename in ["library", 'nowplaying']:
             if not query.prepare(f"SELECT * FROM {Tablename}"):
                 msg = dedenter(f"""
                                Query(SELECT * FROM {Tablename})
-                               Error: {query.lastError().text()} 
+                               Error: {query.lastError().text()}
                                query failed to build""", 16)
                 raise Exception(msg)
 
@@ -773,13 +770,13 @@ class ModelView_Manager(FileManager):
         else:
             pass
 
-        # Sets all the header labels    
+        # Sets all the header labels
         View.setModel(TableModel)
         if  Headers == None:
             Headers = list(range(TableModel.columnCount()))
         self.SetTable_horizontalHeader(View, Headers)
 
-        return TableModel     
+        return TableModel
 
     def OrderedSqlTableModel(self, Query, Order): # untested
         """
@@ -800,7 +797,7 @@ class ModelView_Manager(FileManager):
 
         TableModel.beginInsertRows(QtCore.QModelIndex(), 0, len(Order) - 1)
 
-        # uses the query to get data 
+        # uses the query to get data
         while Query.next():
             for Column in Cols:
                 Item = Query.value(Column)
@@ -836,8 +833,8 @@ class ModelView_Manager(FileManager):
 
         # gets and sets the query item
         while Query.next():
-            TableModel.insertRow(Row, [QtGui.QStandardItem(str(Query.value(Column))) for Column in Cols])    
-            Row += 1            
+            TableModel.insertRow(Row, [QtGui.QStandardItem(str(Query.value(Column))) for Column in Cols])
+            Row += 1
         return TableModel
 
     def Refresh_TableModelData(self, View) -> "QStandardItemModel":
@@ -847,18 +844,18 @@ class ModelView_Manager(FileManager):
         :Args:
             parent_view: QTableView
                 View containing the model
-        """        
+        """
         Table = View.property("DB_Table")
-        return self.SetTableModle(Table, View, View.property("DB_Columns"))      
+        return self.SetTableModle(Table, View, View.property("DB_Columns"))
 
 ########################################################################################################################
 # Table Searches
-########################################################################################################################    
+########################################################################################################################
     def ClearView_Masks(self, View = QtWidgets.QTableView):
         TableModel = View.model()
         for Row in range(TableModel.rowCount()):
             View.showRow(Row)
-        
+
     def TableSearch(self, Line_Edit = QtWidgets.QLineEdit, View = QtWidgets.QTableView):
         """
         Applies a filter to the QSqlTableModel and refreshes it.
@@ -877,11 +874,11 @@ class ModelView_Manager(FileManager):
         if Text == "":
             [View.showRow(Row) for Row in range(View.model().rowCount())]
             return None
-            
+
         tablename = View.property("DB_Table")
         query = QSqlQuery()
 
-        if tablename in ["library", 'nowplaying']:        
+        if tablename in ["library", 'nowplaying']:
             querystate = query.prepare(f"""
             SELECT file_id FROM {tablename}
             WHERE
@@ -906,7 +903,7 @@ class ModelView_Manager(FileManager):
         query_exe = query.exec_()
         if query_exe == False and querystate == False:
             raise Exception(f"<{tablename}> View Not Created")
-        
+
         # shows matching rows
         QueryData = []
         Row = 0
@@ -936,15 +933,18 @@ class ModelView_Manager(FileManager):
             Indexes:
                 Selected Indexes
         """
+        if Indexes in ["", None, []]:
+            return False
+
         # creates a query to filter
         Tablename = View.property("DB_Table")
         exp = "({0} LIKE '%{1}%') OR (lower({2}) LIKE '%{3}%')"
-        LikeExpression = [exp.format(Field, Upper, Field, Lower) for Upper, Lower in zip(Indexes, Indexes)]
-        LikeExpression = " OR ".join(LikeExpression)        
+        LikeExpression = [exp.format(Field, Upper, Field, Upper) for Upper in Indexes]
+        LikeExpression = " OR ".join(LikeExpression)
 
         Query = QSqlQuery()
-        if not (Query.prepare(f"SELECT * FROM {Tablename} WHERE {LikeExpression}")):
-            print(f"SELECT file_id FROM {Tablename} WHERE {LikeExpression}") 
+        if not (Query.prepare(f"SELECT file_id FROM {Tablename} WHERE {LikeExpression}")):
+            print(f"SELECT file_id FROM {Tablename} WHERE {LikeExpression}")
             raise Exception("Query Build Failed")
         Query = self.ExeQuery(Query)
 
@@ -960,7 +960,7 @@ class ModelView_Manager(FileManager):
             if TableModel.index(Row, 0).data() in QueryData:
                 View.showRow(Row)
             else:
-                View.hideRow(Row)                     
+                View.hideRow(Row)
 
     def TableSearchAdvanced(self, query, View):
         """
@@ -978,16 +978,16 @@ class ModelView_Manager(FileManager):
                 Claues Use for filtering the Table
         :Errors:
             Unable to execute multiple statements at a time
-        """        
+        """
         model = View.model()
         model.setFilter()
         ERROR = model.lastError().text()
         if  ERROR != "":
             model.setFilter('')
             self.Refresh_TableModelData(View)
-            raise Exception(ERROR)        
-    
-    
+            raise Exception(ERROR)
+
+
 class LibraryManager(ModelView_Manager):
     """
     Controls the database queries for table and view (creation, modification
@@ -999,17 +999,17 @@ class LibraryManager(ModelView_Manager):
     def __init__(self, DBname = None):
         """Constructor"""
         super().__init__()
-        
+
         if DBname != None:
             if not self.connect(DBname):
-                raise Exception("Startup Checks Failed") 
-        
-        
-                    
+                raise Exception("Startup Checks Failed")
+
+
+
 if __name__ == '__main__':
     from apollo.test.testUtilities import TestSuit_main
     from apollo.test.Test_LIbraryManager import Test_LibraryManager
-        
+
     Suite = TestSuit_main()
     Suite.AddTest(Test_LibraryManager)
     Suite.Run(QT=True)
