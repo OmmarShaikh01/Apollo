@@ -7,8 +7,8 @@ __pycache__/
 #ignores all config files: default config is embedded in code
 **.cfg
 
-#ignores all PNG Images
-**.png
+#ignores all PNG Images included in theme
+apollo/resources/apptheme/theme/**/**/**.png
 
 ## ignores project files 
 **.wpu

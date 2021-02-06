@@ -7,7 +7,7 @@ class VUMeter:
     """
     VU meter class paints the amplitude bars of the given aplitude by an callback function
     """
-    def __init__(self, Parent):
+    def __init__(self, Parent = None, Meter = None):
         """
         Inits
         meter: QLabel to daw the bars
@@ -17,8 +17,14 @@ class VUMeter:
         Qpainter: Painter object to use
         scale: scaling factor for the amplitude
         """
-        self.setupUi(Parent)
-        self.meter = self.apollo_PIXLB_ATOL_masterCH_VU
+
+        if Parent != None:
+            self.setupUi(Parent)
+            self.meter = self.apollo_PIXLB_ATOL_masterCH_VU
+            Parent.layout().addWidget(self.GetWidget(), 0, Parent.layout().count(), 1, 1, QtCore.Qt.AlignLeft)
+
+        if Meter != None:
+            self.meter = Meter
 
         self.rect = self.GetRect(self.meter)
         self.Gradient = self.GetGradient(self.rect.height())
@@ -167,12 +173,12 @@ class VUMeter:
         self.apollo_FR_ATOL_masterCH.setMinimumSize(QtCore.QSize(38, 0))
         self.apollo_FR_ATOL_masterCH.setMaximumSize(QtCore.QSize(38, 16777215))
         self.apollo_FR_ATOL_masterCH.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.apollo_FR_ATOL_masterCH.setObjectName("apollo_FR_ATOL_masterCH__12")
+        self.apollo_FR_ATOL_masterCH.setObjectName("apollo_FR_ATOL_masterCH")
 
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.apollo_FR_ATOL_masterCH)
         self.verticalLayout_4.setContentsMargins(2, 2, 2, 2)
         self.verticalLayout_4.setSpacing(4)
-        self.verticalLayout_4.setObjectName("verticalLayout_4__12")
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
 
         self.apollo_FR_ATOL_masterCH_VU = QtWidgets.QFrame(self.apollo_FR_ATOL_masterCH)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
@@ -182,19 +188,19 @@ class VUMeter:
         self.apollo_FR_ATOL_masterCH_VU.setSizePolicy(sizePolicy)
         self.apollo_FR_ATOL_masterCH_VU.setMinimumSize(QtCore.QSize(32, 0))
         self.apollo_FR_ATOL_masterCH_VU.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.apollo_FR_ATOL_masterCH_VU.setObjectName("apollo_FR_ATOL_masterCH_VU__12")
+        self.apollo_FR_ATOL_masterCH_VU.setObjectName("apollo_FR_ATOL_masterCH_VU")
 
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.apollo_FR_ATOL_masterCH_VU)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setSpacing(4)
-        self.verticalLayout_2.setObjectName("verticalLayout_2__12")
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
 
         self.apollo_HDLBD_ATOL_masterCH_Header = QtWidgets.QLabel(self.apollo_FR_ATOL_masterCH_VU)
         self.apollo_HDLBD_ATOL_masterCH_Header.setMinimumSize(QtCore.QSize(32, 32))
         self.apollo_HDLBD_ATOL_masterCH_Header.setMaximumSize(QtCore.QSize(32, 32))
         self.apollo_HDLBD_ATOL_masterCH_Header.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.apollo_HDLBD_ATOL_masterCH_Header.setAlignment(QtCore.Qt.AlignCenter)
-        self.apollo_HDLBD_ATOL_masterCH_Header.setObjectName("apollo_HDLBD_ATOL_masterCH_Header__12")
+        self.apollo_HDLBD_ATOL_masterCH_Header.setObjectName("apollo_HDLBD_ATOL_masterCH_Header")
         self.verticalLayout_2.addWidget(self.apollo_HDLBD_ATOL_masterCH_Header)
 
         self.apollo_PIXLB_ATOL_masterCH_VU = QtWidgets.QLabel(self.apollo_FR_ATOL_masterCH_VU)
@@ -207,7 +213,7 @@ class VUMeter:
         self.apollo_PIXLB_ATOL_masterCH_VU.setMaximumSize(QtCore.QSize(32, 96))
         self.apollo_PIXLB_ATOL_masterCH_VU.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.apollo_PIXLB_ATOL_masterCH_VU.setAlignment(QtCore.Qt.AlignCenter)
-        self.apollo_PIXLB_ATOL_masterCH_VU.setObjectName("apollo_PIXLB_ATOL_masterCH_VU__12")
+        self.apollo_PIXLB_ATOL_masterCH_VU.setObjectName("apollo_PIXLB_ATOL_masterCH_VU")
         self.verticalLayout_2.addWidget(self.apollo_PIXLB_ATOL_masterCH_VU)
 
         self.apollo_DIAL_ATOL_masterCH_ctrl = QtWidgets.QDial(self.apollo_FR_ATOL_masterCH_VU)
@@ -215,19 +221,19 @@ class VUMeter:
         self.apollo_DIAL_ATOL_masterCH_ctrl.setMaximumSize(QtCore.QSize(32, 32))
         self.apollo_DIAL_ATOL_masterCH_ctrl.setMaximum(100)
         self.apollo_DIAL_ATOL_masterCH_ctrl.setSliderPosition(50)
-        self.apollo_DIAL_ATOL_masterCH_ctrl.setObjectName("apollo_DIAL_ATOL_masterCH_ctrl__12")
+        self.apollo_DIAL_ATOL_masterCH_ctrl.setObjectName("apollo_DIAL_ATOL_masterCH_ctrl")
         self.verticalLayout_2.addWidget(self.apollo_DIAL_ATOL_masterCH_ctrl)
 
         self.verticalLayout_4.addWidget(self.apollo_FR_ATOL_masterCH_VU)
 
         self.apollo_FR_ATOL_masterCH_vol = QtWidgets.QFrame(self.apollo_FR_ATOL_masterCH)
         self.apollo_FR_ATOL_masterCH_vol.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.apollo_FR_ATOL_masterCH_vol.setObjectName("apollo_FR_ATOL_masterCH_vol__12")
+        self.apollo_FR_ATOL_masterCH_vol.setObjectName("apollo_FR_ATOL_masterCH_vol")
 
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.apollo_FR_ATOL_masterCH_vol)
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_3.setSpacing(4)
-        self.verticalLayout_3.setObjectName("verticalLayout_3__12")
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
 
         self.apollo_VSLD_ATOL_masterCH_vol_ctrl = QtWidgets.QSlider(self.apollo_FR_ATOL_masterCH_vol)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
@@ -240,21 +246,21 @@ class VUMeter:
         self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setMaximum(100)
         self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setOrientation(QtCore.Qt.Vertical)
         self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setTickPosition(QtWidgets.QSlider.NoTicks)
-        self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setObjectName("apollo_VSLD_ATOL_masterCH_vol_ctrl__12")
+        self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setObjectName("apollo_VSLD_ATOL_masterCH_vol_ctrl")
         self.verticalLayout_3.addWidget(self.apollo_VSLD_ATOL_masterCH_vol_ctrl)
 
         self.apollo_DIAL_ATOL_masterCH_vol_prevmix = QtWidgets.QDial(self.apollo_FR_ATOL_masterCH_vol)
         self.apollo_DIAL_ATOL_masterCH_vol_prevmix.setMinimumSize(QtCore.QSize(32, 32))
         self.apollo_DIAL_ATOL_masterCH_vol_prevmix.setMaximumSize(QtCore.QSize(32, 32))
         self.apollo_DIAL_ATOL_masterCH_vol_prevmix.setMaximum(100)
-        self.apollo_DIAL_ATOL_masterCH_vol_prevmix.setObjectName("apollo_DIAL_ATOL_masterCH_vol_prevmix__12")
+        self.apollo_DIAL_ATOL_masterCH_vol_prevmix.setObjectName("apollo_DIAL_ATOL_masterCH_vol_prevmix")
         self.verticalLayout_3.addWidget(self.apollo_DIAL_ATOL_masterCH_vol_prevmix)
 
         self.apollo_PSB_ATOL_masterCH_vol_bypass = QtWidgets.QPushButton(self.apollo_FR_ATOL_masterCH_vol)
         self.apollo_PSB_ATOL_masterCH_vol_bypass.setMinimumSize(QtCore.QSize(32, 32))
         self.apollo_PSB_ATOL_masterCH_vol_bypass.setMaximumSize(QtCore.QSize(32, 16777215))
         self.apollo_PSB_ATOL_masterCH_vol_bypass.setCheckable(True)
-        self.apollo_PSB_ATOL_masterCH_vol_bypass.setObjectName("apollo_PSB_ATOL_masterCH_vol_bypass__12")
+        self.apollo_PSB_ATOL_masterCH_vol_bypass.setObjectName("apollo_PSB_ATOL_masterCH_vol_bypass")
 
         self.verticalLayout_3.addWidget(self.apollo_PSB_ATOL_masterCH_vol_bypass)
         self.verticalLayout_4.addWidget(self.apollo_FR_ATOL_masterCH_vol)
@@ -271,6 +277,18 @@ class BaseProcessor:
     def __init__(self):
         """Constructor"""
         self.MasterInput = None
+
+    def SetMixer_Channel(self, Parent):
+        self.MixerChannel = VUMeter(Parent = Parent)
+        self.BindMixerUI(bypass = self.MixerChannel.apollo_PSB_ATOL_masterCH_vol_bypass,
+                         pan = self.MixerChannel.apollo_DIAL_ATOL_masterCH_ctrl,
+                         premix = self.MixerChannel.apollo_DIAL_ATOL_masterCH_vol_prevmix,
+                         postmix = self.MixerChannel.apollo_VSLD_ATOL_masterCH_vol_ctrl)
+
+        self.SetMeterCallback(self.MixerChannel.Painter)
+
+    def SetMeterCallback(self, Call):
+        self.PeakAmp.setFunction(Call)
 
     def processor(self):
         """
@@ -328,7 +346,7 @@ class BaseProcessor:
     def ReplaceInput(self, Input):
         pass
 
-    def BindMixerUI(self, bypass, pan, premix, postmix, meter):
+    def BindMixerUI(self, bypass, pan, premix, postmix):
         """
         Binds the Internal Function to UI Objects
         """
@@ -341,9 +359,6 @@ class BaseProcessor:
         pan.valueChanged.connect(self.SetPan)
         premix.valueChanged.connect(self.SetInputMul)
         postmix.valueChanged.connect(self.SetOutputMul)
-
-        self.VUMeter = VUMeter(meter)
-        self.PeakAmp.setFunction(self.VUMeter.Painter)
 
 class MasterProcessor(BaseProcessor):
     """
