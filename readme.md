@@ -19,8 +19,9 @@
 - theme-support
 
 ### Screenshots(Expected to change over time)
-    ![MainWindow](/examples/mainwindow.PNG?raw=true "MainWindow")
-    ![AudioTools](/examples/audio-tools-tab.PNG?raw=true "AudioTools")
+
+![MainWindow](/examples/mainwindow.PNG?raw=true "MainWindow")
+![AudioTools](/examples/audio-tools-tab.PNG?raw=true "AudioTools")
     
 ### Tech
 
