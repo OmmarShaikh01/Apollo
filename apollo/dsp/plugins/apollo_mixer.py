@@ -249,7 +249,7 @@ class VUMeter:
         self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setSizePolicy(sizePolicy)
         self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setMinimumSize(QtCore.QSize(32, 0))
         self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setMaximumSize(QtCore.QSize(32, 16777215))
-        self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setMaximum(200)
+        self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setMaximum(100)
         self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setOrientation(QtCore.Qt.Vertical)
         self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setTickPosition(QtWidgets.QSlider.NoTicks)
         self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setObjectName("apollo_VSLD_ATOL_masterCH_vol_ctrl")
@@ -273,148 +273,43 @@ class VUMeter:
         self.apollo_PIXLB_ATOL_masterCH_VU.setText("M")
         self.apollo_PSB_ATOL_masterCH_vol_bypass.setText("OO")
 
-class MixerChannelsWidget(VUMeter):
-    """
-    Class for controling mixer channels
-    """
-
-    def __init__(self, Parent):
-        """Constructor"""
-        super().__init__(Parent)
-        self.Input = pyo.Sine(100)
-        self.processor()
-        self.BindMixerUI(bypass = self.apollo_PSB_ATOL_masterCH_vol_bypass,
-                         pan = self.apollo_DIAL_ATOL_masterCH_ctrl,
-                         premix = self.apollo_DIAL_ATOL_masterCH_vol_prevmix,
-                         postmix = self.apollo_VSLD_ATOL_masterCH_vol_ctrl)
-        self.SetMeterCallback(self.Painter)
-
-    def SetMeterCallback(self, Call: callable):
-        """
-        Assigns a callback for the VUmeter to draw the Amp peaks
-        """
-        self.PeakAmp.setFunction(Call)
-
-    def processor(self):
-        """
-        Processing block of the Master filter and returns the output stream
-        """
-        # Inits the Previous Processing block
-        self.Processor = pyo.Sine(0)
-
-        # Inits the switch to use for bypassing between original and processed signal
-        self.Switch = pyo.Selector([self.Input, self.Processor], 0)
-
-        # inits the Paning Filter for the Audio
-        self.Output = pyo.Pan(self.Switch, mul = 1.15)
-
-        # inits the peakamp that will be used to monitor the audio amplitude
-        self.PeakAmp = pyo.PeakAmp(self.Output)
-
-        return self.Output
-
-    def Bypass(self, Bool = True):
-        """
-        Inits the switch to use for bypassing between original and processed signal
-        """
-        if Bool:
-            # will Bypass the processor
-            self.Switch.setVoice(0)
-            self.Processor.stop()
-        else:
-            # will not Bypass The Processor
-            self.Switch.setVoice(1)
-            self.Processor.play()
-
-    def SetOutputMul(self, Val: int):
-        """
-        sets the amplitude for the processor swith
-        """
-        self.Switch.setMul((Val / 100) + 0.0001)
-
-    def SetInputMul(self, Val: int):
-        """
-        sets the amplitude for the input
-        """
-        self.Input.setMul((Val / 100) + 0.0001)
-
-    def SetPan(self, Val: int):
-        """
-        sets the pan for the filter
-        """
-        self.Output.setPan((Val / 100) + 0.0001)
-
-    def ReplaceInput(self, Input):
-        self.Switch.setInputs([Input, self.Processor])
-
-    def BindMixerUI(self, bypass, pan, premix, postmix):
-        """
-        Binds the Internal Function to UI Objects
-        """
-        bypass.setChecked(True)
-        pan.setValue(int(self.Output.pan * 100))
-        premix.setValue(int(self.Input.mul * 100))
-        postmix.setValue(int(self.Switch.mul * 100))
-
-        bypass.toggled.connect(self.Bypass)
-        pan.valueChanged.connect(self.SetPan)
-        premix.valueChanged.connect(self.SetInputMul)
-        postmix.valueChanged.connect(self.SetOutputMul)
-
-
 class ApolloAudioMixer:
     """
     Manages all the Mixer channels and it corresponding widgets
     """
 
-    def __init__(self, Parent: QtWidgets.QWidget, Input: "pyo.Input"):
+    def __init__(self, Parent: QtWidgets.QWidget):
         """Constructor"""
         self.Parent = Parent
-        self.Mixer_alloc = {}
-
-        self.MasterInput = Input
-        self.MasterOutput = None
-
-    def set_MasterInput(self, Input: "pyo.Input"):
-        self.MasterInput = Input
-
-    def get_MasterOutput(self):
-        return self.MasterOutput
 
     def connect_ServerChannel(self, server: pyo.Server, meter: QtWidgets.QLabel):
         # sets tehe VU meter for the server Amp
         self.MasterVU_Meter = VUMeter(Meter = meter)
+
         # adds an scaling factor for displaying the amplitude
         self.MasterVU_Meter.scale = 100
+
         # binds the server callback to the meter painter
         server.setMeterCallable(self.MasterVU_Meter.Painter)
 
-    def create_EmptyMixerChannels(self, Channels: int = 32):
+    def create_EmptyMixerChannels(self, Channels: int = 25):
         self.N_channels = Channels
         self.MixerDict = {}
         for channel in range(Channels):
-            MixerChannel = MixerChannelsWidget(Parent = self.Parent)
-            self.MixerDict[channel] = MixerChannel
-            self.Mixer_alloc[channel] = []
-        self.cascading_connectChannels(self.MixerDict)
+            self.MixerDict[channel] = VUMeter(Parent = self.Parent)
 
-    def cascading_connectChannels(self, Channels: dict):
-        for Channel, Widget in Channels.items():
-
-            if (Channel == 0):
-                self.MasterOutput = Widget.Output
-                self.MasterOutput.out(2)
-
-            if not(Channel == 0 or Channel == self.N_channels - 1):
-                NextChannel = Channels[Channel-1]
-                NextChannel.ReplaceInput(Widget.Output)
-
-            if (Channel == self.N_channels - 1):
-                NextChannel = Channels[Channel-1]
-                NextChannel.ReplaceInput(Widget.Output)
-                Widget.ReplaceInput(self.MasterInput)
-
-if __name__ == "__main__":
-    from apollo.app.apollo_main import ApolloExecute
-    app = ApolloExecute()
-    app.Execute()
+    def bind_ProcessortoMixer(self, Processor: "ProcessorObject", Channel: int):
+        """
+        Sets the Mixer for the parent widget and binds basic Audio Control to the widgets for each mixer channel
+        """
+        if not (Channel <= (self.N_channels)):
+            self.MixerDict[self.N_channels + 1] = VUMeter(Parent = self.Parent)
+            self.N_channels += 1
+            raise Warning("Processor binded to an new channel")
+        else:
+            MixerChannel = self.MixerDict[Channel]
+            Processor.BindMixerUI(bypass = MixerChannel.apollo_PSB_ATOL_masterCH_vol_bypass,
+                                  pan = MixerChannel.apollo_DIAL_ATOL_masterCH_ctrl,
+                                  premix = MixerChannel.apollo_DIAL_ATOL_masterCH_vol_prevmix,
+                                  postmix = MixerChannel.apollo_VSLD_ATOL_masterCH_vol_ctrl)
+            Processor.SetMeterCallback(MixerChannel.Painter)
