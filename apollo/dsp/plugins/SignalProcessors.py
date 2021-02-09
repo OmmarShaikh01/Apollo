@@ -3,291 +3,20 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 import sys, os, time, math
 
-class VUMeter:
-    """
-    VU meter class paints the amplitude bars of the given aplitude by an callback function
-    """
-    def __init__(self, Parent = None, Meter = None):
-        """
-        Inits
-        meter: QLabel to daw the bars
-        rect: frame rectangale
-        Gradient: colour gradient to use
-        pixmap: Pixmap to use and draw the VU bars to
-        Qpainter: Painter object to use
-        scale: scaling factor for the amplitude
-        """
-
-        if Parent != None:
-            self.setupUi(Parent)
-            self.meter = self.apollo_PIXLB_ATOL_masterCH_VU
-            Parent.layout().addWidget(self.GetWidget(), 0, Parent.layout().count(), 1, 1, QtCore.Qt.AlignLeft)
-
-        if Meter != None:
-            self.meter = Meter
-
-        self.rect = self.GetRect(self.meter)
-        self.Gradient = self.GetGradient(self.rect.height())
-        self.pixmap = self.GetPixmap(self.rect.width(), self.rect.height())
-        self.meter.setPixmap(self.pixmap)
-        self.Qpainter = QtGui.QPainter(self.meter.pixmap())
-        self.scale = 1
-
-    def MonitorResize(self):
-        """
-        Monitors the resize functions of the frames and label rects ad reintis the variables
-        """
-        if (self.meter.height() - 2) > self.rect.height():
-            self.Qpainter.end()
-            self.rect = self.GetRect(self.meter)
-            self.Gradient = self.GetGradient(self.rect.height())
-            self.pixmap = self.GetPixmap(self.rect.width(), self.rect.height())
-            self.meter.setPixmap(self.pixmap)
-            self.Qpainter = QtGui.QPainter(self.meter.pixmap())
-
-    def Painter(self, *args):
-        """
-        Main callback function in which amplitudes are passed in as an argument
-        """
-        # checks for the avilable channels of audio
-        if len(args) == 2:
-            self.Dual_channels(Amp = args)
-        else:
-            pass
-
-    def Amp_toDB(self, amp):
-        """
-        converts the aqmplitude to decibles
-        clips the values below 0.000001 to -120Db
-
-        :Args:
-            amp: Float
-                amplitude value
-        """
-        amp = 20 * math.log10(amp) if amp >= 0.000001 else 20 * math.log10(0.000001)
-        amp = amp if not amp <= -120 else -120
-        return amp
-
-    def MaptoMeter(self, amp, height):
-        """
-        Maps the amplitude value to the height of black top rect that hides the underlying gradient
-
-        :Args:
-            amp: Float
-                amplitude value
-            height: int
-                height of the pixmap
-
-        :Return:
-            height of the top bar that will shade the rect
-        """
-        return int(height - ((amp * self.scale) * height))
-
-    def Dual_channels(self, Amp = []):
-        """
-        Draws the Dual channel Amplitude bar
-
-        :Args:
-            amp: Float
-                amplitude value
-        """
-        # Monitors the resize changes
-        self.MonitorResize()
-
-        self.Qpainter.restore()
-        # adds a Black BackGround
-        self.Qpainter.fillRect(self.rect, QtCore.Qt.black)
-
-        # adds the gradient bars
-        self.Qpainter.fillRect(QtCore.QRect(0, 0, 15, self.rect.height()), self.Gradient)
-        self.Qpainter.fillRect(QtCore.QRect(17, 0, 15, self.rect.height()), self.Gradient)
-
-        # adds the overlay
-        self.Qpainter.fillRect(QtCore.QRect(0, 0, 15, self.MaptoMeter(Amp[0], self.rect.height())), QtCore.Qt.black)
-        self.Qpainter.fillRect(QtCore.QRect(17, 0, 15, self.MaptoMeter(Amp[1], self.rect.height())), QtCore.Qt.black)
-
-        # Debug line
-        # print(self.MaptoMeter(Amp[0], self.rect.height()), self.MaptoMeter(Amp[1], self.rect.height()))
-
-        # saves and updates
-        self.Qpainter.save()
-        self.meter.update()
-
-    def GetGradient(self, Height):
-        """
-        Gets the Height and generates the linear gradient according to it.
-
-        :Args:
-            height: int
-                Height of the pixmap
-
-        :Return:
-            A Gradient Object
-        """
-        Gradient = QtGui.QLinearGradient(0, 0, 0, Height)
-        Gradient.setColorAt(0, QtGui.QColor(QtGui.qRgba(255, 0, 0, 255)))
-        Gradient.setColorAt(0.37, QtGui.QColor(QtGui.qRgba(255, 255, 0, 255)))
-        Gradient.setColorAt(0.4588, QtGui.QColor(QtGui.qRgba(0, 255, 0, 255)))
-        Gradient.setColorAt(1, QtGui.QColor(QtGui.qRgba(0, 0, 255, 255)))
-        return Gradient
-
-    def GetPixmap(self, W, H):
-        """
-        Gets the Widgets Dimension and genrates a pixmap related to it
-
-        :Args:
-            height: int
-                Height of the Widget
-            width: int
-                Width of the Widget
-
-        :Return:
-            A pixmap Object
-        """
-
-        pixmap = QtGui.QPixmap(W, H)
-        pixmap.fill(QtCore.Qt.black)
-        return pixmap
-
-    def GetRect(self, meter):
-        """
-        Gets the Widgets Dimension and genrates a rect frame related to it
-
-        :Args:
-            meter: Qlabel
-                Qlabel to generate a rect for
-
-        :Return:
-            A rect Object
-        """
-        H = meter.height()
-        W = meter.width()
-        return QtCore.QRect(0, 0, W, H)
-
-    def GetWidget(self):
-        return self.apollo_FR_ATOL_masterCH
-
-    def setupUi(self, Parent):
-        self.apollo_FR_ATOL_masterCH = QtWidgets.QFrame(Parent)
-        self.apollo_FR_ATOL_masterCH.setGeometry(QtCore.QRect(304, 152, 38, 324))
-        self.apollo_FR_ATOL_masterCH.setMinimumSize(QtCore.QSize(38, 0))
-        self.apollo_FR_ATOL_masterCH.setMaximumSize(QtCore.QSize(38, 16777215))
-        self.apollo_FR_ATOL_masterCH.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.apollo_FR_ATOL_masterCH.setObjectName("apollo_FR_ATOL_masterCH")
-
-        self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.apollo_FR_ATOL_masterCH)
-        self.verticalLayout_4.setContentsMargins(2, 2, 2, 2)
-        self.verticalLayout_4.setSpacing(4)
-        self.verticalLayout_4.setObjectName("verticalLayout_4")
-
-        self.apollo_FR_ATOL_masterCH_VU = QtWidgets.QFrame(self.apollo_FR_ATOL_masterCH)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.apollo_FR_ATOL_masterCH_VU.sizePolicy().hasHeightForWidth())
-        self.apollo_FR_ATOL_masterCH_VU.setSizePolicy(sizePolicy)
-        self.apollo_FR_ATOL_masterCH_VU.setMinimumSize(QtCore.QSize(32, 0))
-        self.apollo_FR_ATOL_masterCH_VU.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.apollo_FR_ATOL_masterCH_VU.setObjectName("apollo_FR_ATOL_masterCH_VU")
-
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.apollo_FR_ATOL_masterCH_VU)
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_2.setSpacing(4)
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
-
-        self.apollo_HDLBD_ATOL_masterCH_Header = QtWidgets.QLabel(self.apollo_FR_ATOL_masterCH_VU)
-        self.apollo_HDLBD_ATOL_masterCH_Header.setMinimumSize(QtCore.QSize(32, 32))
-        self.apollo_HDLBD_ATOL_masterCH_Header.setMaximumSize(QtCore.QSize(32, 32))
-        self.apollo_HDLBD_ATOL_masterCH_Header.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.apollo_HDLBD_ATOL_masterCH_Header.setAlignment(QtCore.Qt.AlignCenter)
-        self.apollo_HDLBD_ATOL_masterCH_Header.setObjectName("apollo_HDLBD_ATOL_masterCH_Header")
-        self.verticalLayout_2.addWidget(self.apollo_HDLBD_ATOL_masterCH_Header)
-
-        self.apollo_PIXLB_ATOL_masterCH_VU = QtWidgets.QLabel(self.apollo_FR_ATOL_masterCH_VU)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(1)
-        sizePolicy.setHeightForWidth(self.apollo_PIXLB_ATOL_masterCH_VU.sizePolicy().hasHeightForWidth())
-        self.apollo_PIXLB_ATOL_masterCH_VU.setSizePolicy(sizePolicy)
-        self.apollo_PIXLB_ATOL_masterCH_VU.setMinimumSize(QtCore.QSize(32, 96))
-        self.apollo_PIXLB_ATOL_masterCH_VU.setMaximumSize(QtCore.QSize(32, 96))
-        self.apollo_PIXLB_ATOL_masterCH_VU.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.apollo_PIXLB_ATOL_masterCH_VU.setAlignment(QtCore.Qt.AlignCenter)
-        self.apollo_PIXLB_ATOL_masterCH_VU.setObjectName("apollo_PIXLB_ATOL_masterCH_VU")
-        self.verticalLayout_2.addWidget(self.apollo_PIXLB_ATOL_masterCH_VU)
-
-        self.apollo_DIAL_ATOL_masterCH_ctrl = QtWidgets.QDial(self.apollo_FR_ATOL_masterCH_VU)
-        self.apollo_DIAL_ATOL_masterCH_ctrl.setMinimumSize(QtCore.QSize(32, 32))
-        self.apollo_DIAL_ATOL_masterCH_ctrl.setMaximumSize(QtCore.QSize(32, 32))
-        self.apollo_DIAL_ATOL_masterCH_ctrl.setMaximum(100)
-        self.apollo_DIAL_ATOL_masterCH_ctrl.setSliderPosition(50)
-        self.apollo_DIAL_ATOL_masterCH_ctrl.setObjectName("apollo_DIAL_ATOL_masterCH_ctrl")
-        self.verticalLayout_2.addWidget(self.apollo_DIAL_ATOL_masterCH_ctrl)
-
-        self.verticalLayout_4.addWidget(self.apollo_FR_ATOL_masterCH_VU)
-
-        self.apollo_FR_ATOL_masterCH_vol = QtWidgets.QFrame(self.apollo_FR_ATOL_masterCH)
-        self.apollo_FR_ATOL_masterCH_vol.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.apollo_FR_ATOL_masterCH_vol.setObjectName("apollo_FR_ATOL_masterCH_vol")
-
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.apollo_FR_ATOL_masterCH_vol)
-        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_3.setSpacing(4)
-        self.verticalLayout_3.setObjectName("verticalLayout_3")
-
-        self.apollo_VSLD_ATOL_masterCH_vol_ctrl = QtWidgets.QSlider(self.apollo_FR_ATOL_masterCH_vol)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(1)
-        sizePolicy.setHeightForWidth(self.apollo_VSLD_ATOL_masterCH_vol_ctrl.sizePolicy().hasHeightForWidth())
-        self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setSizePolicy(sizePolicy)
-        self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setMinimumSize(QtCore.QSize(32, 0))
-        self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setMaximumSize(QtCore.QSize(32, 16777215))
-        self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setMaximum(100)
-        self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setOrientation(QtCore.Qt.Vertical)
-        self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setTickPosition(QtWidgets.QSlider.NoTicks)
-        self.apollo_VSLD_ATOL_masterCH_vol_ctrl.setObjectName("apollo_VSLD_ATOL_masterCH_vol_ctrl")
-        self.verticalLayout_3.addWidget(self.apollo_VSLD_ATOL_masterCH_vol_ctrl)
-
-        self.apollo_DIAL_ATOL_masterCH_vol_prevmix = QtWidgets.QDial(self.apollo_FR_ATOL_masterCH_vol)
-        self.apollo_DIAL_ATOL_masterCH_vol_prevmix.setMinimumSize(QtCore.QSize(32, 32))
-        self.apollo_DIAL_ATOL_masterCH_vol_prevmix.setMaximumSize(QtCore.QSize(32, 32))
-        self.apollo_DIAL_ATOL_masterCH_vol_prevmix.setMaximum(100)
-        self.apollo_DIAL_ATOL_masterCH_vol_prevmix.setObjectName("apollo_DIAL_ATOL_masterCH_vol_prevmix")
-        self.verticalLayout_3.addWidget(self.apollo_DIAL_ATOL_masterCH_vol_prevmix)
-
-        self.apollo_PSB_ATOL_masterCH_vol_bypass = QtWidgets.QPushButton(self.apollo_FR_ATOL_masterCH_vol)
-        self.apollo_PSB_ATOL_masterCH_vol_bypass.setMinimumSize(QtCore.QSize(32, 32))
-        self.apollo_PSB_ATOL_masterCH_vol_bypass.setMaximumSize(QtCore.QSize(32, 16777215))
-        self.apollo_PSB_ATOL_masterCH_vol_bypass.setCheckable(True)
-        self.apollo_PSB_ATOL_masterCH_vol_bypass.setObjectName("apollo_PSB_ATOL_masterCH_vol_bypass")
-
-        self.verticalLayout_3.addWidget(self.apollo_PSB_ATOL_masterCH_vol_bypass)
-        self.verticalLayout_4.addWidget(self.apollo_FR_ATOL_masterCH_vol)
-
-        # SettingUP text
-        self.apollo_HDLBD_ATOL_masterCH_Header.setText("M")
-        self.apollo_PIXLB_ATOL_masterCH_VU.setText("M")
-        self.apollo_PSB_ATOL_masterCH_vol_bypass.setText("OO")
-
 
 class BaseProcessor:
-    """"""
-
+    """
+    Base class for audio processing plugins
+    """
     def __init__(self):
         """Constructor"""
         self.MasterInput = None
+        self.ProcessorName = None
 
-    def SetMixer_Channel(self, Parent):
-        self.MixerChannel = VUMeter(Parent = Parent)
-        self.BindMixerUI(bypass = self.MixerChannel.apollo_PSB_ATOL_masterCH_vol_bypass,
-                         pan = self.MixerChannel.apollo_DIAL_ATOL_masterCH_ctrl,
-                         premix = self.MixerChannel.apollo_DIAL_ATOL_masterCH_vol_prevmix,
-                         postmix = self.MixerChannel.apollo_VSLD_ATOL_masterCH_vol_ctrl)
-
-        self.SetMeterCallback(self.MixerChannel.Painter)
-
-    def SetMeterCallback(self, Call):
+    def SetMeterCallback(self, Call: callable):
+        """
+        Assigns a callback for the VUmeter to draw the Amp peaks
+        """
         self.PeakAmp.setFunction(Call)
 
     def processor(self):
@@ -315,7 +44,6 @@ class BaseProcessor:
         """
         Inits the switch to use for bypassing between original and processed signal
         """
-
         if Bool:
             # will Bypass the processor
             self.Switch.setVoice(0)
@@ -325,19 +53,19 @@ class BaseProcessor:
             self.Switch.setVoice(1)
             self.Processor.play()
 
-    def SetOutputMul(self, Val):
+    def SetOutputMul(self, Val: int):
         """
         sets the amplitude for the processor swith
         """
         self.Switch.setMul((Val / 100) + 0.0001)
 
-    def SetInputMul(self, Val):
+    def SetInputMul(self, Val: int):
         """
         sets the amplitude for the input
         """
         self.MasterInput.setMul((Val / 100) + 0.0001)
 
-    def SetPan(self, Val):
+    def SetPan(self, Val: int):
         """
         sets the pan for the filter
         """
@@ -370,6 +98,7 @@ class MasterProcessor(BaseProcessor):
         """
         super().__init__()
         self.MasterInput = Input
+        self.ProcessorName = "Master"
 
 
 if __name__ == "__main__":
