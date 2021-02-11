@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:/Users/Ommar/AppData/Local/Temp/apollo_uitwNbCf.ui'
+# Form implementation generated from reading ui file 'C:/Users/Ommar/AppData/Local/Temp/apollo_uiubtjzc.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -404,8 +404,9 @@ class Ui_MainWindow(object):
         self.apollo_SCAR_mixer.setSizePolicy(sizePolicy)
         self.apollo_SCAR_mixer.setMinimumSize(QtCore.QSize(0, 350))
         self.apollo_SCAR_mixer.setMaximumSize(QtCore.QSize(16777215, 350))
+        self.apollo_SCAR_mixer.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.apollo_SCAR_mixer.setWidgetResizable(True)
-        self.apollo_SCAR_mixer.setAlignment(QtCore.Qt.AlignCenter)
+        self.apollo_SCAR_mixer.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.apollo_SCAR_mixer.setObjectName("apollo_SCAR_mixer")
         self.apollo_WDG_ATOL_mixer = QtWidgets.QWidget()
         self.apollo_WDG_ATOL_mixer.setGeometry(QtCore.QRect(0, 0, 596, 348))
@@ -700,7 +701,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.apollo_TABWG_main.setCurrentIndex(3)
+        self.apollo_TABWG_main.setCurrentIndex(0)
         self.apollo_SKWG_LBT_main.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
