@@ -2,7 +2,7 @@
 
 #### Apollo is a Open-Source music player for playback and organization of audio files on Microsoft   Windows, built using Python. 
 
-- Audio playback: MP3, AAC, M4A, MPC, OGG, FLAC, ALAC, APE, Opus, TAK [ru], WavPack, WMA, WAV, MIDI, MOD, UMX, XM.
+- Audio playback: MP3, AAC, M4A, MPC, OGG, FLAC, ALAC, APE, Opus, TAK, WavPack, WMA, WAV, MIDI, MOD, UMX, XM.
 - File converter: single/batch file conversion from/to all supported audio formats, with original metadata preserved. In dealing with identical output files instances, provided that re-encoding is unnecessary, the process has optional instructions for selective skipping in favor of performing a tag-only synchronization.
 - Gapless playback: eliminates the timing related artifacts in transitions between consecutive audio tracks to provide a relatively uninterrupted listening experience.
 - ReplayGain: performs normalization of volume levels among individual tracks, equalizing their perceived loudness to achieve a more seamless playlist progression.
