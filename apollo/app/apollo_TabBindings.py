@@ -1,4 +1,4 @@
-import os, re
+import os, re, sys
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtSql import QSqlQuery
@@ -44,7 +44,9 @@ class ApolloUtility_Functions(ApolloUX):
         :Return: None
         """
         if dbname == None:
-            dbname = self.CONF_MANG.Getvalue(path = 'DBNAME')
+            dbname = self.CONF_MANG.Getvalue(path = 'CURRENT_DB')
+            dbname = self.CONF_MANG.Getvalue(path = f'MONITERED_DB/{dbname}/db_loc')
+
         self.LibraryManager = LibraryManager(dbname)
 
 
