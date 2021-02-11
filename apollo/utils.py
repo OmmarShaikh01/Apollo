@@ -64,18 +64,10 @@ class ConfigManager:
         Initilizes the default launch config
         """
         config = {
+            "DBNAME": os.path.join(parent_dir, 'db', 'default.db'),
             "APPTHEMES": [],
             "LIBRARY_GROUPORDER": "file_path",
             "ACTIVETHEME": "",
-            "CURRENT_DB": "Default",
-            "MONITERED_DB": {
-                "Default": {
-                    "name": "Default",
-                    "db_loc": os.path.join(parent_dir, 'db', 'default.db'),
-                    "file_mon": [],
-                    "filters": ""
-                }
-            }
         }
         return config
 

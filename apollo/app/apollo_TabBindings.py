@@ -46,6 +46,7 @@ class ApolloUtility_Functions(ApolloUX):
         if dbname == None:
             dbname = self.CONF_MANG.Getvalue(path = 'CURRENT_DB')
             dbname = self.CONF_MANG.Getvalue(path = f'MONITERED_DB/{dbname}/db_loc')
+
         self.LibraryManager = LibraryManager(dbname)
 
 
