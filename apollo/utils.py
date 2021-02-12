@@ -156,7 +156,7 @@ class ConfigManager:
     def Setvalue(self, value, path = '', config = None):
         """
         Recursively Traverses the path and Sets the value
-        >>> self.Config_manager.Setvalue([File], "APPTHEMES")
+        >>> self.Config_manager.Setvalue(["VALUE"], "ROOT/SUB/SUB1")
         :Args:
             value: Any
                 Value to replace or set

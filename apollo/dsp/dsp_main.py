@@ -28,7 +28,7 @@ class ApolloDSP:
 
         # Inits the mixer
         self.Mixer = ApolloAudioMixer(self.UI.apollo_WDG_ATOL_mixer, pyo.Sine(1000))
-        self.Mixer.create_EmptyMixerChannels(4)
+        self.Mixer.create_EmptyMixerChannels(36)
 
         # Binds the basic ui and its buttons
         self.ButtonBindings()
