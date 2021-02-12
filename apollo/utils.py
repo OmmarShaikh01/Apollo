@@ -64,10 +64,22 @@ class ConfigManager:
         Initilizes the default launch config
         """
         config = {
+<<<<<<< Updated upstream
             "DBNAME": os.path.join(parent_dir, 'db', 'default.db'),
+=======
+>>>>>>> Stashed changes
             "APPTHEMES": [],
             "LIBRARY_GROUPORDER": "file_path",
             "ACTIVETHEME": "",
+            "CURRENT_DB": "Default",
+            "MONITERED_DB": {
+                "Default": {
+                    "name": "Default",
+                    "db_loc": os.path.join(parent_dir, 'db', 'default.db'),
+                    "file_mon": [],
+                    "filters": ""
+                }
+            }
         }
         return config
 
@@ -86,6 +98,7 @@ class ConfigManager:
         if not os.path.isfile(file):
             with open(file, "w") as FP:
                 json.dump(self.deafult_settings(), FP, indent = 4)
+                self.config_dict = self.deafult_settings()
         else:
             try:
                 with open(file) as FP:
