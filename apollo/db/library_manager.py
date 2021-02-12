@@ -59,12 +59,13 @@ class DataBaseManager():
         :Errors:
             ConnectionError: if database fails to connect or fails checks
         """
-        if not (os.path.isfile(db)):
+        if not ((os.path.splitext(db)[1] in [".db"]) or (db == ":memory:")):
+            return False
+
+        if not (os.path.isfile(db)) or db != ":memory:":
             with open(db, "w"):
                 pass
 
-        if not ((os.path.splitext(db)[1] in [".db"]) or (db == ":memory:")):
-            return False
 
         self.db_driver = QSqlDatabase.addDatabase("QSQLITE")
         self.db_driver.setDatabaseName(db)
@@ -1005,6 +1006,7 @@ class LibraryManager(ModelView_Manager):
         super().__init__()
 
         if DBname != None:
+            print(DBname)
             if not self.connect(DBname):
                 raise Exception("Startup Checks Failed")
 
