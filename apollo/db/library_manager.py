@@ -59,10 +59,6 @@ class DataBaseManager():
         :Errors:
             ConnectionError: if database fails to connect or fails checks
         """
-        if not (os.path.isfile(db)):
-            with open(db, "w"):
-                pass
-
         if not ((os.path.splitext(db)[1] in [".db"]) or (db == ":memory:")):
             return False
 

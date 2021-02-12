@@ -64,10 +64,6 @@ class ConfigManager:
         Initilizes the default launch config
         """
         config = {
-<<<<<<< Updated upstream
-            "DBNAME": os.path.join(parent_dir, 'db', 'default.db'),
-=======
->>>>>>> Stashed changes
             "APPTHEMES": [],
             "LIBRARY_GROUPORDER": "file_path",
             "ACTIVETHEME": "",
