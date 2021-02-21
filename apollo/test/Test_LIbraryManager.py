@@ -26,6 +26,10 @@ class Test_LibraryManager(TestCase):
         if self._testMethodName in ["test_TableSize", "test_TablePlaytime", "test_TableAlbumcount",
                                     "test_TableArtistcount", "test_Tabletrackcount"]:
             self.Librarymanager.BatchInsert_Metadata(TesterObjects.Gen_DbTable_Data(10))
+            
+    def tearDown(self):
+        if hasattr(self, "Librarymanager"):            
+            self.Librarymanager.close_connection()
 
     def run(self, result=None):
         """
@@ -60,21 +64,7 @@ class Test_LibraryManager(TestCase):
         # Checks for a proper Stratup and Structure
         ## checks if library table is set up correctly
         with (self.subTest(msg = "checks if library table is set up correctly")):        
-            Query = Library_Inst.ExeQuery(QSqlQuery("SELECT cid, name FROM pragma_table_info('library')")) 
-            structTable = []
-            while Query.next():
-                structTable.append([Query.value(0), Query.value(1)])        
-            self.assertEqual(len(Library_Inst.db_fields), len(structTable),
-                             msg = "<library> table structure not valid")
-            
-        ## checks if nowplaying table is set up correctly
-        with (self.subTest(msg = "checks if nowplaying table is set up correctly")):        
-            Query = Library_Inst.ExeQuery(QSqlQuery("SELECT cid, name FROM pragma_table_info('nowplaying')")) 
-            structTable = []
-            while Query.next():
-                structTable.append([Query.value(0), Query.value(1)])        
-            self.assertEqual(len(Library_Inst.db_fields), len(structTable),
-                             msg = "<nowplaying> table structure not valid")
+            self.assertTrue(Library_Inst.StartUpChecks(), msg = "setup failed")
             
         # tests the closing of the DB
         with (self.subTest(msg = "tests the closing of the DB")):

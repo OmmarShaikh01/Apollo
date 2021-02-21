@@ -1,4 +1,4 @@
-import sys, os, re, datetime, re, hashlib, json, time
+import sys, os, re, datetime, re, hashlib, json, time, pathlib
 
 import mutagen
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery
@@ -23,27 +23,18 @@ DBFIELDS = ["file_id", "path_id","file_name","file_path","album",
 
 ########################################################################################################################
 
-class DataBaseManager():
+class DataBaseManager:
     """
+    Base class for all th sql related function and queries
     """
     def __init__(self):
         """
         Initilizes the Databse Driver and connects to DB and Initilizes the
         fields for the Database Tables
         """
-
-        self.db_fields = ["file_id", "path_id","file_name","file_path","album",
-                          "albumartist","artist","author","bpm","compilation",
-                          "composer","conductor","date","discnumber","discsubtitle",
-                          "encodedby","genre","language","length","filesize",
-                          "lyricist","media","mood","organization","originaldate",
-                          "performer","releasecountry","replaygain_gain","replaygain_peak",
-                          "title","tracknumber","version","website","album_gain",
-                          "bitrate","bitrate_mode","channels","encoder_info","encoder_settings",
-                          "frame_offset","layer","mode","padding","protected","sample_rate",
-                          "track_gain","track_peak", "rating", "playcount"]
-
-    def connect(self, db): #Tested
+        self.db_fields = DBFIELDS
+        
+    def connect(self, db, name = "ConnectionMain"): #Tested
         """
         Uses the Database Driver to create a connection with a local
         database.If Db not avaliable will create new Db
@@ -62,20 +53,40 @@ class DataBaseManager():
         if not ((os.path.splitext(db)[1] in [".db"]) or (db == ":memory:")):
             return False
 
-        if not (os.path.isfile(db)) or db != ":memory:":
+        if not ((os.path.isfile(db)) or (db == ":memory:")):
             with open(db, "w"):
                 pass
 
-
         self.db_driver = QSqlDatabase.addDatabase("QSQLITE")
+        self.db_driver.setUserName(name)
         self.db_driver.setDatabaseName(db)
-        if self.db_driver.open() and self.db_driver.isValid():
-            return self.StartUpChecks()
+        if self.IsConneted():
+            if not self.StartUpChecks():
+                raise Exception("DB structure Invalid")
+            else:
+                return True
         else:
             raise ConnectionError()
 
     def IsConneted(self): #Tested
-        return self.db_driver.isOpen()
+        if self.db_driver.open() and self.db_driver.isValid():           
+            return True
+        else:
+            return False
+            
+    def fetchAll(self, Query, rows = None):
+        """
+        Fetches data from the given query
+        
+        >>> library_manager.fetchAll(Query, 5)
+        """
+        Data = []
+        if rows == None:
+            rows = Query.record().count()
+        while Query.next():
+            Data.append([Query.value(R) for R in range(rows)])
+            
+        return Data
 
     def close_connection(self): #Tested
         """
@@ -95,28 +106,30 @@ class DataBaseManager():
         Performs validation test for Table avalibility and structure.
         Creates the table or the view if it doesnt exist.
         """
-        status = False
         # checks for existance of library table
         query = QSqlQuery()
-        query.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = :tablename ")
-        query.bindValue(":tablename", "library")
+        query.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = library ")        
         query.exec_()
         if not query.next():
-            status = self.Create_LibraryTable()
-        else:
-            status = True
+            self.Create_LibraryTable()
+        query = QSqlQuery("SELECT cid FROM pragma_table_info('library')")
+        query.exec_()
+        if len(self.fetchAll(query, 1)) == len(self.db_fields):    
+            LIB = True
 
-        # checks for existaqnce of nowplaying view
+        # checks for existance of nowplaying view
         query = QSqlQuery()
-        query.prepare("SELECT name FROM sqlite_master WHERE type = 'view' AND name = :viewname ")
-        query.bindValue(":viewname", "nowplaying")
+        query.prepare("SELECT name FROM sqlite_master WHERE type = 'view' AND name = nowplaying ")        
         query.exec_()
         if not query.next():
-            status = self.Create_EmptyView("nowplaying")
-        else:
-            status = True
-
-        return status
+            self.Create_EmptyView("nowplaying")
+            
+        query = QSqlQuery("SELECT cid FROM pragma_table_info('nowplaying')")
+        query.exec_()
+        if len(self.fetchAll(query, 1)) == len(self.db_fields):    
+            NPV = True
+            
+        return all([NPV, LIB])
 
     def ExeQuery(self, Query):
         """
@@ -147,7 +160,7 @@ class DataBaseManager():
                 ERROR: {(Query.lastError().text())}
                 Query: {Query.lastQuery()}
                 """
-            # msg = dedenter(msg, 12)
+            msg = dedenter(msg, 12)
             raise Exception(msg)
         else:
             return Query
@@ -185,7 +198,7 @@ class DataBaseManager():
         query = QSqlQuery()
         querystate = query.prepare(f"""
         CREATE TABLE IF NOT EXISTS library(
-        file_id TEXT PRIMARY KEY,
+        file_id TEXT PRIMARY KEY ON CONFLICT IGNORE,
         path_id TEXT,
         file_name TEXT,
         file_path TEXT,
@@ -235,11 +248,11 @@ class DataBaseManager():
         rating INTEGER,
         playcount INTEGER)
         """)
-        query_exe = query.exec_()
-        if query_exe == False and querystate == False:
-            raise Exception(f"Table Not Created")
+        # Error handling and execution of the query
+        if querystate:
+            self.ExeQuery(query)
         else:
-            return True
+            raise Exception("Query Build Failed")
 
     def Create_EmptyView(self, view_name): # Tested
         """
@@ -254,15 +267,15 @@ class DataBaseManager():
         query = QSqlQuery()
         columns = ", ".join([f"NULL AS {k}" for k in  self.db_fields])
         querystate = query.prepare(f"""
-                                   CREATE VIEW {view_name} AS
+                                   CREATE VIEW IF NOT EXISTS {view_name} AS
                                    SELECT {columns}
                                    """)
-        query_exe = query.exec_()
-        if query_exe == False and querystate == False:
-            raise Exception(f"<{view_name}> View Not Created")
+        # Error handling and execution of the query
+        if querystate:
+            self.ExeQuery(query)
         else:
-            return True
-
+            raise Exception("Query Build Failed")
+        
     def CreateView(self, view_name, Selector, **kwargs): # Tested
         """
         Creates an view from library Table by selection data from a valid field
@@ -334,17 +347,10 @@ class DataBaseManager():
              pass
 
         # Error handling and execution of the query
-        query_exe = query.exec_()
-        if query_exe == False and querystate == False:
-            msg = f"""
-                <{view_name}> View Not Created
-                PREPARE: {querystate}
-                EXE: {query_exe}
-                ERROR: {(query.lastError().text())}
-                QUERY: {query.lastQuery()}
-                """
-            msg = dedenter(msg, 12)
-            raise Exception(msg)
+        if querystate:
+            self.ExeQuery(query)
+        else:
+            raise Exception("Query Build Failed")
 
         # gets the data that has been applied and selected
         return self.IndexSelector("nowplaying", "file_id")
@@ -361,11 +367,12 @@ class DataBaseManager():
         """
         query = QSqlQuery()
         querystate = query.prepare(f"DROP TABLE IF EXISTS {tablename}")
-        query_exe = query.exec_()
-        if query_exe == False and querystate == False:
-            raise Exception(f"ERROR {query.lastError().text()}")
+        # Error handling and execution of the query
+        if querystate:
+            self.ExeQuery(query)
         else:
-            return query
+            raise Exception("Query Build Failed")
+
 
     def DropView(self, viewname):
         """
@@ -381,11 +388,12 @@ class DataBaseManager():
         """
         query = QSqlQuery()
         querystate = query.prepare(f"DROP VIEW IF EXISTS {viewname}")
-        query_exe = query.exec_()
-        if query_exe == False and querystate == False:
-            raise Exception(f"ERROR {query.lastError().text()}")
+        # Error handling and execution of the query
+        if querystate:
+            self.ExeQuery(query)
         else:
-            return query
+            raise Exception("Query Build Failed")
+
 
     def BatchInsert_Metadata(self, metadata):
         """
@@ -394,21 +402,24 @@ class DataBaseManager():
         :Args:
             metadata: Dict
                 Distonary of all the combined metadata
-        """
+        """       
         query = QSqlQuery()
         columns =", ".join(metadata.keys())
         placeholders =  ", ".join(["?" for i in range(len(metadata.keys()))])
-
-        self.db_driver.transaction()
-        QSqlQuery("PRAGMA synchronous = OFF").exec_()
-        QSqlQuery("PRAGMA journal_mode = MEMORY").exec_()
         query.prepare(f"""INSERT INTO library ({columns}) VALUES ({placeholders})""")
         for keys in metadata.keys():
             query.addBindValue(metadata.get(keys))
+            
+
+        self.db_driver.transaction()
+        
+        QSqlQuery("PRAGMA journal_mode = MEMORY").exec_()
 
         if not query.execBatch():
             raise Exception(query.lastError().text())
-
+        
+        QSqlQuery("PRAGMA journal_mode = WAL").exec_()
+        
         self.db_driver.commit()
 
 ########################################################################################################################
@@ -505,70 +516,76 @@ class DataBaseManager():
             return 0
 
 class FileManager(DataBaseManager):
-    """"""
+    """
+    File manager classes manages:
+    -> Scanning Directories
+    -> Fetching metadata for the related file format
+    
+    Read Supported Formats:
+    -> mp3
+    -> flac
+    """
+    
     def __init__(self):
         """Constructor"""
-        super().__init__()
+        self.db_fields = DBFIELDS
+    
+    def TransposeMeatadata(self, Metadata):
+        T_metadata = dict.fromkeys(DBFIELDS, "")
+        for index, key in enumerate(T_metadata.keys()):
+            T_metadata[key] = [value[index] for value in Metadata]            
+        return T_metadata    
 
-    def scan_directory(self, path, include = [], slot = None):
+   
+    def ScanDirectory(self, Dir, include = [], Slot = lambda: ''):
+        BatchMetadata = []
+        FileHashList = []
+        
+        file_paths = {}
+        for D, SD, F in os.walk(os.path.normpath(Dir)):
+            for file in F:
+                if os.path.splitext(file)[1] in include:
+                    file = os.path.normpath(os.path.join(D, file))
+                    file_paths[(hashlib.md5(file.encode())).hexdigest()] = file
+                    
+        ID = ", ".join([f"'{v}'" for v in set(file_paths.keys())])
+        query = QSqlQuery(f"SELECT path_id FROM library WHERE path_id IN ({ID})")
+        query.exec_()
+        while query.next():
+            del file_paths[query.value(0)]
+        self.FileChecker(file_paths, FileHashList, BatchMetadata)            
+        self.BatchInsert_Metadata(self.TransposeMeatadata(BatchMetadata))
+
+    def FileChecker(self, filepath, FileHashList, BatchMetadata):
+        QSqlQuery("BEGIN TRANSCATION").exec_()
+        for ID, file in filepath.items():
+            Filehash = self.FileHasher(file)            
+            if (Filehash not in FileHashList):
+                FileHashList.append(Filehash)
+                Metadata = self.ScanFile(file)
+                Metadata["path_id"] = ID
+                Metadata["file_id"] = Filehash                    
+                BatchMetadata.append(list(Metadata.values()))                        
+                
+    def ScanFile(self, Path):
         """
-        Walks the root directory and scans the directory for media files.
-        It also fetches the metadata of the media file and runs an insert query
-        on the database with the metadata.
-
-        >>> library_manager.scan_directory(papentDir, [".mp3", ".m4a", ".flac"])
+        Reads the file metadata and generates a metadata dict and returns it.
 
         :Args:
             path: String
-                Path of the root level directory
-            include: List
-                List of file extentions to include
-            slot: Function
-                function that gets filepath as arg
+                Path of the file        
         """
-        file_list = []
-        for (dirc, subdir, files) in os.walk(path):
-            for file in files:
-                if os.path.splitext(file)[1] in include:
-                    path = os.path.join(dirc, file)
-                    file_list.append(path)
-        metadata_dict = self.scan_file(file_list, slot = slot)
-        self.BatchInsert_Metadata(metadata_dict)
+        EXT = os.path.splitext(Path)[1]
+        if EXT == ".mp3":
+            return self.get_MP3(Path)
+        
+        elif EXT == ".flac":
+            return self.get_FLAC(Path)
+        
+        else:
+            pass
 
-    def scan_file(self, file_list, slot = None):
-        """
-        Fetches Metadata of the files that have been scanned and returns a
-        metadata dict.
-
-        :Args:
-            file_list: List
-                List of files scanned
-            slot: Function
-                function that gets filepath as arg
-        """
-        metadata_dict = {k: []for k in self.db_fields}
-        filehash_list = []
-        for file in file_list:
-            if slot != None:
-                slot(file)
-            pathhash = (hashlib.md5(file.encode())).hexdigest()
-            query = QSqlQuery(f"SELECT path_id FROM library WHERE path_id = '{pathhash}' ")
-            query.exec_()
-            if not query.next():
-                filehash = self.file_hasher(file)
-                if filehash not in filehash_list:
-                    filehash_list.append(filehash)
-                    metadata = self.file_parser(file, metadata_dict)
-                    metadata["path_id"] = pathhash
-                    metadata["file_id"] = filehash
-                    query = QSqlQuery(f"SELECT file_id FROM library WHERE file_id = '{filehash}' ")
-                    query.exec_()
-                    if not query.next():
-                        for key in metadata_dict.keys():
-                            metadata_dict[key].append(metadata.get(key))
-        return metadata_dict
-
-    def file_hasher(self, file, hashfun = hashlib.md5):
+    def FileHasher(self, file, hashfun = hashlib.md5):
         """
         Creates a hash id for the file path passed and returns hash id.
         Hash id is calculated with the 1024 bytes of the file.
@@ -582,107 +599,57 @@ class FileManager(DataBaseManager):
         with open(file, "rb") as fobj:
             bytes_ = fobj.read(1024)
             hashval = (hashfun(bytes_)).hexdigest()
-        return hashval
+        return hashval    
 
-    def file_parser(self, path, metadata_fields):
-        """
-        Reads the file metadata and generates a metadata dict and returns it.
-
-        :Args:
-            path: String
-                Path of the file
-            metadata_fields: Dict
-                Fields that should be read
-        """
-        muta_file = mutagen.File(path, easy = True)
-        metadata = {}
-        for key in metadata_fields:
-            try:
-                if key == "length":
-                    value = muta_file.info.length
-                    metadata[key] = str(datetime.timedelta(seconds = value))
-
-                elif key == "bitrate":
-                    # bitrate info is stored as bps so need to scale it ro Kbps
-                    value = int(muta_file.info.bitrate / 1000)
-                    metadata[key] = f"{value}Kbps"
-
-                elif key == "bitrate_mode":
-                    value = re.sub('BitrateMode(.)', "", str(muta_file.info.bitrate_mode))
-                    metadata[key] = value
-
-                elif key == 'album_gain':
-                    value = muta_file.info.album_gain
-                    metadata[key] = value
-
-                elif key == 'channels':
-                    value = muta_file.info.channels
-                    metadata[key] = value
-
-                elif key == 'encoder_info':
-                    value = muta_file.info.encoder_info
-                    metadata[key] = value
-
-                elif key == 'encoder_settings':
-                    value = muta_file.info.encoder_settings
-                    metadata[key] = value
-
-                elif key == 'frame_offset':
-                    value = muta_file.info.frame_offset
-                    metadata[key] = value
-
-                elif key == 'layer':
-                    value = muta_file.info.layer
-                    metadata[key] = value
-
-                elif key == 'mode':
-                    value = muta_file.info.mode
-                    metadata[key] = value
-
-                elif key == 'padding':
-                    value = muta_file.info.padding
-                    metadata[key] = value
-
-                elif key == 'protected':
-                    value = muta_file.info.protected
-                    metadata[key] = value
-
-                elif key == 'sample_rate':
-                    value = muta_file.info.sample_rate
-                    metadata[key] = f"{value}Hz"
-
-                elif key == 'track_gain':
-                    value = muta_file.info.track_gain
-                    metadata[key] = value
-
-                elif key == 'track_peak':
-                    value = muta_file.info.track_peak
-                    metadata[key] = value
-
-                elif key == 'version':
-                    value = muta_file.info.version
-                    metadata[key] = value
-
-                elif key == "filesize":
-                    value = round(int(os.path.getsize(muta_file.filename)) * 0.00000095367432, 2)
-                    metadata[key] = f"{value}Mb"
-
-                else:
-                    value = muta_file.get(key)
-                    if value != None:
-                        metadata[key] = value[0]
-                    else:
-                        metadata[key] = ''
-
-                if metadata[key] == None:
-                    metadata[key] = ''
-            except Exception as e:
-                metadata[key] = ''
+    def get_FLAC(self, Path):
+        muta_file = mutagen.File(Path, easy = True)
+        metadata = dict.fromkeys(DBFIELDS, "")
+        
+        for key in muta_file.keys():
+            metadata[key] = muta_file.get(key)[0]
+            
+        metadata['sample_rate'] = f"{muta_file.info.sample_rate}Hz"
+        metadata["length"] = str(datetime.timedelta(seconds = muta_file.info.length))
+        metadata["bitrate"] = f"{int(muta_file.info.bitrate / 1000)}Kbps"                  
+        metadata['channels'] = muta_file.info.channels
+        metadata["filesize"] = f"{round(os.path.getsize(muta_file.filename) * 0.00000095367432, 2)}Mb"
         metadata["file_name"] = os.path.split(muta_file.filename)[1]
         metadata["file_path"] = muta_file.filename
-        metadata["rating"] = muta_file.filename
-        metadata["playcount"] = muta_file.filename
-
+        metadata["rating"] = 0
+        metadata["playcount"] = 0
+        
+        return metadata
+   
+    def get_MP3(self, Path): 
+        muta_file = mutagen.File(Path, easy = True)
+        metadata = dict.fromkeys(DBFIELDS, "")
+        
+        for key in muta_file.keys():
+            metadata[key] = muta_file.get(key)[0]
+            
+        metadata["bitrate_mode"] = str(muta_file.info.bitrate_mode).replace(')', "").replace('BitrateMode(', "")
+        metadata['album_gain'] = muta_file.info.album_gain
+        metadata['encoder_info'] = muta_file.info.encoder_info
+        metadata['encoder_settings'] = muta_file.info.encoder_settings
+        metadata['frame_offset'] = muta_file.info.frame_offset
+        metadata['layer'] = muta_file.info.layer
+        metadata['mode'] = muta_file.info.mode
+        metadata['padding'] = muta_file.info.padding
+        metadata['protected'] = muta_file.info.protected
+        metadata['track_gain'] = muta_file.info.track_gain
+        metadata['track_peak'] = muta_file.info.track_peak
+        metadata['version'] = muta_file.info.version
+        
+        metadata['sample_rate'] = f"{muta_file.info.sample_rate}Hz"
+        metadata["length"] = str(datetime.timedelta(seconds = muta_file.info.length))
+        metadata["bitrate"] = f"{int(muta_file.info.bitrate / 1000)}Kbps"                  
+        metadata['channels'] = muta_file.info.channels
+        metadata["filesize"] = f"{round(os.path.getsize(muta_file.filename) * 0.00000095367432, 2)}Mb"
+        metadata["file_name"] = os.path.split(muta_file.filename)[1]
+        metadata["file_path"] = muta_file.filename
+        metadata["rating"] = 0
+        metadata["playcount"] = 0
+    
         return metadata
 
 class ModelView_Manager(FileManager):
@@ -690,7 +657,7 @@ class ModelView_Manager(FileManager):
 
     def __init__(self):
         """Constructor"""
-        super().__init__()
+        self.db_fields = DBFIELDS
 
     def SetTable_horizontalHeader(self, View, Labels):
         """
@@ -1003,10 +970,10 @@ class LibraryManager(ModelView_Manager):
     """
     def __init__(self, DBname = None):
         """Constructor"""
+        self.db_fields = DBFIELDS
         super().__init__()
 
         if DBname != None:
-            print(DBname)
             if not self.connect(DBname):
                 raise Exception("Startup Checks Failed")
 
@@ -1019,3 +986,5 @@ if __name__ == '__main__':
     Suite = TestSuit_main()
     Suite.AddTest(Test_LibraryManager)
     Suite.Run(QT=True)
+
+    

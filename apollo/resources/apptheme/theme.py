@@ -10,19 +10,20 @@ root_path = os.path.join(apollo.__path__[0], "resources", "apptheme")
 
 # automated tests are remaining to be add
 
-class Theme:
+class Theme: # Untested
     """
     Controls all the theme related functions 
     """
     def __init__(self):
-        self.Config_manager = ConfigManager()    
+        self.Config_manager = ConfigManager()   
+        self.GetAvaliableThemes()
+        
         
     def GetAvaliableThemes(self):
         """
         Scans the theme Directory to get new Themes for applications
         """
         ThemeDir = os.path.join(root_path, "theme")
-        self.Config_manager.Setvalue("", "APPTHEMES")            
         
         for File in os.listdir(ThemeDir):
             File, Ext = (os.path.splitext(File))
@@ -40,16 +41,17 @@ class Theme:
                 ThemePallet = self.GetTheme(NewFname)
                 StyleSheet = self.GenStylesheet(ThemePallet)
                 ResourceFile = self.GenTheme_Icons(ThemePallet, NewDir, os.path.join(root_path, "svg"))
-                with open(os.path.join(NewDir, f"{File}.qss"), "w") as FH1,\
-                     open(os.path.join(NewDir, f"{File}.qrc"), "w") as FH2:
+                with open(os.path.join(NewDir, "style.qss"), "w") as FH1,\
+                     open(os.path.join(NewDir, "style.qrc"), "w") as FH2:
                     FH1.write(StyleSheet)
                     FH2.write(ResourceFile)
                     
                 self.Config_manager.Setvalue(File, "APPTHEMES")            
                                 
-            elif (os.path.isdir(os.path.join(ThemeDir, File))):
+            elif (os.path.isdir(os.path.join(ThemeDir, File)) and \
+                  not (File in self.Config_manager.Getvalue("APPTHEMES"))):
                 self.Config_manager.Setvalue(File, "APPTHEMES")
-            
+                   
             else:
                 continue
                 
@@ -64,7 +66,7 @@ class Theme:
         :Args:
             name: String
                 name of the theme file without extension
-        """
+        """                     
         with open(file) as theme:
             theme_dict = eval(theme.read())["THEME"]
         return theme_dict
@@ -77,7 +79,6 @@ class Theme:
             if len(resources) == 2:
                 return resources
        
-
     ############################################################################    
     # Resourece Generation Functions
     ############################################################################
@@ -141,9 +142,9 @@ class Theme:
             for ThemeName in ["icon-01", "icon-02", "icon-03", "inverse-01", "disabled-02", "disabled-03"]:                
                 Colour = QtGui.QColor(theme.get(ThemeName))
                 
-                self.ImageOverlay(Image, ThemeName, os.path.join(Dest, "24"), Colour, 24)                                                               
-                self.ImageOverlay(Image, ThemeName, os.path.join(Dest, "32"), Colour, 32)                                                           
-                self.ImageOverlay(Image, ThemeName, os.path.join(Dest, "48"), Colour, 48)                                                                                
+                self.ImageOverlay(Image, ThemeName, os.path.join(Dest, "24"), Colour, 24)                
+                self.ImageOverlay(Image, ThemeName, os.path.join(Dest, "32"), Colour, 32)                
+                self.ImageOverlay(Image, ThemeName, os.path.join(Dest, "48"), Colour, 48)                
                 self.ImageOverlay(Image, ThemeName, os.path.join(Dest, "64"), Colour, 64)                
         
         ImgPath = []
@@ -181,7 +182,7 @@ class Theme:
         Prep = lambda x: "\\".join(x.rsplit("\\", 2)[-2:])
         BODY = "\n".join([f"{' '*8}<file>png\\{Prep(File)}</file>" for File in Files])
         
-        FOOTER = """
+        FOOTER = f"""
             </qresource>
         </RCC>
         """        

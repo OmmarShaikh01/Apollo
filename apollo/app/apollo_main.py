@@ -107,7 +107,7 @@ class ApolloExecute:
         self.UI = ApolloMain()
         self.UI.show()
 
-        ThemeRefresh = lambda: self.app.setStyleSheet(Theme().GenStylesheet(eval(Theme().DefaultPallete())["THEME"]))
+        ThemeRefresh = lambda: self.app.setStyleSheet(Theme.GetTheme())
         ThemeRefresh()
         self.UI.apollo_PSB_play.pressed.connect(ThemeRefresh)
 
@@ -116,5 +116,6 @@ class ApolloExecute:
 
 
 if __name__ == "__main__":
+    
     app = ApolloExecute()
     app.Execute()

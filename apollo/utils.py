@@ -122,6 +122,8 @@ class ConfigManager:
 
         with open(file, "w") as FP:
             json.dump(self.config_dict, FP, indent = 4)
+            return True
+        
 
 
     def Getvalue(self, path = "", config = None):
