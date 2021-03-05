@@ -33,7 +33,7 @@ class DataBaseManager:
         fields for the Database Tables
         """
         self.db_fields = DBFIELDS
-        
+
     def connect(self, db, name = "ConnectionMain"): #Tested
         """
         Uses the Database Driver to create a connection with a local
@@ -69,15 +69,15 @@ class DataBaseManager:
             raise ConnectionError()
 
     def IsConneted(self): #Tested
-        if self.db_driver.open() and self.db_driver.isValid():           
+        if self.db_driver.open() and self.db_driver.isValid():
             return True
         else:
             return False
-            
+
     def fetchAll(self, Query, rows = None):
         """
         Fetches data from the given query
-        
+
         >>> library_manager.fetchAll(Query, 5)
         """
         Data = []
@@ -85,7 +85,7 @@ class DataBaseManager:
             rows = Query.record().count()
         while Query.next():
             Data.append([Query.value(R) for R in range(rows)])
-            
+
         return Data
 
     def close_connection(self): #Tested
@@ -108,27 +108,31 @@ class DataBaseManager:
         """
         # checks for existance of library table
         query = QSqlQuery()
-        query.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = library ")        
+        query.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = library ")
         query.exec_()
         if not query.next():
             self.Create_LibraryTable()
         query = QSqlQuery("SELECT cid FROM pragma_table_info('library')")
         query.exec_()
-        if len(self.fetchAll(query, 1)) == len(self.db_fields):    
+        if len(self.fetchAll(query, 1)) == len(self.db_fields):
             LIB = True
+        else:
+            LIB = False
 
         # checks for existance of nowplaying view
         query = QSqlQuery()
-        query.prepare("SELECT name FROM sqlite_master WHERE type = 'view' AND name = nowplaying ")        
+        query.prepare("SELECT name FROM sqlite_master WHERE type = 'view' AND name = nowplaying ")
         query.exec_()
         if not query.next():
             self.Create_EmptyView("nowplaying")
-            
+
         query = QSqlQuery("SELECT cid FROM pragma_table_info('nowplaying')")
         query.exec_()
-        if len(self.fetchAll(query, 1)) == len(self.db_fields):    
+        if len(self.fetchAll(query, 1)) == len(self.db_fields):
             NPV = True
-            
+        else:
+            NPV = False
+
         return all([NPV, LIB])
 
     def ExeQuery(self, Query):
@@ -275,7 +279,7 @@ class DataBaseManager:
             self.ExeQuery(query)
         else:
             raise Exception("Query Build Failed")
-        
+
     def CreateView(self, view_name, Selector, **kwargs): # Tested
         """
         Creates an view from library Table by selection data from a valid field
@@ -402,24 +406,24 @@ class DataBaseManager:
         :Args:
             metadata: Dict
                 Distonary of all the combined metadata
-        """       
+        """
         query = QSqlQuery()
         columns =", ".join(metadata.keys())
         placeholders =  ", ".join(["?" for i in range(len(metadata.keys()))])
         query.prepare(f"""INSERT INTO library ({columns}) VALUES ({placeholders})""")
         for keys in metadata.keys():
             query.addBindValue(metadata.get(keys))
-            
+
 
         self.db_driver.transaction()
-        
+
         QSqlQuery("PRAGMA journal_mode = MEMORY").exec_()
 
         if not query.execBatch():
             raise Exception(query.lastError().text())
-        
+
         QSqlQuery("PRAGMA journal_mode = WAL").exec_()
-        
+
         self.db_driver.commit()
 
 ########################################################################################################################
@@ -520,70 +524,57 @@ class FileManager(DataBaseManager):
     File manager classes manages:
     -> Scanning Directories
     -> Fetching metadata for the related file format
-    
+
     Read Supported Formats:
     -> mp3
     -> flac
+    -> m4a
     """
-    
+
     def __init__(self):
         """Constructor"""
         self.db_fields = DBFIELDS
-    
+
     def TransposeMeatadata(self, Metadata):
         T_metadata = dict.fromkeys(DBFIELDS, "")
         for index, key in enumerate(T_metadata.keys()):
-            T_metadata[key] = [value[index] for value in Metadata]            
-        return T_metadata    
+            T_metadata[key] = [value[index] for value in Metadata]
+        return T_metadata
 
-   
+
     def ScanDirectory(self, Dir, include = [], Slot = lambda: ''):
         BatchMetadata = []
         FileHashList = []
-        
+
         file_paths = {}
         for D, SD, F in os.walk(os.path.normpath(Dir)):
             for file in F:
                 if os.path.splitext(file)[1] in include:
                     file = os.path.normpath(os.path.join(D, file))
                     file_paths[(hashlib.md5(file.encode())).hexdigest()] = file
-                    
+
+        Slot(f"Scanning {Dir}")
         ID = ", ".join([f"'{v}'" for v in set(file_paths.keys())])
         query = QSqlQuery(f"SELECT path_id FROM library WHERE path_id IN ({ID})")
         query.exec_()
         while query.next():
             del file_paths[query.value(0)]
-        self.FileChecker(file_paths, FileHashList, BatchMetadata)            
+
+        self.FileChecker(file_paths, FileHashList, BatchMetadata)
         self.BatchInsert_Metadata(self.TransposeMeatadata(BatchMetadata))
+        Slot(f"Completed Scanning {Dir}")
+
 
     def FileChecker(self, filepath, FileHashList, BatchMetadata):
         QSqlQuery("BEGIN TRANSCATION").exec_()
         for ID, file in filepath.items():
-            Filehash = self.FileHasher(file)            
+            Filehash = self.FileHasher(file)
             if (Filehash not in FileHashList):
                 FileHashList.append(Filehash)
                 Metadata = self.ScanFile(file)
                 Metadata["path_id"] = ID
-                Metadata["file_id"] = Filehash                    
-                BatchMetadata.append(list(Metadata.values()))                        
-                
-    def ScanFile(self, Path):
-        """
-        Reads the file metadata and generates a metadata dict and returns it.
-
-        :Args:
-            path: String
-                Path of the file        
-        """
-        EXT = os.path.splitext(Path)[1]
-        if EXT == ".mp3":
-            return self.get_MP3(Path)
-        
-        elif EXT == ".flac":
-            return self.get_FLAC(Path)
-        
-        else:
-            pass
+                Metadata["file_id"] = Filehash
+                BatchMetadata.append(list(Metadata.values()))
 
     def FileHasher(self, file, hashfun = hashlib.md5):
         """
@@ -599,35 +590,124 @@ class FileManager(DataBaseManager):
         with open(file, "rb") as fobj:
             bytes_ = fobj.read(1024)
             hashval = (hashfun(bytes_)).hexdigest()
-        return hashval    
+        return hashval
+
+    def get_CoverImage(self, path):
+        fileart = {}
+        EXT = os.path.splitext(path)[1]
+        if EXT == ".mp3":
+            Pictures = mutagen.File(os.path.normpath(path)).tags.getall("APIC")
+
+        elif EXT == ".flac":
+            Pictures = mutagen.File(os.path.normpath(path)).pictures
+
+        elif EXT == ".m4a":
+            Pictures = mutagen.File(os.path.normpath(path)).get("covr")
+            return {index: Art for index, Art in enumerate(Pictures)}
+
+        else:
+            return fileart
+
+        for Art in Pictures:
+            # Gets the Album art field
+            if int(Art.type) == int(mutagen.id3.PictureType.OTHER):
+                key = "OTHER"
+            elif int(Art.type) == int(mutagen.id3.PictureType.FILE_ICON):
+                key = "FILE_ICON"
+            elif int(Art.type) == int(mutagen.id3.PictureType.OTHER_FILE_ICON):
+                key = "OTHER_FILE_ICON"
+            elif int(Art.type) == int(mutagen.id3.PictureType.COVER_FRONT):
+                key = "COVER_FRONT"
+            elif int(Art.type) == int(mutagen.id3.PictureType.COVER_BACK):
+                key = "COVER_BACK"
+            elif int(Art.type) == int(mutagen.id3.PictureType.LEAFLET_PAGE):
+                key = "LEAFLET_PAGE"
+            elif int(Art.type) == int(mutagen.id3.PictureType.MEDIA):
+                key = "MEDIA"
+            elif int(Art.type) == int(mutagen.id3.PictureType.LEAD_ARTIST):
+                key = "LEAD_ARTIST"
+            elif int(Art.type) == int(mutagen.id3.PictureType.ARTIST):
+                key = "ARTIST"
+            elif int(Art.type) == int(mutagen.id3.PictureType.CONDUCTOR):
+                key = "CONDUCTOR"
+            elif int(Art.type) == int(mutagen.id3.PictureType.BAND):
+                key = "BAND"
+            elif int(Art.type) == int(mutagen.id3.PictureType.COMPOSER):
+                key = "COMPOSER"
+            elif int(Art.type) == int(mutagen.id3.PictureType.LYRICIST):
+                key = "LYRICIST"
+            elif int(Art.type) == int(mutagen.id3.PictureType.RECORDING_LOCATION):
+                key = "RECORDING_LOCATION"
+            elif int(Art.type) == int(mutagen.id3.PictureType.DURING_RECORDING):
+                key = "DURING_RECORDING"
+            elif int(Art.type) == int(mutagen.id3.PictureType.DURING_PERFORMANCE):
+                key = "DURING_PERFORMANCE"
+            elif int(Art.type) == int(mutagen.id3.PictureType.SCREEN_CAPTURE):
+                key = "SCREEN_CAPTURE"
+            elif int(Art.type) == int(mutagen.id3.PictureType.FISH):
+                key = "FISH"
+            elif int(Art.type) == int(mutagen.id3.PictureType.ILLUSTRATION):
+                key = "ILLUSTRATION"
+            elif int(Art.type) == int(mutagen.id3.PictureType.BAND_LOGOTYPE):
+                key = "BAND_LOGOTYPE"
+            elif int(Art.type) == int(mutagen.id3.PictureType.PUBLISHER_LOGOTYPE):
+                key = "PUBLISHER_LOGOTYPE"
+            else:
+                key = None
+
+            if key != None:
+                fileart[key] = Art.data
+
+        return fileart
+
+    def ScanFile(self, Path):
+        """
+        Reads the file metadata and generates a metadata dict and returns it.
+
+        :Args:
+            path: String
+                Path of the file
+        """
+        EXT = os.path.splitext(Path)[1]
+        if EXT == ".mp3":
+            return self.get_MP3(Path)
+
+        elif EXT == ".flac":
+            return self.get_FLAC(Path)
+
+        elif EXT == ".m4a":
+            return self.get_M4A(Path)
+
+        else:
+            pass
 
     def get_FLAC(self, Path):
         muta_file = mutagen.File(Path, easy = True)
         metadata = dict.fromkeys(DBFIELDS, "")
-        
+
         for key in muta_file.keys():
             metadata[key] = muta_file.get(key)[0]
-            
+
         metadata['sample_rate'] = f"{muta_file.info.sample_rate}Hz"
         metadata["length"] = str(datetime.timedelta(seconds = muta_file.info.length))
-        metadata["bitrate"] = f"{int(muta_file.info.bitrate / 1000)}Kbps"                  
+        metadata["bitrate"] = f"{int(muta_file.info.bitrate / 1000)}Kbps"
         metadata['channels'] = muta_file.info.channels
         metadata["filesize"] = f"{round(os.path.getsize(muta_file.filename) * 0.00000095367432, 2)}Mb"
         metadata["file_name"] = os.path.split(muta_file.filename)[1]
         metadata["file_path"] = muta_file.filename
         metadata["rating"] = 0
         metadata["playcount"] = 0
-        
+
         return metadata
-   
-    def get_MP3(self, Path): 
+
+    def get_MP3(self, Path):
         muta_file = mutagen.File(Path, easy = True)
         metadata = dict.fromkeys(DBFIELDS, "")
-        
+
         for key in muta_file.keys():
             metadata[key] = muta_file.get(key)[0]
-            
-        metadata["bitrate_mode"] = str(muta_file.info.bitrate_mode).replace(')', "").replace('BitrateMode(', "")
+
+        metadata["bitrate_mode"] = str(muta_file.info.bitrate_mode).replace('BitrateMode', "").replace('.', "")
         metadata['album_gain'] = muta_file.info.album_gain
         metadata['encoder_info'] = muta_file.info.encoder_info
         metadata['encoder_settings'] = muta_file.info.encoder_settings
@@ -639,18 +719,40 @@ class FileManager(DataBaseManager):
         metadata['track_gain'] = muta_file.info.track_gain
         metadata['track_peak'] = muta_file.info.track_peak
         metadata['version'] = muta_file.info.version
-        
+
         metadata['sample_rate'] = f"{muta_file.info.sample_rate}Hz"
         metadata["length"] = str(datetime.timedelta(seconds = muta_file.info.length))
-        metadata["bitrate"] = f"{int(muta_file.info.bitrate / 1000)}Kbps"                  
+        metadata["bitrate"] = f"{int(muta_file.info.bitrate / 1000)}Kbps"
         metadata['channels'] = muta_file.info.channels
         metadata["filesize"] = f"{round(os.path.getsize(muta_file.filename) * 0.00000095367432, 2)}Mb"
         metadata["file_name"] = os.path.split(muta_file.filename)[1]
         metadata["file_path"] = muta_file.filename
         metadata["rating"] = 0
         metadata["playcount"] = 0
-    
+
         return metadata
+
+    def get_M4A(self, Path):
+        muta_file = mutagen.File(Path, easy = True)
+        metadata = dict.fromkeys(DBFIELDS, "")
+
+        for key in muta_file.keys():
+            metadata[key] = muta_file.get(key)[0]
+
+        metadata['encoder_info'] = muta_file.info.codec_description
+        metadata['encoder_settings'] = muta_file.info.codec
+        metadata['sample_rate'] = f"{muta_file.info.sample_rate}Hz"
+        metadata["length"] = str(datetime.timedelta(seconds = muta_file.info.length))
+        metadata["bitrate"] = f"{int(muta_file.info.bitrate / 1000)}Kbps"
+        metadata['channels'] = muta_file.info.channels
+        metadata["filesize"] = f"{round(os.path.getsize(muta_file.filename) * 0.00000095367432, 2)}Mb"
+        metadata["file_name"] = os.path.split(muta_file.filename)[1]
+        metadata["file_path"] = muta_file.filename
+        metadata["rating"] = 0
+        metadata["playcount"] = 0
+
+        return metadata
+
 
 class ModelView_Manager(FileManager):
     """"""
@@ -987,4 +1089,4 @@ if __name__ == '__main__':
     Suite.AddTest(Test_LibraryManager)
     Suite.Run(QT=True)
 
-    
+

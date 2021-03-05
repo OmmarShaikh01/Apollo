@@ -16,6 +16,7 @@ class ApolloDSP:
         Inits:
         ComputerGraph: defines the Processing Graph for all the filters
         UI: Passed the Parent app Containing UI objects and related functions
+        
         """
         self.ComputeGraph = ComputeGraph()
         self.UI = kwargs.get("UI")

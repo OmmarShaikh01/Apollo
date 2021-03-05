@@ -101,13 +101,17 @@ class ApolloExecute:
     """
     Executes Apollo
     """
+        
     def __init__(self, style = "fusion"):
+
+        def ThemeRefresh():
+            return self.app.setStyleSheet(Theme().GenStylesheet(eval(Theme().DefaultPallete())["THEME"]))    
+    
         self.app = QtWidgets.QApplication(sys.argv)
         self.app.setStyle(style)
         self.UI = ApolloMain()
         self.UI.show()
 
-        ThemeRefresh = lambda: self.app.setStyleSheet(Theme.GetTheme())
         ThemeRefresh()
         self.UI.apollo_PSB_play.pressed.connect(ThemeRefresh)
 
@@ -116,6 +120,6 @@ class ApolloExecute:
 
 
 if __name__ == "__main__":
-    
+
     app = ApolloExecute()
     app.Execute()

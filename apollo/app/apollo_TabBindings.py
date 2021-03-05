@@ -548,6 +548,7 @@ class ApolloTabBindings(Files_Utils):
         self.NowPlayingTab = NowPlayingTab(self)
         self.AudioToolsTab = ApolloDSP(UI = self)
 
+
 if __name__ == "__main__":
     from apollo.app.apollo_main import ApolloExecute
     app = ApolloExecute()

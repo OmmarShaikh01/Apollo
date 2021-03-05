@@ -1879,83 +1879,471 @@ QComboBox::down-arrow:on { /* shift the arrow when popup is open */
 
 /* ---------------------------------------------------------------------------------------------------------------------
 Library Manager App
-----------------------------------------------------------------------------------------------------------------------*/        
-QWidget#LBM_WDG_central,
-QWidget#LBM_FR_library,
-QWidget#scrollArea,
-QWidget#scrollAreaWidgetContents{
-    background: $ui-background;
-}
+----------------------------------------------------------------------------------------------------------------------*/    
 
-QWidget#LBM_HDLBD_files,
-QWidget#LBM_HDLBD_filters,        
-QWidget#LBM_HDLBD_name,       
-QWidget#LBM_HDLBD_path{        
-    background-color: $ui-background;
-    font-size: 12px;
-    min-height: 24px;
-    min-width: 64px;
-    color: $text-01;
-}
-
-QWidget#LBM_LEDT_path,
-QWidget#LBM_LEDT_name{
-    background-color: $ui-01;
-    border: 1px solid $ui-02;
-    border-radius: 4px;
-    color: $text-01;
-    min-height: 24px;  
-}
-
-QWidget#LBM_LEDT_path:hover,
-QWidget#LBM_LEDT_name:hover{
-    border: 1px solid $interactive-04;
-    min-height: 24px;        
-}
-
-QGroupBox#LBM_GBX_library {
-    background-color: $ui-background;
-    border: 0px solid Transparent;
-    margin-top: 24px; /* leave space at the top for the title */
-}
-
-QGroupBox#LBM_GBX_library::title {
-    subcontrol-origin: margin;
-    min-height: 24px;
-    padding: 0 3px;
-
-    background-color: $ui-background;
-    font-size: 12px;
-    min-height: 24px;
-    min-width: 64px;
-    color: $text-01;
-}
-
-/* QPushButton ------------------------------------------------------------------------------------------------------ */
-    QPushButton#LBM_PSB_back,
-    QPushButton#LBM_PSB_fowd,
-    QPushButton#LBM_PSB_fileexp,
-    QPushButton#LBM_PSB_fileexp_2{
-        background-color: $ui-01;
-        border-radius: 2px;        
-        color: $link-01;
-        border: 1px solid $ui-01;   
-        min-height: 24px;
-        max-height: 24px;
-        padding: 0px;     
-        text-align: center;  
+/* Library Manager Tab ---------------------------------------------------------------------------------------------- */    
+    QWidget#LBM_WDG_central,
+    QWidget#LBM_FR_library,
+    QWidget#scrollArea,
+    QWidget#scrollAreaWidgetContents,
+    QWidget#LBM_WDG_mainwidget{
+        background: $ui-01;
     }
 
-    QPushButton#LBM_PSB_libadd,
-    QPushButton#LBM_PSB_libexport,
-    QPushButton#LBM_PSB_libimport,
-    QPushButton#LBM_PSB_libremove,
-    QPushButton#LBM_PSB_librescan,
-    QPushButton#LBM_PSB_dbactive{
+    QWidget#LBM_HDLBD_files,
+    QWidget#LBM_HDLBD_filters,        
+    QWidget#LBM_HDLBD_name,       
+    QWidget#LBM_HDLBD_path{        
         background-color: $ui-01;
+        font-size: 12px;
+        min-height: 24px;
+        min-width: 64px;
+        color: $text-01;
+    }
+
+    QWidget#LBM_LEDT_path,
+    QWidget#LBM_LEDT_name{
+        background-color: $ui-background;
+        border: 1px solid $ui-02;
+        border-radius: 4px;
+        color: $text-01;
+        min-height: 24px;  
+    }
+
+    QWidget#LBM_LEDT_path:hover,
+    QWidget#LBM_LEDT_name:hover{
+        border: 1px solid $interactive-01;
+        min-height: 24px;        
+    }
+
+    QGroupBox#LBM_GBX_library {
+        background-color: $ui-01;
+        border: 0px solid Transparent;
+        margin-top: 24px; /* leave space at the top for the title */
+    }
+
+    QGroupBox#LBM_GBX_library::title {
+        subcontrol-origin: margin;
+        min-height: 24px;
+        padding: 0 3px;
+
+        background-color: $ui-01;
+        font-size: 12px;
+        min-height: 24px;
+        min-width: 64px;
+        color: $text-01;
+    }
+
+    QComboBox#LBM_CMBX_dbname {
+        border: 0px solid none;
+        border-radius: 3px;
+        padding: 1px 18px 1px 3px;
+        min-width: 6em;
+    }
+
+    QComboBox#LBM_CMBX_dbname:editable {
+        background: $ui-03;
+    }
+
+    QComboBox#LBM_CMBX_dbname:!editable,
+    QComboBox#LBM_CMBX_dbname::drop-down:editable {
+        background: $ui-03;
+    }
+
+    /* QComboBox#LBM_CMBX_dbname gets the "on" state when the popup is open */
+    QComboBox#LBM_CMBX_dbname:!editable:on,
+    QComboBox#LBM_CMBX_dbname::drop-down:editable:on {
+        background: $ui-03;
+        border: 1px solid $interactive-01;
+    }
+
+    QComboBox#LBM_CMBX_dbname:on { /* shift the text when the popup opens */
+        padding-top: 3px;
+        padding-left: 4px;
+    }
+
+    QComboBox#LBM_CMBX_dbname::drop-down {
+        subcontrol-origin: padding;
+        subcontrol-position: top right;
+        width: 15px;
+
+        border-left-width: 1px;
+        border-left-color: $ui-background;
+        border-left-style: solid; /* just a single line */
+        border-top-right-radius: 3px; /* same radius as the QComboBox#LBM_CMBX_dbname */
+        border-bottom-right-radius: 3px;
+    }
+
+    QComboBox#LBM_CMBX_dbname::down-arrow {
+        image: url(":/icon_pack/png/24/chevron--down_icon-02.png");
+        max-width: 4px;
+    }
+
+    QComboBox#LBM_CMBX_dbname::down-arrow:on { /* shift the arrow when popup is open */
+        top: 1px;
+        left: 1px;
+    }
+    /* QPushButton ------------------------------------------------------------------------------------------------------ */
+        QPushButton#LBM_PSB_back,
+        QPushButton#LBM_PSB_fowd,
+        QPushButton#LBM_PSB_fileexp,
+        QPushButton#LBM_PSB_fileexp_2{
+            background-color: $ui-03;
+            border-radius: 2px;        
+            color: $text-02;
+            border: 1px solid $ui-01;   
+            min-height: 24px;
+            max-height: 24px;
+            padding: 0px;     
+            text-align: center;  
+        }
+
+        QPushButton#LBM_PSB_libadd,
+        QPushButton#LBM_PSB_libexport,
+        QPushButton#LBM_PSB_libimport,
+        QPushButton#LBM_PSB_libremove,
+        QPushButton#LBM_PSB_librescan,
+        QPushButton#LBM_PSB_dbactive{
+            background-color: $ui-03;
+            border-radius: 2px;        
+            color: $text-02;
+            border: 1px solid $ui-01;   
+            min-height: 24px;
+            max-height: 24px;    
+            padding-top: 0px;      
+            padding-bottom: 0px;                   
+            text-align: center;  
+        }
+        
+        QPushButton:disabled#LBM_PSB_back,
+        QPushButton:disabled#LBM_PSB_fowd,
+        QPushButton:disabled#LBM_PSB_libadd,
+        QPushButton:disabled#LBM_PSB_libexport,
+        QPushButton:disabled#LBM_PSB_libimport,
+        QPushButton:disabled#LBM_PSB_libremove,
+        QPushButton:disabled#LBM_PSB_librescan,
+        QPushButton:disabled#LBM_PSB_fileexp,
+        QPushButton:disabled#LBM_PSB_fileexp_2,
+        QPushButton:disabled#LBM_PSB_dbactive{
+            background-color: $disabled-02;        
+            color: $disabled-03;
+            border: 1px solid Transparent;            
+        }
+        
+        QPushButton:hover#LBM_PSB_back,
+        QPushButton:hover#LBM_PSB_fowd,
+        QPushButton:hover#LBM_PSB_libadd,
+        QPushButton:hover#LBM_PSB_libexport,
+        QPushButton:hover#LBM_PSB_libimport,
+        QPushButton:hover#LBM_PSB_libremove,
+        QPushButton:hover#LBM_PSB_librescan,
+        QPushButton:hover#LBM_PSB_fileexp,
+        QPushButton:hover#LBM_PSB_fileexp_2,
+        QPushButton:hover#LBM_PSB_dbactive{
+            background-color: $hover-ui;        
+            color: $hover-primary-text;
+            border: 1px solid Transparent;            
+        }
+
+        QPushButton:checked#LBM_PSB_back,
+        QPushButton:checked#LBM_PSB_fowd,
+        QPushButton:checked#LBM_PSB_libadd,
+        QPushButton:checked#LBM_PSB_libexport,
+        QPushButton:checked#LBM_PSB_libimport,
+        QPushButton:checked#LBM_PSB_libremove,
+        QPushButton:checked#LBM_PSB_librescan,
+        QPushButton:checked#LBM_PSB_fileexp,
+        QPushButton:checked#LBM_PSB_fileexp_2,
+        QPushButton:checked#LBM_PSB_dbactive,
+        QPushButton:pressed#LBM_PSB_back,
+        QPushButton:pressed#LBM_PSB_fowd,
+        QPushButton:pressed#LBM_PSB_libadd,
+        QPushButton:pressed#LBM_PSB_libexport,
+        QPushButton:pressed#LBM_PSB_libimport,
+        QPushButton:pressed#LBM_PSB_libremove,
+        QPushButton:pressed#LBM_PSB_librescan,
+        QPushButton:pressed#LBM_PSB_fileexp,
+        QPushButton:pressed#LBM_PSB_fileexp_2,
+        QPushButton:pressed#LBM_PSB_dbactive{
+            background-color: $active-ui;        
+            color: $hover-primary-text;
+            border: 1px solid Transparent;            
+        }
+
+        /* QTabBar ----------------------------------------------------------------- */
+            QTabWidget#LBA_TABWG_main QTabBar {
+                background-color: $ui-01;       
+                qproperty-drawBase: 0;
+                border-radius: 4px;
+                margin: 0px;
+                padding: 2px;
+                /* left: 5px; move to the right by 5px - removed for fix */
+            }
+            
+            QTabWidget#LBA_TABWG_main QTabBar::tab {
+                background-color: $ui-background;
+                border-bottom: 0px solid $ui-02;
+                border-right: 1px;
+                color: $text-02;
+                font-size: 12px;
+                min-height: 100px;
+                min-width: 24px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                padding-left: 0px;
+                padding-right: 0px;
+            }
+
+            QTabWidget#LBA_TABWG_main QTabBar::tab:selected {
+                background-color: $ui-01;
+                border-right: 2px solid $interactive-04;
+                color: $text-02;
+            }
+
+            QTabWidget#LBA_TABWG_main QTabBar::tab:hover {
+                background-color: $ui-04;
+                color: $text-01;
+                border-bottom: 1px solid $ui-background;        
+            }
+
+    /* QListView ------------------------------------------------------------ */
+
+    QListView#LBM_LSV_filesmon,
+    QListView#LBM_LSV_filters{
+        background-color: $ui-background;        
+        color: $text-02;
+        gridline-color: none;
+    }
+
+    QListView#LBM_LSV_filesmon:disabled,
+    QListView#LBM_LSV_filters:disabled{
+        background-color: $disabled-02;
+        color: $disabled-03;
+    }
+
+    QListView#LBM_LSV_filesmon::item,
+    QListView#LBM_LSV_filters::item{
+        background-color: transparent;
+        min-height: 16px;
+        padding: 4px;
+        border: 0px solid transparent;
+        text-align: center;
+    }
+
+    QListView#LBM_LSV_filesmon::item:pressed,
+    QListView#LBM_LSV_filters::item:pressed{
+        background-color: $ui-02;
+        color: $text-01;
+    }
+
+    QListView#LBM_LSV_filesmon::item:selected:active,
+    QListView#LBM_LSV_filters::item:selected:active{
+        background-color: $ui-02;
+        color: $text-01;
+
+    }
+
+    QListView#LBM_LSV_filesmon::item:selected:!active,
+    QListView#LBM_LSV_filters::item:selected:!active{
+        background-color: $ui-02;
+        color: $text-01;
+    }
+
+    QListView#LBM_LSV_filters::indicator:checked {
+        image: url(":/icon_pack/png/24/checkbox--checked_icon-02.png");
+        background: $ui-01;    
+    }
+
+    QListView#LBM_LSV_filters::indicator:checked:hover,
+    QListView#LBM_LSV_filters::indicator:checked:focus,
+    QListView#LBM_LSV_filters::indicator:checked:pressed {
+        image: url(":/icon_pack/png/24/checkbox--checked_icon-02.png");
+        background: $ui-01;    
+    }
+
+    QListView#LBM_LSV_filters::indicator:unchecked {
+        image: url(":/icon_pack/png/24/checkbox--unchecked_icon-02.png");
+        background: $ui-01;    
+    }
+
+    QListView#LBM_LSV_filters::indicator:unchecked:hover,
+    QListView#LBM_LSV_filters::indicator:unchecked:focus,
+    QListView#LBM_LSV_filters::indicator:unchecked:pressed {
+        image: url(":/icon_pack/png/24/checkbox--unchecked_icon-02.png");
+        background: $ui-01;    
+    }
+
+    QListView#LBM_LSV_filters::indicator:indeterminate {
+        image: url(":/icon_pack/png/24/checkbox--indeterminate_icon-02.png");
+        background: $ui-01;    
+    }
+
+    QListView#LBM_LSV_filters::indicator:indeterminate:hover,
+    QListView#LBM_LSV_filters::indicator:indeterminate:focus,
+    QListView#LBM_LSV_filters::indicator:indeterminate:pressed {
+        image: url(":/icon_pack/png/24/checkbox--indeterminate_icon-02.png");
+        background: $ui-01;    
+    }
+/* Meatadata Edit Tab ----------------------------------------------------------------------------------------------- */    
+    
+    QWidget#MDE_WDG_main,
+    QWidget#MDE_WDG_scroll,
+    QWidget#MDE_GBX_lyrics,
+    QWidget#MDE_GBX_cover,
+    QWidget#MDE_GBX_cover_2{
+        background-color: $ui-01;         
+    }
+
+    QGroupBox#MDE_GBX_lyrics, 
+    QGroupBox#MDE_GBX_cover,
+    QGroupBox#MDE_GBX_cover_2{
+        background-color: $ui-01;
+        border: 0px solid Transparent;
+        margin-top: 24px; /* leave space at the top for the title */
+        margin-right: 0px; 
+        margin-right: 0px;
+        margin-bottom: 2px;
+        font-size: 12px;
+    }
+
+    QGroupBox#MDE_GBX_lyrics::title,
+    QGroupBox#MDE_GBX_cover::title,
+    QGroupBox#MDE_GBX_cover_2::title{
+        subcontrol-origin: margin;
+        text-align: vertical-centre;
+        min-height: 24px;
+        padding: 0 3px 0 0;
+
+        background-color: $ui-01;
+        min-height: 24px;
+        min-width: 64px;
+        color: $text-01;
+    }
+
+
+    QWidget#MDE_HDLBD_13,
+    QWidget#MDE_HDLBD_19,
+    QWidget#MDE_HDLBD_24,
+    QWidget#MDE_HDLBD_2,
+    QWidget#MDE_HDLBD_25,
+    QWidget#MDE_HDLBD_9,
+    QWidget#MDE_HDLBD,
+    QWidget#MDE_HDLBD_21,
+    QWidget#MDE_HDLBD_20,
+    QWidget#MDE_HDLBD_23,
+    QWidget#MDE_HDLBD_16,
+    QWidget#MDE_HDLBD_22,
+    QWidget#MDE_HDLBD_8,
+    QWidget#MDE_HDLBD_3,
+    QWidget#MDE_HDLBD_7,
+    QWidget#MDE_HDLBD_14,
+    QWidget#MDE_HDLBD_12,
+    QWidget#MDE_HDLBD_4,
+    QWidget#MDE_HDLBD_10,
+    QWidget#MDE_HDLBD_11,
+    QWidget#MDE_HDLBD_15,
+    QWidget#MDE_HDLBD_5,
+    QWidget#MDE_HDLBD_6,
+    QWidget#MDE_HDLBD_17,
+    QWidget#MDE_HDLBD_18{
+        background-color: $ui-01;
+        font-size: 12px;
+        min-height: 24px;
+        min-width: 64px;
+        color: $text-01;
+    }
+
+    QWidget#MDE_PIXLB_cover,
+    QWidget#MDE_PIXLB_cover_2{
+        background-color: $ui-background;
+        border: 1px solid $ui-02;
+        border-radius: 4px;
+        color: $text-01;
+    }
+
+	QWidget#MDE_PIXLB_cover:hover,
+	QWidget#MDE_PIXLB_cover_2:hover{
+        border: 1px solid $interactive-04;    
+    }
+
+    QWidget#MDE_LEDT_orginaldate,
+    QWidget#MDE_LEDT_artist,
+    QWidget#MDE_LEDT_album,
+    QWidget#MDE_LEDT_author,
+    QWidget#MDE_LEDT_date,
+    QWidget#MDE_LEDT_composer,
+    QWidget#MDE_LEDT_conductor,
+    QWidget#MDE_LEDT_title,
+    QWidget#MDE_LEDT_dsub,
+    QWidget#MDE_LEDT_albumartist,
+    QWidget#MDE_LEDT_dnum,
+    QWidget#MDE_LEDT_tnum,
+    QWidget#MDE_LEDT_genre,
+    QWidget#MDE_LEDT_website,
+    QWidget#MDE_LEDT_releasecountry,
+    QWidget#MDE_LEDT_mood,
+    QWidget#MDE_LEDT_lyricist,
+    QWidget#MDE_LEDT_org,
+    QWidget#MDE_LEDT_lang,
+    QWidget#MDE_LEDT_version,
+    QWidget#MDE_LEDT_performer,
+    QWidget#MDE_LEDT_media,
+    QWidget#MDE_LEDT_encoded,
+    QWidget#MDE_LEDT_filename{
+        background-color: $ui-background;
+        border: 1px solid $ui-02;
+        border-radius: 4px;
+        color: $text-01;
+        min-height: 24px;  
+    }
+
+    QWidget#MDE_TXBRW_lyrics,
+    QWidget#MDE_TXBRW_mediainfo{
+        background-color: $ui-background;
+        border: 1px solid $ui-02;
+        border-radius: 4px;
+        color: $text-01;
+    }
+
+    QWidget#MDE_LEDT_orginaldate:hover,
+    QWidget#MDE_LEDT_artist:hover,
+    QWidget#MDE_LEDT_album:hover,
+    QWidget#MDE_LEDT_author:hover,
+    QWidget#MDE_LEDT_date:hover,
+    QWidget#MDE_LEDT_composer:hover,
+    QWidget#MDE_LEDT_conductor:hover,
+    QWidget#MDE_LEDT_title:hover,
+    QWidget#MDE_LEDT_dsub:hover,
+    QWidget#MDE_LEDT_albumartist:hover,
+    QWidget#MDE_LEDT_dnum:hover,
+    QWidget#MDE_LEDT_tnum:hover,
+    QWidget#MDE_LEDT_genre:hover,
+    QWidget#MDE_LEDT_website:hover,
+    QWidget#MDE_LEDT_releasecountry:hover,
+    QWidget#MDE_LEDT_mood:hover,
+    QWidget#MDE_LEDT_lyricist:hover,
+    QWidget#MDE_LEDT_org:hover,
+    QWidget#MDE_LEDT_lang:hover,
+    QWidget#MDE_LEDT_version:hover,
+    QWidget#MDE_LEDT_performer:hover,
+    QWidget#MDE_LEDT_media:hover,
+    QWidget#MDE_LEDT_encoded:hover,
+    QWidget#MDE_TXBRW_lyrics:hover,   
+    QWidget#MDE_TXBRW_mediainfo:hover,
+    QWidget#MDE_LEDT_filename:hover{
+        border: 1px solid $interactive-01;    
+    }
+
+    QPushButton#MDE_PSB_save,
+    QPushButton#MDE_PSB_rescan,
+    QPushButton#MDE_PSB_scanweb,
+    QPushButton#MDE_PSB_cancel,
+    QPushButton#MDE_PSB_filefront,
+    QPushButton#MDE_PSB_fileback {
+        background-color: $ui-03;
         border-radius: 2px;        
-        color: $link-01;
-        border: 1px solid $ui-01;   
+        color: $text-02;
+        border: 1px solid $ui-03;   
         min-height: 24px;
         max-height: 24px;    
         padding-top: 0px;      
@@ -1963,93 +2351,141 @@ QGroupBox#LBM_GBX_library::title {
         text-align: center;  
     }
     
-    QPushButton:disabled#LBM_PSB_back,
-    QPushButton:disabled#LBM_PSB_fowd,
-    QPushButton:disabled#LBM_PSB_libadd,
-    QPushButton:disabled#LBM_PSB_libexport,
-    QPushButton:disabled#LBM_PSB_libimport,
-    QPushButton:disabled#LBM_PSB_libremove,
-    QPushButton:disabled#LBM_PSB_librescan,
-    QPushButton:disabled#LBM_PSB_fileexp,
-    QPushButton:disabled#LBM_PSB_fileexp_2,
-    QPushButton:disabled#LBM_PSB_dbactive{
+    QPushButton:disabled#MDE_PSB_save,
+    QPushButton:disabled#MDE_PSB_rescan,
+    QPushButton:disabled#MDE_PSB_scanweb,
+    QPushButton:disabled#MDE_PSB_cancel,
+    QPushButton:disabled#MDE_PSB_filefront,
+    QPushButton:disabled#MDE_PSB_fileback {
         background-color: $disabled-02;        
         color: $disabled-03;
         border: 1px solid Transparent;            
     }
     
-    QPushButton:hover#LBM_PSB_back,
-    QPushButton:hover#LBM_PSB_fowd,
-    QPushButton:hover#LBM_PSB_libadd,
-    QPushButton:hover#LBM_PSB_libexport,
-    QPushButton:hover#LBM_PSB_libimport,
-    QPushButton:hover#LBM_PSB_libremove,
-    QPushButton:hover#LBM_PSB_librescan,
-    QPushButton:hover#LBM_PSB_fileexp,
-    QPushButton:hover#LBM_PSB_fileexp_2,
-    QPushButton:hover#LBM_PSB_dbactive{
+    QPushButton:hover#MDE_PSB_save,
+    QPushButton:hover#MDE_PSB_rescan,
+    QPushButton:hover#MDE_PSB_scanweb,
+    QPushButton:hover#MDE_PSB_cancel,
+    QPushButton:hover#MDE_PSB_filefront,
+    QPushButton:hover#MDE_PSB_fileback{
         background-color: $hover-ui;        
         color: $hover-primary-text;
         border: 1px solid Transparent;            
     }
 
-    QPushButton:checked#LBM_PSB_back,
-    QPushButton:checked#LBM_PSB_fowd,
-    QPushButton:checked#LBM_PSB_libadd,
-    QPushButton:checked#LBM_PSB_libexport,
-    QPushButton:checked#LBM_PSB_libimport,
-    QPushButton:checked#LBM_PSB_libremove,
-    QPushButton:checked#LBM_PSB_librescan,
-    QPushButton:checked#LBM_PSB_fileexp,
-    QPushButton:checked#LBM_PSB_fileexp_2,
-    QPushButton:checked#LBM_PSB_dbactive,
-    QPushButton:pressed#LBM_PSB_back,
-    QPushButton:pressed#LBM_PSB_fowd,
-    QPushButton:pressed#LBM_PSB_libadd,
-    QPushButton:pressed#LBM_PSB_libexport,
-    QPushButton:pressed#LBM_PSB_libimport,
-    QPushButton:pressed#LBM_PSB_libremove,
-    QPushButton:pressed#LBM_PSB_librescan,
-    QPushButton:pressed#LBM_PSB_fileexp,
-    QPushButton:pressed#LBM_PSB_fileexp_2,
-    QPushButton:pressed#LBM_PSB_dbactive{
+    QPushButton:checked#MDE_PSB_save,
+    QPushButton:checked#MDE_PSB_rescan,
+    QPushButton:checked#MDE_PSB_scanweb,
+    QPushButton:checked#MDE_PSB_cancel,
+    QPushButton:checked#MDE_PSB_filefront, 
+    QPushButton:checked#MDE_PSB_fileback,
+    QPushButton:pressed#MDE_PSB_save,
+    QPushButton:pressed#MDE_PSB_rescan,
+    QPushButton:pressed#MDE_PSB_scanweb,
+    QPushButton:pressed#MDE_PSB_cancel,
+    QPushButton:pressed#MDE_PSB_filefront,
+    QPushButton:pressed#MDE_PSB_fileback{
         background-color: $active-ui;        
         color: $hover-primary-text;
         border: 1px solid Transparent;            
     }
 
-    /* QTabBar ----------------------------------------------------------------- */
-        QTabWidget#LBA_TABWG_main QTabBar {
-            background-color: $ui-background;       
-            qproperty-drawBase: 0;
-            border-radius: 4px;
-            margin: 0px;
-            padding: 2px;
-            border: 0;
-            /* left: 5px; move to the right by 5px - removed for fix */
-        }
-        
-        QTabWidget#LBA_TABWG_main QTabBar::tab {
-            background-color: $ui-background;
-            border-bottom: 1px solid $ui-02;
-            color: $text-02;
-            font-size: 12px;
-            min-height: 100px;
-            min-width: 24px;
-            padding-top: 8px;
-            padding-bottom: 8px;
-            padding-left: 0px;
-            padding-right: 0px;
-        }
+    QComboBox#MDE_CMBX_cover{
+        border: 0px solid none;
+        border-radius: 3px;
+        padding: 1px 18px 1px 3px;
+        min-width: 6em;
+    }
 
-        QTabWidget#LBA_TABWG_main QTabBar::tab:selected {
-            background-color: $ui-01;
-            border-right: 2px solid $interactive-04;
-            color: $text-02;
-        }
+    QComboBox#MDE_CMBX_cover:editable{
+        background: $ui-03;
+    }
 
-        QTabWidget#LBA_TABWG_main QTabBar::tab:hover {
-            background-color: $ui-04;
-            color: $text-01;
-            border-bottom: 1px solid $ui-background;        
-        }
+    QComboBox#MDE_CMBX_cover:!editable,
+    QComboBox#MDE_CMBX_cover::drop-down:editable{
+        background: $ui-03;
+    }
+
+    /* QComboBox#MDE_CMBX_cover gets the "on" state when the popup is open */
+    QComboBox#MDE_CMBX_cover:!editable:on,
+    QComboBox#MDE_CMBX_cover::drop-down:editable:on{
+        background: $ui-03;
+        border: 1px solid $interactive-01;
+    }
+
+    QComboBox#MDE_CMBX_cover:on{ /* shift the text when the popup opens */
+        padding-top: 3px;
+        padding-left: 4px;
+    }
+
+    QComboBox#MDE_CMBX_cover::drop-down{
+        subcontrol-origin: padding;
+        subcontrol-position: top right;
+        width: 15px;
+
+        border-left-width: 1px;
+        border-left-color: $ui-background;
+        border-left-style: solid; /* just a single line */
+        border-top-right-radius: 3px; /* same radius as the QComboBox#MDE_CMBX_cover */
+        border-bottom-right-radius: 3px;
+    }
+
+    QComboBox#MDE_CMBX_cover::down-arrow{
+        image: url(":/icon_pack/png/24/chevron--down_icon-02.png");
+        max-width: 4px;
+    }
+
+    QComboBox#MDE_CMBX_cover::down-arrow:on{ /* shift the arrow when popup is open */
+        top: 1px;
+        left: 1px;
+    }
+
+    QComboBox#MDE_CMBX_cover_2{
+        border: 0px solid none;
+        border-radius: 3px;
+        padding: 1px 18px 1px 3px;
+        min-width: 6em;
+    }
+
+    QComboBox#MDE_CMBX_cover_2:editable{
+        background: $ui-03;
+    }
+
+    QComboBox#MDE_CMBX_cover_2:!editable,
+    QComboBox#MDE_CMBX_cover_2::drop-down:editable{
+        background: $ui-03;
+    }
+
+    /* QComboBox#MDE_CMBX_cover_2 gets the "on" state when the popup is open */
+    QComboBox#MDE_CMBX_cover_2:!editable:on,
+    QComboBox#MDE_CMBX_cover_2::drop-down:editable:on{
+        background: $ui-03;
+        border: 1px solid $interactive-01;
+    }
+
+    QComboBox#MDE_CMBX_cover_2:on{ /* shift the text when the popup opens */
+        padding-top: 3px;
+        padding-left: 4px;
+    }
+
+    QComboBox#MDE_CMBX_cover_2::drop-down{
+        subcontrol-origin: padding;
+        subcontrol-position: top right;
+        width: 15px;
+
+        border-left-width: 1px;
+        border-left-color: $ui-background;
+        border-left-style: solid; /* just a single line */
+        border-top-right-radius: 3px; /* same radius as the QComboBox#MDE_CMBX_cover_2 */
+        border-bottom-right-radius: 3px;
+    }
+
+    QComboBox#MDE_CMBX_cover_2::down-arrow{
+        image: url(":/icon_pack/png/24/chevron--down_icon-02.png");
+        max-width: 4px;
+    }
+
+    QComboBox#MDE_CMBX_cover_2::down-arrow:on{ /* shift the arrow when popup is open */
+        top: 1px;
+        left: 1px;
+    }
