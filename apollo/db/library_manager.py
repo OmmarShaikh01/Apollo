@@ -6,8 +6,9 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 
 from apollo.utils import exe_time, dedenter, ThreadIt
-
+# from apollo.mediafile import MediaFile
 import apollo
+
 root_path = apollo.__path__
 
 DBFIELDS = ["file_id", "path_id","file_name","file_path","album",
@@ -84,7 +85,10 @@ class DataBaseManager:
         if rows == None:
             rows = Query.record().count()
         while Query.next():
-            Data.append([Query.value(R) for R in range(rows)])
+            if rows == 1:
+                Data.append(Query.value(0))
+            else:
+                Data.append([Query.value(R) for R in range(rows)])
 
         return Data
 
@@ -289,10 +293,10 @@ class DataBaseManager:
         :Args:
             view_name: String
                 Valid view name from (now_playing)
-            FilterField: String
-                Valid field to select data from
             Selector: List
                 Valid Selector to select and filter out Rows from the table
+            FilterField: String
+                Valid field to select data from
             ID: List
                 File_id to indexs from if provided
             Shuffled: Bool
@@ -304,7 +308,6 @@ class DataBaseManager:
         """
         # Drops thgiven view to create a new view
         self.DropView(view_name)
-        query = QSqlQuery()
 
         # creates a a query string of items needed to be selected
         FilterItems =  ", ".join([f"'{value}'"for value in Selector])
@@ -322,7 +325,7 @@ class DataBaseManager:
             else:
                 ID = ""
 
-            querystate = query.prepare(f"""
+            self.ExeQuery(f"""
             CREATE VIEW IF NOT EXISTS {view_name} AS
             SELECT * FROM library WHERE file_id IN (
             SELECT file_id
@@ -335,29 +338,18 @@ class DataBaseManager:
 
         # indexing items and shuffling the order
         elif kwargs.get("Shuffled") != None:
-            querystate = query.prepare(f"""
+            self.ExeQuery(f"""
             CREATE VIEW IF NOT EXISTS {view_name} AS
             SELECT * FROM library WHERE {Field} IN ({FilterItems})
             ORDER BY RANDOM()
             """)
 
         # normal filtering using the selected indexes
-        elif kwargs.get("Normal") != None:
-            querystate = query.prepare(f"""
+        else:
+            self.ExeQuery(f"""
             CREATE VIEW IF NOT EXISTS {view_name} AS
             SELECT * FROM library WHERE {Field} IN ({FilterItems})
             """)
-        else:
-             pass
-
-        # Error handling and execution of the query
-        if querystate:
-            self.ExeQuery(query)
-        else:
-            raise Exception("Query Build Failed")
-
-        # gets the data that has been applied and selected
-        return self.IndexSelector("nowplaying", "file_id")
 
     def DropTable(self, tablename):
         """
@@ -410,11 +402,9 @@ class DataBaseManager:
         query = QSqlQuery()
         columns =", ".join(metadata.keys())
         placeholders =  ", ".join(["?" for i in range(len(metadata.keys()))])
-        query.prepare(f"""INSERT INTO library ({columns}) VALUES ({placeholders})""")
+        query.prepare(f"""INSERT OR IGNORE INTO library ({columns}) VALUES ({placeholders})""")
         for keys in metadata.keys():
             query.addBindValue(metadata.get(keys))
-
-
         self.db_driver.transaction()
 
         QSqlQuery("PRAGMA journal_mode = MEMORY").exec_()
@@ -430,7 +420,7 @@ class DataBaseManager:
 # Table Stats Query
 ########################################################################################################################
 
-    def TableSize(self, tablename):
+    def TableSize(self, tablename = "library"):
         """
         Calculates the total size in Gigabytes of all the files monitered.
         Returns the Gigabyte as a Float.
@@ -450,7 +440,26 @@ class DataBaseManager:
         else:
             return 0
 
-    def TablePlaytime(self, tablename):
+    def TablePlaycount(self, tablename = "library"):
+        """
+        Calculates the total Playtime and returns an Int
+
+        :Args:
+            tablename: String
+                Name of the table or view to be queried
+        """
+        query = QSqlQuery(f"SELECT sum(playcount) FROM {tablename}")
+        query.exec_()
+        if query.next():
+            value = (query.value(0))
+            if value != "":
+                return value
+            else:
+                return 0
+        else:
+            return 0
+
+    def TablePlaytime(self, tablename = "library"):
         """
         Calculates the total playtime of all the files monitered.
         Returns the Playtime as a String.
@@ -471,7 +480,7 @@ class DataBaseManager:
         else:
             return "0"
 
-    def TableAlbumcount(self, tablename):
+    def TableAlbumcount(self, tablename = "library"):
         """
         Calculates the total count of album of all the files monitered.
         Returns the album count as a Int.
@@ -487,7 +496,7 @@ class DataBaseManager:
         else:
             return 0
 
-    def TableArtistcount(self, tablename):
+    def TableArtistcount(self, tablename = "library"):
         """
         Calculates the total count of albumartist of all the files monitered.
         Returns the albumartist count as a Int.
@@ -503,7 +512,7 @@ class DataBaseManager:
         else:
             return 0
 
-    def TableTrackcount(self, tablename):
+    def TableTrackcount(self, tablename = "library"):
         """
         Calculates the total count of Tracks of all the files monitered.
         Returns the track count as a Int.
@@ -518,6 +527,92 @@ class DataBaseManager:
             return (query.value(0))
         else:
             return 0
+
+    def TopAlbum(self, Tablename = "library"):
+        """
+        Calculates the total playcount of Album of all the files monitered.
+
+        :Args:
+            tablename: String
+                Name of the table or view to be queried
+        """
+        query = QSqlQuery(f"""
+        SELECT album
+        FROM {Tablename}
+        WHERE album NOTNULL AND album NOT IN ('', ' ')
+        GROUP BY album
+        ORDER BY COUNT(playcount) DESC
+        LIMIT 1;
+        """)
+        query.exec_()
+        if query.next():
+            return (query.value(0))
+        else:
+            return ""
+
+    def Topgenre(self, Tablename = "library"):
+        """
+        Calculates the total playcount of genre of all the files monitered.
+
+        :Args:
+            tablename: String
+                Name of the table or view to be queried
+        """
+        query = QSqlQuery(f"""
+        SELECT genre
+        FROM {Tablename}
+        WHERE genre NOTNULL AND genre NOT IN ('', ' ')
+        GROUP BY genre
+        ORDER BY COUNT(playcount) DESC
+        LIMIT 1;
+        """)
+        query.exec_()
+        if query.next():
+            return (query.value(0))
+        else:
+            return ""
+
+    def Topartist(self, Tablename = "library"):
+        """
+        Calculates the total playcount of artist of all the files monitered.
+
+        :Args:
+            tablename: String
+                Name of the table or view to be queried
+        """
+        query = QSqlQuery(f"""
+        SELECT artist
+        FROM {Tablename}
+        WHERE artist NOTNULL AND artist NOT IN ('', ' ')
+        GROUP BY artist
+        ORDER BY COUNT(playcount) DESC
+        LIMIT 1;
+        """)
+        query.exec_()
+        if query.next():
+            return (query.value(0))
+        else:
+            return ""
+
+    def Toptrack(self, Tablename = "library"):
+        """
+        Calculates the total playcount of track of all the files monitered.
+
+        :Args:
+            tablename: String
+                Name of the table or view to be queried
+        """
+        query = QSqlQuery(f"""
+        SELECT title
+        FROM {Tablename}
+        WHERE playcount == (SELECT max(playcount) FROM {Tablename}) LIMIT 1;
+        """)
+        query.exec_()
+        if query.next():
+            return (query.value(0))
+        else:
+            return ""
+
 
 class FileManager(DataBaseManager):
     """
@@ -541,11 +636,9 @@ class FileManager(DataBaseManager):
             T_metadata[key] = [value[index] for value in Metadata]
         return T_metadata
 
-
     def ScanDirectory(self, Dir, include = [], Slot = lambda: ''):
         BatchMetadata = []
         FileHashList = []
-
         file_paths = {}
         for D, SD, F in os.walk(os.path.normpath(Dir)):
             for file in F:
@@ -564,14 +657,13 @@ class FileManager(DataBaseManager):
         self.BatchInsert_Metadata(self.TransposeMeatadata(BatchMetadata))
         Slot(f"Completed Scanning {Dir}")
 
-
     def FileChecker(self, filepath, FileHashList, BatchMetadata):
         QSqlQuery("BEGIN TRANSCATION").exec_()
         for ID, file in filepath.items():
             Filehash = self.FileHasher(file)
             if (Filehash not in FileHashList):
                 FileHashList.append(Filehash)
-                Metadata = self.ScanFile(file)
+                Metadata = MediaFile(file).getMetadata()
                 Metadata["path_id"] = ID
                 Metadata["file_id"] = Filehash
                 BatchMetadata.append(list(Metadata.values()))
@@ -592,477 +684,7 @@ class FileManager(DataBaseManager):
             hashval = (hashfun(bytes_)).hexdigest()
         return hashval
 
-    def get_CoverImage(self, path):
-        fileart = {}
-        EXT = os.path.splitext(path)[1]
-        if EXT == ".mp3":
-            Pictures = mutagen.File(os.path.normpath(path)).tags.getall("APIC")
-
-        elif EXT == ".flac":
-            Pictures = mutagen.File(os.path.normpath(path)).pictures
-
-        elif EXT == ".m4a":
-            Pictures = mutagen.File(os.path.normpath(path)).get("covr")
-            return {index: Art for index, Art in enumerate(Pictures)}
-
-        else:
-            return fileart
-
-        for Art in Pictures:
-            # Gets the Album art field
-            if int(Art.type) == int(mutagen.id3.PictureType.OTHER):
-                key = "OTHER"
-            elif int(Art.type) == int(mutagen.id3.PictureType.FILE_ICON):
-                key = "FILE_ICON"
-            elif int(Art.type) == int(mutagen.id3.PictureType.OTHER_FILE_ICON):
-                key = "OTHER_FILE_ICON"
-            elif int(Art.type) == int(mutagen.id3.PictureType.COVER_FRONT):
-                key = "COVER_FRONT"
-            elif int(Art.type) == int(mutagen.id3.PictureType.COVER_BACK):
-                key = "COVER_BACK"
-            elif int(Art.type) == int(mutagen.id3.PictureType.LEAFLET_PAGE):
-                key = "LEAFLET_PAGE"
-            elif int(Art.type) == int(mutagen.id3.PictureType.MEDIA):
-                key = "MEDIA"
-            elif int(Art.type) == int(mutagen.id3.PictureType.LEAD_ARTIST):
-                key = "LEAD_ARTIST"
-            elif int(Art.type) == int(mutagen.id3.PictureType.ARTIST):
-                key = "ARTIST"
-            elif int(Art.type) == int(mutagen.id3.PictureType.CONDUCTOR):
-                key = "CONDUCTOR"
-            elif int(Art.type) == int(mutagen.id3.PictureType.BAND):
-                key = "BAND"
-            elif int(Art.type) == int(mutagen.id3.PictureType.COMPOSER):
-                key = "COMPOSER"
-            elif int(Art.type) == int(mutagen.id3.PictureType.LYRICIST):
-                key = "LYRICIST"
-            elif int(Art.type) == int(mutagen.id3.PictureType.RECORDING_LOCATION):
-                key = "RECORDING_LOCATION"
-            elif int(Art.type) == int(mutagen.id3.PictureType.DURING_RECORDING):
-                key = "DURING_RECORDING"
-            elif int(Art.type) == int(mutagen.id3.PictureType.DURING_PERFORMANCE):
-                key = "DURING_PERFORMANCE"
-            elif int(Art.type) == int(mutagen.id3.PictureType.SCREEN_CAPTURE):
-                key = "SCREEN_CAPTURE"
-            elif int(Art.type) == int(mutagen.id3.PictureType.FISH):
-                key = "FISH"
-            elif int(Art.type) == int(mutagen.id3.PictureType.ILLUSTRATION):
-                key = "ILLUSTRATION"
-            elif int(Art.type) == int(mutagen.id3.PictureType.BAND_LOGOTYPE):
-                key = "BAND_LOGOTYPE"
-            elif int(Art.type) == int(mutagen.id3.PictureType.PUBLISHER_LOGOTYPE):
-                key = "PUBLISHER_LOGOTYPE"
-            else:
-                key = None
-
-            if key != None:
-                fileart[key] = Art.data
-
-        return fileart
-
-    def ScanFile(self, Path):
-        """
-        Reads the file metadata and generates a metadata dict and returns it.
-
-        :Args:
-            path: String
-                Path of the file
-        """
-        EXT = os.path.splitext(Path)[1]
-        if EXT == ".mp3":
-            return self.get_MP3(Path)
-
-        elif EXT == ".flac":
-            return self.get_FLAC(Path)
-
-        elif EXT == ".m4a":
-            return self.get_M4A(Path)
-
-        else:
-            pass
-
-    def get_FLAC(self, Path):
-        muta_file = mutagen.File(Path, easy = True)
-        metadata = dict.fromkeys(DBFIELDS, "")
-
-        for key in muta_file.keys():
-            metadata[key] = muta_file.get(key)[0]
-
-        metadata['sample_rate'] = f"{muta_file.info.sample_rate}Hz"
-        metadata["length"] = str(datetime.timedelta(seconds = muta_file.info.length))
-        metadata["bitrate"] = f"{int(muta_file.info.bitrate / 1000)}Kbps"
-        metadata['channels'] = muta_file.info.channels
-        metadata["filesize"] = f"{round(os.path.getsize(muta_file.filename) * 0.00000095367432, 2)}Mb"
-        metadata["file_name"] = os.path.split(muta_file.filename)[1]
-        metadata["file_path"] = muta_file.filename
-        metadata["rating"] = 0
-        metadata["playcount"] = 0
-
-        return metadata
-
-    def get_MP3(self, Path):
-        muta_file = mutagen.File(Path, easy = True)
-        metadata = dict.fromkeys(DBFIELDS, "")
-
-        for key in muta_file.keys():
-            metadata[key] = muta_file.get(key)[0]
-
-        metadata["bitrate_mode"] = str(muta_file.info.bitrate_mode).replace('BitrateMode', "").replace('.', "")
-        metadata['album_gain'] = muta_file.info.album_gain
-        metadata['encoder_info'] = muta_file.info.encoder_info
-        metadata['encoder_settings'] = muta_file.info.encoder_settings
-        metadata['frame_offset'] = muta_file.info.frame_offset
-        metadata['layer'] = muta_file.info.layer
-        metadata['mode'] = muta_file.info.mode
-        metadata['padding'] = muta_file.info.padding
-        metadata['protected'] = muta_file.info.protected
-        metadata['track_gain'] = muta_file.info.track_gain
-        metadata['track_peak'] = muta_file.info.track_peak
-        metadata['version'] = muta_file.info.version
-
-        metadata['sample_rate'] = f"{muta_file.info.sample_rate}Hz"
-        metadata["length"] = str(datetime.timedelta(seconds = muta_file.info.length))
-        metadata["bitrate"] = f"{int(muta_file.info.bitrate / 1000)}Kbps"
-        metadata['channels'] = muta_file.info.channels
-        metadata["filesize"] = f"{round(os.path.getsize(muta_file.filename) * 0.00000095367432, 2)}Mb"
-        metadata["file_name"] = os.path.split(muta_file.filename)[1]
-        metadata["file_path"] = muta_file.filename
-        metadata["rating"] = 0
-        metadata["playcount"] = 0
-
-        return metadata
-
-    def get_M4A(self, Path):
-        muta_file = mutagen.File(Path, easy = True)
-        metadata = dict.fromkeys(DBFIELDS, "")
-
-        for key in muta_file.keys():
-            metadata[key] = muta_file.get(key)[0]
-
-        metadata['encoder_info'] = muta_file.info.codec_description
-        metadata['encoder_settings'] = muta_file.info.codec
-        metadata['sample_rate'] = f"{muta_file.info.sample_rate}Hz"
-        metadata["length"] = str(datetime.timedelta(seconds = muta_file.info.length))
-        metadata["bitrate"] = f"{int(muta_file.info.bitrate / 1000)}Kbps"
-        metadata['channels'] = muta_file.info.channels
-        metadata["filesize"] = f"{round(os.path.getsize(muta_file.filename) * 0.00000095367432, 2)}Mb"
-        metadata["file_name"] = os.path.split(muta_file.filename)[1]
-        metadata["file_path"] = muta_file.filename
-        metadata["rating"] = 0
-        metadata["playcount"] = 0
-
-        return metadata
-
-
-class ModelView_Manager(FileManager):
-    """"""
-
-    def __init__(self):
-        """Constructor"""
-        self.db_fields = DBFIELDS
-
-    def SetTable_horizontalHeader(self, View, Labels):
-        """
-        Sets the table header
-
-        >>> library_manager.SetTable_horizontalHeader(View, [1, 2, 3])
-
-        :Args:
-            View: QtWidgets.QTableView
-                Table object to modify the header
-
-            Labels: List
-                Labels to set as TableHeader
-        """
-
-        header = View.horizontalHeader().model()
-        Labels = Labels[:header.columnCount()]
-        for col, data in enumerate(Labels):
-            header.setHeaderData(col, Qt.Horizontal, str(data).replace("_", " ").title())
-
-    def GetTable_horizontalHeader(self, View):
-        """
-        Gets the table header and replaces the space with underscore
-        and swaps the string to lower case.
-
-        :Args:
-            View: QtWidgets.QTableView
-                Table object to retrieve the header from
-        """
-        header = View.horizontalHeader().model()
-        labels = []
-        for col in range(header.columnCount()):
-            col_label = header.headerData(col, Qt.Horizontal)
-            labels.append(str(col_label).replace(" ", "_").lower())
-        return labels
-
-    def SetTableModle(self, Tablename, View = QtWidgets.QTableView, Headers = None) -> "QStandardItemModel":
-        """
-        Gets the TableData for the given Table In the DB
-
-        >>> library_manager.SetTableModle(Tablename"Table", View = TableView, Headers = [1,2,3,4,5])
-
-        :Args:
-            Tablename: String
-                Table name for the model to points to
-            View: TableView
-                view to set Modle into
-            Headers: List
-                List of all Labels to add to View Header
-
-        :Return:
-            TableModel: if evrything passes
-            None: if Tablename is invalid
-        """
-        #  Runs a select query to return QueryPointer
-        query = QSqlQuery()
-        if Tablename in ["library", 'nowplaying']:
-            if not query.prepare(f"SELECT * FROM {Tablename}"):
-                msg = dedenter(f"""
-                               Query(SELECT * FROM {Tablename})
-                               Error: {query.lastError().text()}
-                               query failed to build""", 16)
-                raise Exception(msg)
-
-        query_exe = query.exec_()
-        if query_exe == False:
-            raise Exception(f"<{Tablename}> Table Doesnt Exists")
-
-        # Sets all the required Property forn the view
-        View.setProperty("DB_Table", Tablename)
-        View.setProperty("DB_Columns", self.db_fields)
-        Order = View.property("Order")
-
-        # Order is passed in predefined
-        if not(len(Order) == 0):
-            TableModel = self.OrderedSqlTableModel(query, Order)
-
-        # Table population by Normal method
-        elif len(Order) == 0:
-            TableModel = self.SqlTableModel(query)
-
-        else:
-            pass
-
-        # Sets all the header labels
-        View.setModel(TableModel)
-        if  Headers == None:
-            Headers = list(range(TableModel.columnCount()))
-        self.SetTable_horizontalHeader(View, Headers)
-
-        return TableModel
-
-    def OrderedSqlTableModel(self, Query, Order): # untested
-        """
-        Returns a TableModel Ordered according to the Order.
-
-        >>> LibraryManager.OrderedSqlTableModel(Query, [1,2,3,4,5])
-
-        :Args:
-            Query: QSqlQuery
-                Query to get data from
-            Order: List
-                Order to use for the TableModel Items
-
-        :Return: QStandardItemModel
-        """
-        TableModel = QtGui.QStandardItemModel()
-        Cols = range(len(self.db_fields))
-
-        TableModel.beginInsertRows(QtCore.QModelIndex(), 0, len(Order) - 1)
-
-        # uses the query to get data
-        while Query.next():
-            for Column in Cols:
-                Item = Query.value(Column)
-                if Column == 0:
-                    Row = Order.index(Item)
-                # set the query items into the TableModel
-                TableModel.setItem(Row, Column, QtGui.QStandardItem(Item))
-
-        TableModel.endInsertRows()
-
-        # removes the rows that are empty
-        for Row in range(TableModel.rowCount()):
-            if TableModel.item(Row) == None:
-                TableModel.removeRow(Row)
-
-        return TableModel
-
-    def SqlTableModel(self, Query): # untested
-        """
-        Returns a TableModel filled with Query data.
-
-        >>> LibraryManager.OrderedSqlTableModel(Query)
-
-        :Args:
-            Query: QSqlQuery
-                Query to get data from
-        :Return: QStandardItemModel
-        """
-
-        TableModel = QtGui.QStandardItemModel()
-        Cols = range(len(self.db_fields))
-        Row = 0
-
-        # gets and sets the query item
-        while Query.next():
-            TableModel.insertRow(Row, [QtGui.QStandardItem(str(Query.value(Column))) for Column in Cols])
-            Row += 1
-        return TableModel
-
-    def Refresh_TableModelData(self, View) -> "QStandardItemModel":
-        """
-        Refreshes the TableModel
-
-        :Args:
-            parent_view: QTableView
-                View containing the model
-        """
-        Table = View.property("DB_Table")
-        return self.SetTableModle(Table, View, View.property("DB_Columns"))
-
-########################################################################################################################
-# Table Searches
-########################################################################################################################
-    def ClearView_Masks(self, View = QtWidgets.QTableView):
-        TableModel = View.model()
-        for Row in range(TableModel.rowCount()):
-            View.showRow(Row)
-
-    def TableSearch(self, Line_Edit = QtWidgets.QLineEdit, View = QtWidgets.QTableView):
-        """
-        Applies a filter to the QSqlTableModel and refreshes it.
-        Searches in [album, albumartist, artist, author, composer, performer, title] Fields
-
-        >>> library_manager.TableSearch(QLineEdit, QTableView)
-
-        :Args:
-            Line_Edit: QtWidgets.QLineEdit
-                LineEdit that provides the text
-
-            View: QtWidgets.QTableView
-                View that provides the model
-        """
-        Text = Line_Edit.text().strip()
-        if Text == "":
-            [View.showRow(Row) for Row in range(View.model().rowCount())]
-            return None
-
-        tablename = View.property("DB_Table")
-        query = QSqlQuery()
-
-        if tablename in ["library", 'nowplaying']:
-            querystate = query.prepare(f"""
-            SELECT file_id FROM {tablename}
-            WHERE
-            album LIKE '%{Text}%'
-            OR albumartist LIKE '%{Text}%'
-            OR artist LIKE '%{Text}%'
-            OR author LIKE '%{Text}%'
-            OR composer LIKE '%{Text}%'
-            OR performer LIKE '%{Text}%'
-            OR title LIKE '%{Text}%'
-            OR lower(album) LIKE '%{Text}%'
-            OR lower(albumartist) LIKE '%{Text}%'
-            OR lower(artist) LIKE '%{Text}%'
-            OR lower(author) LIKE '%{Text}%'
-            OR lower(composer) LIKE '%{Text}%'
-            OR lower(performer) LIKE '%{Text}%'
-            OR lower(title) LIKE '%{Text}%'
-            """)
-        else:
-            querystate = False
-
-        query_exe = query.exec_()
-        if query_exe == False and querystate == False:
-            raise Exception(f"<{tablename}> View Not Created")
-
-        # shows matching rows
-        QueryData = []
-        Row = 0
-        while query.next():
-            QueryData.append(str(query.value(0)))
-            Row += 1
-
-        TableModel = View.model()
-        for Row in range(TableModel.rowCount()):
-            if TableModel.index(Row, 0).data() in QueryData:
-                View.showRow(Row)
-            else:
-                View.hideRow(Row)
-
-    def SearchSimilarField(self, View, Field, Indexes):
-        """
-        Applies a filter to the QtableView and refreshes it.
-        Searches in [album, artist, genre] Fields
-
-        >>> library_manager.SearchSimilarField(TableView, String, List)
-
-        :Args:
-            View: QtWidgets.QTableView
-                View that provides the model
-            Field:
-                Field to search data from
-            Indexes:
-                Selected Indexes
-        """
-        if Indexes in ["", None, []]:
-            return False
-
-        # creates a query to filter
-        Tablename = View.property("DB_Table")
-        exp = "({0} LIKE '%{1}%') OR (lower({2}) LIKE '%{3}%')"
-        LikeExpression = [exp.format(Field, Upper, Field, Upper) for Upper in Indexes]
-        LikeExpression = " OR ".join(LikeExpression)
-
-        Query = QSqlQuery()
-        if not (Query.prepare(f"SELECT file_id FROM {Tablename} WHERE {LikeExpression}")):
-            print(f"SELECT file_id FROM {Tablename} WHERE {LikeExpression}")
-            raise Exception("Query Build Failed")
-        Query = self.ExeQuery(Query)
-
-        # shows matching rows
-        QueryData = []
-        Row = 0
-        while Query.next():
-            QueryData.append(str(Query.value(0)))
-            Row += 1
-
-        TableModel = View.model()
-        for Row in range(TableModel.rowCount()):
-            if TableModel.index(Row, 0).data() in QueryData:
-                View.showRow(Row)
-            else:
-                View.hideRow(Row)
-
-    def TableSearchAdvanced(self, query, View):
-        """
-        Applies a filter to the QSqlTableModel and refreshes it.
-        Advanced query filter will be used
-
-        :Args:
-            Line_Edit: QtWidgets.QLineEdit
-                LineEdit that provides the text
-
-            View: QtWidgets.QTableView
-                View that provides the model
-
-            query: String
-                Claues Use for filtering the Table
-        :Errors:
-            Unable to execute multiple statements at a time
-        """
-        model = View.model()
-        model.setFilter()
-        ERROR = model.lastError().text()
-        if  ERROR != "":
-            model.setFilter('')
-            self.Refresh_TableModelData(View)
-            raise Exception(ERROR)
-
-
-class LibraryManager(ModelView_Manager):
+class LibraryManager(FileManager):
     """
     Controls the database queries for table and view (creation, modification
     and deletion).
@@ -1078,15 +700,3 @@ class LibraryManager(ModelView_Manager):
         if DBname != None:
             if not self.connect(DBname):
                 raise Exception("Startup Checks Failed")
-
-
-
-if __name__ == '__main__':
-    from apollo.test.testUtilities import TestSuit_main
-    from apollo.test.Test_LIbraryManager import Test_LibraryManager
-
-    Suite = TestSuit_main()
-    Suite.AddTest(Test_LibraryManager)
-    Suite.Run(QT=True)
-
-

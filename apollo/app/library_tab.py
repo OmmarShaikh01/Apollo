@@ -1,85 +1,50 @@
-import os
+import sys
 
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtSql import QSqlQuery
+from PyQt5.QtCore import Qt
 
-################################################################################
-# LibraryTab
-################################################################################
+from apollo.db.library_manager import DataBaseManager
+from apollo.utils import exe_time
+from apollo.app.dataproviders import SQLTableModel
+
 
 class LibraryTab:
-
+    """
+    Info: LIbrary Tab class
+    Args: None
+    Returns: None
+    Errors: None
+    """
     def __init__(self, UI):
+        """
+        Info: Constructor
+        Args: None
+        Returns: None
+        Errors: None
+        """
+        ### Development code not production code will cause bugs if not removed
         if UI != None:
             self.UI = UI
         else:
-            from apollo.app.apollo_TabBindings import ApolloTabBindings
-            self.UI = ApolloTabBindings()
+            from apollo.app.mainapp_ux import ApolloMain
+            self.UI = ApolloMain()
+        ###
+        self.DataProvider = self.UI.DataProvider
+        self.PlayingQueue = self.DataProvider.GetModel("nowplaying_model")
+        self.Init_DataModels()
+        self.MiscFunctionBinding()
 
-        self.LibraryManager = self.UI.LibraryManager
-        self.AssignObjects()
-        self.Init_MainTableModel("library")
-        self.Init_GroupTable()
-        self.ElementsBindings()
+    def Init_DataModels(self):
+        self.MainView = self.UI.LDT_TBV_maintable
+        self.MainModel = SQLTableModel()
+        self.MainModel.LoadTable("library", self.MainModel.DB_FIELDS, Qt.Horizontal)
+        self.DataProvider.AddModel(self.MainModel, "library_model")
+        self.MainView.setModel(self.MainModel)
+        self.MainView.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.MainView.customContextMenuRequested.connect(self.ContextMenu_MainTable)
 
-
-    def AssignObjects(self):
-        """
-        Assigns UI Objects TO Operate Upon
-        """
-        self.MainTable = self.UI.apollo_TBV_LBT_maintable
-        self.MainSearch = self.UI.apollo_LEDT_LBT_main_search
-        self.GroupTable = self.UI.apollo_TBV_LBT_grouptable
-        self.GroupSearch = self.UI.apollo_LEDT_LBT_groupsearch
-        self.QueueTable = self.UI.apollo_TLB_NPQ_maintable
-
-    def Init_MainTableModel(self, tablename):
-        """
-        initilizes table with database values
-        """
-        self.MainTable.setProperty("DB_Table", tablename)
-        self.MainTable.setProperty("DB_Columns", self.LibraryManager.db_fields)
-        self.MainTable.setProperty("Order", [])
-
-        self.LibraryManager.SetTableModle(tablename, self.MainTable, self.LibraryManager.db_fields)
-
-    def Init_GroupTable(self):
-        """
-        Initilizes the Grouping table with Selectors
-        """
-        Field = self.UI.CONF_MANG.Getvalue(path = "LIBRARY_GROUPORDER")
-        self.UI.SetGroupMarkers(self.MainTable, Field, self.GroupTable)
-        self.UI.apollo_TLB_LBT_grouptool.setText(f"Group By {Field.title().replace('_', ' ')}")
-
-
-    def ElementsBindings(self):
-        """
-        Binds and connects UI Signals to internal functions.
-        """
-
-        self.UI.BindingLineSearch(self.UI.apollo_LEDT_LBT_main_search, self.MainTable)
-
-        # group table Queries Functions
-        self.UI.apollo_LEDT_LBT_groupsearch.returnPressed.connect(lambda: \
-        self.UI.SearchGroupTable(self.UI.apollo_LEDT_LBT_groupsearch, self.UI.apollo_TBV_LBT_grouptable))
-
-        self.UI.apollo_LEDT_LBT_groupsearch.textChanged.connect(lambda: \
-        self.UI.SearchGroupTable(self.UI.apollo_LEDT_LBT_groupsearch, self.UI.apollo_TBV_LBT_grouptable))
-
-        self.UI.apollo_TBV_LBT_grouptable.doubleClicked.connect(lambda: self.UI.FilterTable_ByGroups(\
-            self.UI.apollo_TBV_LBT_grouptable,
-            self.UI.apollo_TBV_LBT_maintable))
-
-        Header = self.MainTable.horizontalHeader()
-        Header.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        Header.customContextMenuRequested.connect(self.ContextMenu_HeaderMenu)
-
-        self.UI.apollo_TLB_LBT_grouptool.setMenu(self.ContextMenu_GroupTable())
-        self.UI.apollo_TLB_LBT_main.setMenu(self.ContextMenu_MainGroupMenu())
-
-        self.MainTable.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.MainTable.customContextMenuRequested.connect(self.ContextMenu_MainTable)
-
+    def MiscFunctionBinding(self):
+        self.UI.LBT_LEDT_mainsearch.textChanged.connect(lambda x: self.MainModel.SearchMask(self.MainView, QueryString = x))
 
 ########################################################################################################################
 # Context Menus
@@ -94,9 +59,9 @@ class LibraryTab:
         # Main Menu
         lv_1 = QtWidgets.QMenu()
 
-        BindMenuActions(lv_1, "Play Now", lambda: self.UI.PlayNow(self.MainTable, self.QueueTable))
-        BindMenuActions(lv_1, "Queue Next", lambda: self.UI.QueueNext(self.MainTable, self.QueueTable))
-        BindMenuActions(lv_1, "Queue Last", lambda: self.UI.QueueLast(self.MainTable, self.QueueTable))
+        BindMenuActions(lv_1, "Play Now", lambda: self.PlayingQueue.PlayNow(self.MainView))
+        BindMenuActions(lv_1, "Queue Next", lambda: self.PlayingQueue.QueueNext(self.MainView))
+        BindMenuActions(lv_1, "Queue Last", lambda: self.PlayingQueue.QueueLast(self.MainView))
 
         # Play More Menu
         lv_1_1 = (lv_1).addMenu("Play More")
@@ -106,19 +71,10 @@ class LibraryTab:
         (lv_1_1).addMenu("Output To @")
         (lv_1_1).addSeparator()
 
-        BindMenuActions(lv_1_1, "Play Shuffled", lambda: self.UI.PlayAllShuffled(self.MainTable, self.QueueTable))
-        (lv_1_1).addSeparator()
-
-        BindMenuActions(lv_1_1, "Play Artist", lambda: self.UI.PlayArtist(self.MainTable, self.QueueTable))
-        BindMenuActions(lv_1_1, "Play Similar @")
-        (lv_1_1).addSeparator()
-
-        BindMenuActions(lv_1_1, "Play Album Now", lambda: self.UI.PlayAlbumNow(self.MainTable, self.QueueTable))
-        BindMenuActions(lv_1_1, "Queue Album Next", lambda: self.UI.QueueAlbumNext(self.MainTable, self.QueueTable))
-        BindMenuActions(lv_1_1, "Queue Album Last", lambda: self.UI.QueueAlbumLast(self.MainTable, self.QueueTable))
-        (lv_1_1).addSeparator()
-
-        BindMenuActions(lv_1_1, "Play Genre", lambda: self.UI.PlayGenre(self.MainTable, self.QueueTable))
+        BindMenuActions(lv_1_1, "Play Shuffled", lambda: self.PlayingQueue.PlayShuffled(self.MainView))
+        BindMenuActions(lv_1_1, "Play Artist", lambda: self.PlayingQueue.PlayArtist(self.MainView))
+        BindMenuActions(lv_1_1, "Play Album Now", lambda: self.PlayingQueue.PlayAlbum(self.MainView))
+        BindMenuActions(lv_1_1, "Play Genre", lambda: self.PlayingQueue.PlayGenre(self.MainView))
         (lv_1).addSeparator()
 
         # Edit Action
@@ -126,16 +82,16 @@ class LibraryTab:
 
         # Ratings Menu
         lv_1_2 = (lv_1).addMenu("Rating")
-        BindMenuActions(lv_1_2, "0   stars", lambda: self.UI.SetFileRatings(0, self.MainTable))
-        BindMenuActions(lv_1_2, "1   stars", lambda: self.UI.SetFileRatings(1, self.MainTable))
-        BindMenuActions(lv_1_2, "1.5 stars", lambda: self.UI.SetFileRatings(1.5, self.MainTable))
-        BindMenuActions(lv_1_2, "2   stars", lambda: self.UI.SetFileRatings(2, self.MainTable))
-        BindMenuActions(lv_1_2, "2.5 stars", lambda: self.UI.SetFileRatings(2.5, self.MainTable))
-        BindMenuActions(lv_1_2, "3   stars", lambda: self.UI.SetFileRatings(3, self.MainTable))
-        BindMenuActions(lv_1_2, "3.5 stars", lambda: self.UI.SetFileRatings(3.5, self.MainTable))
-        BindMenuActions(lv_1_2, "4   stars", lambda: self.UI.SetFileRatings(4, self.MainTable))
-        BindMenuActions(lv_1_2, "4.5 stars", lambda: self.UI.SetFileRatings(4.5, self.MainTable))
-        BindMenuActions(lv_1_2, "5   stars", lambda: self.UI.SetFileRatings(5, self.MainTable))
+        BindMenuActions(lv_1_2, "0   stars", lambda: print(1))
+        BindMenuActions(lv_1_2, "1   stars", lambda: print(1))
+        BindMenuActions(lv_1_2, "1.5 stars", lambda: print(1))
+        BindMenuActions(lv_1_2, "2   stars", lambda: print(1))
+        BindMenuActions(lv_1_2, "2.5 stars", lambda: print(1))  
+        BindMenuActions(lv_1_2, "3   stars", lambda: print(1))
+        BindMenuActions(lv_1_2, "3.5 stars", lambda: print(1))
+        BindMenuActions(lv_1_2, "4   stars", lambda: print(1))
+        BindMenuActions(lv_1_2, "4.5 stars", lambda: print(1))
+        BindMenuActions(lv_1_2, "5   stars", lambda: print(1))
 
 
 
@@ -146,15 +102,15 @@ class LibraryTab:
         lv_1_4 = (lv_1).addMenu("Send To @")
 
         # Delete Action
-        BindMenuActions(lv_1, "Delete", lambda: self.UI.DeleteItem("Delete", self.MainTable))
-        BindMenuActions(lv_1, "Remove", lambda: self.UI.DeleteItem("Remove", self.MainTable))
+        BindMenuActions(lv_1, "Delete", lambda: self.MainModel.DeleteItem(self.MainView))
+        BindMenuActions(lv_1, "Remove", lambda: self.MainModel.RemoveItem(self.MainView))
         (lv_1).addSeparator()
 
         # Search Menu
         lv_1_5 = (lv_1).addMenu("Search")
-        BindMenuActions(lv_1_5, "Search Similar Artist", lambda:self.UI.SearchSimilarField(self.MainTable,"artist"))
-        BindMenuActions(lv_1_5, "Search Similar Album", lambda:self.UI.SearchSimilarField(self.MainTable,"album"))
-        BindMenuActions(lv_1_5, "Search Similar Genre", lambda:self.UI.SearchSimilarField(self.MainTable,"genre"))
+        BindMenuActions(lv_1_5, "Search Similar Artist", lambda: self.MainModel.SearchMask(self.MainView, "artist"))
+        BindMenuActions(lv_1_5, "Search Similar Album", lambda: self.MainModel.SearchMask(self.MainView, "album"))
+        BindMenuActions(lv_1_5, "Search Similar Genre", lambda: self.MainModel.SearchMask(self.MainView, "genre"))
         (lv_1_5).addSeparator()
         BindMenuActions(lv_1_5, "Open In Browser @")
         BindMenuActions(lv_1_5, "Locate In Explorer @")
@@ -253,6 +209,9 @@ class LibraryTab:
 
 
 if __name__ == "__main__":
-    from apollo.app.apollo_main import ApolloExecute
+    from apollo.app.mainapp import ApolloExecute
+    from apollo.plugins.app_theme import Theme
+
+    Theme().LoadAppIcons("GRAY_100")
     app = ApolloExecute()
     app.Execute()

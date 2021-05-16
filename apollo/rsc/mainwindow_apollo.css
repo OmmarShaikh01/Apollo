@@ -1,0 +1,1103 @@
+/*
+---------------------------------------------------------------------------
+    WARNING! All changes made in this file will be lost!
+---------------------------------------------------------------------------
+
+ui-background: Default page background
+interactive-01: Primary interactive color, Primary buttons, 
+interactive-02: Secondary interactive color, Secondary button, 
+interactive-03: 4.5:1 AA contrast, Tertiary button
+interactive-04: 3:1 AA contrast, Selected elements, Active elements, Accent icons, 
+danger: Danger button background, 3:1 AA contrast 
+ui-01: Container background on ui-background, Secondary page background
+ui-02: Container background on ui-01, `Light` variant background
+ui-02-alt: Container background on ui-01, `Light` variant background
+ui-03: Subtle border, Tertiary background
+ui-04: 3:1 aa element contrast, Medium contrast border
+ui-05: 4.5:1 aa element contrast, High contrast border, Emphasis elements
+button-separator: 3:1 aa element contrast, Fluid button separator
+decorative-01: "Light" variant elements
+text-01: Primary text, Body copy, Headers, Hover text color for text-02 
+text-02: Secondary text, Input labels 
+text-03: Placeholder text
+text-04: Text on interactive colors
+text-05: Tertiary text, Help text, text-error, Error message text
+link-01: Primary links, Ghost button, 
+inverse-link: Links on inverse-02 backgrounds
+icon-01: Primary icons
+icon-02: Secondary icons
+icon-03: Icons on interactive colors, Icons on non-ui colors, 
+field-01: Default input fields, Fields on ui-backgrounds, 
+field-02: "Light" variant input fields, Fields on ui-01 backgrounds, 
+inverse-01: Inverse text color, Inverse icon color, 
+inverse-02: High contrast backgrounds, High contrast elements, 
+support-01: Error
+support-02: Success
+support-03: Warning
+support-04: Information
+inverse-support-01: Danger in high contrast moments
+inverse-support-02: Success in high contrast moments
+inverse-support-03: Warning in high contrast moments
+inverse-support-04: Information in high contrast moments
+overlay-01: Background overlay
+focus: Focus border, Focus underline, 
+inverse-focus-ui: Focus on high contrast moments
+hover-primary: interactive-01 hover
+hover-primary-text: interactive-01 text hover
+hover-secondary: interactive-02 hover
+hover-tertiary: interactive-03 hover, inverse-01 hover, 
+hover-ui: ui-01 hover, ui-02 hover, Transparent background hover, 
+hover-ui-light: "Light" variant hover
+hover-selected-ui: Selected row hover
+hover-danger: Danger hover, support-01 hover, hover-row, Row hover
+inverse-hover-ui: Hover for inverse-02
+active-primary: interactive-01 active
+active-secondary: interactive-02 active, inverse-01 active
+active-tertiary: interactive-03 active
+active-ui: ui-01 active, ui-02 active 
+active-danger: Danger active, support-01 active
+selected-ui: Selected UI elements
+highlight: interactive-01 highlight
+skeleton-01: Skeleton state of graphics
+skeleton-02: Skeleton state of texts
+visited-link: Visited links
+disabled-01: Disabled fields, Disabled backgrounds, Disabled border
+disabled-02: Disabled elements on disabled-01, Disabled label, Disabled text on disabled-01, Disabled icons, Disabled border 
+disabled-03: Disabled text on disabled-02, Disabled icons on disabled-02
+
+Issues:
+# Treeview, ListView, TableView Icons Not checked
+# playstyle and volume controls need bindings and icons through Code 
+>>> border-image: url(:/icon_pack/png/image.png)0 0 0 0 stretch stretch;
+
+*/
+
+
+/* Main Window ------------------------------------------------------------- */
+
+    QWidget#MW_WDG_centeral_widget {
+        background-color: $ui-background;
+        border: 0px solid Transparent;
+    }
+
+    /* QTabWiget -------------------------------------------------------------- */
+        QTabWidget {
+            border-color: 1px solid $interactive-04;
+            background-color: $ui-background;
+        }
+
+        QTabWidget QWidget {
+            border-color: 1px solid $interactive-04;
+        }
+
+        QTabWidget::pane {
+            border: 0;
+            border-radius: 4px;
+            margin: 0px;
+            /* Fixes double border inside pane with pyqt5 */
+            padding: 0px;
+            background-color: transparent;
+        }
+
+        /* QTabBar ----------------------------------------------------------------- */
+            QTabBar {
+                background-color: $ui-background;       
+                qproperty-drawBase: 0;
+                border-radius: 4px;
+                margin: 0px;
+                padding: 2px;
+                border: 0;
+                /* left: 5px; move to the right by 5px - removed for fix */
+            }
+            
+            QTabBar::tab {
+                background-color: $ui-background;
+                border-right: 1px solid $ui-02;
+                color: $text-02;
+                font-size: 12px;
+                min-height: 24px;
+                min-width: 64px;
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+
+            QTabBar::tab:selected {
+                background-color: $ui-01;
+                border-bottom: 1px solid $interactive-04;
+                color: $text-02;
+            }
+
+            QTabBar::tab:hover {
+                background-color: $ui-04;
+                color: $text-01;
+                border-right: 1px solid $ui-background;        
+            }
+
+    /* QTableView ------------------------------------------------------------ */
+
+        QTableView{
+            background-color: $ui-01;        
+            color: $text-02;
+            gridline-color: none;
+        }
+
+        QTableView:disabled{
+            background-color: $disabled-02;
+            color: $disabled-03;
+        }
+
+        QTableView::item{
+            background-color: $ui-background;
+            max-height: 24px;
+            padding: 4px;
+            border: 0px solid transparent;
+            text-align: center;
+        }
+
+        QTableView::item:alternate{
+            background-color: $ui-01;
+            max-height: 24px;
+            padding: 4px;        
+            border: 0px solid transparent;
+            text-align: center;
+
+        }
+
+        QTableView::item:pressed{
+            background-color: $ui-02;
+            color: $text-01;
+        }
+
+        QTableView::item:selected:active{
+            background-color: $ui-02;
+            color: $text-01;
+
+        }
+
+        QTableView::item:selected:!active{
+            background-color: $ui-02;
+            color: $text-01;
+        }
+
+        QTableView::item:alternate:pressed{
+            background-color: $ui-02-alt;
+            color: $text-01;
+        }
+
+        QTableView::item:alternate:selected:active{
+            background-color: $ui-02-alt;
+            color: $text-01;
+
+        }
+
+        QTableView::item:alternate:selected:!active{
+            background-color: $ui-02-alt;
+            color: $text-02;
+        }
+
+        QTableCornerButton::section {
+            background-color: $ui-01;
+            border-right: 1px solid $ui-background;
+            border-bottom: 1px solid $ui-background;
+            border-radius: 0px;
+        }
+
+    /* QListView ------------------------------------------------------------ */
+
+        QListView{
+            background-color: $ui-01;        
+            color: $text-02;
+            gridline-color: none;
+        }
+
+        QListView:disabled{
+            background-color: $disabled-02;
+            color: $disabled-03;
+        }
+
+        QListView::item{
+            background-color: $ui-01;
+            min-height: 16px;
+            padding: 4px;
+            border: 0px solid transparent;
+            text-align: center;
+        }
+
+        QListView::item:pressed{
+            background-color: $ui-02;
+            color: $text-01;
+        }
+
+        QListView::item:selected:active{
+            background-color: $ui-02;
+            color: $text-01;
+
+        }
+
+        QListView::item:selected:!active{
+            background-color: $ui-02;
+            color: $text-01;
+        }
+
+        QListView::item:alternate:pressed{
+            background-color: $ui-02-alt;
+            color: $text-01;
+        }
+
+        QListView::item:alternate:selected:active{
+            background-color: $ui-02-alt;
+            color: $text-01;
+
+        }
+
+        QListView::item:alternate:selected:!active{
+            background-color: $ui-02-alt;
+            color: $text-02;
+        }
+
+    /* QHeaderView ------------------------------------------------------------ */
+        
+        QHeaderView {
+            background-color: $ui-01;
+            border: 0px transparent ;
+            padding: 0px;
+            margin: 0px;
+            border-radius: 0px;
+            min-height: 24px;
+        }
+
+        QHeaderView:disabled {
+            background-color: $disabled-02;
+            padding: 2px;
+        }
+
+        QHeaderView::section {
+            background-color: $ui-01;
+            color: $text-01;
+            padding: 2px;
+            border-radius: 0px;
+            text-align: left;
+        }
+
+        QHeaderView::section:checked,
+        QHeaderView::section:selected{        
+            color: $text-01;
+            background-color: transparent;
+        }
+
+        QHeaderView::section:checked:disabled {
+            color: $disabled-03;
+            background-color: $disabled-02;
+        }
+
+        QHeaderView::section::horizontal {
+            padding-left: 4px;
+            padding-right: 4px;
+            border-left: 1px solid $ui-background;
+            border-bottom: 1px solid $ui-background;
+        }
+
+        QHeaderView::section::horizontal::first, QHeaderView::section::horizontal::only-one {
+            border-left: 1px solid $ui-01;
+        }
+
+        QHeaderView::section::horizontal:disabled {
+            color: $disabled-02;
+        }
+
+        QHeaderView::section::vertical {
+            padding-left: 4px;
+            padding-right: 4px;
+            border-right: 1px solid $ui-background;
+        }
+
+        QHeaderView::section::vertical::first, QHeaderView::section::vertical::only-one {
+            border-top: 1px solid $ui-01;
+        }
+
+        QHeaderView::section::vertical:disabled {
+            color: $disabled-02;
+        }
+
+        QHeaderView::down-arrow {
+            /* Those settings (border/width/height/background-color) solve bug */
+            /* transparent arrow background and size */
+            background-color: transparent;
+            border: none;
+            height: 16px;
+            width: 16px;
+            padding-left: 2px;
+            padding-right: 2px;
+            image: url(":/icon_pack/png/24/branch_open_icon-02.png");
+        }
+
+        QHeaderView::up-arrow {
+            background-color: transparent;
+            border: none;
+            height: 16px;
+            width: 16px;
+            padding-left: 2px;
+            padding-right: 2px;
+            image: url(":/icon_pack/png/x24/caret--sort--up_icon-02.png");
+        }
+
+    /* QSplitter -------------------------------------------------------------- */
+        QSplitter {
+            background-color: $ui-background;
+            border: 0px solid Transparent;
+        }   
+
+        QSplitter::handle {
+            background-color: $ui-background;
+        }
+
+        QSplitter::handle:hover {
+            background-color: $interactive-04;
+            border-color: 1px solid $interactive-04;
+        }
+
+    /* QScrollBar -------------------------------------------------------------- */
+
+        /*Horizontal*/
+            QScrollBar:horizontal {
+                height: 10px;
+                border: 0px solid transparent;
+                border-radius: 2px;
+                background-color: transparent;
+                margin: 0px;
+            }
+
+            QScrollBar::handle:horizontal {
+                background-color: $ui-04;
+                border: 1px solid $ui-background;
+                border-radius: 2px;
+                min-width: 8px;
+            }
+
+            QScrollBar::handle:horizontal:hover {
+                background-color: $ui-05;
+                border: 1px solid $ui-background;
+                border-radius: 2px;
+            }
+
+            QScrollBar::handle:horizontal:focus {
+                border: 1px solid $focus;
+            }
+
+            QScrollBar::add-line:horizontal {
+                margin: 3px 0px 3px 0px;
+                border-image: transparent;
+                height: 0px;
+                width: 0px;
+                border-image: transparent;
+                subcontrol-position: right;
+                subcontrol-origin: margin;
+            }
+
+            QScrollBar::add-line:horizontal:hover, QScrollBar::add-line:horizontal:on {
+                border-image: transparent;
+                subcontrol-position: right;
+                subcontrol-origin: margin;
+            }
+
+            QScrollBar::sub-line:horizontal {
+                margin: 3px 0px 3px 0px;
+                border-image: transparent;
+                height: 0px;
+                width: 0px;
+                border-image: transparent;
+                subcontrol-position: left;
+                subcontrol-origin: margin;
+            }
+
+            QScrollBar::sub-line:horizontal:hover, QScrollBar::sub-line:horizontal:on {
+                border-image: transparent;
+                subcontrol-position: left;
+                subcontrol-origin: margin;
+            }
+
+            QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+                background: transparent;
+            }
+
+        /*Vertical*/
+            QScrollBar:vertical {
+                background-color: transparent;
+                width: 12px;
+                margin: 0px;
+                border: 1px solid transparent;
+                border-radius: 2px;
+            }
+
+            QScrollBar::handle:vertical {
+                background-color: $ui-04;
+                border: 1px solid $ui-background;
+                min-height: 16px;
+                border-radius: 2px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background-color: $ui-05;
+                border: 1px solid transparent;
+                border-radius: 2px;
+                min-height: 16px;
+            }
+
+            QScrollBar::handle:vertical:focus {
+                border: 1px solid $focus;
+            }
+
+            QScrollBar::add-line:vertical {
+                margin: 3px 0px 3px 0px;
+                border-image: transparent;
+                height: 0px;
+                width: 0px;
+                subcontrol-position: bottom;
+                subcontrol-origin: margin;
+            }
+
+            QScrollBar::add-line:vertical:hover, QScrollBar::add-line:vertical:on {
+                border-image: transparent;
+                height: 0px;
+                width: 0px;
+                subcontrol-position: bottom;
+                subcontrol-origin: margin;
+            }
+
+            QScrollBar::sub-line:vertical {
+                margin: 3px 0px 3px 0px;
+                border-image: transparent;
+                height: 0px;
+                width: 0px;
+                subcontrol-position: top;
+                subcontrol-origin: margin;
+            }
+
+            QScrollBar::sub-line:vertical:hover, QScrollBar::sub-line:vertical:on {
+                border-image: transparent;
+                height: 0px;
+                width: 0px;
+                subcontrol-position: top;
+                subcontrol-origin: margin;
+            }
+
+            QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+                background: none;
+            }
+
+            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+                background: none;
+            }
+
+    /* QSlider ---------------------------------------------------------------- */
+        QSlider:horizontal{
+            min-height: 24px;
+        }
+        QSlider:disabled:horizontal{
+            background: $disabled-02;
+        }
+
+        QSlider:focus:horizontal{
+            border: $focus;
+        }
+
+        QSlider::groove:horizontal {
+            background: $ui-03;
+            border: 1px solid $ui-03;
+            height: 2px;
+            border-radius: 2px;
+        }
+
+        QSlider::handle:horizontal {
+            background: $ui-05;
+            border: 1px solid $ui-05;
+            width: 8px;
+            height: 8px;
+            margin: -4px 0px;
+            border-radius: 4px;
+        }
+
+        QSlider::sub-page:horizontal {
+            background: $interactive-04;
+            height: 4px;
+            margin: 0px;
+            border-radius: 2px;
+        }
+
+        QSlider::sub-page:horizontal:active {
+            background: $interactive-04;
+            border: 1px solid $interactive-04;
+        }
+
+        QSlider:vertical{
+            min-height: 32px;
+            max-width: 8px;
+        }
+
+        QSlider:disabled:vertical{
+            background: $disabled-02;
+        }
+
+        QSlider:focus:vertical{
+            border: $focus;
+        }
+
+        QSlider::groove:vertical {
+            background: $ui-03;
+            border: 1px solid $ui-03;
+            margin: 0px;
+            width: 8px;
+            border-radius: 2px;
+        }
+
+        QSlider::handle:vertical {
+            background: $ui-05;
+            border: 1px solid $ui-05;
+            width: 8px;
+            height: 8px;
+            margin: 0px -4px 0px -4px;
+            border-radius: 4px;
+        }
+
+        QSlider::add-page:vertical {
+            background: $interactive-04;
+            width: 8px;
+            margin: 0px;        
+            border-radius: 4px;
+        }
+
+        QSlider::add-page:vertical:active {
+            background: $interactive-04;
+            border: 1px solid $interactive-04;
+        }
+
+/* Footer ------------------------------------------------------------------ */
+    QWidget#MW_FR_mainfooter{
+        background-color: $ui-background;
+        border: 0px solid Transparent;
+    }
+
+    QWidget#footer_PIXLB_cover{
+        background-color: $ui-01;
+        border: 0px solid Transparent;
+    }
+
+    /* footer_PSB_prev */
+
+        QPushButton#footer_PSB_prev{
+            background-color: Transparent;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#footer_PSB_prev{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#footer_PSB_prev{
+            background-color: $hover-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#footer_PSB_prev,
+        QPushButton:pressed#footer_PSB_prev{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+     /* footer_PSB_seekb */
+
+        QPushButton#footer_PSB_seekb{
+            background-color: Transparent;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#footer_PSB_seekb{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#footer_PSB_seekb{
+            background-color: $hover-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#footer_PSB_seekb,
+        QPushButton:pressed#footer_PSB_seekb{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+     /* footer_PSB_stop */
+
+        QPushButton#footer_PSB_stop{
+            background-color: Transparent;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#footer_PSB_stop{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#footer_PSB_stop{
+            background-color: $hover-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#footer_PSB_stop,
+        QPushButton:pressed#footer_PSB_stop{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+    /* footer_PSB_play */
+
+        QPushButton#footer_PSB_play{
+            background-color: Transparent;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#footer_PSB_play{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#footer_PSB_play{
+            background-color: $hover-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#footer_PSB_play,
+        QPushButton:pressed#footer_PSB_play{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+    /* footer_PSB_pause */
+
+        QPushButton#footer_PSB_pause{
+            background-color: Transparent;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#footer_PSB_pause{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#footer_PSB_pause{
+            background-color: $hover-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#footer_PSB_pause,
+        QPushButton:pressed#footer_PSB_pause{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+    /* footer_PSB_seekf */
+
+        QPushButton#footer_PSB_seekf{
+            background-color: Transparent;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#footer_PSB_seekf{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#footer_PSB_seekf{
+            background-color: $hover-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#footer_PSB_seekf,
+        QPushButton:pressed#footer_PSB_seekf{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+    /* footer_PSB_next */
+
+        QPushButton#footer_PSB_next{
+            background-color: Transparent;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#footer_PSB_next{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#footer_PSB_next{
+            background-color: $hover-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#footer_PSB_next,
+        QPushButton:pressed#footer_PSB_next{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+    /* footer_PSB_volume */
+
+        QPushButton#footer_PSB_volume{
+            background-color: Transparent;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#footer_PSB_volume{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#footer_PSB_volume{
+            background-color: $hover-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#footer_PSB_volume,
+        QPushButton:pressed#footer_PSB_volume{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+    /* pushButton_19 */
+
+        QPushButton#pushButton_19{
+            background-color: Transparent;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#pushButton_19{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#pushButton_19{
+            background-color: $hover-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#pushButton_19,
+        QPushButton:pressed#pushButton_19{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+    /* pushButton_22 */
+
+        QPushButton#pushButton_22{
+            background-color: Transparent;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#pushButton_22{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#pushButton_22{
+            background-color: $hover-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#pushButton_22,
+        QPushButton:pressed#pushButton_22{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+    /* pushButton_20 */
+
+        QPushButton#pushButton_20{
+            background-color: Transparent;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#pushButton_20{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#pushButton_20{
+            background-color: $hover-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#pushButton_20,
+        QPushButton:pressed#pushButton_20{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+/* NowPlaying Queue -------------------------------------------------------- */
+
+    QWidget#NPQ_LEDT_search{
+        background-color: $ui-background;
+        border: 1px solid $ui-02;
+        border-radius: 4px;
+        color: $text-01;
+        min-height: 24px;  
+    }
+
+    QWidget#NPQ_LEDT_search:hover{
+        border: 1px solid $interactive-04;
+        min-height: 24px;        
+    }
+
+    QWidget#NPQ_HDLB_queue{        
+        background-color: $ui-background;
+        border-left: 2px solid $ui-02;
+        font-size: 12px;
+        min-height: 24px;
+        min-width: 64px;
+        color: $text-01;
+    }
+
+    QWidget#SubW_FR_queue {        
+        background-color: $ui-01;     
+        border: 0px solid Transparent;  
+        min-width: 64px;
+        color: $text-01;
+    }        
+
+    QWidget#NPQ_FR_search{       
+        background-color: $ui-02;     
+        border: 0px solid Transparent;  
+        min-width: 64px;
+        color: $text-01;
+    }
+
+    /* NPQ_PSB_search */
+
+        QPushButton#NPQ_PSB_search{
+            background-color: $ui-01;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#NPQ_PSB_search{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#NPQ_PSB_search{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#NPQ_PSB_search,
+        QPushButton:pressed#NPQ_PSB_search {
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid $ui-01;
+            padding: 8px;
+        }
+
+/* Library Tab -------------------------------------------------------- */
+    
+    QWidget#LBT_FR_groupsearch,
+    QWidget#LBT_FR_mainsearch {       
+        background-color: $ui-02;     
+        border: 0px solid Transparent;  
+        min-width: 64px;
+        color: $text-01;
+    }
+
+    QWidget#LBT_FR_grouping,
+    QWidget#LBT_FR_maintable {        
+        background-color: $ui-01;     
+        border: 0px solid Transparent;  
+        min-width: 64px;
+        color: $text-01;
+    }
+
+
+    QWidget#LBT_LEDT_groupsearch,
+    QWidget#LBT_LEDT_mainsearch {
+        background-color: $ui-background;
+        border: 1px solid $ui-02;
+        border-radius: 4px;
+        color: $text-01;
+        min-height: 24px;  
+    }
+
+    QWidget#LBT_LEDT_groupsearch:hover,
+    QWidget#LBT_LEDT_mainsearch:hover {
+        border: 1px solid $interactive-04;
+        min-height: 24px;        
+    }
+
+    /* LBT_PSB_groupsearch */
+
+        QPushButton#LBT_PSB_groupsearch{
+            background-color: $ui-01;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#LBT_PSB_groupsearch{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#LBT_PSB_groupsearch{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#LBT_PSB_groupsearch,
+        QPushButton:pressed#LBT_PSB_groupsearch {
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid $ui-01;
+            padding: 8px;
+        }
+
+    /* LBT_PSB_mainsearch */
+
+        QPushButton#LBT_PSB_mainsearch{
+            background-color: $ui-01;
+            color: $link-01;
+            border: 1px solid Transparent;
+            padding: 8px;
+            border-radius: 2px;
+        }
+
+        QPushButton:disabled#LBT_PSB_mainsearch{
+            background-color: $disabled-02;
+            color: $disabled-03;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:hover#LBT_PSB_mainsearch{
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid Transparent;
+            padding: 8px;
+        }
+
+        QPushButton:checked#LBT_PSB_mainsearch,
+        QPushButton:pressed#LBT_PSB_mainsearch {
+            background-color: $active-ui;
+            color: $hover-primary-text;
+            border: 1px solid $ui-01;
+            padding: 8px;
+        }

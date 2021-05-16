@@ -1,3 +1,6 @@
+import os, pathvalidate, shutil, json
+
+
 import time, json, os, threading
 
 import apollo
@@ -7,10 +10,11 @@ parent_dir = apollo.__path__[0]
 def exe_time(method):
     def timed(*args, **kw):
         """
-        Calculates the method execution time. exe_time is used as an Method
-        decorator.
+        Info: Calculates the method execution time. exe_time is used as an Method decorator.
+        Args: None
+        Returns: None
+        Errors: None
         """
-
         ts = time.time()
         result = method(*args, **kw)
         te = time.time()
@@ -22,46 +26,74 @@ def exe_time(method):
         return result
     return timed
 
+def tryit(method):
+    def exe(*args, **kwargs):
+        try:
+            ts = time.time()
+            result = method(*args, **kwargs)
+            te = time.time()
+            if 'log_time' in kwargs:
+                name = kwargs.get('log_name', method.__name__.upper())
+                kwargs['log_time'][name] = int((te - ts) * 1000)
+            else:
+                print ('%r %2.4f s' % (method.__name__, (te - ts)))
+            return result
+        except Exception as e:
+                print (f"{method.__name__}: {e}")
+    return exe
+
 def ThreadIt(method):
     def Exe(*args, **kw):
         """
-        Threads the function passed in as an argumnet
+        Info: Threads the function passed in as an argumnet
+        Args: None
+        Returns: None
+        Errors: None
         """
         Thread = threading.Thread(target = method, args = args, kwargs = kw, name = method.__name__)
         Thread.start()
     return Exe
 
+
 def dedenter(string = '', indent_size = 4):
     """
-    Dedents the string according to the given indent
-
-    :Args:
-        string: String
-            String dedent
-
-        indent_size: Int
-            indent size to reduce
+    Info: Dedents the string according to the given indent
+    Args:
+    string: String
+        -> String dedent
+    indent_size: Int
+        -> indent size to reduce
+    Returns: None
+    Error: None
     """
     string = string.expandtabs().splitlines()
     string = ("\n".join([line[(indent_size):] for line in string]))
     return (string.strip("\n"))
 
+
 class ConfigManager:
     """
+    Info:
     Manages the Configuration Parameters of Apollo
 
     >>> inst = ConfigManager()
     >>> inst.Getvariable("ROOT/SUB/SUB1")
     >>> inst.Setvariable(["VALUE"], "ROOT/SUB/SUB1")
-    """
 
+    Args: None
+    Returns: None
+    Error: None
+    """
     def __init__(self):
         self.file = os.path.join(parent_dir,"config.cfg")
         self.config_dict = self.openConfig(self.file)
 
     def deafult_settings(self):
         """
-        Initilizes the default launch config
+        Info: Initilizes the default launch config
+        Args:None
+        Returns: dict
+        Errors: None
         """
         config = {
             "APPTHEMES": [],
@@ -81,11 +113,12 @@ class ConfigManager:
 
     def openConfig(self, file = None):
         """
-        Opens the config file and loads the settings JSON
-
-        :Args:
-            file: String
-                Config File path
+        Info: Opens the config file and loads the settings JSON
+        Args:
+        file: String
+            -> Config File path
+        Returns: Dict
+        Errors: None
         """
         if file == None:
             file = self.file
@@ -105,17 +138,16 @@ class ConfigManager:
                     json.dump({}, FP, indent = 4)
         return self.config_dict
 
-
     def writeConfig(self, file = None):
         """
-        Writes Data to the Config File
-
-        :Args:
-            data: Dict
-                Data Dict to Write
-
-            file: String
-                File Name To write Into
+        Info: Writes Data to the Config File
+        Args:
+        data: Dict
+            -> Data Dict to Write
+        file: String
+            -> File Name To write Into
+        Returns: Boolean
+        Errors: None
         """
         if file == None:
             file = self.file
@@ -123,19 +155,17 @@ class ConfigManager:
         with open(file, "w") as FP:
             json.dump(self.config_dict, FP, indent = 4)
             return True
-        
-
 
     def Getvalue(self, path = "", config = None):
         """
-        Recursively Traverses the path and gets the value
-
-        :Args:
-            config: Dict
-                dict to traverse
-
-            path: String, List
-                Path used to traverse the dict
+        Info: Recursively Traverses the path and gets the value
+        Args:
+        config: Dict
+            -> dict to traverse
+        path: String, List
+            -> Path used to traverse the dict
+        Returns: any
+        Errors: None
         """
         if config == None:
             config = self.config_dict
@@ -154,20 +184,22 @@ class ConfigManager:
         else:
             return config
 
-
     def Setvalue(self, value, path = '', config = None):
         """
+        Info:
         Recursively Traverses the path and Sets the value
         >>> self.Config_manager.Setvalue(["VALUE"], "ROOT/SUB/SUB1")
-        :Args:
-            value: Any
-                Value to replace or set
 
-            config: Dict
-                dict to traverse
+        Args:
+        value: Any
+            -> Value to replace or set
+        config: Dict
+            -> dict to traverse
+        path: String, List
+            -> Path used to traverse the dict
 
-            path: String, List
-                Path used to traverse the dict
+        Returns: Boolean
+        Errors: None
         """
         if config == None:
             config = self.config_dict
@@ -205,7 +237,6 @@ class PlayingQueue:
         self.CurrentIndex = 0
         self.IsCircular = circ
         self.index_pos = []
-
 
     def __len__(self):
         return len(self.PlayingQueue)
@@ -408,6 +439,75 @@ class PlayingQueue:
         return self.PlayingQueue
 
 
-if __name__ == "__main__":
-    inst = ConfigManager()
-    inst.Getvalue("children/children")
+class PathUtils:
+    """
+    Info: Path related Utility functions
+    Args: None
+    Returns: None
+    Errors: None
+    """
+    def __init__(self): ...
+
+    @staticmethod
+    def PurgeDirectory(path):
+        """
+        Info: Purges directory tree
+        Args:
+            path: String
+            -> string of directory or file path
+        Returns: None
+        Errors: None
+        """
+        shutil.rmtree(path)
+
+    @staticmethod
+    def PurgeFile(path):
+        """
+        Info: Purges a single file
+        Args:
+            path: String
+            -> string of directory or file path
+        Returns: None
+        Errors: None
+        """
+        os.remove(path)
+
+    @staticmethod
+    def WinPathValidator(path):
+        """
+        Info: Path validator function that checks for OS appropiate paths
+        Args:
+            path: String
+            -> string of directory or file path
+
+        Returns: Boolean
+        Errors: None
+        """
+        return pathvalidate.is_valid_filepath(path)
+
+    @staticmethod
+    def WinFileValidator(file):
+        """
+        Info: name validator function that checks for OS appropiate names
+        Args:
+            file: String
+            -> string of directory or file name
+
+        Returns: Boolean
+        Errors: None
+        """
+        return pathvalidate.is_valid_filepath(file)
+
+    @staticmethod
+    def PathJoin(*args):
+        """
+        Info: Path Join function
+        Args:
+            path: List(string, string)
+            -> string of directory or file path
+
+        Returns: String
+        Errors: None
+        """
+        return os.path.normpath(os.path.join(*args))
+
