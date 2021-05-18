@@ -2,6 +2,7 @@ import time, os, sys, argparse, queue, threading
 from pprint import pprint
 
 import pyo, av
+from pyo.lib import players
 
 from apollo.utils import dedenter, tryit
 from apollo.plugins.audio_player.audiotables import AudioTable
@@ -33,7 +34,7 @@ class AudioDecoder(threading.Thread):
         super().__init__()
         self.start()
         self.file = path
-        self.AudioTable = AudioTable()
+        self.AudioTable = AudioTable(30)
         self.ThreadState = "ACTIVE"
 
     def run(self):
@@ -85,10 +86,10 @@ class AudioDecoder(threading.Thread):
                 if packet.size <= 0:
                     break
                 for frame in packet.decode():
-                    self.AudioTable.put(frame)
+                    self.AudioTable.extend(frame.to_ndarray())
+                    self.AudioTable.refreshView()
 
         self.ThreadState = "DECODED"
-        print(self.AudioTable.GetTableData())
         print(self.ThreadState)
 
 
@@ -116,6 +117,10 @@ class AudioInterface:
         Errors: None
         """
         self.MainServer = pyo.Server().boot()
+        return self
+
+    def gui(self):
+        self.MainServer.gui(locals())
         return self
 
     def ServerInfo(self):
@@ -160,8 +165,10 @@ class PlayBack_Controls(AudioInterface):
                 self.AudioDecoder.stop()
 
             self.AudioDecoder = AudioDecoder(file)
-            self.AudioTable = self.AudioDecoder.GetTable()
+            self.AudioTable = self.AudioDecoder.AudioTable
             self.AudioDecoder.decode()
+            self.reader = pyo.TableRead(self.AudioTable, self.AudioTable.getRate()).out()
+            self.AudioTable.view()
             return True
 
         elif file == None:
@@ -275,3 +282,4 @@ if __name__ == "__main__":
     # Inst.RunLoop()
     Player = PlayBack_Controls().ServerBootUp()
     Player.play("D:\\music\\cantstopohn.mp3")
+    Player.gui()
