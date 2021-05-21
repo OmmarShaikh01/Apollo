@@ -1,0 +1,7 @@
+mutagen
+av 
+pathvalidate
+pyo
+PyQt5
+pytest
+wxPython

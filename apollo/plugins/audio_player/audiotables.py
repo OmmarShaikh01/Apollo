@@ -1,3 +1,6 @@
+from random import randrange, sample
+
+from pyo.lib.utils import SampHold
 from apollo.utils import exe_time
 
 import time, os, sys, argparse, queue, threading
@@ -16,6 +19,7 @@ Plugin Support:
 # Channels:
     -> 2
 """
+
 
 class AudioDecoder(threading.Thread):
     """
@@ -88,8 +92,21 @@ class AudioDecoder(threading.Thread):
             if not(packet.size <= 0):
                 for frame in packet.decode():
                     self.AudioTable.extend(frame.to_ndarray())
+                    self.AudioTable.frame_decoded(frame.index)
+            else:
+                self.AudioTable.lastFrame = frame.index
 
         self.ThreadState = "DECODED"
+
+
+class BufferInfo:
+
+    TIMEBASE_SEC = 0.026122448979591838
+    TIMEBASE_PTS = 368640
+
+    def __init__(self, sample_rate, duration):
+        self.lastFrame = int((duration / BufferInfo.TIMEBASE_SEC) + 1)
+        self.decodedbuffer = dict.fromkeys(range(1, self.lastFrame + 1), False)
 
 
 class AudioTable(pyo.DataTable):
@@ -110,6 +127,7 @@ class AudioTable(pyo.DataTable):
         Returns: None
         Errors: None
         """
+        # setting up decoder and input stream
         if path != None and os.path.isfile(path):
             self.CurrentFile = path
             self.InputStream = av.open(path)
@@ -117,18 +135,29 @@ class AudioTable(pyo.DataTable):
         else:
             raise FileNotFoundError
 
-        if duration is None:
-            if path is not None:
-                self.duration = int(self.InputStream.duration / 100000)
+        # setting up duration for audio table
+        if (duration is None) and (path is not None):
+            self.duration = int(round(self.InputStream.duration / 1000000))
+        elif (duration is not None) and (path is not None):
+            self.duration = duration
         else:
             self.duration = 30
 
+        # meta setup for the table class
         self.sample_rate = 44100
         self.channels = 2
         self.cursor = 0
-        super().__init__(int(self.duration * self.sample_rate), self.channels)
+        self.BufferInfo = BufferInfo(self.sample_rate, self.duration)
+
+        super().__init__(size = int(self.duration * self.sample_rate), chnls = self.channels)
 
     def decode(self):
+        """
+        Info: startes the Decoder function in the thread
+        Args: None
+        Returns: self
+        Errors: None
+        """
         self.Decoder.decode()
         return self
 
@@ -170,14 +199,31 @@ class AudioTable(pyo.DataTable):
             raise Exception("Audio Channels Not Compatable")
 
     def extend(self, array):
+        """
+        Info: extends the audio table with given samples.
+        Args:
+        array: np.array
+            -> array that contains audio samples
+
+        Returns: None
+        Errors: None
+        """
         self.write(array, self.cursor)
 
     def seek(self, time):
+        """
+        Info: seeks to a given time in an audio table
+        Args:
+        time: int, float
+            -> time in seconds to seek to
+
+        Returns: int
+        Errors: None
+        """
         TIMEBASE_SEC = 0.026122448979591838
         TIMEBASE_PTS = 368640
 
-        self.InputStream
-        return (int((time / TIMEBASE_SEC) + 1) * TIMEBASE_PTS)
+        return (int(round(time / TIMEBASE_SEC)) * TIMEBASE_PTS)
 
     def getTable(self):
         """
@@ -189,8 +235,35 @@ class AudioTable(pyo.DataTable):
         return np.array([obj.getTable() for obj in self._base_objs])
 
     def exit(self):
+        """
+        Info: exits the table and closes the decoder, stream
+        Args: None
+        Returns: list
+        Errors: None
+        """
         self.InputStream.close()
         self.Decoder.stop()
+
+    def frame_decoded(self, frame_index):
+        self.Buffer_Info[frame_index] = True
+
+    @property
+    def Buffer_Info(self):
+        return self.BufferInfo.decodedbuffer
+
+    @property
+    def lastFrame(self):
+        return self.BufferInfo.lastFrame
+
+    @lastFrame.setter
+    def lastFrame(self, value):
+        length = len(self.Buffer_Info.keys())
+        print(length)
+        if length != value:
+            self.BufferInfo.lastFrame = value
+            for key in range(value + 1, length):
+                self.Buffer_Info.pop(key)
+
 
 class AudioTable_Reader: ...
 
@@ -200,6 +273,7 @@ if __name__ == "__main__":
     Server = pyo.Server().boot()
 
     INST = AudioTable("D:\\music\\mosesdt.mp3").decode()
+    INST.seek(29)
     tablereader = pyo.TableRead(INST, INST.getRate()).out()
     Server.start()
     Server.setAmp(0.1)
