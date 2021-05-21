@@ -86,30 +86,30 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from apollo.app.mainapp_ux import ApolloMain
 from apollo.plugins.app_theme import Theme
 
-       
+
 class ApolloExecute:
     """
     Info:
     Executes Apollo
-    
+
     Args: None
     Returns: None
     Errors: None
     """
-    
+
     def __init__(self, style = "fusion"):
         """
         Info:
         Class Constructor
-        
+
         Args:
             Style: String
             -> name of the application style to use
-            
+
         Returns: None
         Errors: None
         """
-        
+
         self.app = QtWidgets.QApplication(sys.argv)
         self.app.setStyle(style)
         self.UI = ApolloMain()
@@ -121,17 +121,17 @@ class ApolloExecute:
         """
         Info:
         Executes the app
-        
+
         Args: None
         Returns: None
         Errors: None
         """
         sys.exit(self.app.exec_())
-        
+
     def ThemeRefresh(self):
-        self.app.setStyleSheet(Theme().GenStyleSheet(Theme().DefaultPallete()))      
+        self.app.setStyleSheet(Theme().GenStyleSheet(Theme().DefaultPallete()))
 
 
 if __name__ == "__main__":
-    app = ApolloExecute()    
+    app = ApolloExecute()
     app.Execute()

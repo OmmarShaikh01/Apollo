@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Apollo</title>
+        <style>
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+        
+        
+    </head>
+    <body class="vscode-body">
+        <p><a href="https://www.python.org/"><img src="http://ForTheBadge.com/images/badges/made-with-python.svg" alt="forthebadge made-with-python"></a></p>
+<p><a href="https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity"><img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance"></a>
+<a href="https://pypi.python.org/pypi/ansicolortags/"><img src="https://img.shields.io/pypi/status/ansicolortags.svg" alt="PyPI status"></a>
+<a href="http://perso.crans.org/besson/LICENSE.html"><img src="https://img.shields.io/badge/License-GPL-blue.svg" alt="GPL license"></a>
+<a href="https://github.com/Naereen/badges/"><img src="https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github" alt="Open Source? Yes!"></a></p>
+<h1 id="apollo">Apollo</h1>
+<h4 id="apollo-is-a-open-source-music-player-for-playback-and-organization-of-audio-files-on-microsoft---windows-built-using-python">Apollo is a Open-Source music player for playback and organization of audio files on Microsoft   Windows, built using Python.</h4>
+<ul>
+<li>Audio playback: MP3, AAC, M4A, MPC, OGG, FLAC, ALAC, APE, Opus, TAK, WavPack, WMA, WAV, MIDI, MOD, UMX, XM.</li>
+<li>File converter: single/batch file conversion from/to all supported audio formats, with original metadata preserved. In dealing with identical output files instances, provided that re-encoding is unnecessary, the process has optional instructions for selective skipping in favor of performing a tag-only synchronization.</li>
+<li>Gapless playback: eliminates the timing related artifacts in transitions between consecutive audio tracks to provide a relatively uninterrupted listening experience.</li>
+<li>ReplayGain: performs normalization of volume levels among individual tracks, equalizing their perceived loudness to achieve a more seamless playlist progression.</li>
+<li>Library management: find, organize and rename music into particular folders and files based on any combination of audio tag values such as artist, album, track number, or other metadata. MusicBee can be configured to monitor and perform this task automatically for select libraries, while at the same time allowing users to take manual control on a case-by-case basis.</li>
+<li>Look and feel customization: the layout and appearance of various player elements is open for extensive modification, including adjustable key bindings.</li>
+<li>MiniLyrics integration: for display and editing of song lyrics synchronized to audio files.</li>
+<li>Apollo supports the DirectSound, ASIO and WASAPI audio interfaces, and it uses 32-bit audio processing</li>
+<li>Auto DJ: a user-programmable playlist generator, expanding beyond capabilities of the default shuffle presets and settings.</li>
+<li>Sleep &amp; Shutdown modes, for scheduled exit with gradual volume fade out function.</li>
+<li>Web scraping: integrates <a href="http://Fanart.tv">Fanart.tv</a>, and similar providers, to retrieve high-quality pictures of artists and album covers for music in library</li>
+</ul>
+<h1 id="new-features">New Features!</h1>
+<ul>
+<li>customizable audio-processors</li>
+<li>theme-support</li>
+</ul>
+<h3 id="screenshotsexpected-to-change-over-timew">Screenshots(Expected to change over time)W</h3>
+<p><img src="file:///d:\Apollo\examples%5Cmainwindow.PNG?raw=true" alt="MainWindow" title="MainWindow"></p>
+<h3 id="tech">Tech</h3>
+<p>Apollo uses a number of open source projects to work properly:</p>
+<ul>
+<li><a href="https://www.qt.io/">PyQt5</a> - Qt is a widget toolkit for creating graphical user interfaces as well as cross-platform applications that run on various software and hardware platforms such as Linux, Windows, macOS, Android or embedded systems</li>
+<li><a href="https://mutagen.readthedocs.io/en/latest/">mutagen</a> - Mutagen is a Python module to handle audio metadata.</li>
+<li><a href="http://ajaxsoundstudio.com/software/pyo/">pyo</a> - Pyo is a Python module written in C to help digital signal processing script creation.</li>
+</ul>
+<h3 id="installation">Installation</h3>
+<p>Apollo requires <a href="https://www.python.org/">Python3.8</a> or above to run.</p>
+<p>Install the dependencies and devDependencies</p>
+<pre><code class="language-sh"><div>python -m venv --copies &lt;dest dir&gt;
+python -m pip install PyQt5 mutagen pyo
+</div></code></pre>
+<p>Launching Apollo</p>
+<pre><code class="language-sh"><div>python -m apollo
+</div></code></pre>
+<h3 id="plugins">Plugins</h3>
+<p>Apollo currently dosent support plugins</p>
+<h3 id="todos">Todos</h3>
+<ul>
+<li>Write MORE Tests</li>
+<li>Add Audio Processors</li>
+<li>Add File decoding and playback</li>
+</ul>
+<h2 id="license">License</h2>
+<ul>
+<li><a href="https://github.com/UGLYclown999/Apollo/blob/master/LICENSE">GPL v3</a></li>
+</ul>
+<p><a href="https://GitHub.com/Naereen/"><img src="http://ForTheBadge.com/images/badges/built-with-love.svg" alt="ForTheBadge built-with-love"></a></p>
+
+    </body>
+    </html>

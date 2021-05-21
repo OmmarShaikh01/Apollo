@@ -1,96 +1,10 @@
-import time, os, sys, argparse, queue, threading
+import time, os, threading, datetime
 from pprint import pprint
 
 import pyo, av
-from pyo.lib import players
 
-from apollo.utils import dedenter, tryit
-from apollo.plugins.audio_player.audiotables import AudioTable
-
-"""
-Plugin Support:
-# Bitrate:
-    -> 44100
-# Formats:
-    -> .mp3
-# Channels:
-    -> 2
-"""
-
-class AudioDecoder(threading.Thread):
-    """
-    Info: Main Interface to access all audio deccoders.
-    Args: None
-    Returns: None
-    Errors: None
-    """
-    def __init__(self, path):
-        """
-        Info: Constructor
-        Args: None
-        Returns: None
-        Errors: None
-        """
-        super().__init__()
-        self.start()
-        self.file = path
-        self.AudioTable = AudioTable(30)
-        self.ThreadState = "ACTIVE"
-
-    def run(self):
-        """
-        Info: threade runner
-        Args: None
-        Returns: None
-        Errors: None
-        """
-        while self.ThreadState != "EXIT":
-            if self.ThreadState == "DECODE":
-                self.__Decode(self.file)
-            else:
-                time.sleep(0.01)
-
-    def stop(self):
-        """
-        Info: thread exit
-        Args: None
-        Returns: None
-        Errors: None
-        """
-        self.ThreadState = "EXIT"
-
-    def GetTable(self):
-        self.AudioTable
-
-    def decode(self):
-        self.ThreadState = "DECODE"
-
-    def __Decode(self, path = None):
-        """
-        Info: Audio Decoder
-        Args: None
-        Returns: None
-        Errors: None`
-        """
-        if path is not None:
-            self.file = path
-
-        print(f"Playing: {self.file}")
-
-        # variable Declaration
-        self.ThreadState = "DECODING"
-
-        # actual decoding and demuxing of file
-        with av.open(self.file) as InputStream:
-            for packet in InputStream.demux(audio = 0):
-                if packet.size <= 0:
-                    break
-                for frame in packet.decode():
-                    self.AudioTable.extend(frame.to_ndarray())
-                    self.AudioTable.refreshView()
-
-        self.ThreadState = "DECODED"
-        print(self.ThreadState)
+from apollo.utils import dedenter, exe_time, tryit
+from apollo.plugins.audio_player import AudioTable, MediaFile
 
 
 class AudioInterface:
@@ -120,8 +34,13 @@ class AudioInterface:
         return self
 
     def gui(self):
+        """
+        Info: Starts the GUI for Audio Processor server
+        Args: None
+        Returns: None
+        Errors: None
+        """
         self.MainServer.gui(locals())
-        return self
 
     def ServerInfo(self):
         """
@@ -131,24 +50,24 @@ class AudioInterface:
         Errors: None
         """
         info = {}
-        info["pa_count_devices"] = pyo.pa_count_devices()
-        info["pa_get_default_input"] = pyo.pa_get_default_input()
-        info["pa_get_default_output"] = pyo.pa_get_default_output()
-        info["pm_get_input_devices"] = pyo.pm_get_input_devices()
-        info["pa_count_host_apis"] = pyo.pa_count_host_apis()
-        info["pa_get_default_host_api"] = pyo.pa_get_default_host_api()
-        info["pm_count_devices"] = pyo.pm_count_devices()
-        info["pa_get_input_devices"] = pyo.pa_get_input_devices()
-        info["pm_get_default_input"] = pyo.pm_get_default_input()
-        info["pm_get_output_devices"] = pyo.pm_get_output_devices()
-        info["pm_get_default_output"] = pyo.pm_get_default_output()
-        info["pa_get_devices_infos"] = pyo.pa_get_devices_infos()
-        info["pa_get_version"] = pyo.pa_get_version()
-        info["pa_get_version_text"] = pyo.pa_get_version_text()
+        info["pa_count_devices"] = pyo.pa_count_devices() # type: ignore
+        info["pa_get_default_input"] = pyo.pa_get_default_input() # type: ignore
+        info["pa_get_default_output"] = pyo.pa_get_default_output() # type: ignore
+        info["pm_get_input_devices"] = pyo.pm_get_input_devices() # type: ignore
+        info["pa_count_host_apis"] = pyo.pa_count_host_apis() # type: ignore
+        info["pa_get_default_host_api"] = pyo.pa_get_default_host_api() # type: ignore
+        info["pm_count_devices"] = pyo.pm_count_devices() # type: ignore
+        info["pa_get_input_devices"] = pyo.pa_get_input_devices() # type: ignore
+        info["pm_get_default_input"] = pyo.pm_get_default_input() # type: ignore
+        info["pm_get_output_devices"] = pyo.pm_get_output_devices() # type: ignore
+        info["pm_get_default_output"] = pyo.pm_get_default_output() # type: ignore
+        info["pa_get_devices_infos"] = pyo.pa_get_devices_infos() # type: ignore
+        info["pa_get_version"] = pyo.pa_get_version() # type: ignore
+        info["pa_get_version_text"] = pyo.pa_get_version_text() # type: ignore
         return info
 
 
-class PlayBack_Controls(AudioInterface):
+class PlayBack_Controls(AudioInterface): # messed
 
     def __init__(self):
         super().__init__()
@@ -161,14 +80,8 @@ class PlayBack_Controls(AudioInterface):
         if file != None and os.path.isfile(file):
             self.CurrentFile = file
 
-            if self.AudioDecoder != None:
-                self.AudioDecoder.stop()
-
-            self.AudioDecoder = AudioDecoder(file)
-            self.AudioTable = self.AudioDecoder.AudioTable
-            self.AudioDecoder.decode()
+            self.AudioTable = self.AudioDecoder.GetTable()
             self.reader = pyo.TableRead(self.AudioTable, self.AudioTable.getRate()).out()
-            self.AudioTable.view()
             return True
 
         elif file == None:
@@ -282,4 +195,3 @@ if __name__ == "__main__":
     # Inst.RunLoop()
     Player = PlayBack_Controls().ServerBootUp()
     Player.play("D:\\music\\cantstopohn.mp3")
-    Player.gui()

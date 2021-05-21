@@ -52,7 +52,7 @@ class ApolloTabBindings(ApolloUX):
         """
         super().__init__()
         self.DBManager = DataBaseManager()
-        self.DBManager.connect("C:\\Users\\Ommar\\Desktop\\Apollo\\apollo\\db\\default.db")
+        self.DBManager.connect("D:\\Apollo\\apollo\\db\\default.db")
         self.DataProvider = ApolloDataProvider()
         self.InitTabs()
 
