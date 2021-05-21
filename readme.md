@@ -25,8 +25,8 @@
 - customizable audio-processors
 - theme-support
 
-### Screenshots(Expected to change over time)W
-![MainWindow](examples\mainwindow.PNG?raw=true "MainWindow")
+### Screenshots(Expected to change over time)
+![MainWindow](examples/mainwindow.PNG?raw=true "MainWindow")
 ### Tech
 
 Apollo uses a number of open source projects to work properly:
