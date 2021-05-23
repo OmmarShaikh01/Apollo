@@ -1,19 +1,20 @@
 import os, pathvalidate, shutil, json
-
-
 import time, json, os, threading
 
-import apollo
+from apollo import __path__ as root_path
 
-parent_dir = apollo.__path__[0]
+PARENT_DIR = root_path[0]
+
 
 def exe_time(method):
     def timed(*args, **kw):
         """
-        Info: Calculates the method execution time. exe_time is used as an Method decorator.
-        Args: None
-        Returns: None
-        Errors: None
+        Calculates the method execution time. exe_time is used as an Method decorator
+
+        Returns
+        -------
+        callback
+            wrapped callback
         """
         ts = time.time()
         result = method(*args, **kw)
@@ -28,6 +29,14 @@ def exe_time(method):
 
 def tryit(method):
     def exe(*args, **kwargs):
+        """
+        Wraps the method execution in exception block, is used as an Method decorator
+
+        Returns
+        -------
+        callback
+            wrapped callback
+        """
         try:
             ts = time.time()
             result = method(*args, **kwargs)
@@ -45,26 +54,32 @@ def tryit(method):
 def ThreadIt(method):
     def Exe(*args, **kw):
         """
-        Info: Threads the function passed in as an argumnet
-        Args: None
-        Returns: None
-        Errors: None
+        Thread executes any given function, is used as an Method decorator
+
+        Returns
+        -------
+        callback
+            wrapped callback
         """
         Thread = threading.Thread(target = method, args = args, kwargs = kw, name = method.__name__)
         Thread.start()
     return Exe
 
-
 def dedenter(string = '', indent_size = 4):
     """
-    Info: Dedents the string according to the given indent
-    Args:
-    string: String
-        -> String dedent
-    indent_size: Int
-        -> indent size to reduce
-    Returns: None
-    Error: None
+    Dedents the string according to the given indent
+
+    Parameters
+    ----------
+    string : str, optional
+        String to dedent, by default ''
+    indent_size : int, optional
+        indent size to reduce, by default 4
+
+    Returns
+    -------
+    str
+        output string that is dedented
     """
     string = string.expandtabs().splitlines()
     string = ("\n".join([line[(indent_size):] for line in string]))
@@ -73,27 +88,24 @@ def dedenter(string = '', indent_size = 4):
 
 class ConfigManager:
     """
-    Info:
     Manages the Configuration Parameters of Apollo
 
     >>> inst = ConfigManager()
     >>> inst.Getvariable("ROOT/SUB/SUB1")
     >>> inst.Setvariable(["VALUE"], "ROOT/SUB/SUB1")
-
-    Args: None
-    Returns: None
-    Error: None
     """
     def __init__(self):
-        self.file = os.path.join(parent_dir,"config.cfg")
+        self.file = os.path.join(PARENT_DIR,"config.cfg")
         self.config_dict = self.openConfig(self.file)
 
     def deafult_settings(self):
         """
-        Info: Initilizes the default launch config
-        Args:None
-        Returns: dict
-        Errors: None
+        Initilizes the default launch config
+
+        Returns
+        -------
+        dict
+            returns the default config
         """
         config = {
             "APPTHEMES": [],
@@ -103,7 +115,7 @@ class ConfigManager:
             "MONITERED_DB": {
                 "Default": {
                     "name": "Default",
-                    "db_loc": os.path.join(parent_dir, 'db', 'default.db'),
+                    "db_loc": os.path.join(PARENT_DIR, 'db', 'default.db'),
                     "file_mon": [],
                     "filters": ""
                 }
@@ -113,13 +125,19 @@ class ConfigManager:
 
     def openConfig(self, file = None):
         """
-        Info: Opens the config file and loads the settings JSON
-        Args:
-        file: String
-            -> Config File path
-        Returns: Dict
-        Errors: None
+        Opens the config file and loads the settings JSON
+
+        Parameters
+        ----------
+        file : String, optional
+            Config File path, by default None
+
+        Returns
+        -------
+        dict
+            reads a JSON and returns the config
         """
+
         if file == None:
             file = self.file
 
@@ -140,14 +158,17 @@ class ConfigManager:
 
     def writeConfig(self, file = None):
         """
-        Info: Writes Data to the Config File
-        Args:
-        data: Dict
-            -> Data Dict to Write
-        file: String
-            -> File Name To write Into
-        Returns: Boolean
-        Errors: None
+        Writes Data to the Config File
+
+        Parameters
+        ----------
+        file : str, optional
+            File Name To write Into, by default None
+
+        Returns
+        -------
+        Boolean
+            returns if the write was succesful
         """
         if file == None:
             file = self.file
@@ -158,14 +179,19 @@ class ConfigManager:
 
     def Getvalue(self, path = "", config = None):
         """
-        Info: Recursively Traverses the path and gets the value
-        Args:
-        config: Dict
-            -> dict to traverse
-        path: String, List
-            -> Path used to traverse the dict
-        Returns: any
-        Errors: None
+        Recursively Traverses the path and gets the value
+
+        Parameters
+        ----------
+        path : str, list, optional
+            Path used to traverse the dict, by default ""
+        config : dict, optional
+            dict to traverse, by default None
+
+        Returns
+        -------
+        any
+            returns value stored at a given path in the config
         """
         if config == None:
             config = self.config_dict
@@ -186,20 +212,22 @@ class ConfigManager:
 
     def Setvalue(self, value, path = '', config = None):
         """
-        Info:
         Recursively Traverses the path and Sets the value
         >>> self.Config_manager.Setvalue(["VALUE"], "ROOT/SUB/SUB1")
 
-        Args:
-        value: Any
-            -> Value to replace or set
-        config: Dict
-            -> dict to traverse
-        path: String, List
-            -> Path used to traverse the dict
+        Parameters
+        ----------
+        value : Any
+            Value to replace or set
+        path : str, optional
+            dict to traverse, by default ''
+        config : Dict, optional
+            Path used to traverse the dict, by default None
 
-        Returns: Boolean
-        Errors: None
+        Returns
+        -------
+        Boolean
+            returns if operation was succesful
         """
         if config == None:
             config = self.config_dict
@@ -230,7 +258,6 @@ class PlayingQueue:
     PlayingQueue is used as a track queue to manage track Playback.
     Base datatype used as the queue is an List and related operations of lists.
     """
-
     # management of index scaling when indexes are modified
     def __init__(self, circ = False):
         self.PlayingQueue = []
@@ -248,11 +275,12 @@ class PlayingQueue:
         """
         Adds Elements to the playing Queue according to the index
 
-        :Args:
-            element: List
-                A list of a single or multiple elements to add
-            Index: Int
-                Index to add elements to
+        Parameters
+        ----------
+        element : list
+            A list of a single or multiple elements to add
+        Index : int, optional
+            Index to add elements to, by default None
         """
         #element insertion to an empty queue
         if Index == None:
@@ -269,30 +297,31 @@ class PlayingQueue:
                 if self.CurrentIndex >= Index:
                     self.CurrentIndex += len(element)
 
-        return True
-
 
     def AddNext(self, element):
         """
         Adds Elements to the playing Queue after currest position
-        :Args:
-            element: List
-                A list of a single or multiple elements to add
+
+        Parameters
+        ----------
+        element : List
+            A list of a single or multiple elements to add
         """
         self.AddElements(element, Index = self.GetPointer() + 1)
 
 
     def RemoveElements(self, Index = None, Start = None, End = None):
         """
-        Removes a single element Or Elements between an Range Of indexs
+        Removes a single element Or Elements between an Range Of indexes
 
-        :Args:
-            Index: Int
-                index of the element to pop
-            Start: Int
-                Start position of the slice
-            End: Int
-                End Position of the slice
+        Parameters
+        ----------
+        Index : Int, optional
+            index of the element to pop, by default None
+        Start : Int, optional
+            Start position of the slice, by default None
+        End : Int, optional
+            End Position of the slice, by default None
         """
         # removing single element from an index
         if Index != None and (Start == None or End == None):
@@ -334,18 +363,24 @@ class PlayingQueue:
         # index scaling when elements are removed
 
 
-        return True
-
-
     def IncrementPointer(self, by = 1):
         """
         Increments the index with an given offset
 
-        :Args:
-            by: Int
-                offset to incerment index
-        """
+        Parameters
+        ----------
+        by : int, optional
+            offset to incerment index, by default 1
 
+        Returns
+        -------
+        int
+            current index
+
+        Raises
+        ------
+        IndexError
+        """
         if (self.CurrentIndex + by) < len(self.PlayingQueue):
             self.CurrentIndex += by
         else:
@@ -364,10 +399,21 @@ class PlayingQueue:
         """
         Decrements the index with an given offset
 
-        :Args:
-            by: Int
-                offset to Decerment index
+        Parameters
+        ----------
+        by : int, optional
+            offset to Decerment index, by default 1
+
+        Returns
+        -------
+        int
+            current index
+
+        Raises
+        ------
+        IndexError
         """
+
         if (self.CurrentIndex - by) >= 0:
             self.CurrentIndex -= by
         else:
@@ -386,9 +432,10 @@ class PlayingQueue:
         """
         Random access of queue
 
-        :Args:
-            Pos: Int
-                index to jump to
+        Parameters
+        ----------
+        Pos : Int
+            index to jump to
         """
         if Pos in range(len(self.PlayingQueue)):
             self.CurrentIndex = Pos
@@ -398,19 +445,34 @@ class PlayingQueue:
         """
         Enables and disables endpoint Circling of a list
 
-        :Args:
-            bool_: Boolean
+        Parameters
+        ----------
+        bool_ : bool
+            sets if the queue wraps around itself
         """
         self.IsCircular = bool_
 
 
     def GetPointer(self):
+        """
+        gets the current index where the pointer is at
+
+        Returns
+        -------
+        int
+            current index of the pointer
+        """
         return self.CurrentIndex
 
 
     def GetCurrent(self):
         """
         Gets the current value at index
+
+        Returns
+        -------
+        any
+            item at given index
         """
         if self.CurrentIndex != None:
             return self.PlayingQueue[self.CurrentIndex]
@@ -419,6 +481,11 @@ class PlayingQueue:
     def GetNext(self):
         """
         gets the next value
+
+        Returns
+        -------
+        int
+            gets the next index
         """
         self.IncrementPointer()
         return self.GetCurrent()
@@ -426,7 +493,12 @@ class PlayingQueue:
 
     def GetPrevious(self):
         """
-        Gets the previous value
+        gets the previous index
+
+        Returns
+        -------
+        index
+            gets the previous
         """
         self.DecrementPointer()
         return self.GetCurrent()
@@ -435,79 +507,93 @@ class PlayingQueue:
     def GetQueue(self):
         """
         Returns the complete queue
+
+        Returns
+        -------
+        list
+            gets the complete queue
         """
         return self.PlayingQueue
 
 
 class PathUtils:
     """
-    Info: Path related Utility functions
-    Args: None
-    Returns: None
-    Errors: None
+    Path related Utility functions
     """
     def __init__(self): ...
 
     @staticmethod
     def PurgeDirectory(path):
         """
-        Info: Purges directory tree
-        Args:
-            path: String
-            -> string of directory or file path
-        Returns: None
-        Errors: None
+        Purges directory tree
+
+        Parameters
+        ----------
+        path : String
+            string of directory or file path
         """
         shutil.rmtree(path)
 
     @staticmethod
     def PurgeFile(path):
         """
-        Info: Purges a single file
-        Args:
-            path: String
-            -> string of directory or file path
-        Returns: None
-        Errors: None
+        Purges a single file
+
+        Parameters
+        ----------
+        path : String
+            string of directory or file path
         """
         os.remove(path)
 
     @staticmethod
     def WinPathValidator(path):
         """
-        Info: Path validator function that checks for OS appropiate paths
-        Args:
-            path: String
-            -> string of directory or file path
+        Path validator function that checks for OS appropiate paths
 
-        Returns: Boolean
-        Errors: None
+        Parameters
+        ----------
+        path : String
+            string of directory or file path
+
+        Returns
+        -------
+        Boolean
+            returns if a path is valid or not
         """
         return pathvalidate.is_valid_filepath(path)
 
     @staticmethod
     def WinFileValidator(file):
         """
-        Info: name validator function that checks for OS appropiate names
-        Args:
-            file: String
-            -> string of directory or file name
+        file name validator function that checks for OS appropiate paths
 
-        Returns: Boolean
-        Errors: None
+        Parameters
+        ----------
+        path : String
+            string of directory or file path
+
+        Returns
+        -------
+        Boolean
+            returns if a file name is valid or not
         """
         return pathvalidate.is_valid_filepath(file)
 
     @staticmethod
     def PathJoin(*args):
         """
-        Info: Path Join function
-        Args:
-            path: List(string, string)
-            -> string of directory or file path
+        Path Join function
 
-        Returns: String
-        Errors: None
+        Parameters
+        ----------
+        path : List(string, string)
+            string of directory or file path
+
+        Returns
+        -------
+        String
+            a normalized path according to OS
         """
         return os.path.normpath(os.path.join(*args))
 

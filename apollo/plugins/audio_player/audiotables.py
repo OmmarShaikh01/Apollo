@@ -1,6 +1,3 @@
-from random import randrange, sample
-
-from pyo.lib.utils import SampHold
 from apollo.utils import exe_time
 
 import time, os, sys, argparse, queue, threading
@@ -91,8 +88,10 @@ class AudioDecoder(threading.Thread):
         for packet in self.InputStream.demux(audio = 0):
             if not(packet.size <= 0):
                 for frame in packet.decode():
+                    if frame.index == 10: return None
                     self.AudioTable.extend(frame.to_ndarray())
                     self.AudioTable.frame_decoded(frame.index)
+                    print(frame, frame.index)
             else:
                 self.AudioTable.lastFrame = frame.index
 

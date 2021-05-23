@@ -1,3 +1,6 @@
+# Created by https://www.toptal.com/developers/gitignore/api/python
+# Edit at https://www.toptal.com/developers/gitignore?templates=python
+
 # ignore all compiled binaries
 __pycache__/
 
@@ -10,14 +13,11 @@ __pycache__/
 # ignores the vscode
 .vscode/
 
-## ignores project files 
+## ignores project files
 **.wpu
 **.wpr
 
 
-
-# Created by https://www.toptal.com/developers/gitignore/api/python
-# Edit at https://www.toptal.com/developers/gitignore?templates=python
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

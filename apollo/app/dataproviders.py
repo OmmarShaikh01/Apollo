@@ -1,10 +1,10 @@
-from apollo.utils import exe_time
 import sys
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 
 from apollo.db.library_manager import DataBaseManager
+from apollo import exe_time
 
 class SQLTableModel(QtGui.QStandardItemModel):
     """
