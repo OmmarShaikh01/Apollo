@@ -2,9 +2,8 @@ import os
 from threading import Thread, Event
 import time
 
-from pyo import DataTable
+from pyo import DataTable, TableRead, TrigFunc
 import av
-from pyo.lib.generators import Input
 
 from apollo import exe_time
 
@@ -15,7 +14,7 @@ class BufferInfo():
     """
     def __init__(self, frames: int):
         """
-        Class Cunstructor
+        Class Constructor
 
         Parameters
         ----------
@@ -24,6 +23,22 @@ class BufferInfo():
         """
         super().__init__()
         self.FrameInfo = dict.fromkeys(range(frames), False)
+
+    def isWritten(self, Frame: "av.audio.frame.AudioFrame"): #type: ignore
+        """
+        Checks if the frames is written in the buffer and return boolean
+
+        Parameters
+        ----------
+        Frame : av.audio.frame.AudioFrame
+            frame to check for
+
+        Returns
+        -------
+        boolean
+            if the frame is written to buffer
+        """
+        return self.FrameInfo.get(Frame.index, False)
 
     @property
     def end_frame(self):
@@ -57,11 +72,12 @@ class BufferInfo():
                 self.FrameInfo.__setitem__(key, False)
 
 
+
 class AudioDecoder(Thread):
     """
     Decodes Samples and add it to the Audio Table
     """
-    def __init__(self, InputStream: 'av.container.InputContainer'):
+    def __init__(self, InputStream: 'av.container.InputContainer'): # type:ignore
         """
         Class Constructor
 
@@ -81,12 +97,14 @@ class AudioDecoder(Thread):
         """
         t1 = time.time()
         while self.DecoderStop.is_set():
+
+            # decoder Event loop
             if self.DecoderStream.is_set():
                 frame = self.__decode()
-                if frame == 'EOF':
-                    print(time.time() - t1)
-                else:
-                    self.Table.extend(frame.to_ndarray())
+                if not (frame == 'EOF'):
+                    self.Table.append_frame(frame)
+
+            # default empty state of the thread
             else:
                 time.sleep(0.1)
 
@@ -161,6 +179,7 @@ class AudioDecoder(Thread):
         self.DecoderStop.clear()
 
 
+
 class AudioTable(DataTable):
     """
     Holds the acctual smaples
@@ -206,26 +225,30 @@ class AudioTable(DataTable):
         self.sample_rate = samplerate
         self.channels = channels
         self.cursor = 0
+        self.table_size = int(self.duration * self.sample_rate)
 
         #calling parent class init
-        super().__init__(size = int(self.duration * self.sample_rate), chnls = self.channels)
+        super().__init__(size = self.table_size, chnls = self.channels)
 
     def write(self, array, pos):
         """
-        Info: Adds given samples to the audio table.
-        Args:
-        array: np.array
-            -> array that contains audio samples
-        pos: int
-            -> pos to add samples to
+        Adds given samples to the audio table.
 
-        Returns: None
-        Errors: None
+        Parameters
+        ----------
+        array : np.array
+            array that contains audio samples
+        pos : int
+            pos to add samples to
         """
         def FillSamples(obj, samples, cursor):
             for sample in samples:
                 obj.put(sample, cursor)
-                cursor += 1
+                # writes so fast that no time to read quick
+                if cursor >= self.table_size:
+                    cursor = 0
+                else:
+                    cursor += 1
             return cursor
 
         array_channels = array.shape[0]
@@ -247,15 +270,28 @@ class AudioTable(DataTable):
         else:
             raise Exception("Audio Channels Not Compatable")
 
+        self.refreshView()
+
+    def append_frame(self, frame):
+        """
+        appends an audioframe and extends the audio table with given frame
+
+        Parameters
+        ----------
+        frame : av.audio.frame.AudioFrame
+            A frame of audio
+        """
+        if not self.BufferInfo.isWritten(frame):
+            self.write(frame.to_ndarray(), self.cursor)
+
     def extend(self, array):
         """
-        Info: extends the audio table with given samples.
-        Args:
-        array: np.array
-            -> array that contains audio samples
+        extends the audio table with given samples.
 
-        Returns: None
-        Errors: None
+        Parameters
+        ----------
+        array : np.array
+            array that contains audio samples
         """
         self.write(array, self.cursor)
 
@@ -270,12 +306,28 @@ class AudioTable(DataTable):
         self.Decoder.decode()
 
 
-class AudioReader:
+
+class AudioReader(TableRead):
     """
     Reads the Audio buffer
     """
-    def __init__(self): ...
+    def __init__(self, table, freq = 1, loop = 0, interp = 2, mul = 1, add = 0):
+        """
+        Class Constructor
 
+        Parameters
+        ----------
+        table: PyoTableObject
+            Table containing the waveform samples.
+        freq: float or PyoObject, optional
+            Frequency in cycles per second. Defaults to 1.
+        loop: int {0, 1}, optional
+            Looping mode, 0 means off, 1 means on. Defaults to 0.
+        interp: int, optional
+            Choice of the interpolation method. Defaults to 2.
+        """
+        super().__init__(table, freq = freq, loop = loop, interp = interp, mul = mul, add = add)
+        TrigFunc(self["trig"], lambda: print("LOOP\n\n\n\n\n\n\n"))
 
 if __name__ == "__main__":
     from pyo import Server, TableRead
@@ -285,7 +337,8 @@ if __name__ == "__main__":
         inst.close()
 
     server = Server().boot()
-    inst = AudioTable(r"D:\music\mosesdt.mp3")
+    inst = AudioTable(r"D:\music\mosesdt.mp3", 0)
     inst.decode()
-    reader = TableRead(inst, inst.getRate()).out()
+    inst.view()
+    reader = AudioReader(inst, inst.getRate(), loop = 1).out()
     server.gui(locals())
