@@ -10,7 +10,6 @@ __pycache__/
 ## ignores project files
 **.wpu
 **.wpr
-.vscode/
 
 # ignore all testing tools and files
 tests/result/

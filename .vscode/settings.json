@@ -1,0 +1,23 @@
+{
+    "python.pythonPath": "venv\\Scripts\\python.exe",
+    "python.testing.pytestArgs": [
+        "--new-first",
+        "--self-contained-html",
+        "--rootdir=${workspaceFolder}\\tests\\main",
+        "--ignore=${workspaceFolder}\\venv",
+        "--cache-clear",
+        "-v"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.testing.autoTestDiscoverOnSaveEnabled": false,
+    "python.autoComplete.extraPaths": [
+        "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}"
+    ],
+    "python.autoComplete.addBrackets": true,
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}"
+    ],
+    "terminal.integrated.cwd": "${workspaceFolder}"
+}

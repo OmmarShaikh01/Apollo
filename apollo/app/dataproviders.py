@@ -1,7 +1,7 @@
 import sys
 
-from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import Qt
+from PySide6 import QtWidgets, QtGui, QtCore
+from PySide6.QtCore import Qt
 
 from apollo.db.library_manager import DataBaseManager
 from apollo import exe_time
@@ -35,16 +35,18 @@ class SQLTableModel(QtGui.QStandardItemModel):
         Returns: None
         Errors: None
         """
+        def FilterData(Row):
+            return [QtGui.QStandardItem(str(V)) for V in ResultSet_dict.get(Row)]
+
         self.removeRows(0, self.rowCount())
-        Query = self.DBManager.ExeQuery(f"SELECT * FROM {self.DB_TABLE}")
-        ResultSet = self.DBManager.fetchAll(Query)
+        ResultSet = self.DBManager.fetchAll(self.DBManager.ExeQuery(f"SELECT * FROM {self.DB_TABLE}"))
 
         if len(ResultSet) > 0:
-            ResultSet = {Value[0]: Value for Value in ResultSet}
+            ResultSet_dict = {Value[0]: Value for Value in ResultSet}
             for Row in Keys:
-                self.appendRow(map(lambda x: QtGui.QStandardItem(str(x)), ResultSet.get(Row)))
+                self.appendRow(FilterData(Row))
 
-    def GetSelectedIndexes(self, View, cols = None):
+    def Data_atIndex(self, Indexes:[] = None, Rows:[] = None, Columns:[] = None):
         """
         Info: returns all the data at selected Positions in a TBV
         Args:
@@ -54,39 +56,30 @@ class SQLTableModel(QtGui.QStandardItemModel):
         Return: List[[Column, Column, ...]]
         Errors:
         """
-        selected = View.selectedIndexes()
         Table = {}
 
-        if cols == None:
-            for index in selected:
-                Row = index.row()
-                if Table.get(Row):
-                    Table[Row].append(index.data())
-                else:
-                    Table[Row] = [index.data()]
-            return list(Table.values())
+        if Columns == None:
+            Columns = list(range(len(self.DB_FIELDS)))
 
-        elif len(cols) == 1:
-            for index in selected:
+        if Indexes != None:
+            for index in Indexes:
                 Row = index.row()
                 Col = index.column()
-                if Col in cols:
-                    Table[Row] = index.data()
-            return list(Table.values())
-
-        elif len(cols) > 1:
-            for index in selected:
-                Row = index.row()
-                Col = index.column()
-                if Col in cols:
+                if Col in Columns:
                     if Table.get(Row):
                         Table[Row].append(index.data())
                     else:
                         Table[Row] = [index.data()]
-            return list(Table.values())
 
-        else:
-            return None
+        if Rows != None:
+            for Row in Rows:
+                for Col in Columns:
+                    if Table.get(Row):
+                        Table[Row].append(self.index(Row, Col).data())
+                    else:
+                        Table[Row] = [self.index(Row, Col).data()]
+
+        return list(Table.values())
 
     def RefreshData(self):
         """
@@ -98,7 +91,7 @@ class SQLTableModel(QtGui.QStandardItemModel):
         self.removeRows(0, self.rowCount())
         self.LoadData(self.DB_TABLE)
 
-    def LoadTable(self, TableName, Header = None, Orientation = Qt.Horizontal):
+    def LoadTable(self, TableName, Header = None):
         """
         Info: Loads the table model with DB values
         Args:
@@ -114,7 +107,9 @@ class SQLTableModel(QtGui.QStandardItemModel):
         self.DB_TABLE = TableName
         self.LoadData(TableName)
         if Header != None:
-            self.LoadHeaderData(Header, Orientation)
+            self.LoadHeaderData(Header, Qt.Horizontal)
+        else:
+            self.LoadHeaderData(self.DB_FIELDS, Qt.Horizontal)
 
     def LoadData(self, TableName):
         """
@@ -125,10 +120,9 @@ class SQLTableModel(QtGui.QStandardItemModel):
         Returns: None
         Errors: None
         """
-        Query = self.DBManager.ExeQuery(f"SELECT * FROM {TableName}")
-        ResultSet = self.DBManager.fetchAll(Query)
+        ResultSet = self.DBManager.fetchAll(self.DBManager.ExeQuery(f"SELECT * FROM {TableName}"))
         for Row in ResultSet:
-            self.appendRow(map(lambda x: QtGui.QStandardItem(str(x)), Row))
+            self.appendRow(list(map(lambda x: QtGui.QStandardItem(str(x)), Row)))
 
     def LoadHeaderData(self, Header, Orientation = Qt.Horizontal):
         """
@@ -159,7 +153,7 @@ class SQLTableModel(QtGui.QStandardItemModel):
         if QueryString != None:
             Text = QueryString.strip()
         else:
-            Text = (self.GetSelectedIndexes(View, [self.DB_FIELDS.index(Column)])[0])
+            Text = (self.Data_atIndex(View, [self.DB_FIELDS.index(Column)])[0])
 
         if Text != "":
             Query = self.DBManager.ExeQuery(f"""
@@ -189,7 +183,7 @@ class SQLTableModel(QtGui.QStandardItemModel):
         else:
             [View.showRow(Row) for Row in range(View.model().rowCount())]
 
-    def RemoveItem(self, View):
+    def RemoveItem(self, SelectedIndexes):
         """
         Info: Removes Item From Model
         Args:
@@ -201,14 +195,13 @@ class SQLTableModel(QtGui.QStandardItemModel):
         """
 
         if self.DB_TABLE == "library":
-            selectedID = self.GetSelectedIndexes(View, [0])
+            selectedID = self.Data_atIndex(Indexes = SelectedIndexes, Columns = [0])
             selectedID = ", ".join([f"'{v}'"for v in selectedID])
             self.DBManager.ExeQuery(f"DELETE FROM {self.DB_TABLE} WHERE file_id IN ({selectedID})")
             self.RefreshData()
-            Paths =  self.GetSelectedIndexes(View, [self.DB_FIELDS.index("file_path")])
+            Paths = self.Data_atIndex(SelectedIndexes, [self.DB_FIELDS.index("file_path")])
         else:
-            selectedID = set([index.row() for index in View.selectedIndexes()])
-            View.clearSelection()
+            selectedID = set([index.row() for index in SelectedIndexes.selectedIndexes()])
             if len(selectedID) == self.rowCount():
                 self.removeRows(0, self.rowCount())
             else:

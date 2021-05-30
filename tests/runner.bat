@@ -11,6 +11,10 @@ if "%a%"=="pytest" (
     ..\venv\Scripts\pytest.exe --new-first --rootdir=. --ignore=..\venv --cache-clear -v --color=yes --code-highlight=yes
 )
 
+if "%a%"=="pytest-v" (
+    ..\venv\Scripts\pytest.exe --new-first --rootdir=. --ignore=..\venv --cache-clear -vv --color=yes --code-highlight=yes
+)
+
 if "%a%"=="coverage-apollo" (
     ..\venv\Scripts\coverage.exe run --branch --omit=..\venv,..\tests\* --source=..\apollo,. -m pytest --new-first --self-contained-html --rootdir=. --ignore=..\venv --cache-clear -v --color=yes --code-highlight=yes --html=%pytest_dir%/result.html .
     ..\venv\Scripts\coverage.exe report -i --skip-empty
@@ -30,4 +34,5 @@ if "%a%"=="pytest-html" (
 )
 PAUSE
 cd /d %og_dir%
+cls
 ECHO ON

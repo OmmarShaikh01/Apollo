@@ -10,10 +10,19 @@ from PySide6 import QtCore
 from apollo.db import DataBaseManager, FileManager, LibraryManager
 from apollo.db import DBStructureError, QueryBuildFailed, QueryExecutionFailed
 
-from tests.main.fixtures import DBManager, Gen_DbTable_Data, LibraryManager_connected, DBManager_Filled
+from tests.main.fixtures import DBManager, Gen_DbTable_Data
+from tests.main.fixtures import LibraryManager_connected, TempFilled_DB, del_TempFilled_DB
 
 #### Tests ####################################################################
+
 class Test_DataBaseManager:
+
+    @classmethod
+    def teardown_class(cls):
+        """ teardown any state that was previously setup with a call to
+        setup_class.
+        """
+        del_TempFilled_DB()
 
     def test_DBstartup(self):
         Manager = DataBaseManager()
@@ -132,8 +141,8 @@ class Test_DataBaseManager:
 
         Manager.close_connection() # cleanup
 
-    def test_CreateView_normal(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_CreateView_normal(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
         Selector = ["file_idX1"]
         Manager.CreateView(view_name = "nowplaying", Selector = Selector)
         Expected = [['file_idX1', 'path_idX1', 'file_nameX1', 'file_pathX1', 'albumX1',
@@ -148,8 +157,8 @@ class Test_DataBaseManager:
         assert (Expected == Manager.SelectAll("nowplaying"))
         Manager.close_connection() # cleanup
 
-    def test_CreateView_Shuffled(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_CreateView_Shuffled(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
         Selector = ["file_idX1"]
         Manager.CreateView(view_name = "nowplaying", Selector = Selector, Shuffled = True)
         Expected = [['file_idX1', 'path_idX1', 'file_nameX1', 'file_pathX1', 'albumX1',
@@ -164,8 +173,8 @@ class Test_DataBaseManager:
         assert (Expected == Manager.SelectAll("nowplaying"))
         Manager.close_connection() # cleanup
 
-    def test_CreateView_normal_fieldSelector(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_CreateView_normal_fieldSelector(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
         Selector = ["path_idX1"]
         Manager.CreateView(view_name = "nowplaying", Selector = Selector, FilterField = "path_id")
         Expected = [['file_idX1', 'path_idX1', 'file_nameX1', 'file_pathX1', 'albumX1',
@@ -180,8 +189,8 @@ class Test_DataBaseManager:
         assert (Expected == Manager.SelectAll("nowplaying"))
         Manager.close_connection() # cleanup
 
-    def test_CreateView_filter_fieldSelector_fileID(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_CreateView_filter_fieldSelector_fileID(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
         Selector = ["path_idX1"]
         ID = ["file_idX2"]
         Manager.CreateView(view_name = "nowplaying", Selector = Selector, ID = ID, FilterField = "path_id")
@@ -230,8 +239,8 @@ class Test_DataBaseManager:
 
         Manager.close_connection() # cleanup
 
-    def test_TableSize(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_TableSize(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
 
         # checks for data avaliable
         assert (Manager.TableSize("library") >= 0)
@@ -241,8 +250,8 @@ class Test_DataBaseManager:
 
         Manager.close_connection() # cleanup
 
-    def test_TablePlaycount(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_TablePlaycount(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
 
         # checks for data avaliable
         assert (Manager.TablePlaycount("library") >= 0)
@@ -252,8 +261,8 @@ class Test_DataBaseManager:
 
         Manager.close_connection() # cleanup
 
-    def test_TablePlaytime(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_TablePlaytime(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
 
         # checks for data avaliable
         assert (Manager.TablePlaytime("library") >= datetime.timedelta(seconds = 1))
@@ -263,8 +272,8 @@ class Test_DataBaseManager:
 
         Manager.close_connection() # cleanup
 
-    def test_TableAlbumcount(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_TableAlbumcount(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
 
         # checks for data avaliable
         assert (Manager.TableAlbumcount("library") >= 0)
@@ -274,8 +283,8 @@ class Test_DataBaseManager:
 
         Manager.close_connection() # cleanup
 
-    def test_TableArtistcount(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_TableArtistcount(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
 
         # checks for data avaliable
         assert (Manager.TableArtistcount("library") >= 0)
@@ -285,8 +294,8 @@ class Test_DataBaseManager:
 
         Manager.close_connection() # cleanup
 
-    def test_TableTrackcount(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_TableTrackcount(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
 
         # checks for data avaliable
         assert (Manager.TableTrackcount("library") >= 0)
@@ -296,8 +305,8 @@ class Test_DataBaseManager:
 
         Manager.close_connection() # cleanup
 
-    def test_TopAlbum(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_TopAlbum(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
 
         # checks for data avaliable
         assert (Manager.TopAlbum("library") != "")
@@ -307,8 +316,8 @@ class Test_DataBaseManager:
 
         Manager.close_connection() # cleanup
 
-    def test_Topgenre(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_Topgenre(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
 
         # checks for data avaliable
         assert (Manager.Topgenre("library") != "")
@@ -318,8 +327,8 @@ class Test_DataBaseManager:
 
         Manager.close_connection() # cleanup
 
-    def test_Topartist(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_Topartist(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
 
         # checks for data avaliable
         assert (Manager.Topartist("library") != "")
@@ -329,8 +338,8 @@ class Test_DataBaseManager:
 
         Manager.close_connection() # cleanup
 
-    def test_Toptrack(self, DBManager_Filled):
-        Manager = DBManager_Filled
+    def test_Toptrack(self, TempFilled_DB):
+        Manager, Data = TempFilled_DB
 
         # checks for data avaliable
         assert (Manager.Toptrack("library") != "")
@@ -339,6 +348,7 @@ class Test_DataBaseManager:
         assert (Manager.Toptrack("nowplaying") == "")
 
         Manager.close_connection() # cleanup
+
 
 class Test_LibraryManager:
 
