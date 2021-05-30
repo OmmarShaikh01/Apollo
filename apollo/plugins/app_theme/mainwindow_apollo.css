@@ -592,8 +592,12 @@ Issues:
     }
 
     QWidget#footer_PIXLB_cover{
-        background-color: $ui-background;
-        border: 0px solid Transparent;
+        background-color: Transparent;
+        border: 1px solid $ui-background;
+        border-radius: 2px;
+        background-image: url(':/icon_pack/png/24/music_icon-02.png');
+        background-position: center;
+        background-repeat: no-repeat;
     }
 
     QWidget#footer_LAB_seekbar_right,
@@ -668,7 +672,7 @@ Issues:
             color: $link-01;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/skip--back_icon-02.png');
+            background-image: url(':/icon_pack/png/24/player-skip-back_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -678,7 +682,7 @@ Issues:
             color: $disabled-03;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/skip--back_disabled-02.png');
+            background-image: url(':/icon_pack/png/24/player-skip-back_disabled-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -688,7 +692,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid transparent;    
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/skip--back_icon-03.png');
+            background-image: url(':/icon_pack/png/24/player-skip-back_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;        
         }
@@ -699,7 +703,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid $active-ui;
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/skip--back_icon-03.png');
+            background-image: url(':/icon_pack/png/24/player-skip-back_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;            
         }
@@ -711,7 +715,7 @@ Issues:
             color: $link-01;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/rewind--5_icon-02.png');
+            background-image: url(':/icon_pack/png/24/rotate_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -721,7 +725,7 @@ Issues:
             color: $disabled-03;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/rewind--5_disabled-02.png');
+            background-image: url(':/icon_pack/png/24/rotate_disabled-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -731,7 +735,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid transparent;    
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/rewind--5_icon-03.png');
+            background-image: url(':/icon_pack/png/24/rotate_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;        
         }
@@ -742,7 +746,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid $active-ui;
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/rewind--5_icon-03.png');
+            background-image: url(':/icon_pack/png/24/rotate_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;            
         }
@@ -754,7 +758,7 @@ Issues:
             color: $link-01;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/stop_icon-02.png');
+            background-image: url(':/icon_pack/png/24/player-stop_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -764,7 +768,7 @@ Issues:
             color: $disabled-03;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/stop_disabled-02.png');
+            background-image: url(':/icon_pack/png/24/player-stop_disabled-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -774,7 +778,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid transparent;    
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/stop_icon-03.png');
+            background-image: url(':/icon_pack/png/24/player-stop_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;        
         }
@@ -785,7 +789,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid $active-ui;
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/stop_icon-03.png');
+            background-image: url(':/icon_pack/png/24/player-stop_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;            
         }
@@ -797,7 +801,7 @@ Issues:
             color: $link-01;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/32/play_icon-02.png');
+            background-image: url(':/icon_pack/png/32/player-play_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -807,7 +811,7 @@ Issues:
             color: $disabled-03;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/32/play_disabled-02.png');
+            background-image: url(':/icon_pack/png/32/player-play_disabled-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -817,7 +821,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid transparent;    
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/32/play_icon-03.png');
+            background-image: url(':/icon_pack/png/32/player-play_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;        
         }
@@ -828,7 +832,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid $active-ui;
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/32/play_icon-03.png');
+            background-image: url(':/icon_pack/png/32/player-play_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;            
         }
@@ -840,7 +844,7 @@ Issues:
             color: $link-01;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/pause_icon-02.png');
+            background-image: url(':/icon_pack/png/24/player-pause_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -850,7 +854,7 @@ Issues:
             color: $disabled-03;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/pause_disabled-02.png');
+            background-image: url(':/icon_pack/png/24/player-pause_disabled-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -860,7 +864,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid transparent;    
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/pause_icon-03.png');
+            background-image: url(':/icon_pack/png/24/player-pause_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;        
         }
@@ -871,7 +875,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid $active-ui;
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/pause_icon-03.png');
+            background-image: url(':/icon_pack/png/24/player-pause_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;            
         }
@@ -883,7 +887,7 @@ Issues:
             color: $link-01;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/forward--5_icon-02.png');
+            background-image: url(':/icon_pack/png/24/rotate-2_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -893,7 +897,7 @@ Issues:
             color: $disabled-03;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/forward--5_disabled-02.png');
+            background-image: url(':/icon_pack/png/24/rotate-2_disabled-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -903,7 +907,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid transparent;    
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/forward--5_icon-03.png');
+            background-image: url(':/icon_pack/png/24/rotate-2_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;        
         }
@@ -914,7 +918,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid $active-ui;
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/forward--5_icon-03.png');
+            background-image: url(':/icon_pack/png/24/rotate-2_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;            
         }
@@ -926,7 +930,7 @@ Issues:
             color: $link-01;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/skip--forward_icon-02.png');
+            background-image: url(':/icon_pack/png/24/player-skip-forward_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -936,7 +940,7 @@ Issues:
             color: $disabled-03;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/skip--forward_disabled-02.png');
+            background-image: url(':/icon_pack/png/24/player-skip-forward_disabled-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -946,7 +950,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid transparent;    
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/skip--forward_icon-03.png');
+            background-image: url(':/icon_pack/png/24/player-skip-forward_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;        
         }
@@ -957,7 +961,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid $active-ui;
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/skip--forward_icon-03.png');
+            background-image: url(':/icon_pack/png/24/player-skip-forward_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;            
         }
@@ -969,7 +973,7 @@ Issues:
             color: $link-01;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/volume--up_icon-02.png');
+            background-image: url(':/icon_pack/png/24/volume_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -979,7 +983,7 @@ Issues:
             color: $disabled-03;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/volume--up_disabled-02.png');
+            background-image: url(':/icon_pack/png/24/volume_disabled-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -989,7 +993,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid transparent;    
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/volume--up_icon-03.png');
+            background-image: url(':/icon_pack/png/24/volume_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;        
         }
@@ -1000,7 +1004,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid $active-ui;
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/volume--up_icon-03.png');
+            background-image: url(':/icon_pack/png/24/volume_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;            
         }
@@ -1012,7 +1016,7 @@ Issues:
             color: $link-01;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/audio-console_icon-02.png');
+            background-image: url(':/icon_pack/png/24/adjustments_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -1022,7 +1026,7 @@ Issues:
             color: $disabled-03;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/audio-console_disabled-02.png');
+            background-image: url(':/icon_pack/png/24/adjustments_disabled-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -1032,7 +1036,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid transparent;    
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/audio-console_icon-03.png');
+            background-image: url(':/icon_pack/png/24/adjustments_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;        
         }
@@ -1043,7 +1047,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid $active-ui;
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/audio-console_icon-03.png');
+            background-image: url(':/icon_pack/png/24/adjustments_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;            
         }
@@ -1098,7 +1102,7 @@ Issues:
             color: $link-01;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/rewind--5_icon-02.png');
+            background-image: url(':/icon_pack/png/24/power_icon-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -1108,7 +1112,7 @@ Issues:
             color: $disabled-03;
             border: 1px solid Transparent;            
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/rewind--5_disabled-02.png');
+            background-image: url(':/icon_pack/png/24/power_disabled-02.png');
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -1118,7 +1122,7 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid transparent;    
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/rewind--5_icon-03.png');
+            background-image: url(':/icon_pack/png/24/power_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;        
         }
@@ -1129,12 +1133,10 @@ Issues:
             color: $hover-primary-text;
             border: 1px solid $active-ui;
             border-radius: 2px;
-            background-image: url(':/icon_pack/png/24/rewind--5_icon-03.png');
+            background-image: url(':/icon_pack/png/24/power_icon-03.png');
             background-position: center;
             background-repeat: no-repeat;            
         }
-
-
 
 
 /* NowPlaying Queue -------------------------------------------------------- */
@@ -1154,7 +1156,6 @@ Issues:
 
     QWidget#NPQ_HDLB_queue{        
         background-color: $ui-background;
-        border-left: 2px solid $ui-02;
         font-size: 12px;
         min-height: 24px;
         min-width: 64px;

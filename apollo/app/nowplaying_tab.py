@@ -1,7 +1,7 @@
 import sys
 
-from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import Qt
+from PySide6 import QtWidgets, QtGui, QtCore
+from PySide6.QtCore import Qt
 
 from apollo.utils import PlayingQueue, exe_time
 from apollo.app.dataproviders import SQLTableModel

@@ -1,9 +1,7 @@
 import os, pathvalidate, shutil, json
 import time, json, os, threading
 
-from apollo import __path__ as root_path
-
-PARENT_DIR = root_path[0]
+from apollo import PARENT_DIR
 
 
 def exe_time(method):
@@ -597,3 +595,60 @@ class PathUtils:
         """
         return os.path.normpath(os.path.join(*args))
 
+    @staticmethod
+    def isFileExt(file, ext):
+        return (os.path.splitext(file)[1] == ext)
+
+class AppConfig(dict):
+
+    def __init__(self):
+        """
+        Manages all the app config loading and writing config manager that manages the config.cfg file
+        """
+        self.Manager = ConfigManager()
+
+    def __repr__(self):
+        return json.dumps(self.Manager.config_dict, indent = 2)
+
+    def __str__(self):
+        return json.dumps(self.Manager.config_dict, indent = 2)
+
+    def __getitem__(self, k):
+        """
+        Gets the item at index
+
+        Parameters
+        ----------
+        k : any
+            key to look for
+        """
+        if k == "current_db_path":
+            return self.current_db_path
+
+    def __setitem__(self, k, value):
+        """
+        Gets the item at index
+
+        Parameters
+        ----------
+        k : any
+            key to look for
+        """
+        if k == "current_db_path":
+            self.current_db_path = value
+
+    # current_db_path #########################################################
+    @property
+    def current_db_path(self):
+        name = self.Manager.Getvalue("CURRENT_DB")
+        return self.Manager.Getvalue(f"MONITERED_DB/{name}/db_loc")
+
+    @current_db_path.setter
+    def current_db_path(self, value):
+        name = self.Manager.Getvalue("CURRENT_DB")
+        self.Manager.Setvalue([value], f"MONITERED_DB/{name}/db_loc")
+
+
+if __name__ == "__main__":
+    inst = AppConfig()
+    print(inst)

@@ -1,7 +1,11 @@
 mutagen
-av 
+av
 pathvalidate
 pyo
-PyQt5
+PySide6
+coverage
+sphinx_rtd_theme
+sphinx
+pytest-html
 pytest
 wxPython

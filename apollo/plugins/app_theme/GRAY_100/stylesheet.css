@@ -148,14 +148,16 @@ Issues:
         QTableView::item{
             background-color: #161616;
             max-height: 24px;
+            min-height: 16px;
             padding: 4px;
-            border: 0px solid transparent;
+            border-bottom: 1px solid #262626;
             text-align: center;
         }
 
         QTableView::item:alternate{
             background-color: #262626;
             max-height: 24px;
+            min-height: 16px;
             padding: 4px;        
             border: 0px solid transparent;
             text-align: center;
@@ -206,7 +208,6 @@ Issues:
         QListView{
             background-color: #262626;        
             color: #c6c6c6;
-            gridline-color: none;
         }
 
         QListView:disabled{
@@ -215,10 +216,10 @@ Issues:
         }
 
         QListView::item{
-            background-color: #262626;
-            min-height: 16px;
-            padding: 4px;
-            border: 0px solid transparent;
+            background-color: #161616;
+            max-height: 24px;
+            min-height: 24px;
+            border-bottom: 1px solid #262626;
             text-align: center;
         }
 
@@ -361,9 +362,9 @@ Issues:
             QScrollBar:horizontal {
                 height: 10px;
                 border: 0px solid transparent;
-                border-radius: 2px;
-                background-color: transparent;
+                border-radius: 2px;                
                 margin: 0px;
+                background: transparent;                    
             }
 
             QScrollBar::handle:horizontal {
@@ -390,13 +391,14 @@ Issues:
                 width: 0px;
                 border-image: transparent;
                 subcontrol-position: right;
-                subcontrol-origin: margin;
+                subcontrol-origin: margin;                
             }
 
             QScrollBar::add-line:horizontal:hover, QScrollBar::add-line:horizontal:on {
                 border-image: transparent;
                 subcontrol-position: right;
-                subcontrol-origin: margin;
+                subcontrol-origin: margin;                
+
             }
 
             QScrollBar::sub-line:horizontal {
@@ -406,17 +408,19 @@ Issues:
                 width: 0px;
                 border-image: transparent;
                 subcontrol-position: left;
-                subcontrol-origin: margin;
+                subcontrol-origin: margin;                
+
             }
 
             QScrollBar::sub-line:horizontal:hover, QScrollBar::sub-line:horizontal:on {
                 border-image: transparent;
                 subcontrol-position: left;
-                subcontrol-origin: margin;
+                subcontrol-origin: margin;                
+
             }
 
             QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
-                background: transparent;
+                background: transparent;    
             }
 
         /*Vertical*/
@@ -582,13 +586,18 @@ Issues:
 
 /* Footer ------------------------------------------------------------------ */
     QWidget#MW_FR_mainfooter{
-        background-color: #161616;
+        background-color: #262626;
         border: 0px solid Transparent;
+        border-top: 1px solid #161616;
     }
 
     QWidget#footer_PIXLB_cover{
-        background-color: #262626;
-        border: 0px solid Transparent;
+        background-color: Transparent;
+        border: 2px solid #161616;
+        border-radius: 2px;
+        background-image: url(':/icon_pack/png/24/music_icon-02.png');
+        background-position: center;
+        background-repeat: no-repeat;
     }
 
     QWidget#footer_LAB_seekbar_right,
@@ -657,99 +666,132 @@ Issues:
     }
 
     /* footer_PSB_prev */
-
+        
         QPushButton#footer_PSB_prev{
             background-color: Transparent;
             color: #78a9ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/skip--back_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:disabled#footer_PSB_prev{
             background-color: #525252;
             color: #6f6f6f;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/skip--back_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:hover#footer_PSB_prev{
-            background-color: #353535;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid transparent;    
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/skip--back_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;        
         }
 
         QPushButton:checked#footer_PSB_prev,
         QPushButton:pressed#footer_PSB_prev{
-            background-color: #525252;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid #525252;
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/skip--back_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;            
         }
 
-     /* footer_PSB_seekb */
+    /* footer_PSB_seekb */
 
         QPushButton#footer_PSB_seekb{
             background-color: Transparent;
             color: #78a9ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/rewind--5_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:disabled#footer_PSB_seekb{
             background-color: #525252;
             color: #6f6f6f;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/rewind--5_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:hover#footer_PSB_seekb{
-            background-color: #353535;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid transparent;    
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/rewind--5_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;        
         }
 
         QPushButton:checked#footer_PSB_seekb,
         QPushButton:pressed#footer_PSB_seekb{
-            background-color: #525252;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid #525252;
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/rewind--5_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;            
         }
 
-     /* footer_PSB_stop */
+    /* footer_PSB_stop */
 
         QPushButton#footer_PSB_stop{
             background-color: Transparent;
             color: #78a9ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/stop_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:disabled#footer_PSB_stop{
             background-color: #525252;
             color: #6f6f6f;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/stop_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:hover#footer_PSB_stop{
-            background-color: #353535;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid transparent;    
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/stop_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;        
         }
 
         QPushButton:checked#footer_PSB_stop,
         QPushButton:pressed#footer_PSB_stop{
-            background-color: #525252;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid #525252;
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/stop_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;            
         }
 
     /* footer_PSB_play */
@@ -757,31 +799,42 @@ Issues:
         QPushButton#footer_PSB_play{
             background-color: Transparent;
             color: #78a9ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/32/play_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:disabled#footer_PSB_play{
             background-color: #525252;
             color: #6f6f6f;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/32/play_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:hover#footer_PSB_play{
-            background-color: #353535;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid transparent;    
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/32/play_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;        
         }
 
         QPushButton:checked#footer_PSB_play,
         QPushButton:pressed#footer_PSB_play{
-            background-color: #525252;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid #525252;
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/32/play_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;            
         }
 
     /* footer_PSB_pause */
@@ -789,31 +842,42 @@ Issues:
         QPushButton#footer_PSB_pause{
             background-color: Transparent;
             color: #78a9ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/pause_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:disabled#footer_PSB_pause{
             background-color: #525252;
             color: #6f6f6f;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/pause_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:hover#footer_PSB_pause{
-            background-color: #353535;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid transparent;    
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/pause_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;        
         }
 
         QPushButton:checked#footer_PSB_pause,
         QPushButton:pressed#footer_PSB_pause{
-            background-color: #525252;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid #525252;
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/pause_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;            
         }
 
     /* footer_PSB_seekf */
@@ -821,31 +885,42 @@ Issues:
         QPushButton#footer_PSB_seekf{
             background-color: Transparent;
             color: #78a9ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/forward--5_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:disabled#footer_PSB_seekf{
             background-color: #525252;
             color: #6f6f6f;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/forward--5_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:hover#footer_PSB_seekf{
-            background-color: #353535;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid transparent;    
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/forward--5_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;        
         }
 
         QPushButton:checked#footer_PSB_seekf,
         QPushButton:pressed#footer_PSB_seekf{
-            background-color: #525252;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid #525252;
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/forward--5_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;            
         }
 
     /* footer_PSB_next */
@@ -853,31 +928,42 @@ Issues:
         QPushButton#footer_PSB_next{
             background-color: Transparent;
             color: #78a9ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/skip--forward_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:disabled#footer_PSB_next{
             background-color: #525252;
             color: #6f6f6f;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/skip--forward_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:hover#footer_PSB_next{
-            background-color: #353535;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid transparent;    
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/skip--forward_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;        
         }
 
         QPushButton:checked#footer_PSB_next,
         QPushButton:pressed#footer_PSB_next{
-            background-color: #525252;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid #525252;
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/skip--forward_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;            
         }
 
     /* footer_PSB_volume */
@@ -885,95 +971,128 @@ Issues:
         QPushButton#footer_PSB_volume{
             background-color: Transparent;
             color: #78a9ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/volume--up_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:disabled#footer_PSB_volume{
             background-color: #525252;
             color: #6f6f6f;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/volume--up_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:hover#footer_PSB_volume{
-            background-color: #353535;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid transparent;    
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/volume--up_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;        
         }
 
         QPushButton:checked#footer_PSB_volume,
         QPushButton:pressed#footer_PSB_volume{
-            background-color: #525252;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid #525252;
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/volume--up_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;            
         }
 
-    /* pushButton_19 */
+    /* footer_PSB_audio_control */
 
-        QPushButton#pushButton_19{
+        QPushButton#footer_PSB_audio_control{
             background-color: Transparent;
             color: #78a9ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/audio-console_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        QPushButton:disabled#pushButton_19{
+        QPushButton:disabled#footer_PSB_audio_control{
             background-color: #525252;
             color: #6f6f6f;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/audio-console_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        QPushButton:hover#pushButton_19{
-            background-color: #353535;
+        QPushButton:hover#footer_PSB_audio_control{
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid transparent;    
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/audio-console_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;        
         }
 
-        QPushButton:checked#pushButton_19,
-        QPushButton:pressed#pushButton_19{
-            background-color: #525252;
+        QPushButton:checked#footer_PSB_audio_control,
+        QPushButton:pressed#footer_PSB_audio_control{
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid #525252;
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/audio-console_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;            
         }
 
-    /* pushButton_22 */
+    /* footer_PSB_repeat */
 
-        QPushButton#pushButton_22{
+        QPushButton#footer_PSB_repeat{
             background-color: Transparent;
             color: #78a9ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/repeat_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        QPushButton:disabled#pushButton_22{
+        QPushButton:disabled#footer_PSB_repeat{
             background-color: #525252;
             color: #6f6f6f;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/repeat_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        QPushButton:hover#pushButton_22{
-            background-color: #353535;
+        QPushButton:hover#footer_PSB_repeat{
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid transparent;    
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/repeat_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;        
         }
 
-        QPushButton:checked#pushButton_22,
-        QPushButton:pressed#pushButton_22{
-            background-color: #525252;
+        QPushButton:checked#footer_PSB_repeat,
+        QPushButton:pressed#footer_PSB_repeat{
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid #525252;
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/repeat_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;            
         }
 
     /* pushButton_20 */
@@ -981,32 +1100,46 @@ Issues:
         QPushButton#pushButton_20{
             background-color: Transparent;
             color: #78a9ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/rewind--5_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:disabled#pushButton_20{
             background-color: #525252;
             color: #6f6f6f;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/rewind--5_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:hover#pushButton_20{
-            background-color: #353535;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid transparent;    
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/rewind--5_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;        
         }
 
         QPushButton:checked#pushButton_20,
         QPushButton:pressed#pushButton_20{
-            background-color: #525252;
+            background-color: transparent;
             color: #a6c8ff;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid #525252;
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/24/rewind--5_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;            
         }
+
+
+
 
 /* NowPlaying Queue -------------------------------------------------------- */
 
@@ -1036,6 +1169,7 @@ Issues:
         background-color: #262626;     
         border: 0px solid Transparent;  
         min-width: 64px;
+        padding-bottom: 1px;
         color: #f4f4f4;
     }        
 
@@ -1052,22 +1186,33 @@ Issues:
             background-color: #262626;
             color: #78a9ff;
             border: 1px solid Transparent;
-            padding: 8px;
+            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/16/search_icon-03.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:disabled#NPQ_PSB_search{
             background-color: #525252;
             color: #6f6f6f;
             border: 1px solid Transparent;
-            padding: 8px;
+            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/16/search_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:hover#NPQ_PSB_search{
             background-color: #525252;
             color: #a6c8ff;
             border: 1px solid Transparent;
-            padding: 8px;
+
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/16/search_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:checked#NPQ_PSB_search,
@@ -1075,7 +1220,11 @@ Issues:
             background-color: #525252;
             color: #a6c8ff;
             border: 1px solid #262626;
-            padding: 8px;
+            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/16/search_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
 /* Library Tab -------------------------------------------------------- */
@@ -1085,6 +1234,7 @@ Issues:
         background-color: #393939;     
         border: 0px solid Transparent;  
         min-width: 64px;
+        padding-bottom: 1px;    
         color: #f4f4f4;
     }
 
@@ -1118,22 +1268,33 @@ Issues:
             background-color: #262626;
             color: #78a9ff;
             border: 1px solid Transparent;
-            padding: 8px;
+            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/16/search_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:disabled#LBT_PSB_groupsearch{
             background-color: #525252;
             color: #6f6f6f;
             border: 1px solid Transparent;
-            padding: 8px;
+
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/16/search_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:hover#LBT_PSB_groupsearch{
             background-color: #525252;
             color: #a6c8ff;
             border: 1px solid Transparent;
-            padding: 8px;
+            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/16/search_icon-01.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:checked#LBT_PSB_groupsearch,
@@ -1141,35 +1302,46 @@ Issues:
             background-color: #525252;
             color: #a6c8ff;
             border: 1px solid #262626;
-            padding: 8px;
+            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/16/search_icon-01.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
     /* LBT_PSB_mainsearch */
 
         QPushButton#LBT_PSB_mainsearch{
             background-color: #262626;
-            border-radius: 2px;
-            background-image: url(':/icon_pack/png/16/volume--up_icon-02.png');
-            background-position: center;
-            background-repeat: no-repeat;
-
             color: #78a9ff;
             border: 1px solid Transparent;
+            
             border-radius: 2px;
+            background-image: url(':/icon_pack/png/16/search_icon-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:disabled#LBT_PSB_mainsearch{
             background-color: #525252;
             color: #6f6f6f;
-            border: 1px solid Transparent;
-            padding: 8px;
+            border: 1px solid Transparent;            
+            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/16/search_disabled-02.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:hover#LBT_PSB_mainsearch{
             background-color: #525252;
             color: #a6c8ff;
             border: 1px solid Transparent;
-            padding: 8px;
+            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/16/search_icon-01.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         QPushButton:checked#LBT_PSB_mainsearch,
@@ -1177,5 +1349,9 @@ Issues:
             background-color: #525252;
             color: #a6c8ff;
             border: 1px solid #262626;
-            padding: 8px;
+            
+            border-radius: 2px;
+            background-image: url(':/icon_pack/png/16/search_icon-01.png');
+            background-position: center;
+            background-repeat: no-repeat;
         }

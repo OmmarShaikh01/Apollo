@@ -1,22 +1,21 @@
-# Created by https://www.toptal.com/developers/gitignore/api/python
-# Edit at https://www.toptal.com/developers/gitignore?templates=python
-
 # ignore all compiled binaries
 __pycache__/
 
-# ignores all db files
+#ignores all db files
 **.db
 
-# ignores all config files: default config is embedded in code
+#ignores all config files: default config is embedded in code
 **.cfg
-
-# ignores the vscode
-.vscode/
 
 ## ignores project files
 **.wpu
 **.wpr
+.vscode/
 
+# ignore all testing tools and files
+tests/result/
+apollo/plugins/app_theme/**/png/
+apollo/plugins/app_theme/**/**.qrc
 
 
 ### Python ###
@@ -28,7 +27,7 @@ __pycache__/
 # C extensions
 *.so
 
-# Distribution / packaging
+# Distribution / packagingA
 .Python
 build/
 develop-eggs/
