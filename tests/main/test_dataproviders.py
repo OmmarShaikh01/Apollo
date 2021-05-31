@@ -17,44 +17,49 @@ def getSQLModel(TempFilled_DB):
 
 #### Tests ####################################################################
 class Test_SQLTableModel:
-
+    
     @classmethod
     def setup_class(cls):
-        App = QtWidgets.QApplication()
-
+        if not QtWidgets.QApplication.instance():
+            cls.App = QtWidgets.QApplication()    
+    
     @classmethod
     def teardown_class(cls):
         """ teardown any state that was previously setup with a call to
         setup_class.
         """
+        if QtWidgets.QApplication.instance() and hasattr(cls, "App"):
+            cls.App.quit()
+            del cls.App
+            
         del_TempFilled_DB()
 
+        
     def test_SQlTable_load(self, TempFilled_DB):
         Manager, Table = TempFilled_DB
         Table = [[str(C[R]) for C in Table.values()] for R in range(len(Table["album"]))]
-
         Model = SQLTableModel()
         Model.LoadTable("library")
         Data = Model.Data_atIndex(Rows = list(range(20)))
-        assert Data == Table
 
         Manager.close_connection() #clean up
+        assert Table == Data
 
     def test_SQlTable_index(self, getSQLModel):
         (Model, Manager, Table) = getSQLModel
-
+        Manager.close_connection() #clean up
+        
         assert [Table[1]] == Model.Data_atIndex(Rows = [1])
         assert [Table[1][5:10]] == Model.Data_atIndex(Rows = [1], Columns = list(range(5,10)))
-        Manager.close_connection() #clean up
 
     def test_SQlTable_selectedindex(self, getSQLModel):
         (Model, Manager, Table) = getSQLModel
-
         View = QtWidgets.QTableView()
         View.setModel(Model)
         View.selectAll()
+        Manager.close_connection() #clean up
+
         assert Table == Model.Data_atIndex(View.selectedIndexes())
 
-        Manager.close_connection() #clean up
 
 

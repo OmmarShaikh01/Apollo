@@ -14,7 +14,6 @@ from tests.main.fixtures import DBManager, Gen_DbTable_Data
 from tests.main.fixtures import LibraryManager_connected, TempFilled_DB, del_TempFilled_DB
 
 #### Tests ####################################################################
-
 class Test_DataBaseManager:
 
     @classmethod
@@ -55,9 +54,10 @@ class Test_DataBaseManager:
         # checks for DB file filtering
         assert Manager.connect("trial.db")
         assert Manager.StartUpChecks()
+
         Manager.close_connection() # cleanup
         os.remove('trial.db') # cleanup
-        os.path.isfile("trial.db") # cleanup
+        assert not os.path.isfile("trial.db") # cleanup
 
     def test_BatchInsert_Metadata(self, DBManager, Gen_DbTable_Data):
         Manager = DBManager
@@ -70,10 +70,8 @@ class Test_DataBaseManager:
         assert Inserted_data == Querydata
         Manager.close_connection() # cleanup
 
-    def test_SelectAll(self, DBManager, Gen_DbTable_Data):
-        Manager = DBManager
-        DATA = Gen_DbTable_Data
-        Manager.BatchInsert_Metadata(DATA)
+    def test_SelectAll(self, TempFilled_DB):
+        Manager, DATA = TempFilled_DB
 
         Inserted_data = [[Col[R] for Col in DATA.values()] for R in range(len(DATA["file_id"]))]
         Querydata = Manager.SelectAll("library")
@@ -155,6 +153,7 @@ class Test_DataBaseManager:
                     'paddingX1', 'protectedX1', 'sample_rateX1', 'track_gainX1', 'track_peakX1',
                     'ratingX1', 'playcountX1']]
         assert (Expected == Manager.SelectAll("nowplaying"))
+        Manager.DropView("nowplaying")
         Manager.close_connection() # cleanup
 
     def test_CreateView_Shuffled(self, TempFilled_DB):
@@ -171,6 +170,7 @@ class Test_DataBaseManager:
                     'paddingX1', 'protectedX1', 'sample_rateX1', 'track_gainX1', 'track_peakX1',
                     'ratingX1', 'playcountX1']]
         assert (Expected == Manager.SelectAll("nowplaying"))
+        Manager.DropView("nowplaying")
         Manager.close_connection() # cleanup
 
     def test_CreateView_normal_fieldSelector(self, TempFilled_DB):
@@ -187,6 +187,7 @@ class Test_DataBaseManager:
                     'paddingX1', 'protectedX1', 'sample_rateX1', 'track_gainX1', 'track_peakX1',
                     'ratingX1', 'playcountX1']]
         assert (Expected == Manager.SelectAll("nowplaying"))
+        Manager.DropView("nowplaying")
         Manager.close_connection() # cleanup
 
     def test_CreateView_filter_fieldSelector_fileID(self, TempFilled_DB):
@@ -214,6 +215,7 @@ class Test_DataBaseManager:
                     'paddingX2', 'protectedX2', 'sample_rateX2', 'track_gainX2', 'track_peakX2',
                     'ratingX2', 'playcountX2']]
         assert all([(E==A) for E, A in zip(Expected, Manager.SelectAll("nowplaying"))])
+        Manager.DropView("nowplaying")
         Manager.close_connection() # cleanup
 
     def test_DropTable(self, DBManager):

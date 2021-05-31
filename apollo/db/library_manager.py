@@ -8,6 +8,8 @@ import json
 import time
 import pathlib
 
+sys.path.insert(0, r"D:\dev\Apollo-dev")
+
 import mutagen
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 from PySide6 import QtWidgets, QtGui, QtCore
@@ -67,16 +69,20 @@ class DataBaseManager:
         ConnectionError
             if database fails to connect or fails checks
         """
-        if not os.path.isfile(db) and PathUtils.isFileExt(db, ".db"): open(db, "w").close()
-        elif (db == ":memory:") or (os.path.isfile(db) and PathUtils.isFileExt(db, ".db")): pass
-        else: return False
+        if ((db == ":memory:") or PathUtils.isFileExt(db, ".db")):
+            self.db_driver = QSqlDatabase.addDatabase("QSQLITE")
+            self.db_driver.setDatabaseName(db)
+        else:
+            return False
 
-        self.db_driver = QSqlDatabase.addDatabase("QSQLITE")
-        self.db_driver.database(db)
         self.DB_NAME = db
         if self.db_driver.open() and self.IsConneted():
-            if not self.StartUpChecks(): raise DBStructureError("Startup Checks Failed")
-            else: return True
+            if self.db_driver.isOpenError():
+                raise ConnectionError()
+            if not self.StartUpChecks():
+                raise DBStructureError("Startup Checks Failed")
+            else:
+                return True
 
         # only executes when connection fails and app closes
         else: # pragma: no cover
@@ -107,7 +113,6 @@ class DataBaseManager:
         """
         self.db_driver.commit()
         self.db_driver.close()
-        self.db_driver.removeDatabase(self.DB_NAME)
         if not self.db_driver.isOpen():
             return True
 
@@ -123,7 +128,6 @@ class DataBaseManager:
         """
 
         # checks for existance of library table
-        state = False
         [[TABLE, COLUMNS]] = self.fetchAll(
             self.ExeQuery("""
             SELECT
@@ -155,12 +159,8 @@ class DataBaseManager:
         )
         if not bool(TABLE) or not bool(COLUMNS):
             self.Create_LibraryTable()
-            state = True
-        else:
-            state = True
 
         # checks for existance of nowplaying view
-        state = False
         [[TABLE, COLUMNS]] = self.fetchAll(
             self.ExeQuery("""
             SELECT
@@ -192,11 +192,8 @@ class DataBaseManager:
         )
         if not bool(TABLE) or not bool(COLUMNS):
             self.Create_EmptyView("nowplaying")
-            state = True
-        else:
-            state = True
 
-        return state
+        return True
 
     def ExeQuery(self, Query): #Tested
         """
@@ -492,8 +489,8 @@ class DataBaseManager:
 
         if not query.execBatch(): # pragma: no cover
             msg = f"""
-                ERROR: {(Query.lastError().text())}
-                Query: {Query.lastQuery()}
+                ERROR: {(query.lastError().text())}
+                Query: {query.lastQuery()}
                 """
             raise QueryExecutionFailed(dedenter(msg, 12))
 
@@ -808,5 +805,6 @@ class LibraryManager(FileManager):
 
 if __name__ == "__main__": # pragma: no cover
     inst = DataBaseManager()
-    inst.connect(":memory:")
+    inst.connect(".\\default.db")
     print(inst.IsConneted(), inst.IsConneted())
+    inst.close_connection()

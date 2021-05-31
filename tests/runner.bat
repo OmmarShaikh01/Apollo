@@ -2,6 +2,7 @@
 
 set og_dir=%cd%
 set a=%1
+set b=%2
 set pytest_dir=.\result\pytest
 set cov_dir=.\result\coverage
 set PYTHONPATH=..
@@ -9,6 +10,10 @@ cd %~dp0
 
 if "%a%"=="pytest" (
     ..\venv\Scripts\pytest.exe --new-first --rootdir=. --ignore=..\venv --cache-clear -v --color=yes --code-highlight=yes
+)
+
+if "%a%"=="pytest-f" (
+    ..\venv\Scripts\pytest.exe %b% --new-first --rootdir=. --ignore=..\venv --cache-clear --color=yes --code-highlight=yes
 )
 
 if "%a%"=="pytest-v" (

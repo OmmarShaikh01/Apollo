@@ -106,11 +106,15 @@ def LibraryManager_connected():
 def TempFilled_DB(Gen_DbTable_Data):
     Manager = DataBaseManager()
     Data = Gen_DbTable_Data
-    Manager.connect(r".\testing_tools\test_files\temp.db")
-    if os.path.isfile(r".\testing_tools\test_files\temp.db"):
+    # Manager.connect(r":memory:")
+    # Manager.BatchInsert_Metadata(Data)
+    if not os.path.isfile(r".\testing_tools\test_files\test_db.db"):
+        Manager.connect(r".\testing_tools\test_files\test_db.db")
         Manager.BatchInsert_Metadata(Data)
+    else:
+        Manager.connect(r".\testing_tools\test_files\test_db.db")
     return (Manager, Data)
 
 def del_TempFilled_DB():
-    if os.path.isfile(r".\testing_tools\test_files\temp.db"):
-        os.remove(r".\testing_tools\test_files\temp.db")
+    if os.path.isfile(r".\testing_tools\test_files\test_db.db"):
+        os.remove(r".\testing_tools\test_files\test_db.db")

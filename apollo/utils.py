@@ -622,8 +622,7 @@ class AppConfig(dict):
         k : any
             key to look for
         """
-        if k == "current_db_path":
-            return self.current_db_path
+        return self.get(k)
 
     def __setitem__(self, k, value):
         """
@@ -636,6 +635,18 @@ class AppConfig(dict):
         """
         if k == "current_db_path":
             self.current_db_path = value
+
+    def get(self, key):
+        """
+        Gets the item at index
+
+        Parameters
+        ----------
+        key : any
+            key to look for
+        """
+        if key == "current_db_path":
+            return self.current_db_path
 
     # current_db_path #########################################################
     @property
@@ -651,4 +662,4 @@ class AppConfig(dict):
 
 if __name__ == "__main__":
     inst = AppConfig()
-    print(inst)
+    print(inst.get("current_db_path"))

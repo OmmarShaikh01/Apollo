@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainwindow_apollolVbxqn.ui'
+## Form generated from reading UI file 'mainwindow_apolloXkhJNN.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.1.0
 ##
@@ -36,7 +36,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.MW_HSP_subwindows.sizePolicy().hasHeightForWidth())
         self.MW_HSP_subwindows.setSizePolicy(sizePolicy)
         self.MW_HSP_subwindows.setOrientation(Qt.Horizontal)
-        self.MW_HSP_subwindows.setHandleWidth(1)
+        self.MW_HSP_subwindows.setHandleWidth(2)
         self.SubW_TABWG_MainTab = QTabWidget(self.MW_HSP_subwindows)
         self.SubW_TABWG_MainTab.setObjectName(u"SubW_TABWG_MainTab")
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -54,7 +54,7 @@ class Ui_MainWindow(object):
         self.LBT_HSP_main = QSplitter(self.LBT_WDG_main)
         self.LBT_HSP_main.setObjectName(u"LBT_HSP_main")
         self.LBT_HSP_main.setOrientation(Qt.Horizontal)
-        self.LBT_HSP_main.setHandleWidth(1)
+        self.LBT_HSP_main.setHandleWidth(2)
         self.LBT_FR_grouping = QFrame(self.LBT_HSP_main)
         self.LBT_FR_grouping.setObjectName(u"LBT_FR_grouping")
         self.LBT_FR_grouping.setFrameShape(QFrame.StyledPanel)
@@ -64,51 +64,53 @@ class Ui_MainWindow(object):
         self.gridLayout.setHorizontalSpacing(4)
         self.gridLayout.setVerticalSpacing(0)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.LBT_FR_groupsearch = QFrame(self.LBT_FR_grouping)
-        self.LBT_FR_groupsearch.setObjectName(u"LBT_FR_groupsearch")
-        self.LBT_FR_groupsearch.setMinimumSize(QSize(0, 24))
-        self.LBT_FR_groupsearch.setMaximumSize(QSize(16777215, 16777215))
-        self.horizontalLayout_3 = QHBoxLayout(self.LBT_FR_groupsearch)
+        self.LBT_LSV_grouping = QListView(self.LBT_FR_grouping)
+        self.LBT_LSV_grouping.setObjectName(u"LBT_LSV_grouping")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(1)
+        sizePolicy2.setHeightForWidth(self.LBT_LSV_grouping.sizePolicy().hasHeightForWidth())
+        self.LBT_LSV_grouping.setSizePolicy(sizePolicy2)
+        self.LBT_LSV_grouping.setFrameShape(QFrame.NoFrame)
+
+        self.gridLayout.addWidget(self.LBT_LSV_grouping, 1, 0, 1, 1)
+
+        self.LBT_FR_search_group = QFrame(self.LBT_FR_grouping)
+        self.LBT_FR_search_group.setObjectName(u"LBT_FR_search_group")
+        self.LBT_FR_search_group.setMinimumSize(QSize(0, 24))
+        self.LBT_FR_search_group.setMaximumSize(QSize(16777215, 24))
+        self.horizontalLayout_3 = QHBoxLayout(self.LBT_FR_search_group)
         self.horizontalLayout_3.setSpacing(2)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.horizontalLayout_3.setContentsMargins(2, 2, 2, 2)
-        self.LBT_LEDT_groupsearch = QLineEdit(self.LBT_FR_groupsearch)
-        self.LBT_LEDT_groupsearch.setObjectName(u"LBT_LEDT_groupsearch")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.LBT_LEDT_groupsearch.sizePolicy().hasHeightForWidth())
-        self.LBT_LEDT_groupsearch.setSizePolicy(sizePolicy2)
-        self.LBT_LEDT_groupsearch.setMinimumSize(QSize(0, 24))
-        self.LBT_LEDT_groupsearch.setMaximumSize(QSize(16777215, 24))
-
-        self.horizontalLayout_3.addWidget(self.LBT_LEDT_groupsearch)
-
-        self.LBT_PSB_groupsearch = QPushButton(self.LBT_FR_groupsearch)
-        self.LBT_PSB_groupsearch.setObjectName(u"LBT_PSB_groupsearch")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        self.LBT_LEDT_search_group = QLineEdit(self.LBT_FR_search_group)
+        self.LBT_LEDT_search_group.setObjectName(u"LBT_LEDT_search_group")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.LBT_PSB_groupsearch.sizePolicy().hasHeightForWidth())
-        self.LBT_PSB_groupsearch.setSizePolicy(sizePolicy3)
-        self.LBT_PSB_groupsearch.setMinimumSize(QSize(24, 24))
-        self.LBT_PSB_groupsearch.setMaximumSize(QSize(24, 24))
+        sizePolicy3.setHeightForWidth(self.LBT_LEDT_search_group.sizePolicy().hasHeightForWidth())
+        self.LBT_LEDT_search_group.setSizePolicy(sizePolicy3)
+        self.LBT_LEDT_search_group.setMinimumSize(QSize(0, 0))
+        self.LBT_LEDT_search_group.setMaximumSize(QSize(16777215, 24))
 
-        self.horizontalLayout_3.addWidget(self.LBT_PSB_groupsearch)
+        self.horizontalLayout_3.addWidget(self.LBT_LEDT_search_group)
 
-
-        self.gridLayout.addWidget(self.LBT_FR_groupsearch, 1, 0, 1, 1)
-
-        self.LBT_LSV_grouping = QListView(self.LBT_FR_grouping)
-        self.LBT_LSV_grouping.setObjectName(u"LBT_LSV_grouping")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.LBT_TLB_search_group = QToolButton(self.LBT_FR_search_group)
+        self.LBT_TLB_search_group.setObjectName(u"LBT_TLB_search_group")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
         sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(1)
-        sizePolicy4.setHeightForWidth(self.LBT_LSV_grouping.sizePolicy().hasHeightForWidth())
-        self.LBT_LSV_grouping.setSizePolicy(sizePolicy4)
-        self.LBT_LSV_grouping.setFrameShape(QFrame.NoFrame)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.LBT_TLB_search_group.sizePolicy().hasHeightForWidth())
+        self.LBT_TLB_search_group.setSizePolicy(sizePolicy4)
+        self.LBT_TLB_search_group.setMinimumSize(QSize(0, 0))
+        self.LBT_TLB_search_group.setMaximumSize(QSize(24, 24))
+        self.LBT_TLB_search_group.setPopupMode(QToolButton.MenuButtonPopup)
+        self.LBT_TLB_search_group.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
-        self.gridLayout.addWidget(self.LBT_LSV_grouping, 2, 0, 1, 1)
+        self.horizontalLayout_3.addWidget(self.LBT_TLB_search_group)
+
+
+        self.gridLayout.addWidget(self.LBT_FR_search_group, 0, 0, 1, 1)
 
         self.LBT_HSP_main.addWidget(self.LBT_FR_grouping)
         self.LBT_FR_maintable = QFrame(self.LBT_HSP_main)
@@ -125,35 +127,6 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setHorizontalSpacing(4)
         self.gridLayout_2.setVerticalSpacing(0)
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.LBT_FR_mainsearch = QFrame(self.LBT_FR_maintable)
-        self.LBT_FR_mainsearch.setObjectName(u"LBT_FR_mainsearch")
-        self.LBT_FR_mainsearch.setMinimumSize(QSize(0, 24))
-        self.LBT_FR_mainsearch.setMaximumSize(QSize(16777215, 16777215))
-        self.horizontalLayout_4 = QHBoxLayout(self.LBT_FR_mainsearch)
-        self.horizontalLayout_4.setSpacing(2)
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalLayout_4.setContentsMargins(2, 2, 2, 2)
-        self.LBT_LEDT_mainsearch = QLineEdit(self.LBT_FR_mainsearch)
-        self.LBT_LEDT_mainsearch.setObjectName(u"LBT_LEDT_mainsearch")
-        sizePolicy2.setHeightForWidth(self.LBT_LEDT_mainsearch.sizePolicy().hasHeightForWidth())
-        self.LBT_LEDT_mainsearch.setSizePolicy(sizePolicy2)
-        self.LBT_LEDT_mainsearch.setMinimumSize(QSize(0, 24))
-        self.LBT_LEDT_mainsearch.setMaximumSize(QSize(16777215, 24))
-
-        self.horizontalLayout_4.addWidget(self.LBT_LEDT_mainsearch)
-
-        self.LBT_PSB_mainsearch = QPushButton(self.LBT_FR_mainsearch)
-        self.LBT_PSB_mainsearch.setObjectName(u"LBT_PSB_mainsearch")
-        sizePolicy3.setHeightForWidth(self.LBT_PSB_mainsearch.sizePolicy().hasHeightForWidth())
-        self.LBT_PSB_mainsearch.setSizePolicy(sizePolicy3)
-        self.LBT_PSB_mainsearch.setMinimumSize(QSize(24, 24))
-        self.LBT_PSB_mainsearch.setMaximumSize(QSize(24, 24))
-
-        self.horizontalLayout_4.addWidget(self.LBT_PSB_mainsearch)
-
-
-        self.gridLayout_2.addWidget(self.LBT_FR_mainsearch, 1, 0, 1, 1)
-
         self.LDT_TBV_maintable = QTableView(self.LBT_FR_maintable)
         self.LDT_TBV_maintable.setObjectName(u"LDT_TBV_maintable")
         self.LDT_TBV_maintable.setFrameShape(QFrame.NoFrame)
@@ -170,7 +143,7 @@ class Ui_MainWindow(object):
         self.LDT_TBV_maintable.verticalHeader().setMinimumSectionSize(24)
         self.LDT_TBV_maintable.verticalHeader().setDefaultSectionSize(24)
 
-        self.gridLayout_2.addWidget(self.LDT_TBV_maintable, 2, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.LDT_TBV_maintable, 1, 0, 1, 1)
 
         self.LBT_HSP_main.addWidget(self.LBT_FR_maintable)
 
@@ -190,6 +163,43 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setHorizontalSpacing(4)
         self.gridLayout_3.setVerticalSpacing(0)
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.NPQ_LSV_mainqueue = QListView(self.SubW_FR_queue)
+        self.NPQ_LSV_mainqueue.setObjectName(u"NPQ_LSV_mainqueue")
+        sizePolicy2.setHeightForWidth(self.NPQ_LSV_mainqueue.sizePolicy().hasHeightForWidth())
+        self.NPQ_LSV_mainqueue.setSizePolicy(sizePolicy2)
+        self.NPQ_LSV_mainqueue.setFrameShape(QFrame.NoFrame)
+
+        self.gridLayout_3.addWidget(self.NPQ_LSV_mainqueue, 5, 0, 1, 1)
+
+        self.NPQ_FR_search = QFrame(self.SubW_FR_queue)
+        self.NPQ_FR_search.setObjectName(u"NPQ_FR_search")
+        self.NPQ_FR_search.setMinimumSize(QSize(0, 24))
+        self.NPQ_FR_search.setMaximumSize(QSize(16777215, 24))
+        self.horizontalLayout = QHBoxLayout(self.NPQ_FR_search)
+        self.horizontalLayout.setSpacing(2)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setContentsMargins(0, 2, 2, 2)
+        self.NPQ_LEDT_search = QLineEdit(self.NPQ_FR_search)
+        self.NPQ_LEDT_search.setObjectName(u"NPQ_LEDT_search")
+        sizePolicy3.setHeightForWidth(self.NPQ_LEDT_search.sizePolicy().hasHeightForWidth())
+        self.NPQ_LEDT_search.setSizePolicy(sizePolicy3)
+        self.NPQ_LEDT_search.setMinimumSize(QSize(0, 0))
+        self.NPQ_LEDT_search.setMaximumSize(QSize(16777215, 24))
+
+        self.horizontalLayout.addWidget(self.NPQ_LEDT_search)
+
+        self.NPQ_PSB_search = QPushButton(self.NPQ_FR_search)
+        self.NPQ_PSB_search.setObjectName(u"NPQ_PSB_search")
+        sizePolicy4.setHeightForWidth(self.NPQ_PSB_search.sizePolicy().hasHeightForWidth())
+        self.NPQ_PSB_search.setSizePolicy(sizePolicy4)
+        self.NPQ_PSB_search.setMinimumSize(QSize(0, 0))
+        self.NPQ_PSB_search.setMaximumSize(QSize(24, 24))
+
+        self.horizontalLayout.addWidget(self.NPQ_PSB_search)
+
+
+        self.gridLayout_3.addWidget(self.NPQ_FR_search, 0, 0, 1, 1)
+
         self.NPQ_HDLB_queue = QLabel(self.SubW_FR_queue)
         self.NPQ_HDLB_queue.setObjectName(u"NPQ_HDLB_queue")
         self.NPQ_HDLB_queue.setMinimumSize(QSize(0, 24))
@@ -197,44 +207,7 @@ class Ui_MainWindow(object):
         self.NPQ_HDLB_queue.setFrameShape(QFrame.StyledPanel)
         self.NPQ_HDLB_queue.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_3.addWidget(self.NPQ_HDLB_queue, 0, 0, 1, 1)
-
-        self.NPQ_FR_search = QFrame(self.SubW_FR_queue)
-        self.NPQ_FR_search.setObjectName(u"NPQ_FR_search")
-        self.NPQ_FR_search.setMinimumSize(QSize(0, 24))
-        self.NPQ_FR_search.setMaximumSize(QSize(16777215, 16777215))
-        self.horizontalLayout = QHBoxLayout(self.NPQ_FR_search)
-        self.horizontalLayout.setSpacing(2)
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setContentsMargins(2, 2, 2, 2)
-        self.NPQ_LEDT_search = QLineEdit(self.NPQ_FR_search)
-        self.NPQ_LEDT_search.setObjectName(u"NPQ_LEDT_search")
-        sizePolicy2.setHeightForWidth(self.NPQ_LEDT_search.sizePolicy().hasHeightForWidth())
-        self.NPQ_LEDT_search.setSizePolicy(sizePolicy2)
-        self.NPQ_LEDT_search.setMinimumSize(QSize(0, 24))
-        self.NPQ_LEDT_search.setMaximumSize(QSize(16777215, 24))
-
-        self.horizontalLayout.addWidget(self.NPQ_LEDT_search)
-
-        self.NPQ_PSB_search = QPushButton(self.NPQ_FR_search)
-        self.NPQ_PSB_search.setObjectName(u"NPQ_PSB_search")
-        sizePolicy3.setHeightForWidth(self.NPQ_PSB_search.sizePolicy().hasHeightForWidth())
-        self.NPQ_PSB_search.setSizePolicy(sizePolicy3)
-        self.NPQ_PSB_search.setMinimumSize(QSize(24, 24))
-        self.NPQ_PSB_search.setMaximumSize(QSize(24, 24))
-
-        self.horizontalLayout.addWidget(self.NPQ_PSB_search)
-
-
-        self.gridLayout_3.addWidget(self.NPQ_FR_search, 3, 0, 1, 1)
-
-        self.NPQ_LSV_mainqueue = QListView(self.SubW_FR_queue)
-        self.NPQ_LSV_mainqueue.setObjectName(u"NPQ_LSV_mainqueue")
-        sizePolicy4.setHeightForWidth(self.NPQ_LSV_mainqueue.sizePolicy().hasHeightForWidth())
-        self.NPQ_LSV_mainqueue.setSizePolicy(sizePolicy4)
-        self.NPQ_LSV_mainqueue.setFrameShape(QFrame.NoFrame)
-
-        self.gridLayout_3.addWidget(self.NPQ_LSV_mainqueue, 4, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.NPQ_HDLB_queue, 2, 0, 1, 1)
 
         self.MW_HSP_subwindows.addWidget(self.SubW_FR_queue)
         self.MW_VSP_mainsplitter.addWidget(self.MW_HSP_subwindows)
@@ -256,7 +229,7 @@ class Ui_MainWindow(object):
         self.gridLayout_7.setObjectName(u"gridLayout_7")
         self.gridLayout_7.setHorizontalSpacing(4)
         self.gridLayout_7.setVerticalSpacing(0)
-        self.gridLayout_7.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout_7.setContentsMargins(4, 0, 4, 0)
         self.footer_LAB_seekbar_right = QLabel(self.footer_FR_seekbar)
         self.footer_LAB_seekbar_right.setObjectName(u"footer_LAB_seekbar_right")
 
@@ -292,7 +265,7 @@ class Ui_MainWindow(object):
         self.gridLayout_11 = QGridLayout(self.footer_FR_label)
         self.gridLayout_11.setSpacing(0)
         self.gridLayout_11.setObjectName(u"gridLayout_11")
-        self.gridLayout_11.setContentsMargins(1, 0, 0, 0)
+        self.gridLayout_11.setContentsMargins(4, 0, 0, 0)
         self.footer_PIXLB_cover = QLabel(self.footer_FR_label)
         self.footer_PIXLB_cover.setObjectName(u"footer_PIXLB_cover")
         self.footer_PIXLB_cover.setMinimumSize(QSize(40, 40))
@@ -459,12 +432,11 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.LBT_PSB_groupsearch.setText("")
-        self.LBT_PSB_mainsearch.setText("")
+        self.LBT_TLB_search_group.setText("")
         self.SubW_TABWG_MainTab.setTabText(self.SubW_TABWG_MainTab.indexOf(self.LBT_WDG_main), QCoreApplication.translate("MainWindow", u"Library", None))
         self.SubW_TABWG_MainTab.setTabText(self.SubW_TABWG_MainTab.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
-        self.NPQ_HDLB_queue.setText(QCoreApplication.translate("MainWindow", u"Now Playing", None))
         self.NPQ_PSB_search.setText("")
+        self.NPQ_HDLB_queue.setText(QCoreApplication.translate("MainWindow", u"Now Playing", None))
         self.footer_LAB_seekbar_right.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.footer_LAB_seekbar_left.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.footer_PIXLB_cover.setText("")

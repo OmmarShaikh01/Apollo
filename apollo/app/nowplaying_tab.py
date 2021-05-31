@@ -23,7 +23,7 @@ class NowPlayingQueue(SQLTableModel):
         super().__init__()
         self.PlayingQueue = PlayingQueue()
 
-    def GetDataFromModel(self, Column):
+    def Get_columnData(self, Column):
         """
         Info: Gets Data grom the model
         Args:
@@ -33,9 +33,9 @@ class NowPlayingQueue(SQLTableModel):
         Returns: List
         Errors: None
         """
-        return [self.index(Row, Column).data() for Row in range(self.rowCount())]
+        return self.Data_atIndex(Rows = list(range(self.rowCount())), Columns = [Column])
 
-    def PlayNow(self, View):
+    def PlayNow(self, Indexes):
         """
         Info: Gets selected indexes from View and adds to model
         Args:
@@ -45,14 +45,14 @@ class NowPlayingQueue(SQLTableModel):
         Returns: None
         Errors: None
         """
-        Indexes = self.GetSelectedIndexes(View, [0])
+        Indexes = self.Data_atIndex(Indexes = Indexes, Columns = [0])
         self.DBManager.CreateView("nowplaying", Indexes)
         self.RefreshData()
 
         self.PlayingQueue.RemoveElements()
-        self.PlayingQueue.AddElements(self.GetDataFromModel(0))
+        self.PlayingQueue.AddElements(self.Get_columnData(0))
 
-    def PlayShuffled(self, View):
+    def PlayShuffled(self, Indexes):
         """
         Info: Gets selected indexes from View and adds Shuffled Data to model
         Args:
@@ -62,14 +62,14 @@ class NowPlayingQueue(SQLTableModel):
         Returns: None
         Errors: None
         """
-        Indexes = self.GetSelectedIndexes(View, [0])
+        Indexes = self.Data_atIndex(Indexes = Indexes, Columns = [0])
         self.DBManager.CreateView("nowplaying", Indexes, Shuffled = True)
         self.RefreshData()
 
         self.PlayingQueue.RemoveElements()
-        self.PlayingQueue.AddElements(self.GetDataFromModel(0))
+        self.PlayingQueue.AddElements(self.Get_columnData(0))
 
-    def PlayArtist(self, View):
+    def PlayArtist(self, Indexes):
         """
         Info: Gets selected Artists from View and adds to model
         Args:
@@ -79,14 +79,14 @@ class NowPlayingQueue(SQLTableModel):
         Returns: None
         Errors: None
         """
-        Indexes = self.GetSelectedIndexes(View, [self.DB_FIELDS.index('artist')])
+        Indexes = self.Data_atIndex(Indexes = Indexes,Columns = [self.DB_FIELDS.index('artist')])
         self.DBManager.CreateView("nowplaying", Indexes, FilterField  = 'artist', Filter = True)
         self.RefreshData()
 
         self.PlayingQueue.RemoveElements()
-        self.PlayingQueue.AddElements(self.GetDataFromModel(0))
+        self.PlayingQueue.AddElements(self.Get_columnData(0))
 
-    def PlayAlbum(self, View):
+    def PlayAlbum(self, Indexes):
         """
         Info: Gets selected Album from View and adds to model
         Args:
@@ -96,14 +96,14 @@ class NowPlayingQueue(SQLTableModel):
         Returns: None
         Errors: None
         """
-        Indexes = self.GetSelectedIndexes(View, [self.DB_FIELDS.index('album')])
+        Indexes = self.Data_atIndex(Indexes = Indexes,Columns = [self.DB_FIELDS.index('album')])
         self.DBManager.CreateView("nowplaying", Indexes, FilterField  = 'album', Filter = True)
         self.RefreshData()
 
         self.PlayingQueue.RemoveElements()
-        self.PlayingQueue.AddElements(self.GetDataFromModel(0))
+        self.PlayingQueue.AddElements(self.Get_columnData(0))
 
-    def PlayGenre(self, View):
+    def PlayGenre(self, Indexes):
         """
         Info: Gets selected genre from View and adds to model
         Args:
@@ -113,14 +113,14 @@ class NowPlayingQueue(SQLTableModel):
         Returns: None
         Errors: None
         """
-        Indexes = self.GetSelectedIndexes(View, [self.DB_FIELDS.index('genre')])
+        Indexes = self.Data_atIndex(Indexes = Indexes,Columns = [self.DB_FIELDS.index('genre')])
         self.DBManager.CreateView("nowplaying", Indexes, FilterField  = 'genre', Filter = True)
         self.RefreshData()
 
         self.PlayingQueue.RemoveElements()
-        self.PlayingQueue.AddElements(self.GetDataFromModel(0))
+        self.PlayingQueue.AddElements(self.Get_columnData(0))
 
-    def QueueNext(self, View):
+    def QueueNext(self, Indexes):
         """
         Info: Gets selected indexes from View and queues to model
         Args:
@@ -130,13 +130,13 @@ class NowPlayingQueue(SQLTableModel):
         Returns: None
         Errors: None
         """
-        NewIndexes = self.GetSelectedIndexes(View, [0])
+        NewIndexes = self.Data_atIndex(Indexes = Indexes, Columns = [0])
         self.PlayingQueue.AddNext(NewIndexes)
         Indexes = self.PlayingQueue.GetQueue()
         self.DBManager.CreateView("nowplaying", Indexes)
         self.OrderTable(Indexes)
 
-    def QueueLast(self, View):
+    def QueueLast(self, Indexes):
         """
         Info: Gets selected indexes from View and queues to model
         Args:
@@ -146,7 +146,7 @@ class NowPlayingQueue(SQLTableModel):
         Returns: None
         Errors: None
         """
-        NewIndexes = self.GetSelectedIndexes(View, [0])
+        NewIndexes = self.Data_atIndex(Indexes = Indexes, Columns = [0])
         self.PlayingQueue.AddElements(NewIndexes)
         Indexes = self.PlayingQueue.GetQueue()
         self.DBManager.CreateView("nowplaying", Indexes)
@@ -179,7 +179,7 @@ class NowPlayingTab:
 
     def Init_DataModels(self):
         self.MainModel = NowPlayingQueue()
-        self.MainModel.LoadTable("nowplaying", self.MainModel.DB_FIELDS, Qt.Horizontal)
+        self.MainModel.LoadTable("nowplaying", self.MainModel.DB_FIELDS)
         self.DataProvider.AddModel(self.MainModel, "nowplaying_model")
         self.UI.NPQ_LSV_mainqueue.setModel(self.MainModel)
 

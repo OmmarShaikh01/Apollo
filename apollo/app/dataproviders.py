@@ -120,7 +120,8 @@ class SQLTableModel(QtGui.QStandardItemModel):
         Returns: None
         Errors: None
         """
-        ResultSet = self.DBManager.fetchAll(self.DBManager.ExeQuery(f"SELECT * FROM {TableName}"))
+        Query = self.DBManager.ExeQuery(f"SELECT * FROM {TableName}")
+        ResultSet = self.DBManager.fetchAll(Query)
         for Row in ResultSet:
             self.appendRow(list(map(lambda x: QtGui.QStandardItem(str(x)), Row)))
 

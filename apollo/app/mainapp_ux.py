@@ -1,4 +1,4 @@
-import sys
+import sys, datetime
 
 from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtCore import Qt
@@ -7,10 +7,10 @@ from apollo.gui.ui_mainwindow_apollo import Ui_MainWindow as MainWindow
 from apollo.utils import AppConfig
 from apollo.plugins.app_theme import Theme
 from apollo.db import LibraryManager
+from apollo.app.dataproviders import ApolloDataProvider
+from apollo.app.library_tab import LibraryTab
+from apollo.app.nowplaying_tab import NowPlayingTab
 
-# from apollo.app.library_tab import LibraryTab
-# from apollo.app.nowplaying_tab import NowPlayingTab
-# from apollo.app.dataproviders import ApolloDataProvider
 
 class ApolloUX(QtWidgets.QMainWindow, MainWindow):
     """
@@ -30,7 +30,11 @@ class ApolloUX(QtWidgets.QMainWindow, MainWindow):
         """
         super().__init__()
         self.setupUi(self)
+        self.setupUx()
         self.AppConfig = AppConfig()
+
+    def setupUx(self):
+        pass
 
 
 class ApolloTabBindings(ApolloUX):
@@ -51,6 +55,9 @@ class ApolloTabBindings(ApolloUX):
         """
         super().__init__()
         self.DBManager = LibraryManager(self.AppConfig.get("current_db_path"))
+        if self.DBManager.IsConneted():
+            self.DataProvider = ApolloDataProvider()
+            self.InitTabs()
 
     def InitTabs(self):
         """
@@ -86,6 +93,7 @@ class ApolloMain(ApolloTabBindings):
 
 if __name__ == "__main__":
     from apollo.app.mainapp import ApolloExecute
+    from apollo.plugins.app_theme.GRAY_100 import *
 
     app = ApolloExecute()
     app.Execute()

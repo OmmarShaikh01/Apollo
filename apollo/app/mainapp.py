@@ -108,7 +108,6 @@ class ApolloExecute:
         Returns: None
         Errors: None
         """
-        Theme().LoadTheme("GRAY_100")
         self.app = QtWidgets.QApplication(sys.argv)
         self.app.setStyle(style)
         self.UI = ApolloMain()
