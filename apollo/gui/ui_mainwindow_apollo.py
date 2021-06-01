@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainwindow_apolloXkhJNN.ui'
+## Form generated from reading UI file 'mainwindow_apolloUIMBDx.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.1.0
 ##
@@ -64,17 +64,6 @@ class Ui_MainWindow(object):
         self.gridLayout.setHorizontalSpacing(4)
         self.gridLayout.setVerticalSpacing(0)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.LBT_LSV_grouping = QListView(self.LBT_FR_grouping)
-        self.LBT_LSV_grouping.setObjectName(u"LBT_LSV_grouping")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(1)
-        sizePolicy2.setHeightForWidth(self.LBT_LSV_grouping.sizePolicy().hasHeightForWidth())
-        self.LBT_LSV_grouping.setSizePolicy(sizePolicy2)
-        self.LBT_LSV_grouping.setFrameShape(QFrame.NoFrame)
-
-        self.gridLayout.addWidget(self.LBT_LSV_grouping, 1, 0, 1, 1)
-
         self.LBT_FR_search_group = QFrame(self.LBT_FR_grouping)
         self.LBT_FR_search_group.setObjectName(u"LBT_FR_search_group")
         self.LBT_FR_search_group.setMinimumSize(QSize(0, 24))
@@ -85,11 +74,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.setContentsMargins(2, 2, 2, 2)
         self.LBT_LEDT_search_group = QLineEdit(self.LBT_FR_search_group)
         self.LBT_LEDT_search_group.setObjectName(u"LBT_LEDT_search_group")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.LBT_LEDT_search_group.sizePolicy().hasHeightForWidth())
-        self.LBT_LEDT_search_group.setSizePolicy(sizePolicy3)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.LBT_LEDT_search_group.sizePolicy().hasHeightForWidth())
+        self.LBT_LEDT_search_group.setSizePolicy(sizePolicy2)
         self.LBT_LEDT_search_group.setMinimumSize(QSize(0, 0))
         self.LBT_LEDT_search_group.setMaximumSize(QSize(16777215, 24))
 
@@ -97,11 +86,11 @@ class Ui_MainWindow(object):
 
         self.LBT_TLB_search_group = QToolButton(self.LBT_FR_search_group)
         self.LBT_TLB_search_group.setObjectName(u"LBT_TLB_search_group")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.LBT_TLB_search_group.sizePolicy().hasHeightForWidth())
-        self.LBT_TLB_search_group.setSizePolicy(sizePolicy4)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.LBT_TLB_search_group.sizePolicy().hasHeightForWidth())
+        self.LBT_TLB_search_group.setSizePolicy(sizePolicy3)
         self.LBT_TLB_search_group.setMinimumSize(QSize(0, 0))
         self.LBT_TLB_search_group.setMaximumSize(QSize(24, 24))
         self.LBT_TLB_search_group.setPopupMode(QToolButton.MenuButtonPopup)
@@ -111,6 +100,22 @@ class Ui_MainWindow(object):
 
 
         self.gridLayout.addWidget(self.LBT_FR_search_group, 0, 0, 1, 1)
+
+        self.LBT_LSV_grouping = QListView(self.LBT_FR_grouping)
+        self.LBT_LSV_grouping.setObjectName(u"LBT_LSV_grouping")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(1)
+        sizePolicy4.setHeightForWidth(self.LBT_LSV_grouping.sizePolicy().hasHeightForWidth())
+        self.LBT_LSV_grouping.setSizePolicy(sizePolicy4)
+        self.LBT_LSV_grouping.setMinimumSize(QSize(256, 480))
+        self.LBT_LSV_grouping.setFrameShape(QFrame.NoFrame)
+        self.LBT_LSV_grouping.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.LBT_LSV_grouping.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.LBT_LSV_grouping.setGridSize(QSize(0, 0))
+        self.LBT_LSV_grouping.setUniformItemSizes(True)
+
+        self.gridLayout.addWidget(self.LBT_LSV_grouping, 1, 0, 1, 1)
 
         self.LBT_HSP_main.addWidget(self.LBT_FR_grouping)
         self.LBT_FR_maintable = QFrame(self.LBT_HSP_main)
@@ -129,6 +134,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.LDT_TBV_maintable = QTableView(self.LBT_FR_maintable)
         self.LDT_TBV_maintable.setObjectName(u"LDT_TBV_maintable")
+        self.LDT_TBV_maintable.setMinimumSize(QSize(273, 504))
         self.LDT_TBV_maintable.setFrameShape(QFrame.NoFrame)
         self.LDT_TBV_maintable.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.LDT_TBV_maintable.setAlternatingRowColors(False)
@@ -143,7 +149,7 @@ class Ui_MainWindow(object):
         self.LDT_TBV_maintable.verticalHeader().setMinimumSectionSize(24)
         self.LDT_TBV_maintable.verticalHeader().setDefaultSectionSize(24)
 
-        self.gridLayout_2.addWidget(self.LDT_TBV_maintable, 1, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.LDT_TBV_maintable, 0, 0, 1, 1)
 
         self.LBT_HSP_main.addWidget(self.LBT_FR_maintable)
 
@@ -165,9 +171,14 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
         self.NPQ_LSV_mainqueue = QListView(self.SubW_FR_queue)
         self.NPQ_LSV_mainqueue.setObjectName(u"NPQ_LSV_mainqueue")
-        sizePolicy2.setHeightForWidth(self.NPQ_LSV_mainqueue.sizePolicy().hasHeightForWidth())
-        self.NPQ_LSV_mainqueue.setSizePolicy(sizePolicy2)
+        sizePolicy4.setHeightForWidth(self.NPQ_LSV_mainqueue.sizePolicy().hasHeightForWidth())
+        self.NPQ_LSV_mainqueue.setSizePolicy(sizePolicy4)
+        self.NPQ_LSV_mainqueue.setMinimumSize(QSize(255, 485))
         self.NPQ_LSV_mainqueue.setFrameShape(QFrame.NoFrame)
+        self.NPQ_LSV_mainqueue.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.NPQ_LSV_mainqueue.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.NPQ_LSV_mainqueue.setUniformItemSizes(True)
+        self.NPQ_LSV_mainqueue.setSelectionRectVisible(True)
 
         self.gridLayout_3.addWidget(self.NPQ_LSV_mainqueue, 5, 0, 1, 1)
 
@@ -181,8 +192,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setContentsMargins(0, 2, 2, 2)
         self.NPQ_LEDT_search = QLineEdit(self.NPQ_FR_search)
         self.NPQ_LEDT_search.setObjectName(u"NPQ_LEDT_search")
-        sizePolicy3.setHeightForWidth(self.NPQ_LEDT_search.sizePolicy().hasHeightForWidth())
-        self.NPQ_LEDT_search.setSizePolicy(sizePolicy3)
+        sizePolicy2.setHeightForWidth(self.NPQ_LEDT_search.sizePolicy().hasHeightForWidth())
+        self.NPQ_LEDT_search.setSizePolicy(sizePolicy2)
         self.NPQ_LEDT_search.setMinimumSize(QSize(0, 0))
         self.NPQ_LEDT_search.setMaximumSize(QSize(16777215, 24))
 
@@ -190,8 +201,8 @@ class Ui_MainWindow(object):
 
         self.NPQ_PSB_search = QPushButton(self.NPQ_FR_search)
         self.NPQ_PSB_search.setObjectName(u"NPQ_PSB_search")
-        sizePolicy4.setHeightForWidth(self.NPQ_PSB_search.sizePolicy().hasHeightForWidth())
-        self.NPQ_PSB_search.setSizePolicy(sizePolicy4)
+        sizePolicy3.setHeightForWidth(self.NPQ_PSB_search.sizePolicy().hasHeightForWidth())
+        self.NPQ_PSB_search.setSizePolicy(sizePolicy3)
         self.NPQ_PSB_search.setMinimumSize(QSize(0, 0))
         self.NPQ_PSB_search.setMaximumSize(QSize(24, 24))
 

@@ -121,19 +121,6 @@
               <property name="verticalSpacing">
                <number>0</number>
               </property>
-              <item row="1" column="0">
-               <widget class="QListView" name="LBT_LSV_grouping">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>1</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::NoFrame</enum>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="0">
                <widget class="QFrame" name="LBT_FR_search_group">
                 <property name="minimumSize">
@@ -220,6 +207,37 @@
                 </layout>
                </widget>
               </item>
+              <item row="1" column="0">
+               <widget class="QListView" name="LBT_LSV_grouping">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>1</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>256</width>
+                  <height>480</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="editTriggers">
+                 <set>QAbstractItemView::NoEditTriggers</set>
+                </property>
+                <property name="selectionMode">
+                 <enum>QAbstractItemView::ExtendedSelection</enum>
+                </property>
+                <property name="uniformItemSizes">
+                 <bool>true</bool>
+                </property>
+                <property name="selectionRectVisible">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
              </layout>
             </widget>
             <widget class="QFrame" name="LBT_FR_maintable">
@@ -254,8 +272,14 @@
               <property name="verticalSpacing">
                <number>0</number>
               </property>
-              <item row="1" column="0">
+              <item row="0" column="0">
                <widget class="QTableView" name="LDT_TBV_maintable">
+                <property name="minimumSize">
+                 <size>
+                  <width>273</width>
+                  <height>504</height>
+                 </size>
+                </property>
                 <property name="frameShape">
                  <enum>QFrame::NoFrame</enum>
                 </property>
@@ -343,8 +367,26 @@
              <verstretch>1</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>255</width>
+             <height>485</height>
+            </size>
+           </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="uniformItemSizes">
+            <bool>true</bool>
+           </property>
+           <property name="selectionRectVisible">
+            <bool>true</bool>
            </property>
           </widget>
          </item>

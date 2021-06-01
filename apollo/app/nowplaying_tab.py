@@ -1,10 +1,12 @@
 import sys
 
 from PySide6 import QtWidgets, QtGui, QtCore
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QPoint, QRect, QSize, Qt
 
 from apollo.utils import PlayingQueue, exe_time
 from apollo.app.dataproviders import SQLTableModel
+from apollo.gui.ui_NPQ_delegate import Ui_NPQ_WDG_delegate
+from apollo.db import DBFIELDS
 
 class NowPlayingQueue(SQLTableModel):
     """
@@ -153,6 +155,115 @@ class NowPlayingQueue(SQLTableModel):
         self.OrderTable(Indexes)
 
 
+class NPQDelegate_WDG():
+
+    def __init__(self): ...
+    def paint(self, option, painter: QtGui.QPainter, *items):
+        Rect = option.rect
+        Rect.setWidth(Rect.width()-4)
+        painter.save()
+
+        # main
+        # painter.drawRect(Rect)
+
+        # cover
+        TempRec = QRect(Rect.x() + 4, Rect.y() + 4, 56, 56)
+        # painter.drawRect(TempRec)
+        painter.drawImage(TempRec, QtGui.QImage(':/icon_pack/png/64/music_icon-02.png'))
+
+
+
+        painter.restore()
+
+
+class NowPlaying_ItemDelegate(QtWidgets.QStyledItemDelegate):
+    """
+    Delegate calss for the NPQ which interfaces with the model
+    """
+    def __init__(self, Model):
+        """
+        Class Constructor
+
+        Parameters
+        ----------
+        Model : QtGui.QStandardItemModel
+            Modle to load data from
+        """
+        super().__init__()
+        self._model = Model
+        self._style = QtWidgets.QApplication.style()
+        self._option = None
+        self._painter = None
+
+    def setDataModel(self, Value):
+        """
+        Setter for the DataModel
+
+        Parameters
+        ----------
+        Value : QtGui.QStandardItemModel
+            DataModel
+        """
+        self._model = Value
+
+    def setFields(self, T, M, B1, B2, B3):
+        self.Fields = [DBFIELDS.index(F) for F in [T, M, B1, B2, B3]]
+
+    def getData(self, index):
+        Row = index.row()
+        return [self._model.index(Row, Col).data() for Col in self.Fields]
+
+    def DrawWidget(self, Painter, Option, Index):
+        Painter.setPen(QtGui.QColor("#c6c6c6"))
+        self._style.drawPrimitive(self._style.PE_PanelItemViewItem, Option, Painter, Option.widget)
+
+        items = self.getData(Index)
+        self.DrawCover(Painter, Option)
+        self.DrawTop(Painter, Option, items[0])
+        self.DrawMid(Painter, Option, items[1])
+        self.DrawBottom(Painter, Option, [items[2], items[3], items[4]])
+
+        Painter.setPen(QtGui.QColor("#393939"))
+        Painter.drawLine(QPoint(0, Option.rect.y() + 64), QPoint(Option.rect.width(), Option.rect.y() + 64))
+
+    def DrawCover(self, Painter, Options):
+        self._style.subElementRect(self._style.SE_ItemViewItemDecoration, Options, Options.widget)
+        Rect = Options.rect
+        TempRec = QRect(Rect.x() + 4, Rect.y() + 4, 56, 56)
+        Painter.drawImage(TempRec, QtGui.QImage(':/icon_pack/png/64/music_icon-02.png'))
+
+
+    def DrawTop(self, Painter, Options, item):
+        Rect = Options.rect
+        TempRec = QRect(Rect.x() + 64, Rect.y() + 4, Rect.width() - 68, 16)
+        Painter.drawText(TempRec, item)
+
+    def DrawMid(self, Painter, Options, item):
+        Rect = Options.rect
+        TempRec = QRect(Rect.x() + 64, Rect.y() + 24, Rect.width() - 68, 16)
+        Painter.drawText(TempRec, item)
+
+    def DrawBottom(self, Painter, Options, items):
+        Rect = Options.rect
+        Width = round((Rect.width() - 72) / 3)
+        # 1
+        TempRec = QRect(Rect.x() + 64, Rect.y() + 44, Width, 16)
+        Painter.drawText(TempRec, items[0])
+        # 2
+        TempRec = QRect(Rect.x() + (64 + Width + 4), Rect.y() + 44, Width, 16)
+        Painter.drawText(TempRec, items[1])
+        # 3
+        TempRec = QRect(Rect.x() + (64 + Width + 4 + Width + 4), Rect.y() + 44, Width - 4, 16)
+        Painter.drawText(TempRec, items[2])
+
+    def paint(self, painter: QtGui.QPainter, option: QtWidgets.QStyleOptionViewItem, index):
+        painter.save()
+        self.DrawWidget(painter, option, index)
+        painter.restore()
+
+    def sizeHint(self, option, index):
+        return (QSize(option.rect.height(), 64))
+
 class NowPlayingTab:
     """
     Info: Now PLaying Tab
@@ -183,11 +294,15 @@ class NowPlayingTab:
         self.DataProvider.AddModel(self.MainModel, "nowplaying_model")
         self.UI.NPQ_LSV_mainqueue.setModel(self.MainModel)
 
+        self.Delegate = NowPlaying_ItemDelegate(self.MainModel)
+        self.Delegate.setFields("artist", "title", "length", "filesize", "bitrate")
+
+        self.UI.NPQ_LSV_mainqueue.setItemDelegate(self.Delegate)
+
 
 if __name__ == "__main__":
     from apollo.app.mainapp import ApolloExecute
-    from apollo.plugins.app_theme import Theme
+    from apollo.plugins.app_theme.GRAY_100 import *
 
-    Theme().LoadAppIcons("GRAY_100")
     app = ApolloExecute()
     app.Execute()

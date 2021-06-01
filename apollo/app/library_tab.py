@@ -42,8 +42,7 @@ class LibraryTab:
 
 if __name__ == "__main__":
     from apollo.app.mainapp import ApolloExecute
-    from apollo.plugins.app_theme import Theme
+    from apollo.plugins.app_theme.GRAY_100 import *
 
-    Theme().LoadAppIcons("GRAY_100")
     app = ApolloExecute()
     app.Execute()
