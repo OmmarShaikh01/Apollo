@@ -9,6 +9,9 @@ from PySide6 import QtCore
 
 from apollo.db import DataBaseManager, FileManager, LibraryManager
 from apollo.db import DBStructureError, QueryBuildFailed, QueryExecutionFailed
+from apollo import PARENT_DIR
+
+TESTFILES = f"./testing_tools/test_files"
 
 @pytest.fixture
 def Gen_TableModel(size = (20, 20)):
@@ -108,13 +111,13 @@ def TempFilled_DB(Gen_DbTable_Data):
     Data = Gen_DbTable_Data
     # Manager.connect(r":memory:")
     # Manager.BatchInsert_Metadata(Data)
-    if not os.path.isfile(r".\testing_tools\test_files\test_db.db"):
-        Manager.connect(r".\testing_tools\test_files\test_db.db")
+    if not os.path.isfile(f"{TESTFILES}\\test_db.db"):
+        Manager.connect(f"{TESTFILES}\\test_db.db")
         Manager.BatchInsert_Metadata(Data)
     else:
-        Manager.connect(r".\testing_tools\test_files\test_db.db")
+        Manager.connect(f"{TESTFILES}\\test_db.db")
     return (Manager, Data)
 
 def del_TempFilled_DB():
-    if os.path.isfile(r".\testing_tools\test_files\test_db.db"):
-        os.remove(r".\testing_tools\test_files\test_db.db")
+    if os.path.isfile(f"{TESTFILES}\\test_db.db"):
+        os.remove(f"{TESTFILES}\\test_db.db")

@@ -84,173 +84,6 @@ def dedenter(string = '', indent_size = 4):
     return (string.strip("\n"))
 
 
-class ConfigManager:
-    """
-    Manages the Configuration Parameters of Apollo
-
-    >>> inst = ConfigManager()
-    >>> inst.Getvariable("ROOT/SUB/SUB1")
-    >>> inst.Setvariable(["VALUE"], "ROOT/SUB/SUB1")
-    """
-    def __init__(self):
-        self.file = os.path.join(PARENT_DIR,"config.cfg")
-        self.config_dict = self.openConfig(self.file)
-
-    def deafult_settings(self):
-        """
-        Initilizes the default launch config
-
-        Returns
-        -------
-        dict
-            returns the default config
-        """
-        config = {
-            "APPTHEMES": [],
-            "LIBRARY_GROUPORDER": "file_path",
-            "ACTIVETHEME": "",
-            "CURRENT_DB": "Default",
-            "MONITERED_DB": {
-                "Default": {
-                    "name": "Default",
-                    "db_loc": os.path.join(PARENT_DIR, 'db', 'default.db'),
-                    "file_mon": [],
-                    "filters": ""
-                }
-            }
-        }
-        return config
-
-    def openConfig(self, file = None):
-        """
-        Opens the config file and loads the settings JSON
-
-        Parameters
-        ----------
-        file : String, optional
-            Config File path, by default None
-
-        Returns
-        -------
-        dict
-            reads a JSON and returns the config
-        """
-
-        if file == None:
-            file = self.file
-
-        self.config_dict = {}
-        if not os.path.isfile(file):
-            with open(file, "w") as FP:
-                json.dump(self.deafult_settings(), FP, indent = 4)
-                self.config_dict = self.deafult_settings()
-        else:
-            try:
-                with open(file) as FP:
-                    self.config_dict = json.load(FP)
-            except json.JSONDecodeError as e:
-                print(e)
-                with open(file, "w") as FP:
-                    json.dump({}, FP, indent = 4)
-        return self.config_dict
-
-    def writeConfig(self, file = None):
-        """
-        Writes Data to the Config File
-
-        Parameters
-        ----------
-        file : str, optional
-            File Name To write Into, by default None
-
-        Returns
-        -------
-        Boolean
-            returns if the write was succesful
-        """
-        if file == None:
-            file = self.file
-
-        with open(file, "w") as FP:
-            json.dump(self.config_dict, FP, indent = 4)
-            return True
-
-    def Getvalue(self, path = "", config = None):
-        """
-        Recursively Traverses the path and gets the value
-
-        Parameters
-        ----------
-        path : str, list, optional
-            Path used to traverse the dict, by default ""
-        config : dict, optional
-            dict to traverse, by default None
-
-        Returns
-        -------
-        any
-            returns value stored at a given path in the config
-        """
-        if config == None:
-            config = self.config_dict
-
-        if isinstance(path, str):
-            path = path.split("/")
-
-        if len(path) >= 1 and not("" in path):
-            index = path.pop(0)
-            data = config.get(index)
-
-            if isinstance(data, dict):
-                return self.Getvalue(path, data)
-            else:
-                return data
-        else:
-            return config
-
-    def Setvalue(self, value, path = '', config = None):
-        """
-        Recursively Traverses the path and Sets the value
-        >>> self.Config_manager.Setvalue(["VALUE"], "ROOT/SUB/SUB1")
-
-        Parameters
-        ----------
-        value : Any
-            Value to replace or set
-        path : str, optional
-            dict to traverse, by default ''
-        config : Dict, optional
-            Path used to traverse the dict, by default None
-
-        Returns
-        -------
-        Boolean
-            returns if operation was succesful
-        """
-        if config == None:
-            config = self.config_dict
-
-        if isinstance(path, str):
-            path = path.split("/")
-
-        if len(path) >= 1 and not("" in path):
-            index = path.pop(0)
-            if not config.get(index):
-                config[index] = value
-                return None
-
-            data = config.get(index)
-            if isinstance(data, dict):
-                return self.Setvalue(value, path, data)
-            else:
-                if isinstance(data, list):
-                    config[index].append(value)
-                else:
-                    config[index] = [value]
-        else:
-            return None
-
-
 class PlayingQueue:
     """
     PlayingQueue is used as a track queue to manage track Playback.
@@ -599,6 +432,174 @@ class PathUtils:
     def isFileExt(file, ext):
         return (os.path.splitext(file)[1] == ext)
 
+
+class ConfigManager:
+    """
+    Manages the Configuration Parameters of Apollo
+
+    >>> inst = ConfigManager()
+    >>> inst.Getvariable("ROOT/SUB/SUB1")
+    >>> inst.Setvariable(["VALUE"], "ROOT/SUB/SUB1")
+    """
+    def __init__(self):
+        self.file = os.path.join(PARENT_DIR,"config.cfg")
+        self.config_dict = self.openConfig(self.file)
+
+    def deafult_settings(self):
+        """
+        Initilizes the default launch config
+
+        Returns
+        -------
+        dict
+            returns the default config
+        """
+        config = {
+            "APPTHEMES": {},
+            "LIBRARY_GROUPORDER": "file_path",
+            "ACTIVETHEME": "",
+            "CURRENT_DB": "Default",
+            "MONITERED_DB": {
+                "Default": {
+                    "name": "Default",
+                    "db_loc": os.path.join(PARENT_DIR, 'db', 'default.db'),
+                    "file_mon": [],
+                    "filters": ""
+                }
+            }
+        }
+        return config
+
+    def openConfig(self, file = None):
+        """
+        Opens the config file and loads the settings JSON
+
+        Parameters
+        ----------
+        file : String, optional
+            Config File path, by default None
+
+        Returns
+        -------
+        dict
+            reads a JSON and returns the config
+        """
+
+        if file == None:
+            file = self.file
+
+        self.config_dict = {}
+        if not os.path.isfile(file):
+            with open(file, "w") as FP:
+                json.dump(self.deafult_settings(), FP, indent = 4)
+                self.config_dict = self.deafult_settings()
+        else:
+            try:
+                with open(file) as FP:
+                    self.config_dict = json.load(FP)
+            except json.JSONDecodeError as e:
+                print(e)
+                with open(file, "w") as FP:
+                    json.dump({}, FP, indent = 4)
+        return self.config_dict
+
+    def writeConfig(self, file = None):
+        """
+        Writes Data to the Config File
+
+        Parameters
+        ----------
+        file : str, optional
+            File Name To write Into, by default None
+
+        Returns
+        -------
+        Boolean
+            returns if the write was succesful
+        """
+        if file == None:
+            file = self.file
+
+        with open(file, "w") as FP:
+            json.dump(self.config_dict, FP, indent = 4)
+            return True
+
+    def Getvalue(self, path = "", config = None):
+        """
+        Recursively Traverses the path and gets the value
+
+        Parameters
+        ----------
+        path : str, list, optional
+            Path used to traverse the dict, by default ""
+        config : dict, optional
+            dict to traverse, by default None
+
+        Returns
+        -------
+        any
+            returns value stored at a given path in the config
+        """
+        if config == None:
+            config = self.config_dict
+
+        if isinstance(path, str):
+            path = path.split("/")
+
+        if len(path) >= 1 and not("" in path):
+            index = path.pop(0)
+            data = config.get(index)
+
+            if isinstance(data, dict):
+                return self.Getvalue(path, data)
+            else:
+                return data
+        else:
+            return config
+
+    def Setvalue(self, value, path = '', config = None):
+        """
+        Recursively Traverses the path and Sets the value
+        >>> self.Config_manager.Setvalue(["VALUE"], "ROOT/SUB/SUB1")
+
+        Parameters
+        ----------
+        value : Any
+            Value to replace or set
+        path : str, optional
+            dict to traverse, by default ''
+        config : Dict, optional
+            Path used to traverse the dict, by default None
+
+        Returns
+        -------
+        Boolean
+            returns if operation was succesful
+        """
+        if config == None:
+            config = self.config_dict
+
+        if isinstance(path, str):
+            path = path.split("/")
+
+        if len(path) >= 1 and not("" in path):
+            index = path.pop(0)
+            if not config.get(index):
+                config[index] = value
+                return None
+
+            data = config.get(index)
+            if isinstance(data, dict):
+                return self.Setvalue(value, path, data)
+            else:
+                if isinstance(data, list):
+                    config[index].append(value)
+                else:
+                    config[index] = [value]
+        else:
+            return None
+
+
 class AppConfig(dict):
 
     def __init__(self):
@@ -635,6 +636,9 @@ class AppConfig(dict):
         """
         if k == "current_db_path":
             self.current_db_path = value
+        else:
+            self.Manager.Setvalue([value], k)
+        self.Manager.writeConfig()
 
     def get(self, key):
         """

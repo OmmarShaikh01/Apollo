@@ -8,6 +8,7 @@ from apollo.app.dataproviders import SQLTableModel
 from apollo.gui.ui_NPQ_delegate import Ui_NPQ_WDG_delegate
 from apollo.db import DBFIELDS
 
+
 class NowPlayingQueue(SQLTableModel):
     """
     Info: Utilities for data and communication between tabs
@@ -155,27 +156,6 @@ class NowPlayingQueue(SQLTableModel):
         self.OrderTable(Indexes)
 
 
-class NPQDelegate_WDG():
-
-    def __init__(self): ...
-    def paint(self, option, painter: QtGui.QPainter, *items):
-        Rect = option.rect
-        Rect.setWidth(Rect.width()-4)
-        painter.save()
-
-        # main
-        # painter.drawRect(Rect)
-
-        # cover
-        TempRec = QRect(Rect.x() + 4, Rect.y() + 4, 56, 56)
-        # painter.drawRect(TempRec)
-        painter.drawImage(TempRec, QtGui.QImage(':/icon_pack/png/64/music_icon-02.png'))
-
-
-
-        painter.restore()
-
-
 class NowPlaying_ItemDelegate(QtWidgets.QStyledItemDelegate):
     """
     Delegate calss for the NPQ which interfaces with the model
@@ -232,7 +212,6 @@ class NowPlaying_ItemDelegate(QtWidgets.QStyledItemDelegate):
         TempRec = QRect(Rect.x() + 4, Rect.y() + 4, 56, 56)
         Painter.drawImage(TempRec, QtGui.QImage(':/icon_pack/png/64/music_icon-02.png'))
 
-
     def DrawTop(self, Painter, Options, item):
         Rect = Options.rect
         TempRec = QRect(Rect.x() + 64, Rect.y() + 4, Rect.width() - 68, 16)
@@ -256,13 +235,14 @@ class NowPlaying_ItemDelegate(QtWidgets.QStyledItemDelegate):
         TempRec = QRect(Rect.x() + (64 + Width + 4 + Width + 4), Rect.y() + 44, Width - 4, 16)
         Painter.drawText(TempRec, items[2])
 
-    def paint(self, painter: QtGui.QPainter, option: QtWidgets.QStyleOptionViewItem, index):
+    def paint(self, painter, option, index):
         painter.save()
         self.DrawWidget(painter, option, index)
         painter.restore()
 
     def sizeHint(self, option, index):
         return (QSize(option.rect.height(), 64))
+
 
 class NowPlayingTab:
     """

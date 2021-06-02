@@ -13,7 +13,7 @@ if "%a%"=="pytest" (
 )
 
 if "%a%"=="pytest-f" (
-    ..\venv\Scripts\pytest.exe %b% --new-first --rootdir=. --ignore=..\venv --cache-clear --color=yes --code-highlight=yes
+    ..\venv\Scripts\pytest.exe %b% --new-first -vv --rootdir=. --ignore=..\venv --cache-clear --color=yes --code-highlight=yes
 )
 
 if "%a%"=="pytest-v" (
