@@ -13,9 +13,7 @@ __pycache__/
 
 # ignore all testing tools and files
 tests/result/
-apollo/plugins/app_theme/**/png/
-apollo/plugins/app_theme/**/**.qrc
-
+apollo/plugins/app_theme/theme_packs/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

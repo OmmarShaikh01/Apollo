@@ -457,7 +457,7 @@ class ConfigManager:
         config = {
             "APPTHEMES": {},
             "LIBRARY_GROUPORDER": "file_path",
-            "ACTIVETHEME": "",
+            "ACTIVETHEME": "GRAY_100",
             "CURRENT_DB": "Default",
             "MONITERED_DB": {
                 "Default": {
@@ -584,11 +584,10 @@ class ConfigManager:
 
         if len(path) >= 1 and not("" in path):
             index = path.pop(0)
-            if not config.get(index):
+            data = config.get(index, False)
+            if index not in config.keys():
                 config[index] = value
                 return None
-
-            data = config.get(index)
             if isinstance(data, dict):
                 return self.Setvalue(value, path, data)
             else:
@@ -667,3 +666,5 @@ class AppConfig(dict):
 if __name__ == "__main__":
     inst = AppConfig()
     print(inst.get("current_db_path"))
+    inst[f"APPTHEMES/GRAY_100"] = 111111111
+

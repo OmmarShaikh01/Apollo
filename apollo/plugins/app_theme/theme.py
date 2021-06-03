@@ -18,7 +18,7 @@ class Theme:
     """
     Theme class for application
     """
-    def __init__(self):
+    def __init__(self, Name = ""):
         """
         Class Constructor
         """
@@ -34,7 +34,15 @@ class Theme:
             if not os.path.isdir(PU.PathJoin(self.ROOTPATH, "GRAY_100")):
                 self.CreateThemePack(self.ROOTPATH, "GRAY_100", self.DefaultPallete())
 
-    def LoadTheme(self, app, name = ""): # pragma: no cover
+        self.sheet = None
+        self.pallete = None
+        if Name == "":
+            self.LoadTheme(self.ThemeConfig["ACTIVETHEME"])
+        else:
+            self.LoadTheme(self.ThemeConfig[f"APPTHEMES/{Name}"])
+
+
+    def LoadTheme(self, app = None, name = ""): # pragma: no cover
         """
         Loads the theme for the given Application
 
@@ -46,8 +54,11 @@ class Theme:
             Name of the theme, by default ""
         """
         if name in os.listdir(self.ROOTPATH):
-            app.setStyleSheet(self.GetStyleSheet(name))
+            self.sheet = self.GetStyleSheet(name)
+            self.pallete = self.GetPallete(name)
             self.LoadAppIcons(name)
+        if app:
+            app.setStyleSheet(self.sheet)
 
     def GetStyleSheet(self, Name = ""):
         """
@@ -64,6 +75,22 @@ class Theme:
             return Stylesheet
         else:
             raise ThemeLoadFailed("Stylesheet Not avaliable")
+
+    def GetPallete(self, Name = ""):
+        """
+        Info: Get the style sheet for the theme
+        Args:
+        Name: String
+            -> theme name
+        Returns: String
+        Errors: None
+        """
+        if os.path.isfile(PU.PathJoin(self.ROOTPATH, Name, "theme.json")):
+            with open(PU.PathJoin(self.ROOTPATH, Name, "theme.json")) as FH:
+                Pallete = FH.read()
+            return Pallete
+        else:
+            raise ThemeLoadFailed("Pallete Not avaliable")
 
     def LoadAppIcons(self, Name = "", PKG = None):
         """
@@ -343,8 +370,3 @@ class Theme:
                 "disabled-03" : "#6f6f6f"
             }
         return JSON
-
-
-if __name__ == "__main__":
-    App = QtWidgets.QApplication([])
-    Inst = Theme()
