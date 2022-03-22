@@ -44,47 +44,39 @@ class BufferTable:
         self.time_length = round(math.ceil(float(self.media.Tags['length'])))
         self.buffer_virtual_length = round(int(self.media.Tags['samplerate']) * float(self.media.Tags['length']))
 
-        self.buffer_time = 30
+        self.buffer_time = 10
         self.buffer_length = int(self.media.Tags['samplerate']) * self.buffer_time
-        self.indexes = pyo.Linseg([(0, 0), (self.buffer_time, 1)], loop = True)
+        self.indexes = pyo.Linseg([(0, 0), (self.buffer_time * .5, self.buffer_length)], loop = True)
 
         self.table = pyo.DataTable(self.buffer_length, chnls = 2, init = np.zeros((2, self.buffer_length)).tolist())
         self.shared_buffer = [np.asarray(self.table._base_objs[chnl].getTableStream()) for chnl in
                               range(self.table.chnls)]
         self.temp_buffer = np.asarray([np.asarray([]) for chnl in range(self.table.chnls)])
 
-        self.reader = pyo.Pointer2(table = self.table, index = self.indexes).mix(2)
+        self.reader = pyo.TableIndex(table = self.table, index = self.indexes).mix(2)
 
     def mapTimetoIndex(self, time: float) -> int:
         return int(self.buffer_length * time)
 
-    @timeit
     def fetchMore(self):
-        sample_diff = 4410
+        stop_distance = 4410
         if not hasattr(self, 'head_pos'):
             self.head_pos = 0
             # initilize and move ahead the initial samples
             self.writeSamples(self.getSamples())
             return None
 
-        self.read_pos = self.mapTimetoIndex(self.indexes.get())
-
-        if self.read_pos < self.head_pos and (abs(self.read_pos - self.head_pos) < sample_diff):
+        self.read_pos = self.indexes.get()
+        if abs(self.read_pos - self.head_pos) <= stop_distance * .5:
             self.writeSamples(self.getSamples())
-        elif self.read_pos > self.head_pos:
-            if not self.temp_buffer.shape[1] == 0:
-                self.writeSamples(self.temp_buffer)
-                self.temp_buffer = np.asarray([[] for chnl in range(self.table.chnls)])
-            if (abs(self.read_pos - self.head_pos) > sample_diff):
-                self.writeSamples(self.getSamples())
         else:
             pass
+
 
     def getSamples(self):
         array: np.ndarray = self.audio_decoder.get().to_ndarray()
         return array
 
-    @timeit
     def writeSamples(self, samples):
         index = 0
         hasdump = False
@@ -99,7 +91,6 @@ class BufferTable:
                     break
         if hasdump:
             self.temp_buffer = np.asarray([samples[chan][index - 1:] for chan in range(self.table.chnls)])
-        self.table.refreshView()
 
     def play(self):
         self.indexes.play()
@@ -161,7 +152,6 @@ class DSPInterface:
             self.addToCallbackChain(self.input_stream_2.fetchMore)
             if hasattr(self, "input_stream_1"):
                 self.popFromCallbackChain(self.input_stream_1.fetchMore)
-            self.input_stream_2.table.graph()
 
     def init_processing_chain(self):
         # Creating Silent Input Stream
