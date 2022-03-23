@@ -16,7 +16,12 @@ class MP3_Decoder():
                 for frame in packet.decode():
                     yield frame
             else:
-                break
+                yield None
 
     def get(self):
         return next(self.decoder)
+
+    def reset_buffer(self):
+        self.InputStream.close()
+        self.InputStream = av.open(self.file_path)
+        self.decoder = self.decode()
