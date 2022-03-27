@@ -27,12 +27,7 @@ class PlayBackBar:
         self.setAlbumCoverImage()
         self.ui.volume_slider.setValue(50)
         self.ui.volume_pushbutton.clicked.connect(self.volumeChangeCycle)
-        self.ui.queue_pushbutton.clicked.connect(lambda: (
-            self.ui.main_content_splitterframe.setSizes((
-                int(self.ui.centralwidget.width() * 0.7),
-                int(self.ui.centralwidget.width() * 0.3)
-            ))
-        ))
+        self.ui.queue_pushbutton.clicked.connect(self.reactQueueButtonPressed)
         self.ui.audio_fx_pushbutton.clicked.connect(lambda: (
             self.ui.main_tab_widget.setCurrentIndex(3)
         ))
@@ -174,6 +169,18 @@ class PlayBackBar:
         self.ui.shuffle_pushbutton.style().unpolish(self.ui.shuffle_pushbutton)
         self.ui.shuffle_pushbutton.style().polish(self.ui.shuffle_pushbutton)
 
+    def reactQueueButtonPressed(self):
+        if self.ui.main_content_splitterframe.sizes()[-1] <= 10:
+            self.ui.main_content_splitterframe.setSizes((
+                int(self.ui.centralwidget.width() * 0.7),
+                int(self.ui.centralwidget.width() * 0.3)
+            ))
+        else:
+            self.ui.main_content_splitterframe.setSizes((
+                int(self.ui.centralwidget.width() * 1),
+                int(self.ui.centralwidget.width() * 0)
+            ))
+
     def setTrackTimes(self, total: datetime.time):
         self.ui.total_time_label.setText(str(total))
         self.ui.completed_time_label.setText(str(datetime.timedelta(seconds = 0)))
@@ -189,8 +196,12 @@ class PlayBackBar:
 
     def setAlbumCoverImage(self, data: QPixmap = None):
         if data is None:
-            default = (
-                os.path.join(pathlib.Path.home(), '.qt_material', 'theme_custom', 'primary', 'music-note-2.4.svg'))
-            data = QIcon(default).pixmap(
-                    QSize(int(self.ui.cover_pixmap.width() * 0.8), int(self.ui.cover_pixmap.height() * 0.8)))
-        self.ui.cover_pixmap.setPixmap(data)
+            default = (os.path.join(pathlib.Path.home(), '.qt_material', 'theme_custom', 'primary', 'music-note-2.4.svg'))
+
+            data = QIcon(default)
+            data = data.pixmap(QSize(int(self.ui.cover_pixmap.width() * 0.8), int(self.ui.cover_pixmap.height() * 0.8)))
+            self.ui.cover_pixmap.setPixmap(data)
+
+            data = QIcon(default)
+            data = data.pixmap(QSize(256, 256))
+            self.ui.cover_pixmap_large.setPixmap(data)

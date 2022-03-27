@@ -106,20 +106,42 @@ QFrame#frame_8 {{
 }}
 
 QFrame#frame_7,
+QFrame#frame_9,
+QFrame#library_tab,
+QFrame#playlists_tab,
+QFrame#now_playing_tab,
+QFrame#audio_fx_tab,
 QFrame#frame {{
     background: {QTMATERIAL_SECONDARYCOLOR};
     border: none;
     border-radius: 0px;
 }}
 
-QGroupBox#queue_groupbox {{
+QGroupBox#queue_groupbox{{
     text-transform: uppercase;
     border: 0px;
     padding: 30px 0px 0px 0px;
     font-size: 14px;
 }}
 
+QGroupBox#lyrics_groupbox {{
+    text-transform: uppercase;
+    border: 0px;
+    padding: 30px 0px 0px 0px;
+    font-size: 14px;
+    border-top: 2px solid {QTMATERIAL_SECONDARYCOLOR};
+}}
+
 QGroupBox::title#queue_groupbox {{
+  color: {QTMATERIAL_SECONDARYTEXTCOLOR};
+  subcontrol-origin: margin;
+  subcontrol-position: top left;
+  padding: 8px 16px;
+  background-color: transparent;
+  height: 32px;
+}}
+
+QGroupBox::title#lyrics_groupbox {{
   color: {QTMATERIAL_SECONDARYTEXTCOLOR};
   subcontrol-origin: margin;
   subcontrol-position: top left;
@@ -132,6 +154,12 @@ QWidget#cover_pixmap {{
     border-radius: 2px;
     border: 2px solid {QTMATERIAL_SECONDARYCOLOR};
     background-color: {QTMATERIAL_SECONDARYDARKCOLOR};
+}}
+
+QWidget#cover_pixmap_large {{
+    border-radius: 2px;
+    border: 2px solid {QTMATERIAL_SECONDARYCOLOR};
+    background-color: {QTMATERIAL_SECONDARYCOLOR};
 }}
 
 QLineEdit {{
@@ -377,42 +405,68 @@ QPushButton:disabled#settings_pushbutton{{
     padding: 4px
 }}
 
-QPushButton#library_tab_add_pushbutton {{
+QPushButton#playlists_tab_menu_pushbutton {{
+    image: url(theme_custom:/primary/menu.svg);
+    color: {QTMATERIAL_PRIMARYCOLOR};
+    border-radius: 4px;
+    padding: 4px
+}}
+
+QPushButton:disabled#playlists_tab_menu_pushbutton{{
+    image: url(theme_custom:/disabled/menu.svg);
+    color: {QTMATERIAL_PRIMARYCOLOR};
+    border-radius: 4px;
+    padding: 4px
+}}
+
+QPushButton#library_tab_add_pushbutton,
+QPushButton#playlists_tab_add_pushbutton,
+QPushButton#queue_tab_add_pushbutton {{
     image: url(theme_custom:/primary/plus.svg);
     color: {QTMATERIAL_PRIMARYCOLOR};
     border-radius: 4px;
     padding: 4px
 }}
 
-QPushButton:disabled#library_tab_add_pushbutton {{
+QPushButton:disabled#library_tab_add_pushbutton,
+QPushButton:disabled#playlists_tab_add_pushbutton,
+QPushButton:disabled#queue_tab_add_pushbutton {{
     image: url(theme_custom:/disabled/plus.svg);
     color: {QTMATERIAL_PRIMARYCOLOR};
     border-radius: 4px;
     padding: 4px
 }}
 
-QPushButton#library_tab_min_pushbutton {{
+QPushButton#library_tab_min_pushbutton,
+QPushButton#playlists_tab_min_pushbutton,
+QPushButton#queue_tab_min_pushbutton {{
     image: url(theme_custom:/primary/minus.svg);
     color: {QTMATERIAL_PRIMARYCOLOR};
     border-radius: 4px;
     padding: 4px
 }}
 
-QPushButton:disabled#library_tab_min_pushbutton {{
+QPushButton:disabled#library_tab_min_pushbutton,
+QPushButton:disabled#playlists_tab_min_pushbutton,
+QPushButton:disabled#queue_tab_min_pushbutton {{
     image: url(theme_custom:/disabled/minus.svg);
     color: {QTMATERIAL_PRIMARYCOLOR};
     border-radius: 4px;
     padding: 4px
 }}
 
-QPushButton#library_tab_search_pushbutton {{
+QPushButton#library_tab_search_pushbutton,
+QPushButton#playlists_tab_search_pushbutton,
+QPushButton#queue_tab_search_pushbutton {{
     image: url(theme_custom:/primary/search.svg);
     color: {QTMATERIAL_PRIMARYCOLOR};
     border-radius: 4px;
     padding: 4px
 }}
 
-QPushButton:disabled#library_tab_search_pushbutton {{
+QPushButton:disabled#library_tab_search_pushbutton,
+QPushButton:disabled#playlists_tab_search_pushbutton,
+QPushButton:disabled#queue_tab_search_pushbutton {{
     image: url(theme_custom:/disabled/search.svg);
     color: {QTMATERIAL_PRIMARYCOLOR};
     border-radius: 4px;
