@@ -11,23 +11,12 @@ import pyo
 from apollo.media import Mediafile
 
 
-def tryit(method):
-    def exec(*args, **kwargs):
-        try:
-            method(*args, **kwargs)
-        except Exception as e:
-            print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
-            raise e
-
-    return exec
-
-
 def timeit(method):
     def exec(*args, **kwargs):
         try:
             t1 = time.time()
             method(*args, **kwargs)
-            print(round(time.time() - t1, 8))
+            print(method, round(time.time() - t1, 8))
         except Exception as e:
             print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
             raise e
@@ -35,15 +24,25 @@ def timeit(method):
     return exec
 
 
-class BufferTable:
+def execLine(msg, method):
+    try:
+        t1 = time.time()
+        method()
+        print(msg, round(time.time() - t1, 8))
+    except Exception as e:
+        print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
+        raise e
 
-    def __init__(self, path: str) -> None:
+
+class BufferTable:
+    def __init__(self, path: str = None) -> None:
         super().__init__()
         self.path = path
+        self.sample_rate = 44100
         self.read(path)
 
         self.buffer_time = 10
-        self.buffer_length = int(self.media.Tags['samplerate']) * self.buffer_time
+        self.buffer_length = int(44100) * self.buffer_time
         self.indexes = pyo.Linseg([(0, 0), (self.buffer_time * 1, self.buffer_length)], loop = True)
 
         self.table = pyo.DataTable(self.buffer_length, chnls = 2, init = np.zeros((2, self.buffer_length)).tolist())
@@ -52,14 +51,17 @@ class BufferTable:
         self.reader = pyo.TableIndex(table = self.table, index = self.indexes)
 
     def read(self, path: str):
-        self.media = Mediafile(self.path)
-        self.audio_decoder = self.media.Decoder
-        self.frame_pos = 0
-        self.time_length = round(math.ceil(float(self.media.Tags['length'])))
-        self.buffer_virtual_length = round(int(self.media.Tags['samplerate']) * float(self.media.Tags['length']))
+        if path is not None:
+            self.media = Mediafile(path)
+            self.audio_decoder = self.media.Decoder
+            self.time_length = round(math.ceil(float(self.media.Tags['length'])))
+            self.buffer_virtual_length = round(int(self.media.Tags['samplerate']) * float(self.media.Tags['length']))
 
+        self.frame_pos = 0
+        self.actual_pos = 0
         self.EOF = False
         self.isPlaying = False
+        self.repeat = False
 
     def getBuffer(self):
         return [np.asarray(self.table._base_objs[chnl].getTableStream()) for chnl in range(self.table.chnls)]
@@ -91,6 +93,9 @@ class BufferTable:
                 return array.to_ndarray()
             else:
                 self.EOF = True
+                if self.repeat:
+                    self.reset()
+                    self.repeat = False
                 return None
 
     def writeSamples(self, samples):
@@ -102,6 +107,7 @@ class BufferTable:
                 self.head_pos = self.head_pos + sample_len
             elif (self.head_pos + sample_len) > self.buffer_length:
                 self.head_pos = (self.head_pos + sample_len) - self.buffer_length
+            self.actual_pos += sample_len
             return True
         else:
             return False
@@ -134,11 +140,23 @@ class BufferTable:
 
     def clear(self):
         for chan in range(self.table.chnls):
-            self.shared_buffer[chan].put(range(0, self.buffer_length), np.zeros(self.buffer_length), 'wrap')
+            self.shared_buffer[chan].fill(0)
 
     def mapIndextoTime(self, index: int, sr: int):
         time = int(index) / int(sr)
         return time
+
+    def getCurrentTime(self):
+        if not hasattr(self, 'head_pos'):
+            return 0
+        else:
+            return self.mapIndextoTime(self.actual_pos, 44100)
+
+    def time_to_end(self):
+        if not hasattr(self, 'time_length'):
+            return 0
+        else:
+            return self.time_length - self.mapIndextoTime(self.actual_pos, 44100)
 
 
 class DSPInterface:
@@ -153,14 +171,20 @@ class DSPInterface:
         self.server.start()
         self.init_processing_chain()
         self.server.setCallback(self.server_callback)
+        self.addToCallbackChain(self.check_for_end)
 
     def server_callback(self):
         if not hasattr(self, 'callback_chain'):
             self.callback_chain = []
         for callback in self.callback_chain:
-            callback()
+            try:
+                callback()
+            except Exception as e:
+                print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
 
     def addToCallbackChain(self, item):
+        if not hasattr(self, 'callback_chain'):
+            self.callback_chain = []
         for index, callback in enumerate(self.callback_chain):
             if item == callback:
                 self.callback_chain[index] = item
@@ -168,6 +192,8 @@ class DSPInterface:
             self.callback_chain.append(item)
 
     def popFromCallbackChain(self, item):
+        if not hasattr(self, 'callback_chain'):
+            self.callback_chain = []
         for index, callback in enumerate(self.callback_chain):
             if item == callback:
                 self.callback_chain.pop(index)
@@ -177,13 +203,17 @@ class DSPInterface:
         self.fader = pyo.Linseg([(0, 0), (self.config_dict.get('fadeout_time') + 0.5, 1)])
         self.fader_callback = pyo.TrigFunc(pyo.Thresh(self.fader, 0.99), self.remove_faded_table)
         self.voices = itertools.cycle([
-            [(0, 0), (self.config_dict.get("fadeout_time"), 1)],
             [(0, 1), (self.config_dict.get("fadeout_time"), 0)],
+            [(0, 0), (self.config_dict.get("fadeout_time"), 1)],
         ])
         self.voice_switch = pyo.Linseg(next(self.voices))
-        self.main_input = pyo.Selector([pyo.Sine([0, 0]), pyo.Sine([0, 0])], self.voice_switch)
+
+        self.input_stream_0 = BufferTable()
+        self.input_stream_1 = BufferTable()
+
+        self.main_input = pyo.Selector([self.input_stream_0.reader, self.input_stream_1.reader], self.voice_switch)
         self.main_output = pyo.Clip(self.main_input)
-        self.current_stream = 1
+        self.current_stream = 0
 
     def remove_faded_table(self):
         if self.current_stream == 1 and hasattr(self, "input_stream_0"):
@@ -208,38 +238,30 @@ class DSPInterface:
         else:
             return None
 
+    @timeit
     def replaceTable(self, path: str):
+        stream = self.get_active_stream()
         # manage then input switch rest works
-        if self.current_stream == 1:
-            if not hasattr(self, "input_stream_0"):
-                self.input_stream_0 = BufferTable(path)
+        if stream is not None:
+            self.voice_switch.setList(next(self.voices))
+            stream.clear()
+            stream.read(path)
+            stream.fetchMore()
+            stream.play()
+            self.addToCallbackChain(stream.fetchMore)
+            self.voice_switch.play()
+            self.fader.play()
+            if self.current_stream == 0:
+                self.current_stream = 1
             else:
-                self.input_stream_1.clear()
-                self.input_stream_0.read(path)
-            self.input_stream_0.fetchMore()
-            self.input_stream_0.play()
-            self.current_stream = 0
-            self.addToCallbackChain(self.input_stream_0.fetchMore)
+                self.current_stream = 0
 
-        elif self.current_stream == 0:
-            if not hasattr(self, "input_stream_1"):
-                self.input_stream_1 = BufferTable(path)
-            else:
-                self.input_stream_1.clear()
-                self.input_stream_1.read(path)
-            self.input_stream_1.fetchMore()
-            self.input_stream_1.play()
-            self.current_stream = 1
-            self.addToCallbackChain(self.input_stream_1.fetchMore)
-
-        if hasattr(self, "input_stream_0") and hasattr(self, "input_stream_1"):
-            self.main_input.setInputs([self.input_stream_0.reader, self.input_stream_1.reader])
-        else:
-            self.main_input.setInputs([self.input_stream_0.reader, pyo.Sine([0, 0])])
-
-        self.voice_switch.setList(next(self.voices))
-        self.voice_switch.play()
-        self.fader.play()
+    def check_for_end(self):
+        stream = self.get_active_stream()
+        if stream is not None:
+            switch = (0 < (self.config_dict.get("fadeout_time") - (stream.time_to_end())) <= 0.1)
+            if switch and (not self.fader.isPlaying()):
+                self.call_at_EOF()
 
     def seek(self, time):
         stream = self.get_active_stream()
@@ -277,3 +299,6 @@ class DSPInterface:
                 pa_get_version_text = pyo.pa_get_version_text()
         )
         return info
+
+    def call_at_EOF(self):
+        ...

@@ -58,6 +58,37 @@ class Connection:
 
 
 class Database:
+    library_columns = [
+        "file_id",
+        "file_name",
+        "file_path",
+        "tracktitle",
+        "artist",
+        "album",
+        "albumartist",
+        "composer",
+        "tracknumber",
+        "totaltracks",
+        "discnumber",
+        "totaldiscs",
+        "genre",
+        "year",
+        "compilation",
+        "lyrics",
+        "isrc",
+        "comment",
+        "artwork",
+        "bitrate",
+        "codec",
+        "length",
+        "channels",
+        "bitspersample",
+        "samplerate",
+        "rating",
+        "isLiked"
+    ]
+    playlist_columns = ["file_id", "order"]
+    queue_columns = ["file_id", "order"]
 
     def __init__(self) -> None:
         self.database_file = config["DATABASE"]["file_location"]
@@ -91,30 +122,72 @@ class Database:
             "channels"	TEXT,
             "bitspersample"	TEXT,
             "samplerate"	TEXT,
+            "rating"	INTEGER  DEFAULT 0,
+            "isLiked"	INTEGER  DEFAULT 0,
+            "isLiked"	INTEGER  DEFAULT 0,
             PRIMARY KEY("file_id")
+        );
+        """
+        table_query_queue = """
+        CREATE TABLE IF NOT EXISTS "queue" (
+            "file_id" TEXT NOT NULL,
+            "order" INTEGER,
+            FOREIGN KEY("file_id") REFERENCES "library"("file_id"),
+            PRIMARY KEY("order")
         );
         """
         with Connection(self.database_file) as CON:
             QSqlQuery(table_query_library, db = CON).exec()
+            QSqlQuery(table_query_queue, db = CON).exec()
             del CON
 
-    def batchinsert_Metadata(self, metadata: list, keys: list):
-        with Connection(self.database_file) as CON:
+    def batchinsert_Metadata(self, metadata: dict, keys: list, connection: Connection = None):
+
+        def internal_call(CON, keys, metadata):
             CON.transaction()
-            QSqlQuery("PRAGMA journal_mode = MEMORY", db = CON).exec()
+            self.exec_query(query = "PRAGMA journal_mode = MEMORY", db = CON)
             columns = ", ".join([f"'{i}'" for i in keys])
             placeholders = ", ".join(["?" for i in keys])
             query = QSqlQuery(f"INSERT OR IGNORE INTO library ({columns}) VALUES ({placeholders})", db = CON)
             for key in keys:
                 query.addBindValue([value[key] for value in metadata])
-
             if query.execBatch():
-                QSqlQuery("PRAGMA journal_mode = WAL", db = CON).exec()
+                self.exec_query(query = "PRAGMA journal_mode = WAL", db = CON)
                 CON.commit()
             else:
                 msg = f"ERROR: {(query.lastError().text())}\nQuery: {query.lastQuery()}"
-                QSqlQuery("PRAGMA journal_mode = WAL", db = CON).exec()
+                self.exec_query(query = "PRAGMA journal_mode = WAL", db = CON)
                 raise QueryExecutionFailed(msg)
+
+        if connection is None:
+            with Connection(self.database_file) as CON:
+                internal_call(CON, keys, metadata)
+        else:
+            internal_call(connection, keys, metadata)
+
+    def batchinsert_data(self, table: str, data: dict, keys: list, connection: Connection = None):
+
+        def internal_call(CON, keys, data):
+            CON.transaction()
+            self.exec_query(query = "PRAGMA journal_mode = MEMORY", db = CON)
+            columns = ", ".join([f"'{i}'" for i in keys])
+            placeholders = ", ".join(["?" for i in keys])
+            query = QSqlQuery(f"INSERT OR IGNORE INTO {table} ({columns}) VALUES ({placeholders})", db = CON)
+            for key in keys:
+                query.addBindValue([value[key] for value in data])
+            if query.execBatch():
+                self.exec_query(query = "PRAGMA journal_mode = WAL", db = CON)
+                CON.commit()
+            else:
+                msg = f"ERROR: {(query.lastError().text())}\nQuery: {query.lastQuery()}"
+                self.exec_query(query = "PRAGMA journal_mode = WAL", db = CON)
+                raise QueryExecutionFailed(msg)
+
+        if connection is None:
+            with Connection(self.database_file) as CON:
+                internal_call(CON, keys, data)
+        else:
+            internal_call(connection, keys, data)
 
     def exec_query(self, query: str, db: Connection, column: Union[int, None] = None, commit: bool = True):
         # creates a connection to the DB that is linked to the main class

@@ -7,13 +7,14 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon, QPixmap
 
 from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
-
+from apollo.media.player import Player
 
 class PlayBackBar:
 
     def __init__(self, ui: Apollo) -> None:
         super().__init__()
         self.ui = ui
+        self._player = Player()
         self.setupUI()
 
     def setupUI(self):
@@ -205,3 +206,7 @@ class PlayBackBar:
             data = QIcon(default)
             data = data.pixmap(QSize(256, 256))
             self.ui.cover_pixmap_large.setPixmap(data)
+
+    @property
+    def Player(self):
+        return self._player

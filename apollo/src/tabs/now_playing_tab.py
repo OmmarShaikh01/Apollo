@@ -9,7 +9,7 @@ class NowPlayingTab:
     def __init__(self, ui: Apollo) -> None:
         super().__init__()
         self.ui = ui
-        self.setupUI()
+        # self.setupUI()
 
     def setupUI(self):
         # TODO save initial states into a temporary dump

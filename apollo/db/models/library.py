@@ -14,7 +14,7 @@ class LibraryModel(QStandardItemModel):
     def __init__(self, parent: Optional[PySide6.QtCore.QObject] = None) -> None:
         super().__init__(parent)
         self.database = Database()
-        self.fields = Mediafile.tags_fields
+        self.fields = self.database.library_columns
         self.fetchRecords()
 
     def fillHeaderData(self):
@@ -23,20 +23,15 @@ class LibraryModel(QStandardItemModel):
             self.setHorizontalHeaderItem(index, QStandardItem(item))
 
     def fetchRecords(self):
-        self.clear()
-        self.fillHeaderData()
         columns = ", ".join([f"{i}" for i in self.fields])
         with Connection(self.database.database_file) as CONN:
             query = self.database.exec_query(query = f"SELECT {columns} FROM library", db = CONN)
-            for row in self.database.fetch_all(query, lambda x: QStandardItem(str(x))):
-                self.appendRow(row)
+            self.refill_table(query)
 
     def searchTable(self, text):
         if text:
             try:
-                self.fillHeaderData()
                 columns = ", ".join([f"{i}" for i in self.fields])
-                self.clear()
                 with Connection(self.database.database_file) as CONN:
                     query = self.database.exec_query(
                         query = f"""
@@ -49,9 +44,14 @@ class LibraryModel(QStandardItemModel):
                         """,
                         db = CONN
                     )
-                    for row in self.database.fetch_all(query, lambda x: QStandardItem(str(x))):
-                        self.appendRow(row)
+                    self.refill_table(query)
             except QueryBuildFailed:
                 self.fetchRecords()
         else:
             self.fetchRecords()
+
+    def refill_table(self, query):
+        self.clear()
+        self.fillHeaderData()
+        for row in self.database.fetch_all(query, lambda x: QStandardItem(str(x))):
+            self.appendRow(row)

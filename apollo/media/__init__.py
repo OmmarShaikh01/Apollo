@@ -33,7 +33,7 @@ class Mediafile:
         'length',
         'channels',
         'bitspersample',
-        'samplerate',
+        'samplerate'
     )
 
     def __init__(self, path) -> None:

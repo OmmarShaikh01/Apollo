@@ -167,6 +167,11 @@ QLineEdit {{
     border: 0px;
 }}
 
+QMenu::item {{
+  max-height: 32px;
+  border: 2px solid transparent;
+  color: {QTMATERIAL_SECONDARYTEXTCOLOR};
+}}
 /* BUTTON STYLESHEETS */
 QPushButton#volume_pushbutton[volume_level=MUTE] {{
     image: url(theme_custom:/primary/volume-3.svg);
