@@ -1,12 +1,9 @@
 from typing import Optional
 
 import PySide6.QtCore
-from PySide6 import QtGui, QtCore, QtWidgets
-from PySide6.QtGui import QStandardItemModel, QStandardItem
-from PySide6.QtSql import QSqlQuery, QSqlDatabase
+from PySide6.QtGui import QStandardItem, QStandardItemModel
 
-from apollo.db.database import Database, Connection, QueryBuildFailed
-from apollo.media import Mediafile
+from apollo.db.database import Connection, Database, QueryBuildFailed
 
 
 class LibraryModel(QStandardItemModel):

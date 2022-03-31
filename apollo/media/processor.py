@@ -1,7 +1,6 @@
 import itertools
 import math
 import sys
-import time
 import traceback
 
 import av
@@ -11,43 +10,18 @@ import pyo
 from apollo.media import Mediafile
 
 
-def timeit(method):
-    def exec(*args, **kwargs):
-        try:
-            t1 = time.time()
-            method(*args, **kwargs)
-            print(method, round(time.time() - t1, 8))
-        except Exception as e:
-            print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
-            raise e
-
-    return exec
-
-
-def execLine(msg, method):
-    try:
-        t1 = time.time()
-        method()
-        print(msg, round(time.time() - t1, 8))
-    except Exception as e:
-        print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
-        raise e
-
-
 class BufferTable:
     def __init__(self, path: str = None) -> None:
         super().__init__()
-        self.path = path
         self.sample_rate = 44100
+        self.path = path
         self.read(path)
 
         self.buffer_time = 10
         self.buffer_length = int(44100) * self.buffer_time
         self.indexes = pyo.Linseg([(0, 0), (self.buffer_time * 1, self.buffer_length)], loop = True)
-
         self.table = pyo.DataTable(self.buffer_length, chnls = 2, init = np.zeros((2, self.buffer_length)).tolist())
         self.shared_buffer = self.getBuffer()
-
         self.reader = pyo.TableIndex(table = self.table, index = self.indexes)
 
     def read(self, path: str):
@@ -72,7 +46,8 @@ class BufferTable:
             if not hasattr(self, 'head_pos'):
                 self.head_pos = 0
                 # initilize and move ahead the initial samples
-                self.writeSamples(self.getSamples())
+                if not self.writeSamples(self.getSamples()):
+                    self.stop()
                 return None
 
             self.read_pos = self.indexes.get()
@@ -134,8 +109,7 @@ class BufferTable:
     def reset(self):
         self.frame_pos = 0
         self.audio_decoder.reset_buffer()
-        for chan in range(self.table.chnls):
-            self.shared_buffer[chan].put(range(0, self.buffer_length), np.zeros(self.buffer_length), 'wrap')
+        self.clear()
         self.EOF = False
 
     def clear(self):
@@ -161,21 +135,20 @@ class BufferTable:
 
 class DSPInterface:
 
-    def __init__(self, fadeout_time = 5) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self.config_dict = {
-            "fadeout_time": fadeout_time
+            "fadeout_time": 5,
+            "server_amp": 1,
         }
         self.server = pyo.Server(nchnls = 2, duplex = 0).boot()
-        self.server.setAmp(0.0001)
         self.server.start()
+        self.server.setAmp(self.config_dict.get("server_amp"))
         self.init_processing_chain()
         self.server.setCallback(self.server_callback)
         self.addToCallbackChain(self.check_for_end)
 
     def server_callback(self):
-        if not hasattr(self, 'callback_chain'):
-            self.callback_chain = []
         for callback in self.callback_chain:
             try:
                 callback()
@@ -183,8 +156,6 @@ class DSPInterface:
                 print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
 
     def addToCallbackChain(self, item):
-        if not hasattr(self, 'callback_chain'):
-            self.callback_chain = []
         for index, callback in enumerate(self.callback_chain):
             if item == callback:
                 self.callback_chain[index] = item
@@ -192,25 +163,23 @@ class DSPInterface:
             self.callback_chain.append(item)
 
     def popFromCallbackChain(self, item):
-        if not hasattr(self, 'callback_chain'):
-            self.callback_chain = []
         for index, callback in enumerate(self.callback_chain):
             if item == callback:
                 self.callback_chain.pop(index)
 
     def init_processing_chain(self):
         # Creating the main input fader; an entry point for multiple input feeds
+        self.callback_chain = []
         self.fader = pyo.Linseg([(0, 0), (self.config_dict.get('fadeout_time') + 0.5, 1)])
         self.fader_callback = pyo.TrigFunc(pyo.Thresh(self.fader, 0.99), self.remove_faded_table)
-        self.voices = itertools.cycle([
-            [(0, 1), (self.config_dict.get("fadeout_time"), 0)],
-            [(0, 0), (self.config_dict.get("fadeout_time"), 1)],
-        ])
-        self.voice_switch = pyo.Linseg(next(self.voices))
-
         self.input_stream_0 = BufferTable()
         self.input_stream_1 = BufferTable()
+        self.voices = itertools.cycle([
+            [(0, 1), (self.config_dict.get("fadeout_time"), 0)],
+            [(0, 0), (self.config_dict.get("fadeout_time"), 1)]
+        ])
 
+        self.voice_switch = pyo.Linseg(next(self.voices))
         self.main_input = pyo.Selector([self.input_stream_0.reader, self.input_stream_1.reader], self.voice_switch)
         self.main_output = pyo.Clip(self.main_input)
         self.current_stream = 0
@@ -238,7 +207,6 @@ class DSPInterface:
         else:
             return None
 
-    @timeit
     def replaceTable(self, path: str):
         stream = self.get_active_stream()
         # manage then input switch rest works

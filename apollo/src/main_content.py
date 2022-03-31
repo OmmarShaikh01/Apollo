@@ -1,5 +1,5 @@
 from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
-from apollo.src.tabs import LibraryTab, PlaylistTab, NowPlayingTab
+from apollo.src.tabs import LibraryTab, NowPlayingTab, PlaylistTab
 
 
 class MainContent:

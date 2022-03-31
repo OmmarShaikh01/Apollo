@@ -1,7 +1,7 @@
-from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtWidgets
 
-from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
 from apollo.db.models.library import LibraryModel
+from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
 
 
 class NowPlayingTab:

@@ -1,11 +1,9 @@
-import copy
-import os
 import configparser
+import os
 import random
-import typing
-from typing import Union, Callable
+from typing import Callable, Union
 
-from PySide6.QtSql import QSqlQuery, QSqlDatabase
+from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 from apollo.media import Mediafile
 

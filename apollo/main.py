@@ -5,7 +5,7 @@ from pathlib import Path
 
 from PySide6 import QtWidgets
 from PySide6.QtCore import QDir
-from qt_material import apply_stylesheet, ResourseGenerator, export_theme
+from qt_material import ResourseGenerator, apply_stylesheet
 
 from src.apollo import Apollo
 

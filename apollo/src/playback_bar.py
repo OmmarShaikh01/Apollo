@@ -9,6 +9,7 @@ from PySide6.QtGui import QIcon, QPixmap
 from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
 from apollo.media.player import Player
 
+
 class PlayBackBar:
 
     def __init__(self, ui: Apollo) -> None:

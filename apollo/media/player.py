@@ -1,6 +1,6 @@
 import os
 
-from apollo.media.processor import DSPInterface, timeit
+from apollo.media.processor import DSPInterface
 
 
 class Player:

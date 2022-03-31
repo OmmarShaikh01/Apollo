@@ -4,7 +4,7 @@ import os
 
 import music_tag
 
-from apollo.media.decoders import WAV_Decoder, MP3_Decoder
+from apollo.media.decoders import MP3_Decoder, WAV_Decoder
 
 
 class Mediafile:

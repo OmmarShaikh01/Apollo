@@ -1,7 +1,7 @@
 from PySide6 import QtCore, QtGui, QtWidgets
 
+from apollo.db.models import LibraryModel, PlaylistsModel, Provider
 from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
-from apollo.db.models import Provider, LibraryModel, PlaylistsModel
 
 
 class LibraryTab:
