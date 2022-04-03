@@ -272,28 +272,28 @@ QPushButton:disabled#repeat_pushbutton[repeat=NONE] {{
 }}
 
 QPushButton#repeat_pushbutton[repeat=SINGLE] {{
-    image: url(theme_custom:/primary/repeat.svg);
-    color: {QTMATERIAL_PRIMARYCOLOR};
-    border-radius: 4px;
-    padding: 4px
-}}
-
-QPushButton:disabled#repeat_pushbutton[repeat=SINGLE] {{
-    image: url(theme_custom:/disabled/repeat.svg);
-    color: {QTMATERIAL_PRIMARYCOLOR};
-    border-radius: 4px;
-    padding: 4px
-}}
-
-QPushButton#repeat_pushbutton[repeat=QUEUE] {{
     image: url(theme_custom:/primary/repeat-once.svg);
     color: {QTMATERIAL_PRIMARYCOLOR};
     border-radius: 4px;
     padding: 4px
 }}
 
-QPushButton:disabled#repeat_pushbutton[repeat=QUEUE] {{
+QPushButton:disabled#repeat_pushbutton[repeat=SINGLE] {{
     image: url(theme_custom:/disabled/repeat-once.svg);
+    color: {QTMATERIAL_PRIMARYCOLOR};
+    border-radius: 4px;
+    padding: 4px
+}}
+
+QPushButton#repeat_pushbutton[repeat=QUEUE] {{
+    image: url(theme_custom:/primary/repeat.svg);
+    color: {QTMATERIAL_PRIMARYCOLOR};
+    border-radius: 4px;
+    padding: 4px
+}}
+
+QPushButton:disabled#repeat_pushbutton[repeat=QUEUE] {{
+    image: url(theme_custom:/disabled/repeat.svg);
     color: {QTMATERIAL_PRIMARYCOLOR};
     border-radius: 4px;
     padding: 4px

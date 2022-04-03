@@ -8,15 +8,20 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QMetaObject, QRect,
-                            QSize, Qt)
-from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QAbstractItemView, QFrame, QGridLayout,
-                               QGroupBox, QHBoxLayout, QLabel,
-                               QLineEdit, QListView, QMenu,
-                               QMenuBar, QPushButton, QSizePolicy, QSlider,
-                               QSpacerItem, QSplitter, QTabWidget, QTableView,
-                               QVBoxLayout, QWidget)
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
+    QCursor, QFont, QFontDatabase, QGradient,
+    QIcon, QImage, QKeySequence, QLinearGradient,
+    QPainter, QPalette, QPixmap, QRadialGradient,
+    QTransform)
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QFrame, QGridLayout,
+    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QListView, QMainWindow, QMenu,
+    QMenuBar, QPushButton, QSizePolicy, QSlider,
+    QSpacerItem, QSplitter, QTabWidget, QTableView,
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -572,3 +577,4 @@ class Ui_MainWindow(object):
         self.queue_pushbutton.setText("")
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
     # retranslateUi
+

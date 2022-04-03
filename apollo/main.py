@@ -49,9 +49,7 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle('Fusion')
     window = Apollo()
-    if STYLED:
-        window.play_pushbutton.clicked.connect(lambda x: style_app(app))
-        style_app(app)
+    style_app(app)
     window.show()
     app.exec()
 

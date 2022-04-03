@@ -2,12 +2,14 @@ import datetime
 import os
 import pathlib
 import typing
+import time
 
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon, QPixmap
 
 from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
 from apollo.media.player import Player
+from apollo.media import Mediafile
 
 
 class PlayBackBar:
@@ -15,26 +17,51 @@ class PlayBackBar:
     def __init__(self, ui: Apollo) -> None:
         super().__init__()
         self.ui = ui
-        self._player = Player()
+        self.Player = Player()
         self.setupUI()
 
+    # SETUP: START
     def setupUI(self):
         # TODO save initial states into a temporary dump
+
+        # Sets Defaults
         self.ui.volume_pushbutton.setProperty('volume_level', 'HALF')
         self.ui.play_pushbutton.setProperty('play_type', 'PLAY')
         self.ui.repeat_pushbutton.setProperty('repeat', 'NONE')
         self.ui.shuffle_pushbutton.setProperty('shuffle', 'NONE')
 
         self.ui.cover_pixmap.clear()
+        self.setTrackTimes(360)
         self.setAlbumCoverImage()
         self.ui.volume_slider.setValue(50)
+        # END REGION
+
         self.ui.volume_pushbutton.clicked.connect(self.volumeChangeCycle)
         self.ui.queue_pushbutton.clicked.connect(self.reactQueueButtonPressed)
         self.ui.audio_fx_pushbutton.clicked.connect(lambda: (
             self.ui.main_tab_widget.setCurrentIndex(3)
         ))
 
-    def connectSeekingSliderValueChange(self, callback: typing.Callable):
+        self.Player.fetchMediaData = self.setMediaData
+        self.Player.dsp.call_for_ElapsedTime = self.updateElapsedTime
+        self.Player.onPlay = self.changeViewToPlaybackChanges
+        self.Player.onPause = self.changeViewToPlaybackChanges
+        self.connectVolumeSliderValueReleased()
+        self.connectVolumeSliderValueChange()
+        self.connectSeekingSliderValueReleased()
+        self.connectRepeatPushbutton()
+        self.connectPlayPushbutton()
+        self.connectOffPushbutton()
+        self.connectNextTrackPushbutton()
+        self.connectPreviousTrackPushbutton()
+
+        q = [
+            r'D:\Music\fold_2\whenowhere30.mp3',
+            r'D:\Music\fold_2\whenowhere45.mp3'
+        ]
+        self.Player.setQueue(q)
+
+    def connectSeekingSliderValueChange(self, callback: typing.Callable = lambda x: None):
         """
         Signal Connector
 
@@ -42,11 +69,11 @@ class PlayBackBar:
         :return: None
         """
         self.ui.seeking_slider.valueChanged.connect(lambda value: (
-            self.updateElapsedTime(datetime.timedelta(seconds = value)),
+            self.Player.seek_exact(value),
             callback(value)
         ))
 
-    def connectSeekingSliderValueReleased(self, callback: typing.Callable):
+    def connectSeekingSliderValueReleased(self, callback: typing.Callable = lambda x: None):
         """
         Signal Connector
 
@@ -54,10 +81,11 @@ class PlayBackBar:
         :return: None
         """
         self.ui.seeking_slider.sliderReleased.connect(lambda: (
+            self.Player.seek_exact(self.ui.seeking_slider.value()),
             callback(self.ui.seeking_slider.value())
         ))
 
-    def connectVolumeSliderValueChange(self, callback: typing.Callable):
+    def connectVolumeSliderValueChange(self, callback: typing.Callable = lambda x: None):
         """
         Signal Connector
 
@@ -69,7 +97,7 @@ class PlayBackBar:
             callback(value)
         ))
 
-    def connectVolumeSliderValueReleased(self, callback: typing.Callable):
+    def connectVolumeSliderValueReleased(self, callback: typing.Callable = lambda x: None):
         """
         Signal Connector
 
@@ -81,29 +109,44 @@ class PlayBackBar:
             self.reactTovolumeChanges(self.ui.volume_slider.value())
         ))
 
-    def connectPlayPushbutton(self, callback: typing.Callable):
+    def connectPlayPushbutton(self, callback: typing.Callable = lambda: None):
         self.ui.play_pushbutton.clicked.connect(lambda: (
             self.reactToPlaybackChanges()
         ))
 
-    def connectRepeatPushbutton(self, callback: typing.Callable):
+    def connectOffPushbutton(self, callback: typing.Callable = lambda: None):
+        self.ui.switch_audio_pushbutton.clicked.connect(lambda: (
+            self.reactToPlaybackChanges()
+        ))
+
+    def connectRepeatPushbutton(self, callback: typing.Callable = lambda: None):
         self.ui.repeat_pushbutton.clicked.connect(lambda: (
             self.reactToPlaybackTypeChanges()
         ))
 
-    def connectShufflePushbutton(self, callback: typing.Callable):
+    def connectShufflePushbutton(self, callback: typing.Callable = lambda: None):
         self.ui.shuffle_pushbutton.clicked.connect(lambda: (
             self.reactToShuffleTypeChanges()
         ))
 
-    def connectEffectsSwitchPushbutton(self, callback: typing.Callable):
+    def connectEffectsSwitchPushbutton(self, callback: typing.Callable = lambda: None):
         self.ui.switch_audio_pushbutton.clicked.connect(lambda: (
             callback()
         ))
 
-    def connectSettingsPushbutton(self, callback: typing.Callable):
+    def connectSettingsPushbutton(self, callback: typing.Callable = lambda: None):
         self.ui.settings_pushbutton.clicked.connect(lambda: (
             callback()
+        ))
+
+    def connectNextTrackPushbutton(self, callback: typing.Callable = lambda: None):
+        self.ui.next_pushbutton.clicked.connect(lambda: (
+            self.Player.move_f(True)
+        ))
+
+    def connectPreviousTrackPushbutton(self, callback: typing.Callable = lambda: None):
+        self.ui.prev_pushbutton.clicked.connect(lambda: (
+            self.Player.move_b(True)
         ))
 
     def volumeChangeCycle(self):
@@ -139,7 +182,17 @@ class PlayBackBar:
         self.ui.volume_pushbutton.style().unpolish(self.ui.volume_pushbutton)
         self.ui.volume_pushbutton.style().polish(self.ui.volume_pushbutton)
 
+        self.Player.setVolume(self.ui.volume_slider.value())
+
     def reactToPlaybackChanges(self):
+        if self.ui.play_pushbutton.property('play_type') == 'PLAY':
+            self.Player.play()
+        elif self.ui.play_pushbutton.property('play_type') == 'PAUSE':
+            self.Player.pause()
+        else:
+            pass
+
+    def changeViewToPlaybackChanges(self):
         if self.ui.play_pushbutton.property('play_type') != 'PLAY':
             self.ui.play_pushbutton.setProperty('play_type', 'PLAY')
         elif self.ui.play_pushbutton.property('play_type') != 'PAUSE':
@@ -152,10 +205,13 @@ class PlayBackBar:
     def reactToPlaybackTypeChanges(self):
         if self.ui.repeat_pushbutton.property('repeat') == 'QUEUE':
             self.ui.repeat_pushbutton.setProperty('repeat', 'NONE')
+            self.Player.setRepeat(Player.REPEAT_NONE)
         elif self.ui.repeat_pushbutton.property('repeat') == 'NONE':
             self.ui.repeat_pushbutton.setProperty('repeat', 'SINGLE')
+            self.Player.setRepeat(Player.REPEAT_TRACK)
         elif self.ui.repeat_pushbutton.property('repeat') == 'SINGLE':
             self.ui.repeat_pushbutton.setProperty('repeat', 'QUEUE')
+            self.Player.setRepeat(Player.REPEAT_QUEUE)
         else:
             pass
         self.ui.repeat_pushbutton.style().unpolish(self.ui.repeat_pushbutton)
@@ -183,31 +239,36 @@ class PlayBackBar:
                 int(self.ui.centralwidget.width() * 0)
             ))
 
-    def setTrackTimes(self, total: datetime.time):
-        self.ui.total_time_label.setText(str(total))
-        self.ui.completed_time_label.setText(str(datetime.timedelta(seconds = 0)))
-        self.ui.seeking_slider.setMaximum((total.hour * 60 * 60) + (total.minute * 60) + total.second)
+    def setTrackTimes(self, total: float):
+        DT = time.gmtime(total)
+        self.ui.total_time_label.setText(str(datetime.timedelta(seconds = total)).split(".")[0])
+        self.ui.completed_time_label.setText(str(datetime.timedelta(seconds = 0)).split(".")[0])
+        self.ui.seeking_slider.setMaximum(((DT.tm_hour * 60 * 60) + (DT.tm_min * 60) + DT.tm_sec) * 100)
         self.ui.seeking_slider.setSingleStep(5)
 
-    def updateElapsedTime(self, elapsed: typing.Union[datetime.time, datetime.timedelta]):
-        self.ui.completed_time_label.setText(str(elapsed))
-        if isinstance(elapsed, datetime.timedelta):
-            self.ui.seeking_slider.setValue(elapsed.total_seconds())
-        if isinstance(elapsed, datetime.time):
-            self.ui.seeking_slider.setValue((elapsed.hour * 60 * 60) + (elapsed.minute * 60) + elapsed.second)
+    def updateElapsedTime(self, elapsed: float):
+        if not self.ui.seeking_slider.underMouse():
+            elapsed = datetime.timedelta(seconds = elapsed)
+            _time = round(elapsed.total_seconds(), 3) * 100
+            self.ui.completed_time_label.setText(str(elapsed).split(".")[0])
+            self.ui.seeking_slider.setValue(_time)
 
-    def setAlbumCoverImage(self, data: QPixmap = None):
+    def setAlbumCoverImage(self, data: QIcon = None):
+        size = QSize(int(self.ui.cover_pixmap.width() * 0.8), int(self.ui.cover_pixmap.height() * 0.8))
         if data is None:
-            default = (os.path.join(pathlib.Path.home(), '.qt_material', 'theme_custom', 'primary', 'music-note-2.4.svg'))
-
+            home = pathlib.Path.home()
+            default = (os.path.join(home, '.qt_material', 'theme_custom', 'primary', 'music-note-2.4.svg'))
             data = QIcon(default)
-            data = data.pixmap(QSize(int(self.ui.cover_pixmap.width() * 0.8), int(self.ui.cover_pixmap.height() * 0.8)))
+            data = data.pixmap(size)
+            self.ui.cover_pixmap.setPixmap(data)
+        elif data is QIcon:
+            data = data.pixmap(size)
             self.ui.cover_pixmap.setPixmap(data)
 
-            data = QIcon(default)
-            data = data.pixmap(QSize(256, 256))
-            self.ui.cover_pixmap_large.setPixmap(data)
+    def setMediaData(self, media: [Mediafile, None] = None):
+        if media is not None:
+            self.setTrackTimes(float(media.Tags['length']))
+        else:
+            self.setTrackTimes(0)
 
-    @property
-    def Player(self):
-        return self._player
+    # SETUP: END REGION

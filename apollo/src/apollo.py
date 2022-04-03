@@ -16,20 +16,5 @@ class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
         self.playback_bar_controller = PlayBackBar(self)
         self.main_content_controller = MainContent(self)
 
-        self.testing()
-
-    def testing(self):
-        self.playback_bar_controller.setTrackTimes(datetime.time(1, 45, 20))
-
-        self.playback_bar_controller.connectSeekingSliderValueChange(lambda x: None)
-        self.playback_bar_controller.connectSeekingSliderValueReleased(print)
-
-        self.playback_bar_controller.connectVolumeSliderValueChange(lambda x: None)
-        self.playback_bar_controller.connectVolumeSliderValueReleased(print)
-
-        self.playback_bar_controller.connectPlayPushbutton(lambda: None)
-        self.playback_bar_controller.connectRepeatPushbutton(lambda: None)
-        self.playback_bar_controller.connectShufflePushbutton(lambda: None)
-
     def setupUX(self):
         self.main_content_splitterframe.setCollapsible(0, False)

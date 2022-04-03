@@ -1,3 +1,4 @@
+import inspect
 import itertools
 import math
 import sys
@@ -7,6 +8,7 @@ import av
 import numpy as np
 import pyo
 
+import apollo.utils
 from apollo.media import Mediafile
 
 
@@ -31,6 +33,7 @@ class BufferTable:
             self.time_length = round(math.ceil(float(self.media.Tags['length'])))
             self.buffer_virtual_length = round(int(self.media.Tags['samplerate']) * float(self.media.Tags['length']))
 
+        self.call_at_SOF()
         self.frame_pos = 0
         self.actual_pos = 0
         self.EOF = False
@@ -67,6 +70,7 @@ class BufferTable:
                 self.frame_pos = array.time
                 return array.to_ndarray()
             else:
+                self.call_at_EOF()
                 self.EOF = True
                 if self.repeat:
                     self.reset()
@@ -88,11 +92,9 @@ class BufferTable:
             return False
 
     def seek(self, time):
-        cur_time = self.frame_pos
-        if (0 <= time) and (cur_time + time) <= self.time_length:
-            self.audio_decoder.seek(cur_time + time)
-        elif (time <= 0) and 0 <= (cur_time + time) <= self.time_length:
-            self.audio_decoder.seek(cur_time + time)
+        if (0 <= time) and (time) <= self.time_length:
+            self.audio_decoder.seek(time)
+            self.actual_pos = self.mapTimetoIndex(time)
         else:
             return None
 
@@ -107,6 +109,7 @@ class BufferTable:
         self.reader.stop()
 
     def reset(self):
+        self.call_at_SOF()
         self.frame_pos = 0
         self.audio_decoder.reset_buffer()
         self.clear()
@@ -115,22 +118,40 @@ class BufferTable:
     def clear(self):
         for chan in range(self.table.chnls):
             self.shared_buffer[chan].fill(0)
+        if hasattr(self, "head_pos"):
+            del self.head_pos
 
-    def mapIndextoTime(self, index: int, sr: int):
+    def mapIndextoTime(self, index: int, sr: int = 44100):
         time = int(index) / int(sr)
+        return time
+
+    def mapTimetoIndex(self, time: float, sr: int = 44100):
+        time = int(time) * int(sr)
         return time
 
     def getCurrentTime(self):
         if not hasattr(self, 'head_pos'):
             return 0
         else:
-            return self.mapIndextoTime(self.actual_pos, 44100)
+            return self.mapIndextoTime(self.actual_pos)
 
     def time_to_end(self):
         if not hasattr(self, 'time_length'):
             return 0
         else:
             return self.time_length - self.mapIndextoTime(self.actual_pos, 44100)
+
+    def getMediaFile(self):
+        if hasattr(self, "media"):
+            return self.media
+        else:
+            return None
+
+    def call_at_EOF(self):
+        ...
+
+    def call_at_SOF(self):
+        ...
 
 
 class DSPInterface:
@@ -139,14 +160,15 @@ class DSPInterface:
         super().__init__()
         self.config_dict = {
             "fadeout_time": 5,
-            "server_amp": 1,
+            "server_volume": 50,
         }
         self.server = pyo.Server(nchnls = 2, duplex = 0).boot()
         self.server.start()
-        self.server.setAmp(self.config_dict.get("server_amp"))
+        self.setVolume(self.config_dict.get("server_volume"))
         self.init_processing_chain()
         self.server.setCallback(self.server_callback)
         self.addToCallbackChain(self.check_for_end)
+        self.addToCallbackChain(self.getCurrentStreamElapsedTime)
 
     def server_callback(self):
         for callback in self.callback_chain:
@@ -183,6 +205,7 @@ class DSPInterface:
         self.main_input = pyo.Selector([self.input_stream_0.reader, self.input_stream_1.reader], self.voice_switch)
         self.main_output = pyo.Clip(self.main_input)
         self.current_stream = 0
+        self.current_stream_obj = None
 
     def remove_faded_table(self):
         if self.current_stream == 1 and hasattr(self, "input_stream_0"):
@@ -200,15 +223,22 @@ class DSPInterface:
             stream.play()
 
     def get_active_stream(self) -> BufferTable:
+        return self.current_stream_obj
+
+    def replaceTable(self, path: str, instant = False):
+        if instant:
+            self.remove_faded_table()
+
         if self.current_stream == 0 and hasattr(self, "input_stream_0"):
-            return self.input_stream_0
+            stream = self.input_stream_1
+            self.current_stream = 1
+            self.current_stream_obj = stream
         elif self.current_stream == 1 and hasattr(self, "input_stream_1"):
-            return self.input_stream_1
+            stream = self.input_stream_0
+            self.current_stream = 0
+            self.current_stream_obj = stream
         else:
             return None
-
-    def replaceTable(self, path: str):
-        stream = self.get_active_stream()
         # manage then input switch rest works
         if stream is not None:
             self.voice_switch.setList(next(self.voices))
@@ -217,12 +247,14 @@ class DSPInterface:
             stream.fetchMore()
             stream.play()
             self.addToCallbackChain(stream.fetchMore)
-            self.voice_switch.play()
+
+        if instant:
+            self.fader.replace([(0, 0), (self.config_dict.get('fadeout_time') + 0.5, 1)])
+            self.main_input.setVoice(self.current_stream)
+        else:
+            self.main_input.setVoice(self.voice_switch)
             self.fader.play()
-            if self.current_stream == 0:
-                self.current_stream = 1
-            else:
-                self.current_stream = 0
+            self.voice_switch.play()
 
     def check_for_end(self):
         stream = self.get_active_stream()
@@ -234,7 +266,12 @@ class DSPInterface:
     def seek(self, time):
         stream = self.get_active_stream()
         if stream is not None:
-            stream.seek(time)
+            stream.seek(float(time / 100))
+
+    def getCurrentStreamElapsedTime(self):
+        stream = self.get_active_stream()
+        if stream is not None:
+            self.call_for_ElapsedTime(float(stream.getCurrentTime()))
 
     def stop(self):
         self.server.stop()
@@ -268,5 +305,12 @@ class DSPInterface:
         )
         return info
 
+    def setVolume(self, value: int):
+        value = ((2 * pow(value, 2)) / 100) * 0.01
+        self.server.setAmp(value if value >= 0.0001 else 0.0001)
+
     def call_at_EOF(self):
+        ...
+
+    def call_for_ElapsedTime(self, time: float):
         ...

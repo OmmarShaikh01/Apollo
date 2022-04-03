@@ -1,6 +1,9 @@
+import math
 import os
+import time
 
 from apollo.media.processor import DSPInterface
+from apollo.media import Mediafile
 
 
 class Player:
@@ -9,53 +12,79 @@ class Player:
     REPEAT_NONE = 2
 
     def __init__(self) -> None:
-        self.dsp = DSPInterface(fadeout_time = 5)
+        self.dsp = DSPInterface()
         self.dsp.output()
         self.dsp.call_at_EOF = self.move_f
-        self.repeat_type = self.REPEAT_QUEUE
+        self.repeat_type = self.REPEAT_NONE
 
     def setQueue(self, queue: list):
         self.pointer = 0
         self.queue = queue
+        self.replayed = False
         self.load_track(self.queue[self.pointer])
 
-    def load_track(self, path: str):
+    def load_track(self, path: str, instant = False):
         if os.path.isfile(path):
-            self.dsp.replaceTable(path)
+            self.dsp.replaceTable(path, instant = instant)
+            self.fetchMediaData(self.dsp.get_active_stream().getMediaFile())
+            self.replayed = False
 
     def reload_track(self):
+        self.replayed = True
         self.dsp.replay_table()
+        self.fetchMediaData(self.dsp.get_active_stream().getMediaFile())
 
-    def seek_f(self, time):
-        self.dsp.seek(time)
+    def seek_exact(self, time_value):
+        self.dsp.seek(time_value)
 
-    def seek_b(self, time):
-        self.dsp.seek(-time)
+    def move_f(self, instant = False):
+        print(time.time())
+        if not self.dsp.server.getIsStarted():
+            self.play()
 
-    def move_f(self):
-        if (self.pointer + 1) < len(self.queue):
-            self.pointer += 1
-            self.load_track(self.queue[self.pointer])
-        elif (self.pointer + 1) == len(self.queue) and self.repeat_type == self.REPEAT_QUEUE:
-            self.pointer = 0
-            self.load_track(self.queue[self.pointer])
+        if self.repeat_type == self.REPEAT_TRACK and not instant and not self.replayed:
+            self.reload_track()
         else:
-            self.pointer = 0
-            self.pause()
+            if (self.pointer + 1) < len(self.queue):
+                self.pointer += 1
+                self.load_track(self.queue[self.pointer], instant)
+            elif (self.pointer + 1) == len(self.queue) and self.repeat_type == self.REPEAT_QUEUE:
+                self.pointer = 0
+                self.load_track(self.queue[self.pointer], instant)
 
-    def move_b(self):
+    def move_b(self, instant = False):
+        if not self.dsp.server.getIsStarted():
+            self.play()
+
         if (self.pointer - 1) >= 0:
             self.pointer -= 1
-            self.load_track(self.queue[self.pointer])
+            self.load_track(self.queue[self.pointer], instant)
         elif (self.pointer - 1) < 0 and self.repeat_type == self.REPEAT_QUEUE:
-            self.pointer = (self.queue - 1)
-            self.pause()
+            self.pointer = (len(self.queue) - 1)
+            self.load_track(self.queue[self.pointer], instant)
 
     def play(self):
-        self.dsp.server.start()
+        self.onPlay()
+        if not self.dsp.server.getIsStarted():
+            self.dsp.server.start()
+        if (self.pointer + 1) == len(self.queue):
+            self.move_f(True)
 
     def pause(self):
+        self.onPause()
         self.dsp.server.stop()
+
+    def setVolume(self, value: int):
+        self.dsp.setVolume(value)
+
+    def setRepeat(self, value):
+        self.repeat_type = value
+
+    def fetchMediaData(self, media: [Mediafile, None]): ...
+
+    def onPause(self): ...
+
+    def onPlay(self): ...
 
 
 if __name__ == '__main__':
