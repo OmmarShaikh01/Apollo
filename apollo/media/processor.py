@@ -80,8 +80,12 @@ class BufferTable:
     def writeSamples(self, samples):
         if samples is not None:
             sample_len = len(samples[0])
+            rng = range(self.head_pos, (self.head_pos + sample_len))
             for chan in range(self.table.chnls):
-                self.shared_buffer[chan].put(range(self.head_pos, (self.head_pos + sample_len)), samples[chan], 'wrap')
+                if self.table.chnls == 1:
+                    self.shared_buffer[chan].put(rng, samples[0], 'wrap')
+                elif self.table.chnls == 2:
+                    self.shared_buffer[chan].put(rng, samples[chan], 'wrap')
             if (self.head_pos + sample_len) < self.buffer_length:
                 self.head_pos = self.head_pos + sample_len
             elif (self.head_pos + sample_len) > self.buffer_length:

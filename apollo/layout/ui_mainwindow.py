@@ -266,11 +266,11 @@ class Ui_MainWindow(object):
         self.gridLayout_8.setSpacing(0)
         self.gridLayout_8.setObjectName(u"gridLayout_8")
         self.gridLayout_8.setContentsMargins(0, 0, 0, 0)
-        self.listView = QListView(self.queue_groupbox)
-        self.listView.setObjectName(u"listView")
-        self.listView.setFrameShape(QFrame.NoFrame)
+        self.queue_listview = QListView(self.queue_groupbox)
+        self.queue_listview.setObjectName(u"queue_listview")
+        self.queue_listview.setFrameShape(QFrame.NoFrame)
 
-        self.gridLayout_8.addWidget(self.listView, 0, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.queue_listview, 0, 0, 1, 1)
 
         self.frame_7 = QFrame(self.queue_groupbox)
         self.frame_7.setObjectName(u"frame_7")

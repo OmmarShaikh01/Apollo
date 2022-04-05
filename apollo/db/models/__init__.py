@@ -1,5 +1,6 @@
 from .library import LibraryModel
 from .playlists import PlaylistsModel
+from .queue import QueueModel
 
 
 class _Provider:
@@ -16,6 +17,10 @@ class _Provider:
             if not hasattr(self, "PlaylistsModel"):
                 self.PlaylistsModel = PlaylistsModel()
             return self.PlaylistsModel
+        elif (QueueModel) == (_type):
+            if not hasattr(self, "QueueModel"):
+                self.QueueModel = QueueModel()
+            return self.QueueModel
         else:
             return None
 

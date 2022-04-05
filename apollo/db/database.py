@@ -122,39 +122,33 @@ class Database:
             "samplerate"	TEXT,
             "rating"	INTEGER  DEFAULT 0,
             "isLiked"	INTEGER  DEFAULT 0,
-            "isLiked"	INTEGER  DEFAULT 0,
             PRIMARY KEY("file_id")
         );
         """
         table_query_queue = """
         CREATE TABLE IF NOT EXISTS "queue" (
             "file_id" TEXT NOT NULL,
-            "order" INTEGER,
+            "play_order" INTEGER,
             FOREIGN KEY("file_id") REFERENCES "library"("file_id"),
-            PRIMARY KEY("order")
+            PRIMARY KEY("play_order")
         );
         """
         with Connection(self.database_file) as CON:
-            QSqlQuery(table_query_library, db = CON).exec()
-            QSqlQuery(table_query_queue, db = CON).exec()
+            self.exec_query(table_query_library, db = CON).exec()
+            self.exec_query(table_query_queue, db = CON).exec()
             del CON
 
-    def batchinsert_Metadata(self, metadata: dict, keys: list, connection: Connection = None):
+    def insert_Metadata(self, metadata: dict, keys: list, connection: Connection = None):
 
         def internal_call(CON, keys, metadata):
-            CON.transaction()
-            self.exec_query(query = "PRAGMA journal_mode = MEMORY", db = CON)
             columns = ", ".join([f"'{i}'" for i in keys])
             placeholders = ", ".join(["?" for i in keys])
             query = QSqlQuery(f"INSERT OR IGNORE INTO library ({columns}) VALUES ({placeholders})", db = CON)
-            for key in keys:
-                query.addBindValue([value[key] for value in metadata])
-            if query.execBatch():
-                self.exec_query(query = "PRAGMA journal_mode = WAL", db = CON)
+            [query.bindValue(index, metadata[key]) for index, key in enumerate(keys)]
+            if query.exec():
                 CON.commit()
             else:
                 msg = f"ERROR: {(query.lastError().text())}\nQuery: {query.lastQuery()}"
-                self.exec_query(query = "PRAGMA journal_mode = WAL", db = CON)
                 raise QueryExecutionFailed(msg)
 
         if connection is None:
@@ -187,7 +181,10 @@ class Database:
         else:
             internal_call(connection, keys, data)
 
-    def exec_query(self, query: str, db: Connection, column: Union[int, None] = None, commit: bool = True):
+    def batchinsert_Metadata(self, metadata: dict, keys: list, connection: Connection = None):
+        self.batchinsert_data('library', metadata, keys, connection)
+
+    def exec_query(self, query: str, db: Connection, column: [int, None] = None, commit: bool = True):
         # creates a connection to the DB that is linked to the main class
         if isinstance(query, str):
             query_str = query
@@ -210,7 +207,7 @@ class Database:
         else:
             return query
 
-    def fetch_all(self, query: QSqlQuery, to: Callable = None, column: Union[int, None] = None):
+    def fetch_all(self, query: QSqlQuery, to: Callable = None, column: [int, None] = None):
         data = []
 
         if column is None:
@@ -252,10 +249,19 @@ class LibraryManager(Database):
                         scanned_files.append(mediafile.SynthTags)
         self.batchinsert_Metadata(scanned_files, Mediafile.tags_fields)
 
+    def scan_file(self, path: str):
+        if not os.path.isfile(path):
+            return None
+
+        if Mediafile.isSupported(path):
+            mediafile = Mediafile(path)
+            if mediafile.SynthTags['file_id']:
+                self.insert_Metadata(mediafile.SynthTags, Mediafile.tags_fields)
+
 
 if __name__ == '__main__':
     import dotenv
 
     dotenv.load_dotenv(os.path.join(PARENT_ROOT, 'development.env'))
     manager = LibraryManager()
-    manager.scan_directory(r"D:\Music")
+    manager.scan_file(r"D:\Music\fold_2\topntch.mp3")

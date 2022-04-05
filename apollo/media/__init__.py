@@ -98,10 +98,21 @@ class Mediafile:
         with open(self.path, "rb") as fobj:
             return (hashlib.md5(fobj.read(1024 * 10))).hexdigest()
 
+    @property
+    def Artwork(self) -> bytes:
+        art = self.File['artwork'].first
+        try:
+            if art is None:
+                raise ValueError()
+            else:
+                return art.data
+        except ValueError:
+            return b''
+
     @staticmethod
     def isSupported(path) -> bool:
         supported = (
-            ".mp3", ".flac", ".wav"
+            ".mp3"
         )
         if str(os.path.splitext(path)[1]).lower() in supported:
             return True

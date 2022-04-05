@@ -4,12 +4,14 @@ import pathlib
 import typing
 import time
 
+from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon, QPixmap
 
 from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
 from apollo.media.player import Player
 from apollo.media import Mediafile
+from apollo.db.models import Provider, QueueModel
 
 
 class PlayBackBar:
@@ -20,19 +22,21 @@ class PlayBackBar:
         self.Player = Player()
         self.setupUI()
 
+    def init_queue(self):
+        self.model = Provider.get_model(QueueModel)
+        self.updatePlayerQueue()
+
     # SETUP: START
     def setupUI(self):
         # TODO save initial states into a temporary dump
+        self.init_queue()
 
         # Sets Defaults
         self.ui.volume_pushbutton.setProperty('volume_level', 'HALF')
-        self.ui.play_pushbutton.setProperty('play_type', 'PLAY')
+        self.ui.play_pushbutton.setProperty('play_type', 'PAUSE')
         self.ui.repeat_pushbutton.setProperty('repeat', 'NONE')
         self.ui.shuffle_pushbutton.setProperty('shuffle', 'NONE')
 
-        self.ui.cover_pixmap.clear()
-        self.setTrackTimes(360)
-        self.setAlbumCoverImage()
         self.ui.volume_slider.setValue(50)
         # END REGION
 
@@ -54,12 +58,16 @@ class PlayBackBar:
         self.connectOffPushbutton()
         self.connectNextTrackPushbutton()
         self.connectPreviousTrackPushbutton()
+        self.connectQueueValueChange()
 
-        q = [
-            r'D:\Music\fold_2\whenowhere30.mp3',
-            r'D:\Music\fold_2\whenowhere45.mp3'
-        ]
-        self.Player.setQueue(q)
+    def connectQueueValueChange(self, callback: typing.Callable = lambda x: None):
+        """
+        Signal Connector
+
+        :param callback: is a callable that recieves the value of the slider
+        :return: None
+        """
+        self.model.TABLE_UPDATE.connect(lambda: self.updatePlayerQueue())
 
     def connectSeekingSliderValueChange(self, callback: typing.Callable = lambda x: None):
         """
@@ -254,21 +262,37 @@ class PlayBackBar:
             self.ui.seeking_slider.setValue(_time)
 
     def setAlbumCoverImage(self, data: QIcon = None):
-        size = QSize(int(self.ui.cover_pixmap.width() * 0.8), int(self.ui.cover_pixmap.height() * 0.8))
+        size = QSize(int(self.ui.cover_pixmap.width() * 0.98), int(self.ui.cover_pixmap.height() * 0.98))
         if data is None:
             home = pathlib.Path.home()
             default = (os.path.join(home, '.qt_material', 'theme_custom', 'primary', 'music-note-2.4.svg'))
             data = QIcon(default)
             data = data.pixmap(size)
+            self.ui.cover_pixmap.clear()
             self.ui.cover_pixmap.setPixmap(data)
         elif data is QIcon:
             data = data.pixmap(size)
+            self.ui.cover_pixmap.clear()
+            self.ui.cover_pixmap.setPixmap(data)
+        elif isinstance(data, bytes):
+            data = QtGui.QImage().fromData(data).scaled(size)
+            data = (QtGui.QPixmap.fromImage(data))
+            self.ui.cover_pixmap.clear()
             self.ui.cover_pixmap.setPixmap(data)
 
-    def setMediaData(self, media: [Mediafile, None] = None):
+    def setMediaData(self, media: Mediafile = None):
         if media is not None:
             self.setTrackTimes(float(media.Tags['length']))
+            self.setAlbumCoverImage(media.Artwork)
         else:
             self.setTrackTimes(0)
 
+    def updatePlayerQueue(self):
+        queue = []
+        for row in range(self.model.rowCount()):
+            for col in range(self.model.columnCount()):
+                if self.model.database.library_columns[col] == 'file_path':
+                    queue.append(self.model.index(row, col).data())
+        if len(queue) > 0:
+            self.Player.setQueue(queue)
     # SETUP: END REGION

@@ -24,10 +24,13 @@ class Player:
         self.load_track(self.queue[self.pointer])
 
     def load_track(self, path: str, instant = False):
-        if os.path.isfile(path):
+        if os.path.isfile(path) and Mediafile.isSupported(path):
+            print(path)
             self.dsp.replaceTable(path, instant = instant)
             self.fetchMediaData(self.dsp.get_active_stream().getMediaFile())
             self.replayed = False
+        else:
+            self.move_f(True)
 
     def reload_track(self):
         self.replayed = True
@@ -38,7 +41,6 @@ class Player:
         self.dsp.seek(time_value)
 
     def move_f(self, instant = False):
-        print(time.time())
         if not self.dsp.server.getIsStarted():
             self.play()
 

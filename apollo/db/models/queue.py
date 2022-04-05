@@ -7,7 +7,7 @@ from PySide6.QtSql import QSqlQuery
 from apollo.db.database import Connection, Database, QueryBuildFailed
 
 
-class PlaylistsModel(QStandardItemModel):
+class QueueModel(QStandardItemModel):
     TABLE_UPDATE = QtCore.Signal()
 
     def __init__(self, parent: Optional[QtCore.QObject] = None) -> None:
@@ -15,9 +15,8 @@ class PlaylistsModel(QStandardItemModel):
         self.database = Database()
         self.fields = self.database.playlist_columns
         # TODO: add loaded and all playlists field in config
-        self.valid_playlists = ["temp_playlist"]
-        self.loaded_playlist = 'temp_playlist'
-        self.create_playList(self.loaded_playlist)
+        self.valid_playlists = ["queue"]
+        self.loaded_playlist = 'queue'
         self.fetchRecords(self.loaded_playlist)
 
     def fillHeaderData(self):
@@ -32,7 +31,7 @@ class PlaylistsModel(QStandardItemModel):
             columns = ", ".join([f"library.{i}" for i in self.database.library_columns])
             with Connection(self.database.database_file) as CONN:
                 query = self.database.exec_query(query = f"""
-                SELECT {columns} 
+                SELECT {columns}
                 FROM {name} 
                 INNER JOIN library ON {name}.file_id = library.file_id
                 ORDER BY '{name}.play_order'
@@ -48,20 +47,20 @@ class PlaylistsModel(QStandardItemModel):
                 columns = ", ".join([f"library.{i}" for i in self.database.library_columns])
                 with Connection(self.database.database_file) as CONN:
                     query = self.database.exec_query(
-                        query = f"""
-                            SELECT {columns} FROM (
-                                SELECT {columns}
-                                FROM {name} 
-                                INNER JOIN library ON {name}.file_id = library.file_id
-                                ORDER BY '{name}.play_order'
-                            ) 
-                            WHERE 
-                            tracktitle LIKE '%{text}%' OR
-                            artist LIKE '%{text}%' OR
-                            album LIKE '%{text}%' OR
-                            file_name LIKE '%{text}%' 
-                        """,
-                        db = CONN
+                            query = f"""
+                                SELECT {columns} FROM (
+                                    SELECT {columns}
+                                    FROM {name} 
+                                    INNER JOIN library ON {name}.file_id = library.file_id
+                                    ORDER BY '{name}.play_order'
+                                ) 
+                                WHERE 
+                                tracktitle LIKE '%{text}%' OR
+                                artist LIKE '%{text}%' OR
+                                album LIKE '%{text}%' OR
+                                file_name LIKE '%{text}%' 
+                            """,
+                            db = CONN
                     )
                     self.refill_table(query)
             except QueryBuildFailed:
@@ -80,6 +79,7 @@ class PlaylistsModel(QStandardItemModel):
             ids = list()
         if name is None:
             name = self.loaded_playlist
+        table_drop = f"""DROP TABLE IF EXISTS "{name}" """
         table_query = f"""
         CREATE TABLE IF NOT EXISTS "{name}" (        
             "file_id" TEXT NOT NULL,
@@ -88,14 +88,16 @@ class PlaylistsModel(QStandardItemModel):
             PRIMARY KEY("play_order")
         );
         """
+
         with Connection(self.database.database_file) as CON:
+            QSqlQuery(table_drop, db = CON).exec()
             QSqlQuery(table_query, db = CON).exec()
             if len(ids) != 0:
                 self.database.batchinsert_data(
-                    table = name,
-                    data = [dict(file_id = key[-1]) for key in ids],
-                    keys = ['file_id'],
-                    connection = CON
+                        table = name,
+                        data = [dict(file_id = key[-1]) for key in ids],
+                        keys = ['file_id'],
+                        connection = CON
                 )
         self.fetchRecords(self.loaded_playlist)
-        print(ids)
+        self.TABLE_UPDATE.emit()
