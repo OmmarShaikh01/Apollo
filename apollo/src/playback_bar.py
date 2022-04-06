@@ -15,21 +15,21 @@ from apollo.db.models import Provider, QueueModel
 
 
 class PlayBackBar:
+    QUEUE_POINTER_CHANGED = QtCore.Signal()
 
     def __init__(self, ui: Apollo) -> None:
         super().__init__()
         self.ui = ui
         self.Player = Player()
+        self.init_queue()
         self.setupUI()
 
     def init_queue(self):
         self.model = Provider.get_model(QueueModel)
-        self.updatePlayerQueue()
 
     # SETUP: START
     def setupUI(self):
         # TODO save initial states into a temporary dump
-        self.init_queue()
 
         # Sets Defaults
         self.ui.volume_pushbutton.setProperty('volume_level', 'HALF')
@@ -37,7 +37,9 @@ class PlayBackBar:
         self.ui.repeat_pushbutton.setProperty('repeat', 'NONE')
         self.ui.shuffle_pushbutton.setProperty('shuffle', 'NONE')
 
-        self.ui.volume_slider.setValue(50)
+        self.setTrackTimes(0)
+        self.setAlbumCoverImage(self.ui.cover_pixmap)
+        self.reactTovolumeChanges(25)
         # END REGION
 
         self.ui.volume_pushbutton.clicked.connect(self.volumeChangeCycle)
@@ -54,11 +56,15 @@ class PlayBackBar:
         self.connectVolumeSliderValueChange()
         self.connectSeekingSliderValueReleased()
         self.connectRepeatPushbutton()
+        self.connectShufflePushbutton()
         self.connectPlayPushbutton()
         self.connectOffPushbutton()
         self.connectNextTrackPushbutton()
         self.connectPreviousTrackPushbutton()
         self.connectQueueValueChange()
+
+        self.updatePlayerQueue()
+        self.ui.play_pushbutton.click()
 
     def connectQueueValueChange(self, callback: typing.Callable = lambda x: None):
         """
@@ -189,7 +195,7 @@ class PlayBackBar:
             pass
         self.ui.volume_pushbutton.style().unpolish(self.ui.volume_pushbutton)
         self.ui.volume_pushbutton.style().polish(self.ui.volume_pushbutton)
-
+        self.ui.volume_slider.setValue(value)
         self.Player.setVolume(self.ui.volume_slider.value())
 
     def reactToPlaybackChanges(self):
@@ -228,8 +234,10 @@ class PlayBackBar:
     def reactToShuffleTypeChanges(self):
         if self.ui.shuffle_pushbutton.property('shuffle') == 'SHUFFLE':
             self.ui.shuffle_pushbutton.setProperty('shuffle', 'NONE')
+            self.Player.setShuffle(Player.SHUFFLE_NONE)
         elif self.ui.shuffle_pushbutton.property('shuffle') == 'NONE':
             self.ui.shuffle_pushbutton.setProperty('shuffle', 'SHUFFLE')
+            self.Player.setShuffle(Player.SHUFFLE_TRACK)
         else:
             pass
         self.ui.shuffle_pushbutton.style().unpolish(self.ui.shuffle_pushbutton)
@@ -261,38 +269,47 @@ class PlayBackBar:
             self.ui.completed_time_label.setText(str(elapsed).split(".")[0])
             self.ui.seeking_slider.setValue(_time)
 
-    def setAlbumCoverImage(self, data: QIcon = None):
-        size = QSize(int(self.ui.cover_pixmap.width() * 0.98), int(self.ui.cover_pixmap.height() * 0.98))
+    def setAlbumCoverImage(self, widget, data: QIcon = None):
+        size = QSize(int(widget.width() * 0.98), int(widget.height() * 0.98))
         if data is None:
             home = pathlib.Path.home()
             default = (os.path.join(home, '.qt_material', 'theme_custom', 'primary', 'music-note-2.4.svg'))
             data = QIcon(default)
             data = data.pixmap(size)
-            self.ui.cover_pixmap.clear()
-            self.ui.cover_pixmap.setPixmap(data)
+            widget.clear()
+            widget.setPixmap(data)
         elif data is QIcon:
             data = data.pixmap(size)
-            self.ui.cover_pixmap.clear()
-            self.ui.cover_pixmap.setPixmap(data)
+            widget.clear()
+            widget.setPixmap(data)
         elif isinstance(data, bytes):
             data = QtGui.QImage().fromData(data).scaled(size)
             data = (QtGui.QPixmap.fromImage(data))
-            self.ui.cover_pixmap.clear()
-            self.ui.cover_pixmap.setPixmap(data)
+            widget.clear()
+            widget.setPixmap(data)
 
     def setMediaData(self, media: Mediafile = None):
         if media is not None:
             self.setTrackTimes(float(media.Tags['length']))
-            self.setAlbumCoverImage(media.Artwork)
+            self.setAlbumCoverImage(self.ui.cover_pixmap, media.Artwork)
+            self.setAlbumCoverImage(self.ui.cover_pixmap_large, media.Artwork)
         else:
             self.setTrackTimes(0)
 
     def updatePlayerQueue(self):
         queue = []
+        col = [col for col in range(self.model.columnCount()) if self.model.database.library_columns[col] == 'file_path']
         for row in range(self.model.rowCount()):
-            for col in range(self.model.columnCount()):
-                if self.model.database.library_columns[col] == 'file_path':
-                    queue.append(self.model.index(row, col).data())
+            queue.append(self.model.index(row, col[0]).data())
         if len(queue) > 0:
             self.Player.setQueue(queue)
+
+    def play_File(self, f_id: str):
+        queue = []
+        col = [col for col in range(self.model.columnCount()) if self.model.database.library_columns[col] == 'file_id']
+        for index, row in enumerate(range(self.model.rowCount())):
+            if self.model.index(row, col[0]).data() == f_id:
+                self.Player.move_to(index, True)
+                break
+
     # SETUP: END REGION

@@ -2,6 +2,7 @@ from PySide6 import QtCore, QtWidgets
 
 from apollo.db.models import QueueModel, Provider
 from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
+from apollo.src.playback_bar import PlayBackBar
 
 
 class NowPlayingTab:
@@ -9,6 +10,7 @@ class NowPlayingTab:
     def __init__(self, ui: Apollo) -> None:
         super().__init__()
         self.ui = ui
+        self.playback_bar_controller = PlayBackBar(ui)
         self.setupUI()
 
     def setupUI(self):
@@ -37,8 +39,22 @@ class NowPlayingTab:
 
     def connectTableView(self):
         self.ui.queue_listview.doubleClicked.connect(lambda item: (
-            print(self.getRowData(item.row()))
+            self.playSelected(item.row())
         ))
+        # self.playback_bar_controller.Player.queuePositionChanged = lambda index: (
+        #     print(index)
+        # )
 
-    def getRowData(self, index: int) -> list:
-        return [self.model.index(index, col).data() for col in range(self.model.columnCount())]
+    def playSelected(self, row_id):
+        row = self.getRowData(row_id, ['file_id'])
+        self.playback_bar_controller.play_File(row[0])
+
+    def getRowData(self, index, column: str = None) -> list[list]:
+        if column is not None:
+            column = [self.model.database.library_columns.index(item) for item in column]
+        return [self.model.index(index, col).data() for col in column]
+
+    def getRowModelIndex(self, index, column: str = None) -> list[list]:
+        if column is not None:
+            column = [self.model.database.library_columns.index(item) for item in column]
+        return [self.model.index(index, col) for col in [0]]

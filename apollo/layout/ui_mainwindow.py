@@ -11,17 +11,15 @@
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
-    QCursor, QFont, QFontDatabase, QGradient,
-    QIcon, QImage, QKeySequence, QLinearGradient,
-    QPainter, QPalette, QPixmap, QRadialGradient,
-    QTransform)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QFrame, QGridLayout,
     QGroupBox, QHBoxLayout, QHeaderView, QLabel,
-    QLineEdit, QListView, QMainWindow, QMenu,
-    QMenuBar, QPushButton, QSizePolicy, QSlider,
-    QSpacerItem, QSplitter, QTabWidget, QTableView,
-    QVBoxLayout, QWidget)
+    QLineEdit, QListView, QMainWindow, QPushButton,
+    QSizePolicy, QSlider, QSpacerItem, QSplitter,
+    QTabWidget, QTableView, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -527,14 +525,6 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.playback_footer_frame)
 
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menuBar = QMenuBar(MainWindow)
-        self.menuBar.setObjectName(u"menuBar")
-        self.menuBar.setGeometry(QRect(0, 0, 807, 20))
-        self.menuFile = QMenu(self.menuBar)
-        self.menuFile.setObjectName(u"menuFile")
-        MainWindow.setMenuBar(self.menuBar)
-
-        self.menuBar.addAction(self.menuFile.menuAction())
 
         self.retranslateUi(MainWindow)
 
@@ -575,6 +565,5 @@ class Ui_MainWindow(object):
         self.settings_pushbutton.setText("")
         self.volume_pushbutton.setText("")
         self.queue_pushbutton.setText("")
-        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
     # retranslateUi
 

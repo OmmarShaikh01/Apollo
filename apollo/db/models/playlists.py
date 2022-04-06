@@ -14,11 +14,15 @@ class PlaylistsModel(QStandardItemModel):
         super().__init__(parent)
         self.database = Database()
         self.fields = self.database.playlist_columns
+
         # TODO: add loaded and all playlists field in config
         self.valid_playlists = ["temp_playlist"]
-        self.loaded_playlist = 'temp_playlist'
-        self.create_playList(self.loaded_playlist)
-        self.fetchRecords(self.loaded_playlist)
+        self.loadPlaylist(self.valid_playlists[0])
+
+    def loadPlaylist(self, name):
+        self.fetchRecords(name)
+        self.create_playList(name)
+        self.loaded_playlist = name
 
     def fillHeaderData(self):
         for index, item in enumerate(self.database.library_columns):
@@ -43,30 +47,30 @@ class PlaylistsModel(QStandardItemModel):
             return None
 
     def searchTable(self, text):
-        if text:
-            try:
+        try:
+            if text:
                 columns = ", ".join([f"library.{i}" for i in self.database.library_columns])
                 with Connection(self.database.database_file) as CONN:
                     query = self.database.exec_query(
                         query = f"""
-                            SELECT {columns} FROM (
-                                SELECT {columns}
-                                FROM {name} 
-                                INNER JOIN library ON {name}.file_id = library.file_id
-                                ORDER BY '{name}.play_order'
-                            ) 
-                            WHERE 
-                            tracktitle LIKE '%{text}%' OR
-                            artist LIKE '%{text}%' OR
-                            album LIKE '%{text}%' OR
-                            file_name LIKE '%{text}%' 
+                        SELECT {columns} FROM (
+                            SELECT {columns}
+                            FROM {name} 
+                            INNER JOIN library ON {name}.file_id = library.file_id
+                            ORDER BY '{name}.play_order'
+                        ) 
+                        WHERE 
+                        tracktitle LIKE '%{text}%' OR
+                        artist LIKE '%{text}%' OR
+                        album LIKE '%{text}%' OR
+                        file_name LIKE '%{text}%' 
                         """,
                         db = CONN
                     )
                     self.refill_table(query)
-            except QueryBuildFailed:
+            else:
                 self.fetchRecords()
-        else:
+        except QueryBuildFailed:
             self.fetchRecords()
 
     def refill_table(self, query):
@@ -76,10 +80,9 @@ class PlaylistsModel(QStandardItemModel):
             self.appendRow(row)
 
     def create_playList(self, name: str = None, ids = None):
-        if ids is None:
-            ids = list()
         if name is None:
             name = self.loaded_playlist
+
         table_query = f"""
         CREATE TABLE IF NOT EXISTS "{name}" (        
             "file_id" TEXT NOT NULL,
@@ -88,14 +91,9 @@ class PlaylistsModel(QStandardItemModel):
             PRIMARY KEY("play_order")
         );
         """
-        with Connection(self.database.database_file) as CON:
-            QSqlQuery(table_query, db = CON).exec()
-            if len(ids) != 0:
-                self.database.batchinsert_data(
-                    table = name,
-                    data = [dict(file_id = key[-1]) for key in ids],
-                    keys = ['file_id'],
-                    connection = CON
-                )
-        self.fetchRecords(self.loaded_playlist)
-        print(ids)
+        if ids is not None:
+            with Connection(self.database.database_file) as CON:
+                QSqlQuery(table_query, db = CON).exec()
+                self.database.batchinsert_data(name, [{'file_id': key[0]} for key in ids], ['file_id'], CON)
+            self.fetchRecords(self.loaded_playlist)
+        self.TABLE_UPDATE.emit()

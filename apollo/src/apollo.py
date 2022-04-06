@@ -4,7 +4,6 @@ from PySide6 import QtWidgets
 
 from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo_MainWindow
 from apollo.src.main_content import MainContent
-from apollo.src.playback_bar import PlayBackBar
 
 
 class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
@@ -13,7 +12,6 @@ class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.setupUX()
-        self.playback_bar_controller = PlayBackBar(self)
         self.main_content_controller = MainContent(self)
 
     def setupUX(self):

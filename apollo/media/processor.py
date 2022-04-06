@@ -49,6 +49,7 @@ class BufferTable:
             if not hasattr(self, 'head_pos'):
                 self.head_pos = 0
                 # initilize and move ahead the initial samples
+                self.writeSamples(self.getSamples())
                 if not self.writeSamples(self.getSamples()):
                     self.stop()
                 return None
@@ -118,6 +119,8 @@ class BufferTable:
         self.audio_decoder.reset_buffer()
         self.clear()
         self.EOF = False
+        if hasattr(self, "head_pos"):
+            del self.head_pos
 
     def clear(self):
         for chan in range(self.table.chnls):
@@ -179,7 +182,8 @@ class DSPInterface:
             try:
                 callback()
             except Exception as e:
-                print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
+                pass
+                # print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
 
     def addToCallbackChain(self, item):
         for index, callback in enumerate(self.callback_chain):
@@ -229,6 +233,7 @@ class DSPInterface:
     def get_active_stream(self) -> BufferTable:
         return self.current_stream_obj
 
+    @apollo.utils.timeit
     def replaceTable(self, path: str, instant = False):
         if instant:
             self.remove_faded_table()
@@ -245,12 +250,12 @@ class DSPInterface:
             return None
         # manage then input switch rest works
         if stream is not None:
-            self.voice_switch.setList(next(self.voices))
             stream.clear()
             stream.read(path)
             stream.fetchMore()
             stream.play()
             self.addToCallbackChain(stream.fetchMore)
+            self.voice_switch.setList(next(self.voices))
 
         if instant:
             self.fader.replace([(0, 0), (self.config_dict.get('fadeout_time') + 0.5, 1)])
@@ -287,7 +292,9 @@ class DSPInterface:
         self.main_output.out()
 
     def GUI(self, vars):
-        self.spectrum = pyo.Spectrum(self.main_output)
+        self.spectrum_1 = pyo.Spectrum(self.main_output)
+        self.spectrum_2 = pyo.Spectrum(self.fader)
+        self.spectrum_3 = pyo.Spectrum(self.voice_switch)
         self.server.gui(vars)
 
     def ServerInfo(self):

@@ -29,10 +29,11 @@ class Connection:
     def __init__(self, db_name: str, commit: bool = True):
         super().__init__()
         self.database = self.connect(db_name)
+        self.name = str(random.random())
         self.autocommit = commit
 
     def __enter__(self):
-        self.db_driver = QSqlDatabase.addDatabase("QSQLITE", str(random.random()))
+        self.db_driver = QSqlDatabase.addDatabase("QSQLITE", self.name)
         self.db_driver.setDatabaseName(self.database)
         if self.db_driver.open() and self.db_driver.isValid() and self.db_driver.isOpen():
             return self.db_driver
@@ -44,15 +45,15 @@ class Connection:
             self.db_driver.commit()
             del self.db_driver
         if any([exc_type, exc_value, exc_traceback]):
-            print(f"exc_type: {exc_type}\nexc_value: {exc_value}\nexc_traceback: {exc_traceback}")
-        QSqlDatabase.removeDatabase(str(random.random()))
+            print(f"Type: {exc_type}\nValue: {exc_value}\nTraceback:\n{exc_traceback}")
+        QSqlDatabase.removeDatabase(self.name)
 
     @staticmethod
     def connect(db_name: str):
         if (db_name == ":memory:") or os.path.splitext(db_name)[1] == ".db":
             return db_name
         else:
-            raise ConnectionError()
+            raise ValueError(db_name)
 
 
 class Database:
@@ -138,6 +139,51 @@ class Database:
             self.exec_query(table_query_queue, db = CON).exec()
             del CON
 
+    def exec_query(self, query: str, db: Connection, commit: bool = True):
+        # creates a connection to the DB that is linked to the main class
+        if isinstance(query, str):
+            query_str = query
+            query = QSqlQuery(db = db)
+            if not query.prepare(query_str):
+                connection_info = (str(db))
+                raise QueryBuildFailed(f"{connection_info}\n{query_str}")
+
+        # executes the given query
+        query_executed = query.exec()
+        if not query_executed:
+            connection_info = (str(db))
+            msg = f"""
+                EXE: {query_executed}
+                ERROR: {(query.lastError().text())}
+                Query: {query.lastQuery()}
+                Connection: {connection_info}
+                """
+            raise QueryExecutionFailed(msg)
+        else:
+            return query
+
+    def fetch_all(self, query: QSqlQuery, to_obj: Callable = None, fltr_column: [int, None] = None):
+        data = []
+
+        if fltr_column is None:
+            fltr_column = query.record().count()
+
+        if fltr_column == 1:
+            if to_obj:
+                while query.next():
+                    data.append(to_obj(query.value(0)))
+            else:
+                while query.next():
+                    data.append(query.value(0))
+        else:
+            if to_obj:
+                while query.next():
+                    data.append([to_obj(query.value(C)) for C in range(fltr_column)])
+            else:
+                while query.next():
+                    data.append([query.value(C) for C in range(fltr_column)])
+        return data
+
     def insert_Metadata(self, metadata: dict, keys: list, connection: Connection = None):
 
         def internal_call(CON, keys, metadata):
@@ -181,54 +227,6 @@ class Database:
         else:
             internal_call(connection, keys, data)
 
-    def batchinsert_Metadata(self, metadata: dict, keys: list, connection: Connection = None):
-        self.batchinsert_data('library', metadata, keys, connection)
-
-    def exec_query(self, query: str, db: Connection, column: [int, None] = None, commit: bool = True):
-        # creates a connection to the DB that is linked to the main class
-        if isinstance(query, str):
-            query_str = query
-            query = QSqlQuery(db = db)
-            if not query.prepare(query_str):
-                connection_info = (str(db))
-                raise QueryBuildFailed(f"{connection_info}\n{query_str}")
-
-        # executes the given query
-        query_executed = query.exec()
-        if not query_executed:
-            connection_info = (str(db))
-            msg = f"""
-                EXE: {query_executed}
-                ERROR: {(query.lastError().text())}
-                Query: {query.lastQuery()}
-                Connection: {connection_info}
-                """
-            raise QueryExecutionFailed(msg)
-        else:
-            return query
-
-    def fetch_all(self, query: QSqlQuery, to: Callable = None, column: [int, None] = None):
-        data = []
-
-        if column is None:
-            column = query.record().count()
-
-        if column == 1:
-            if to:
-                while query.next():
-                    data.append(to(query.value(0)))
-            else:
-                while query.next():
-                    data.append(query.value(0))
-        else:
-            if to:
-                while query.next():
-                    data.append([to(query.value(C)) for C in range(column)])
-            else:
-                while query.next():
-                    data.append([query.value(C) for C in range(column)])
-        return data
-
 
 class LibraryManager(Database):
 
@@ -247,7 +245,7 @@ class LibraryManager(Database):
                     mediafile = Mediafile(path)
                     if mediafile.SynthTags['file_id']:
                         scanned_files.append(mediafile.SynthTags)
-        self.batchinsert_Metadata(scanned_files, Mediafile.tags_fields)
+        self.batchinsert_data('library', scanned_files, Mediafile.tags_fields)
 
     def scan_file(self, path: str):
         if not os.path.isfile(path):

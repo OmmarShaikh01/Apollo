@@ -197,3 +197,4 @@ cython_debug/
 /.env.development
 /.ini
 /.idea/
+/default.db

@@ -1,13 +1,18 @@
-import configparser
-import os
 import sys
+import os
+
+import configparser
 from pathlib import Path
 
 from PySide6 import QtWidgets
 from PySide6.QtCore import QDir
 from qt_material import ResourseGenerator, apply_stylesheet
 
-from src.apollo import Apollo
+try:
+    from src.apollo import Apollo
+except ModuleNotFoundError:
+    sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+    from src.apollo import Apollo
 
 PARENT_ROOT = os.path.dirname(__file__)
 STYLED = True
