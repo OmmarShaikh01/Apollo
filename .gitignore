@@ -195,6 +195,9 @@ cython_debug/
 
 # Misc Development files
 /.env.development
+/development.env
 /.ini
 /.idea/
-/default.db
+/apollo/assets/generated/
+/apollo/db/default.db
+/apollo/.ini

@@ -1,6 +1,9 @@
+import copy
 import math
 import os
+import random
 import time
+import typing
 
 from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtCore import QSize
@@ -19,18 +22,20 @@ class Player:
 
     def __init__(self) -> None:
         self.dsp = DSPInterface()
-        self.dsp.output()
         self.dsp.call_at_EOF = self.move_f
         self.repeat_type = self.REPEAT_NONE
         self.shuffle_type = self.SHUFFLE_NONE
+        self.pointer = 0
+        self.queue = []
+        self.dsp.output()
 
-    def setQueue(self, queue: list):
+    def setQueue(self, queue: typing.List):
         self.pointer = 0
         self.queue = queue
         self.replayed = False
         self.load_track(self.getCurrentTrack(), True)
 
-    def load_track(self, path: str, instant = False):
+    def load_track(self, path: typing.AnyStr, instant: bool = False):
         if os.path.isfile(path) and Mediafile.isSupported(path):
             self.queuePositionChanged(self.pointer)
             self.dsp.replaceTable(path, instant = instant)
@@ -44,10 +49,10 @@ class Player:
         self.dsp.replay_table()
         self.fetchMediaData(self.dsp.get_active_stream().getMediaFile())
 
-    def seek_exact(self, time_value):
+    def seek_exact(self, time_value: float):
         self.dsp.seek(time_value)
 
-    def move_f(self, instant = False):
+    def move_f(self, instant: bool = False):
         if not self.dsp.server.getIsStarted():
             self.play()
 
@@ -61,15 +66,15 @@ class Player:
                 self.pointer = 0
                 self.load_track(self.getCurrentTrack(), instant)
 
-    def move_to(self, index, instant = False):
+    def move_to(self, index: int, instant: bool = False):
         if not self.dsp.server.getIsStarted():
             self.play()
 
-        if 0 < (index) < len(self.queue):
+        if 0 <= (index) < len(self.queue):
             self.pointer = index
             self.load_track(self.getCurrentTrack(), instant)
 
-    def move_b(self, instant = False):
+    def move_b(self, instant: bool = False):
         if not self.dsp.server.getIsStarted():
             self.play()
 
@@ -94,19 +99,22 @@ class Player:
     def setVolume(self, value: int):
         self.dsp.setVolume(value)
 
-    def setRepeat(self, value):
+    def setRepeat(self, value: int):
         self.repeat_type = value
 
-    def setShuffle(self, value):
+    def setShuffle(self, value: int):
+        if value == self.SHUFFLE_TRACK:
+            self.ordered_queue = copy.deepcopy(self.queue)
+            random.shuffle(self.queue)
+        elif value == self.SHUFFLE_NONE and hasattr(self, 'ordered_queue'):
+            self.pointer = self.ordered_queue.index(self.queue[self.pointer])
+            self.queue = copy.deepcopy(self.ordered_queue)
         self.shuffle_type = value
 
     def getCurrentTrack(self):
-        if self.shuffle_type == self.SHUFFLE_NONE:
-            return self.queue[self.pointer]
-        elif self.shuffle_type == self.SHUFFLE_TRACK:
-            return self.queue[self.pointer]
+        return self.queue[self.pointer]
 
-    def fetchMediaData(self, media: [Mediafile, None]):
+    def fetchMediaData(self, media: typing.Union[Mediafile, None]):
         ...
 
     def onPause(self):
@@ -115,7 +123,7 @@ class Player:
     def onPlay(self):
         ...
 
-    def queuePositionChanged(self, index):
+    def queuePositionChanged(self, index: int):
         ...
 
 

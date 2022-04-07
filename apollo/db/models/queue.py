@@ -73,6 +73,9 @@ class QueueModel(QStandardItemModel):
     def create_playList(self, name: str = None, ids = None):
         if name is None:
             name = self.loaded_playlist
+        if ids is None:
+            ids = []
+
         table_drop = f"""DROP TABLE IF EXISTS "{name}" """
         table_query = f"""
         CREATE TABLE IF NOT EXISTS "{name}" (        
@@ -82,7 +85,7 @@ class QueueModel(QStandardItemModel):
             PRIMARY KEY("play_order")
         );
         """
-        if ids is not None:
+        if len(ids) > 0:
             with Connection(self.database.database_file) as CON:
                 QSqlQuery(table_drop, db = CON).exec()
                 QSqlQuery(table_query, db = CON).exec()

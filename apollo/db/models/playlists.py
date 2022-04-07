@@ -1,3 +1,5 @@
+import os.path
+import typing
 from typing import Optional
 
 from PySide6 import QtCore
@@ -5,6 +7,9 @@ from PySide6.QtGui import QStandardItem, QStandardItemModel
 from PySide6.QtSql import QSqlQuery
 
 from apollo.db.database import Connection, Database, QueryBuildFailed
+from apollo.utils import getConfigParser
+
+CONFIG = getConfigParser()
 
 
 class PlaylistsModel(QStandardItemModel):
@@ -16,20 +21,23 @@ class PlaylistsModel(QStandardItemModel):
         self.fields = self.database.playlist_columns
 
         # TODO: add loaded and all playlists field in config
-        self.valid_playlists = ["temp_playlist"]
-        self.loadPlaylist(self.valid_playlists[0])
+        self.valid_playlists = list(CONFIG['DEFAULT']["playlists"])
+        self.loadPlaylist(CONFIG['DEFAULT']["loaded_playlist"])
 
-    def loadPlaylist(self, name):
-        self.fetchRecords(name)
-        self.create_playList(name)
-        self.loaded_playlist = name
+    def loadPlaylist(self, name: typing.AnyStr):
+        if name:
+            self.fetchRecords(name)
+            self.create_playList(name)
+            self.loaded_playlist = name
+            CONFIG['DEFAULT']["loaded_playlist"] = name
+            writeConfig(CONFIG)
 
     def fillHeaderData(self):
         for index, item in enumerate(self.database.library_columns):
             item = str(item).title().replace("_", " ")
             self.setHorizontalHeaderItem(index, QStandardItem(item))
 
-    def fetchRecords(self, name = None):
+    def fetchRecords(self, name: typing.AnyStr = None):
         if name is None:
             return None
         elif name in self.valid_playlists:
@@ -46,13 +54,13 @@ class PlaylistsModel(QStandardItemModel):
         else:
             return None
 
-    def searchTable(self, text):
+    def searchTable(self, text: typing.AnyStr):
         try:
             if text:
                 columns = ", ".join([f"library.{i}" for i in self.database.library_columns])
                 with Connection(self.database.database_file) as CONN:
                     query = self.database.exec_query(
-                        query = f"""
+                            query = f"""
                         SELECT {columns} FROM (
                             SELECT {columns}
                             FROM {name} 
@@ -65,7 +73,7 @@ class PlaylistsModel(QStandardItemModel):
                         album LIKE '%{text}%' OR
                         file_name LIKE '%{text}%' 
                         """,
-                        db = CONN
+                            db = CONN
                     )
                     self.refill_table(query)
             else:
@@ -73,15 +81,17 @@ class PlaylistsModel(QStandardItemModel):
         except QueryBuildFailed:
             self.fetchRecords()
 
-    def refill_table(self, query):
+    def refill_table(self, query: QSqlQuery):
         self.clear()
         self.fillHeaderData()
         for row in self.database.fetch_all(query, lambda x: QStandardItem(str(x))):
             self.appendRow(row)
 
-    def create_playList(self, name: str = None, ids = None):
+    def create_playList(self, name: typing.AnyStr = None, ids: typing.List = None):
         if name is None:
             name = self.loaded_playlist
+        if ids is None:
+            ids = []
 
         table_query = f"""
         CREATE TABLE IF NOT EXISTS "{name}" (        
@@ -91,9 +101,18 @@ class PlaylistsModel(QStandardItemModel):
             PRIMARY KEY("play_order")
         );
         """
-        if ids is not None:
+        if len(ids) > 0:
             with Connection(self.database.database_file) as CON:
                 QSqlQuery(table_query, db = CON).exec()
                 self.database.batchinsert_data(name, [{'file_id': key[0]} for key in ids], ['file_id'], CON)
-            self.fetchRecords(self.loaded_playlist)
-        self.TABLE_UPDATE.emit()
+                self.addPlaylistToConfig(name)
+            if name == self.loaded_playlist:
+                self.fetchRecords(name)
+            self.TABLE_UPDATE.emit()
+
+    def addPlaylistToConfig(self, name: typing.AnyStr):
+        playlist = list(CONFIG['DEFAULT']["playlists"])
+        if name not in playlist:
+            playlist.append(name)
+            CONFIG['DEFAULT']["playlists"] = playlist
+            writeConfig(CONFIG)

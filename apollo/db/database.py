@@ -6,10 +6,9 @@ from typing import Callable, Union
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 from apollo.media import Mediafile
+from apollo.utils import ROOT, getConfigParser
 
-PARENT_ROOT = (os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-config = configparser.ConfigParser()
-config.read(os.path.join(PARENT_ROOT, '.ini'))
+CONFIG = getConfigParser()
 
 
 class DBStructureError(Exception):
@@ -90,7 +89,7 @@ class Database:
     queue_columns = ["file_id", "order"]
 
     def __init__(self) -> None:
-        self.database_file = config["DATABASE"]["file_location"]
+        self.database_file = CONFIG["DEFAULT"]["database_location"]
         self.initilize_structure()
 
     def initilize_structure(self):
@@ -258,8 +257,5 @@ class LibraryManager(Database):
 
 
 if __name__ == '__main__':
-    import dotenv
-
-    dotenv.load_dotenv(os.path.join(PARENT_ROOT, 'development.env'))
     manager = LibraryManager()
     manager.scan_file(r"D:\Music\fold_2\topntch.mp3")

@@ -96,7 +96,7 @@ class LibraryTab:
             self.add_FoldertoLibrary()
         ))
         lv_1.addAction("Add Selected to Playlist").triggered.connect(lambda: (
-            (Provider.get_model(PlaylistsModel).create_playList('temp_playlist', ids = self.get_selected_rowData(["file_id"])))
+            self.add_ToPlaylist()
         ))
         lv_1.addAction("File Info").triggered.connect(lambda: (
             self.display_FileInfo()
@@ -117,10 +117,15 @@ class LibraryTab:
         lv_1.exec(cursor.pos())
 
     def add_FoldertoLibrary(self):
-        text, pressed = QtWidgets.QInputDialog.getText(None, "input dialog", "Is this ok?", flags = QtCore.Qt.Dialog)
+        text, pressed = QtWidgets.QInputDialog.getText(None, "Add Folder/File", "Path:", flags = QtCore.Qt.Dialog)
         if pressed:
             text = os.path.normpath(text)
             self.model.add_ItemFormFS(text)
+
+    def add_ToPlaylist(self):
+        text, pressed = QtWidgets.QInputDialog.getText(None, "Add To Playlist", "Playlist name:", flags = QtCore.Qt.Dialog)
+        if pressed and text != '':
+            Provider.get_model(PlaylistsModel).create_playList(text, ids = self.get_selected_rowData(["file_id"]))
 
     def display_FileInfo(self):
         data = self.get_selected_rowData(['file_id'])
