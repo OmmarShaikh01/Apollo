@@ -7,7 +7,7 @@ from PySide6.QtGui import QStandardItem, QStandardItemModel
 from PySide6.QtSql import QSqlQuery
 
 from apollo.db.database import Connection, Database, QueryBuildFailed
-from apollo.utils import getConfigParser
+from apollo.utils import getConfigParser, writeConfig
 
 CONFIG = getConfigParser()
 
@@ -21,15 +21,16 @@ class PlaylistsModel(QStandardItemModel):
         self.fields = self.database.playlist_columns
 
         # TODO: add loaded and all playlists field in config
-        self.valid_playlists = list(CONFIG['DEFAULT']["playlists"])
+        self.valid_playlists = eval(CONFIG['DEFAULT']["playlists"])
+        self.loaded_playlist = ''
         self.loadPlaylist(CONFIG['DEFAULT']["loaded_playlist"])
 
     def loadPlaylist(self, name: typing.AnyStr):
         if name:
             self.fetchRecords(name)
             self.create_playList(name)
-            self.loaded_playlist = name
             CONFIG['DEFAULT']["loaded_playlist"] = name
+            self.loaded_playlist = name
             writeConfig(CONFIG)
 
     def fillHeaderData(self):
@@ -108,11 +109,13 @@ class PlaylistsModel(QStandardItemModel):
                 self.addPlaylistToConfig(name)
             if name == self.loaded_playlist:
                 self.fetchRecords(name)
+            elif self.loaded_playlist == "":
+                self.loadPlaylist(name)
             self.TABLE_UPDATE.emit()
 
     def addPlaylistToConfig(self, name: typing.AnyStr):
-        playlist = list(CONFIG['DEFAULT']["playlists"])
+        playlist = eval(CONFIG['DEFAULT']["playlists"])
         if name not in playlist:
             playlist.append(name)
-            CONFIG['DEFAULT']["playlists"] = playlist
+            CONFIG['DEFAULT']["playlists"] = str(playlist)
             writeConfig(CONFIG)

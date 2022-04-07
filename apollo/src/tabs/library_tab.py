@@ -28,6 +28,9 @@ class LibraryTab:
     def setTableModel(self):
         self.model = Provider.get_model(LibraryModel)
         self.ui.library_tableview.setModel(self.model)
+        self.setHeaderLabels()
+
+    def setHeaderLabels(self):
         header = self.ui.library_tableview.horizontalHeader()
         for index in range(header.model().columnCount()):
             if header.model().headerData(index, QtCore.Qt.Horizontal) in ["File Id", "File Path"]:
@@ -121,6 +124,7 @@ class LibraryTab:
         if pressed:
             text = os.path.normpath(text)
             self.model.add_ItemFormFS(text)
+            self.setHeaderLabels()
 
     def add_ToPlaylist(self):
         text, pressed = QtWidgets.QInputDialog.getText(None, "Add To Playlist", "Playlist name:", flags = QtCore.Qt.Dialog)
