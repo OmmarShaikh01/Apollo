@@ -233,7 +233,6 @@ class DSPInterface:
     def get_active_stream(self) -> BufferTable:
         return self.current_stream_obj
 
-    @apollo.utils.timeit
     def replaceTable(self, path: str, instant = False):
         if instant:
             self.remove_faded_table()

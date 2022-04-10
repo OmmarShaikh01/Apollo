@@ -30,6 +30,13 @@ class LibraryTab:
         self.ui.library_tableview.setModel(self.model)
         self.setHeaderLabels()
 
+    def onModelUpdate(self):
+        self.setHeaderLabels()
+        Provider.get_model(QueueModel).fetchRecords()
+        Provider.get_model(QueueModel).TABLE_UPDATE.emit()
+        Provider.get_model(PlaylistsModel).fetchRecords()
+        Provider.get_model(PlaylistsModel).TABLE_UPDATE.emit()
+
     def setHeaderLabels(self):
         header = self.ui.library_tableview.horizontalHeader()
         for index in range(header.model().columnCount()):
@@ -38,43 +45,47 @@ class LibraryTab:
 
     def connectLineEdit(self):
         self.ui.library_tab_lineedit.returnPressed.connect(lambda: (
-            self.model.searchTable(self.ui.library_tab_lineedit.text())
+            self.model.searchTable(self.ui.library_tab_lineedit.text()),
+            self.setHeaderLabels()
         ))
         self.ui.library_tab_lineedit.textChanged.connect(lambda: (
-            self.model.searchTable(self.ui.library_tab_lineedit.text())
+            self.model.searchTable(self.ui.library_tab_lineedit.text()),
+            self.setHeaderLabels()
         ))
         self.ui.library_tab_search_pushbutton.pressed.connect(lambda: (
-            self.model.searchTable(self.ui.library_tab_lineedit.text())
+            self.model.searchTable(self.ui.library_tab_lineedit.text()),
+            self.setHeaderLabels()
         ))
 
     def connectTableView(self):
         self.ui.library_tableview.doubleClicked.connect(lambda item: (
-            print(self.getRowData(item.row()))
+            Provider.get_model(QueueModel).addItemToQueueTop(
+                self.getRowDataAt(item.row(), ["file_id"])[0][0], self.getRowData(["file_id"])
+            )
         ))
+        self.model.TABLE_UPDATE.connect(self.onModelUpdate)
 
-    def getRowData(self, index: int) -> list:
-        return [self.model.index(index, col).data() for col in range(self.model.columnCount())]
-
-    def get_selected_rowData(self, column: str = None) -> list[list]:
-        rows = set(ModelIndex.row() for ModelIndex in self.ui.library_tableview.selectedIndexes())
+    def getRowDataAt(self, index: int, column: list[str] = None) -> list:
         if column is not None:
             column = [self.model.fields.index(item) for item in column]
 
-        table = []
+        row = []
         column_data = []
-        for row_index in rows:
-            for col_index in range(self.model.columnCount()):
-                if column is None:
-                    column_data.append(data)
-                else:
-                    if col_index in column:
-                        column_data.append(self.model.index(row_index, col_index).data())
-            table.append(column_data)
-            column_data = []
-        return table
+        for col_index in range(self.model.columnCount()):
+            if column is None:
+                column_data.append(data)
+            else:
+                if col_index in column:
+                    column_data.append(self.model.index(index, col_index).data())
+        row.append(column_data)
+        return row
 
-    def get_all_rowData(self, column: str = None) -> list[list]:
-        rows = set(range(self.model.rowCount()))
+    def getRowData(self, column: str = None, rows_selected: bool = False) -> list[list]:
+        if rows_selected:
+            rows = set(ModelIndex.row() for ModelIndex in self.ui.library_tableview.selectedIndexes())
+        else:
+            rows = set(range(self.model.rowCount()))
+
         if column is not None:
             column = [self.model.fields.index(item) for item in column]
 
@@ -106,13 +117,15 @@ class LibraryTab:
         ))
         lv_1.addSeparator()
         lv_1.addAction("Play All").triggered.connect(lambda: (
-            (Provider.get_model(QueueModel).create_playList("queue", self.get_all_rowData(["file_id"])))
+            Provider.get_model(QueueModel).create_playList("queue", self.getRowData(["file_id"]))
         ))
         lv_1.addAction("Play Selected").triggered.connect(lambda: (
-            (Provider.get_model(QueueModel).create_playList("queue", self.get_selected_rowData(["file_id"])))
+            Provider.get_model(QueueModel).create_playList("queue", self.getRowData(["file_id"], rows_selected = True))
         ))
         lv_1.addSeparator()
-        lv_1.addAction("Delete Selected")
+        lv_1.addAction("Delete Selected").triggered.connect(lambda: (
+            self.model.delete_ItemfromDB(self.getRowData(["file_id"], rows_selected = True))
+        ))
         lv_1.addAction("Delete Selected Physically")
 
         # Execution
@@ -129,7 +142,7 @@ class LibraryTab:
     def add_ToPlaylist(self):
         text, pressed = QtWidgets.QInputDialog.getText(None, "Add To Playlist", "Playlist name:", flags = QtCore.Qt.Dialog)
         if pressed and text != '':
-            Provider.get_model(PlaylistsModel).create_playList(text, ids = self.get_selected_rowData(["file_id"]))
+            Provider.get_model(PlaylistsModel).create_playList(text, ids = self.getRowData(["file_id"], rows_selected = True))
 
     def display_FileInfo(self):
         data = self.get_selected_rowData(['file_id'])

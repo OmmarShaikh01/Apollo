@@ -5,6 +5,7 @@ from typing import Callable, Union
 
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
+import apollo.utils
 from apollo.media import Mediafile
 from apollo.utils import ROOT, getConfigParser
 
@@ -35,6 +36,7 @@ class Connection:
         self.db_driver = QSqlDatabase.addDatabase("QSQLITE", self.name)
         self.db_driver.setDatabaseName(self.database)
         if self.db_driver.open() and self.db_driver.isValid() and self.db_driver.isOpen():
+            self.db_driver.exec("PRAGMA foreign_keys=ON")
             return self.db_driver
         else:
             raise ConnectionError(self.database)
@@ -151,12 +153,10 @@ class Database:
         query_executed = query.exec()
         if not query_executed:
             connection_info = (str(db))
-            msg = f"""
-                EXE: {query_executed}
-                ERROR: {(query.lastError().text())}
-                Query: {query.lastQuery()}
-                Connection: {connection_info}
-                """
+            msg = f"\nEXE: {query_executed}" \
+                  f"\nERROR: {(query.lastError().text())}" \
+                  f"\nQuery: {query.lastQuery()}" \
+                  f"\nConnection: {connection_info}"
             raise QueryExecutionFailed(msg)
         else:
             return query
@@ -193,7 +193,10 @@ class Database:
             if query.exec():
                 CON.commit()
             else:
-                msg = f"ERROR: {(query.lastError().text())}\nQuery: {query.lastQuery()}"
+                connection_info = (str(CON))
+                msg = f"\nERROR: {(query.lastError().text())}" \
+                      f"\nQuery: {query.lastQuery()}" \
+                      f"\nConnection: {connection_info}"
                 raise QueryExecutionFailed(msg)
 
         if connection is None:
@@ -205,19 +208,21 @@ class Database:
     def batchinsert_data(self, table: str, data: dict, keys: list, connection: Connection = None):
 
         def internal_call(CON, keys, data):
-            CON.transaction()
             self.exec_query(query = "PRAGMA journal_mode = MEMORY", db = CON)
+            CON.transaction()
             columns = ", ".join([f"'{i}'" for i in keys])
             placeholders = ", ".join(["?" for i in keys])
             query = QSqlQuery(f"INSERT OR IGNORE INTO {table} ({columns}) VALUES ({placeholders})", db = CON)
             for key in keys:
                 query.addBindValue([value[key] for value in data])
             if query.execBatch():
-                self.exec_query(query = "PRAGMA journal_mode = WAL", db = CON)
                 CON.commit()
-            else:
-                msg = f"ERROR: {(query.lastError().text())}\nQuery: {query.lastQuery()}"
                 self.exec_query(query = "PRAGMA journal_mode = WAL", db = CON)
+            else:
+                connection_info = (str(CON))
+                msg = f"\nERROR: {(query.lastError().text())}" \
+                      f"\nQuery: {query.lastQuery()}" \
+                      f"\nConnection: {connection_info}"
                 raise QueryExecutionFailed(msg)
 
         if connection is None:

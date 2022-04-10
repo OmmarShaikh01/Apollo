@@ -1,18 +1,12 @@
+import typing
 from typing import Optional
 import os, threading
 
 from PySide6 import QtCore
 from PySide6.QtGui import QStandardItem, QStandardItemModel
 
-from apollo.db.database import Connection, Database, QueryBuildFailed, LibraryManager
-
-
-def threadit(method):
-    def exe(*args, **kwargs):
-        thread = threading.Thread(target = lambda: (method(*args, **kwargs)))
-        thread.start()
-    return exe
-
+from apollo.db.database import Connection, Database, QueryExecutionFailed, QueryBuildFailed, LibraryManager
+from apollo.utils import threadit
 
 class LibraryModel(QStandardItemModel):
     TABLE_UPDATE = QtCore.Signal()
@@ -87,4 +81,17 @@ class LibraryModel(QStandardItemModel):
             self.TABLE_UPDATE.emit()
             return None
         finally:
+            self.TABLE_UPDATE.emit()
+
+    def delete_ItemfromDB(self, ids: typing.List):
+        if ids is None:
+            ids = []
+        if len(ids) > 0:
+            if len(ids) == 1:
+                ids = f"('{ids[0][0]}')"
+            else:
+                ids = tuple(id[0] for id in ids)
+            with Connection(self.database.database_file) as CON:
+                self.database.exec_query(f"""DELETE FROM 'library' WHERE file_id IN {ids}""", db = CON, commit = True)
+                self.fetchRecords()
             self.TABLE_UPDATE.emit()

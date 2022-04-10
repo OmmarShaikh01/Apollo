@@ -12,6 +12,7 @@ from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
 from apollo.media.player import Player
 from apollo.media import Mediafile
 from apollo.db.models import Provider, QueueModel
+from apollo.utils import ROOT
 
 
 class PlayBackBar:
@@ -257,8 +258,10 @@ class PlayBackBar:
 
     def setTrackTimes(self, total: float):
         DT = time.gmtime(total)
-        self.ui.total_time_label.setText(str(datetime.timedelta(seconds = total)).split(".")[0])
-        self.ui.completed_time_label.setText(str(datetime.timedelta(seconds = 0)).split(".")[0])
+        start = ':'.join(str(datetime.timedelta(seconds = 0)).split(".")[0].split(":")[1:])
+        end = ':'.join(str(datetime.timedelta(seconds = total)).split(".")[0].split(":")[1:])
+        self.ui.total_time_label.setText(end)
+        self.ui.completed_time_label.setText(start)
         self.ui.seeking_slider.setMaximum(((DT.tm_hour * 60 * 60) + (DT.tm_min * 60) + DT.tm_sec) * 100)
         self.ui.seeking_slider.setSingleStep(5)
 
@@ -266,14 +269,14 @@ class PlayBackBar:
         if not self.ui.seeking_slider.underMouse():
             elapsed = datetime.timedelta(seconds = elapsed)
             _time = round(elapsed.total_seconds(), 3) * 100
-            self.ui.completed_time_label.setText(str(elapsed).split(".")[0])
+            start = ':'.join(str(elapsed).split(".")[0].split(":")[1:])
+            self.ui.completed_time_label.setText(start)
             self.ui.seeking_slider.setValue(_time)
 
     def setAlbumCoverImage(self, widget, data: QIcon = None):
         size = QSize(int(widget.width() * 0.98), int(widget.height() * 0.98))
         if data is None:
-            home = pathlib.Path.home()
-            default = (os.path.join(home, '.qt_material', 'theme_custom', 'primary', 'music-note-2.4.svg'))
+            default = (os.path.join(ROOT, 'assets', 'generated', 'theme_custom', 'primary', 'music-note-2.4.svg'))
             data = QIcon(default)
             data = data.pixmap(size)
             widget.clear()

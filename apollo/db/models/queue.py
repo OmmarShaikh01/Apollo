@@ -4,6 +4,7 @@ from PySide6 import QtCore
 from PySide6.QtGui import QStandardItem, QStandardItemModel
 from PySide6.QtSql import QSqlQuery
 
+import apollo.utils
 from apollo.db.database import Connection, Database, QueryBuildFailed
 
 
@@ -44,7 +45,7 @@ class QueueModel(QStandardItemModel):
                 with Connection(self.database.database_file) as CONN:
                     query = self.database.exec_query(
                         query = f"""
-                        SELECT {columns} FROM (
+                        SELECT * FROM (
                             SELECT {columns}
                             FROM {name} 
                             INNER JOIN library ON {name}.file_id = library.file_id
@@ -70,6 +71,7 @@ class QueueModel(QStandardItemModel):
         for row in self.database.fetch_all(query, lambda x: QStandardItem(str(x))):
             self.appendRow(row)
 
+    @apollo.utils.threadit
     def create_playList(self, name: str = None, ids = None):
         if name is None:
             name = self.loaded_playlist
@@ -81,14 +83,39 @@ class QueueModel(QStandardItemModel):
         CREATE TABLE IF NOT EXISTS "{name}" (        
             "file_id" TEXT NOT NULL,
             "play_order" INTEGER,
-            FOREIGN KEY("file_id") REFERENCES "library"("file_id"),
+            FOREIGN KEY("file_id") REFERENCES "library"("file_id") ON DELETE CASCADE,
             PRIMARY KEY("play_order")
         );
         """
         if len(ids) > 0:
             with Connection(self.database.database_file) as CON:
-                QSqlQuery(table_drop, db = CON).exec()
-                QSqlQuery(table_query, db = CON).exec()
+                self.database.exec_query(table_drop, db = CON)
+                self.database.exec_query(table_query, db = CON)
                 self.database.batchinsert_data(name, [{'file_id': key[0]} for key in ids], ['file_id'], CON)
+            self.fetchRecords()
+            self.TABLE_UPDATE.emit()
+
+    @apollo.utils.threadit
+    def addItemToQueueTop(self, first: str, remaining: list[[str]]):
+        if first in [" ", "", None]:
+            return False
+        remaining = [item[0] for item in remaining if item[0] != first]
+        name = self.loaded_playlist
+        table_drop = f"""DROP TABLE IF EXISTS "{name}" """
+        table_query = f"""
+        CREATE TABLE IF NOT EXISTS "{name}" (        
+            "file_id" TEXT NOT NULL,
+            "play_order" INTEGER,
+            FOREIGN KEY("file_id") REFERENCES "library"("file_id") ON DELETE CASCADE,
+            PRIMARY KEY("play_order")
+        );
+        """
+        primary_insert = (f"""INSERT INTO "{name}" ('file_id') VALUES ('{first}')""")
+        if len(remaining) > 0:
+            with Connection(self.database.database_file) as CON:
+                self.database.exec_query(table_drop, db = CON)
+                self.database.exec_query(table_query, db = CON)
+                self.database.exec_query(primary_insert, db = CON)
+                self.database.batchinsert_data(name, [{'file_id': key} for key in remaining], ['file_id'], CON)
             self.fetchRecords()
             self.TABLE_UPDATE.emit()

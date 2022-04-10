@@ -1,10 +1,10 @@
 import configparser
 import os
+import shutil
 import sys
+import threading
 import time
 import traceback
-import shutil
-from pathlib import Path
 
 import qt_material
 
@@ -77,3 +77,11 @@ class ResourseGenerator(qt_material.ResourseGenerator):
         for folder, _ in self.contex:
             shutil.rmtree(folder, ignore_errors = True)
             os.makedirs(folder, exist_ok = True)
+
+
+def threadit(method):
+    def exe(*args, **kwargs):
+        thread = threading.Thread(target = lambda: (method(*args, **kwargs)))
+        thread.start()
+
+    return exe
