@@ -9,22 +9,31 @@ from apollo.db.database import Connection, Database, QueryBuildFailed
 
 
 class QueueModel(QStandardItemModel):
+    """Model for queue table"""
     TABLE_UPDATE = QtCore.Signal()
 
     def __init__(self, parent: Optional[QtCore.QObject] = None) -> None:
+        """
+        Constructor
+
+        Args:
+            parent (QtCore.QObject): parent object for the model.
+        """
         super().__init__(parent)
         self.database = Database()
         self.fields = self.database.playlist_columns
         # TODO: add loaded and all playlists field in config
         self.loaded_playlist = 'queue'
-        self.fetchRecords()
+        self.fetch_records()
 
-    def fillHeaderData(self):
+    def fill_headerdata(self):
+        """fills the header data for the loaded model with DB column headers"""
         for index, item in enumerate(self.database.library_columns):
             item = str(item).title().replace("_", " ")
             self.setHorizontalHeaderItem(index, QStandardItem(item))
 
-    def fetchRecords(self):
+    def fetch_records(self):
+        """fetches data from the database into the model"""
         name = self.loaded_playlist
         columns = ", ".join([f"library.{i}" for i in self.database.library_columns])
         with Connection(self.database.database_file) as CONN:
@@ -35,9 +44,15 @@ class QueueModel(QStandardItemModel):
                 INNER JOIN library ON {name}.file_id = library.file_id
                 ORDER BY '{name}.play_order'
                 """, db = CONN)
-            self.refill_table(query)
+            self.fill_table(query)
 
-    def searchTable(self, text):
+    def search_table(self, text: str):
+        """
+        Queries the table and filters the loaded models data
+
+        Args:
+            text (str): string to search for in tracktitle, artist, album, file_name columns
+        """
         try:
             if text:
                 name = self.loaded_playlist
@@ -59,20 +74,33 @@ class QueueModel(QStandardItemModel):
                         """,
                         db = CONN
                     )
-                    self.refill_table(query)
+                    self.fill_table(query)
             else:
-                self.fetchRecords()
+                self.fetch_records()
         except QueryBuildFailed:
-            self.fetchRecords()
+            self.fetch_records()
 
-    def refill_table(self, query):
+    def fill_table(self, query):
+        """
+        Fetches the data from the query and fills the model
+
+        Args:
+            query (QSqlQuery): query to fetch data from and fill model with
+        """
         self.clear()
-        self.fillHeaderData()
+        self.fill_headerdata()
         for row in self.database.fetch_all(query, lambda x: QStandardItem(str(x))):
             self.appendRow(row)
 
     @apollo.utils.threadit
-    def create_playList(self, name: str = None, ids = None):
+    def create_playList(self, ids: list[str], name: str = None):
+        """
+        creates a playlist from file_ids
+
+        Args:
+            name (str): name of the playlist to create
+            ids (list[str]): list of files ids to add to the playlist
+        """
         if name is None:
             name = self.loaded_playlist
         if ids is None:
@@ -92,11 +120,18 @@ class QueueModel(QStandardItemModel):
                 self.database.exec_query(table_drop, db = CON)
                 self.database.exec_query(table_query, db = CON)
                 self.database.batchinsert_data(name, [{'file_id': key[0]} for key in ids], ['file_id'], CON)
-            self.fetchRecords()
+            self.fetch_records()
             self.TABLE_UPDATE.emit()
 
     @apollo.utils.threadit
-    def addItemToQueueTop(self, first: str, remaining: list[[str]]):
+    def add_item_toqueue_top(self, first: str, remaining: list[[str]]):
+        """
+        creates a queue from the file ids provided
+
+        Args:
+            first (str): first item to start the queue from
+            remaining (list[[str]]): remaining file ids to add to the queue
+        """
         if first in [" ", "", None]:
             return False
         remaining = [item[0] for item in remaining if item[0] != first]
@@ -110,12 +145,12 @@ class QueueModel(QStandardItemModel):
             PRIMARY KEY("play_order")
         );
         """
-        primary_insert = (f"""INSERT INTO "{name}" ('file_id') VALUES ('{first}')""")
+        primary_insert = f"""INSERT INTO "{name}" ('file_id') VALUES ('{first}')"""
         if len(remaining) > 0:
             with Connection(self.database.database_file) as CON:
                 self.database.exec_query(table_drop, db = CON)
                 self.database.exec_query(table_query, db = CON)
                 self.database.exec_query(primary_insert, db = CON)
                 self.database.batchinsert_data(name, [{'file_id': key} for key in remaining], ['file_id'], CON)
-            self.fetchRecords()
+            self.fetch_records()
             self.TABLE_UPDATE.emit()

@@ -1,38 +1,52 @@
-import configparser
 import os
 import random
-from typing import Callable, Union
+from types import TracebackType
+from typing import Callable
 
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
-import apollo.utils
 from apollo.media import Mediafile
-from apollo.utils import ROOT, getConfigParser
+from apollo.utils import get_configparser
 
-CONFIG = getConfigParser()
+CONFIG = get_configparser()
 
 
 class DBStructureError(Exception):
-    __module__ = "LibraryManager"
+    """Raised when DB Tables or relations are not present"""
+    __module__ = "Database"
 
 
 class QueryBuildFailed(Exception):
-    __module__ = "LibraryManager"
+    """Raised when Query build fails"""
+    __module__ = "Database"
 
 
 class QueryExecutionFailed(Exception):
-    __module__ = "LibraryManager"
+    """Raised when execution fails"""
+    __module__ = "Database"
 
 
 class Connection:
+    """ Connector used execute queries """
 
-    def __init__(self, db_name: str, commit: bool = True):
+    def __init__(self, db_path: str, commit: bool = True):
+        """
+        Constructor
+
+        Args:
+            db_path (str): database file path to connect
+            commit (bool): autocommit of commits on exit
+        """
         super().__init__()
-        self.database = self.connect(db_name)
+        self.database = self.connect(db_path)
         self.name = str(random.random())
         self.autocommit = commit
 
-    def __enter__(self):
+    def __enter__(self) -> QSqlDatabase:
+        """
+        Returns:
+            QSqlDatabase: a connection object used to execute queries
+        """
         self.db_driver = QSqlDatabase.addDatabase("QSQLITE", self.name)
         self.db_driver.setDatabaseName(self.database)
         if self.db_driver.open() and self.db_driver.isValid() and self.db_driver.isOpen():
@@ -41,23 +55,42 @@ class Connection:
         else:
             raise ConnectionError(self.database)
 
-    def __exit__(self, exc_type, exc_value, exc_traceback):
+    def __exit__(self, exc_type: BaseException, value: BaseException, traceback: TracebackType):
+        """
+        Args:
+            exc_type (BaseException): Exception type
+            value (BaseException): Exception Value
+            traceback (TracebackType): Traceback stack
+        """
         if hasattr(self, "db_driver"):
-            self.db_driver.commit()
+            if self.autocommit:
+                self.db_driver.commit()
             del self.db_driver
-        if any([exc_type, exc_value, exc_traceback]):
-            print(f"Type: {exc_type}\nValue: {exc_value}\nTraceback:\n{exc_traceback}")
+        if any([exc_type, value, traceback]):
+            print(f"Type: {exc_type}\nValue: {value}\nTraceback:\n{traceback}")
         QSqlDatabase.removeDatabase(self.name)
 
     @staticmethod
-    def connect(db_name: str):
-        if (db_name == ":memory:") or os.path.splitext(db_name)[1] == ".db":
-            return db_name
+    def connect(db_path: str) -> str:
+        """
+        Connection validator used to connect to a database
+
+        Args:
+            db_path (str): database path
+
+        Returns:
+            str: if the connection file is valid, otherwise None
+        """
+        if (db_path == ":memory:") or os.path.splitext(db_path)[1] == ".db":
+            return db_path
         else:
-            raise ValueError(db_name)
+            raise ValueError(db_path)
 
 
 class Database:
+    """
+    Database class for all database queries and methods
+    """
     library_columns = [
         "file_id",
         "file_name",
@@ -92,9 +125,12 @@ class Database:
 
     def __init__(self) -> None:
         self.database_file = CONFIG["DEFAULT"]["database_location"]
-        self.initilize_structure()
+        self.init_structure()
 
-    def initilize_structure(self):
+    def init_structure(self):
+        """
+        Initializes all the database tables and relations
+        """
         table_query_library = """
         CREATE TABLE IF NOT EXISTS "library" (
             "file_id"	TEXT NOT NULL,
@@ -140,8 +176,18 @@ class Database:
             self.exec_query(table_query_queue, db = CON).exec()
             del CON
 
-    def exec_query(self, query: str, db: Connection, commit: bool = True):
-        # creates a connection to the DB that is linked to the main class
+    def exec_query(self, query: str, db: QSqlDatabase, commit: bool = True):
+        """
+        Creates a connection to the DB that is linked to the main class
+
+        Args:
+            query (str): query string used for execution
+            db (QSqlDatabase): Connection used to execute queries on
+            commit (bool): autocommit flag, commits the query after execution
+
+        Returns:
+            QSqlQuery: executed query, with the fetched data
+        """
         if isinstance(query, str):
             query_str = query
             query = QSqlQuery(db = db)
@@ -151,6 +197,9 @@ class Database:
 
         # executes the given query
         query_executed = query.exec()
+        if commit:
+            db.commit()
+
         if not query_executed:
             connection_info = (str(db))
             msg = f"\nEXE: {query_executed}" \
@@ -161,13 +210,24 @@ class Database:
         else:
             return query
 
-    def fetch_all(self, query: QSqlQuery, to_obj: Callable = None, fltr_column: [int, None] = None):
+    def fetch_all(self, query: QSqlQuery, to_obj: Callable = None, fltr_column: list[int] = None) -> list[list[any]]:
+        """
+        fetches data from te executed query
+
+        Args:
+            query (QSqlQuery): query to get data from
+            to_obj (Callable): a callable(x: string) used to box string type to any
+            fltr_column: filtering the columns to output
+
+        Returns:
+            list[list[any]]: table of the fetched data
+        """
         data = []
 
         if fltr_column is None:
             fltr_column = query.record().count()
 
-        if fltr_column == 1:
+        if len(fltr_column) == 1:
             if to_obj:
                 while query.next():
                     data.append(to_obj(query.value(0)))
@@ -175,61 +235,77 @@ class Database:
                 while query.next():
                     data.append(query.value(0))
         else:
+            fltr_column = range(fltr_column)
             if to_obj:
                 while query.next():
-                    data.append([to_obj(query.value(C)) for C in range(fltr_column)])
+                    data.append([to_obj(query.value(C)) for C in fltr_column])
             else:
                 while query.next():
-                    data.append([query.value(C) for C in range(fltr_column)])
+                    data.append([query.value(C) for C in fltr_column])
         return data
 
-    def insert_Metadata(self, metadata: dict, keys: list, connection: Connection = None):
+    def insert_Metadata(self, metadata: dict, keys: list, connection: QSqlDatabase = None):
+        """
+        Inserts Music metadata into the library database
 
-        def internal_call(CON, keys, metadata):
+        Args:
+            metadata (dict): metadata dict
+            keys (list): fields list
+            connection (QSqlDatabase): database connection
+        """
+        def internal_call(con: QSqlDatabase):
             columns = ", ".join([f"'{i}'" for i in keys])
             placeholders = ", ".join(["?" for i in keys])
-            query = QSqlQuery(f"INSERT OR IGNORE INTO library ({columns}) VALUES ({placeholders})", db = CON)
+            query = QSqlQuery(f"INSERT OR IGNORE INTO library ({columns}) VALUES ({placeholders})", db = con)
             [query.bindValue(index, metadata[key]) for index, key in enumerate(keys)]
             if query.exec():
-                CON.commit()
+                con.commit()
             else:
-                connection_info = (str(CON))
+                connection_info = (str(con))
                 msg = f"\nERROR: {(query.lastError().text())}" \
                       f"\nQuery: {query.lastQuery()}" \
                       f"\nConnection: {connection_info}"
                 raise QueryExecutionFailed(msg)
 
         if connection is None:
-            with Connection(self.database_file) as CON:
-                internal_call(CON, keys, metadata)
+            with Connection(self.database_file) as connection:
+                internal_call(connection)
         else:
-            internal_call(connection, keys, metadata)
+            internal_call(connection)
 
-    def batchinsert_data(self, table: str, data: dict, keys: list, connection: Connection = None):
+    def batchinsert_data(self, table: str, data: list, keys: list, connection: QSqlDatabase = None):
+        """
+        Inserts data into the table
 
-        def internal_call(CON, keys, data):
-            self.exec_query(query = "PRAGMA journal_mode = MEMORY", db = CON)
-            CON.transaction()
+        Args:
+            table (str): table to fill data into
+            data (list): data to be inserted into the table
+            keys (list): fields list
+            connection (QSqlDatabase): database connection
+        """
+        def internal_call(con):
+            self.exec_query(query = "PRAGMA journal_mode = MEMORY", db = con)
+            con.transaction()
             columns = ", ".join([f"'{i}'" for i in keys])
             placeholders = ", ".join(["?" for i in keys])
-            query = QSqlQuery(f"INSERT OR IGNORE INTO {table} ({columns}) VALUES ({placeholders})", db = CON)
+            query = QSqlQuery(f"INSERT OR IGNORE INTO {table} ({columns}) VALUES ({placeholders})", db = con)
             for key in keys:
                 query.addBindValue([value[key] for value in data])
             if query.execBatch():
-                CON.commit()
-                self.exec_query(query = "PRAGMA journal_mode = WAL", db = CON)
+                con.commit()
+                self.exec_query(query = "PRAGMA journal_mode = WAL", db = con)
             else:
-                connection_info = (str(CON))
+                connection_info = (str(con))
                 msg = f"\nERROR: {(query.lastError().text())}" \
                       f"\nQuery: {query.lastQuery()}" \
                       f"\nConnection: {connection_info}"
                 raise QueryExecutionFailed(msg)
 
         if connection is None:
-            with Connection(self.database_file) as CON:
-                internal_call(CON, keys, data)
+            with Connection(self.database_file) as connection:
+                internal_call(connection)
         else:
-            internal_call(connection, keys, data)
+            internal_call(connection)
 
 
 class LibraryManager(Database):
@@ -237,14 +313,20 @@ class LibraryManager(Database):
     def __init__(self) -> None:
         super().__init__()
 
-    def scan_directory(self, directiory: str):
-        if not os.path.isdir(directiory):
+    def scan_directory(self, directory: str):
+        """
+        Starts a recursive scan of the directory and inserts the metadata into the file
+
+        Args:
+            directory (str): directory to scan files from
+        """
+        if not os.path.isdir(directory):
             return None
 
         scanned_files = []
-        for dir, subdirs, files in os.walk(directiory):
+        for dirct, subdirs, files in os.walk(directory):
             for file in files:
-                path = (os.path.normpath(os.path.join(dir, file)))
+                path = (os.path.normpath(os.path.join(dirct, file)))
                 if Mediafile.isSupported(path):
                     mediafile = Mediafile(path)
                     if mediafile.SynthTags['file_id']:
@@ -252,6 +334,12 @@ class LibraryManager(Database):
         self.batchinsert_data('library', scanned_files, Mediafile.tags_fields)
 
     def scan_file(self, path: str):
+        """
+        Starts a scan of the file and inserts the metadata into the library
+
+        Args:
+            path (str): file to scan and insert into library
+        """
         if not os.path.isfile(path):
             return None
 

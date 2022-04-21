@@ -27,7 +27,7 @@
 
 ### Screenshots(Expected to change over time)
 
-![MainWindow](examples/MAINWINDOW.png "MainWindow")
+![MainWindow](examples\MAINWINDOW.png "MainWindow")
 ### Tech
 
 Apollo uses a number of open source projects to work properly:

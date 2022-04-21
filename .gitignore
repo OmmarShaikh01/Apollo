@@ -201,3 +201,4 @@ cython_debug/
 /apollo/assets/generated/
 /apollo/db/default.db
 /apollo/.ini
+/docs/build/

@@ -2,9 +2,9 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from apollo.db.models import LibraryModel, PlaylistsModel, Provider, QueueModel
 from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
-from apollo.utils import getConfigParser
+from apollo.utils import get_configparser
 
-CONFIG = getConfigParser()
+CONFIG = get_configparser()
 
 
 class PlaylistTab:
@@ -43,15 +43,15 @@ class PlaylistTab:
 
     def connectLineEdit(self):
         self.ui.playlists_tab_lineedit.returnPressed.connect(lambda: (
-            self.model.searchTable(self.ui.playlists_tab_lineedit.text()),
+            self.model.search_table(self.ui.playlists_tab_lineedit.text()),
             self.setHeaderLabels()
         ))
         self.ui.playlists_tab_lineedit.textChanged.connect(lambda: (
-            self.model.searchTable(self.ui.playlists_tab_lineedit.text()),
+            self.model.search_table(self.ui.playlists_tab_lineedit.text()),
             self.setHeaderLabels()
         ))
         self.ui.library_tab_search_pushbutton.pressed.connect(lambda: (
-            self.model.searchTable(self.ui.playlists_tab_lineedit.text()),
+            self.model.search_table(self.ui.playlists_tab_lineedit.text()),
             self.setHeaderLabels()
         ))
 
@@ -61,11 +61,11 @@ class PlaylistTab:
         ))
 
     def avaliablePLaylists_ContextMenu(self):
-        CONFIG = getConfigParser()
+        CONFIG = get_configparser()
         lv_1 = QtWidgets.QMenu()
         playlists = eval(CONFIG['DEFAULT']["playlists"])
         menu_action = (lambda name: lv_1.addAction(name).triggered.connect(lambda: (
-            self.model.loadPlaylist(name), self.setHeaderLabels()
+            self.model.load_playlist(name), self.setHeaderLabels()
         )))
         for item in playlists:
             menu_action(str(item))
@@ -90,7 +90,7 @@ class PlaylistTab:
         ))
         lv_1.addSeparator()
         lv_1.addAction("Delete Selected").triggered.connect(lambda: (
-            self.model.delete_ItemfromDB(self.getRowData(["file_id"], rows_selected = True))
+            self.model.delete_item_fromFS(self.getRowData(["file_id"], rows_selected = True))
         ))
         lv_1.addAction("Delete Selected Physically")
 
@@ -100,7 +100,7 @@ class PlaylistTab:
 
     def connectTableView(self):
         self.ui.playlists_tableview.doubleClicked.connect(lambda item: (
-            Provider.get_model(QueueModel).addItemToQueueTop(
+            Provider.get_model(QueueModel).add_item_toqueue_top(
                     self.getRowDataAt(item.row(), ["file_id"])[0][0], self.getRowData(["file_id"])
             )
         ))
@@ -145,7 +145,7 @@ class PlaylistTab:
     def display_FileInfo(self):
         data = self.getRowData(['file_id'])
         if len(data) >= 1:
-            data = (self.model.getFileInfo(data.pop()))
+            data = (self.model.get_fileinfo(data.pop()))
             msg_bx = QtWidgets.QMessageBox()
             msg_bx.setWindowTitle("File Info")
             msg_bx.setInformativeText(f"Info About: {data.get('file_name')}")

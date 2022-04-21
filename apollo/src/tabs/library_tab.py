@@ -32,9 +32,9 @@ class LibraryTab:
 
     def onModelUpdate(self):
         self.setHeaderLabels()
-        Provider.get_model(QueueModel).fetchRecords()
+        Provider.get_model(QueueModel).fetch_records()
         Provider.get_model(QueueModel).TABLE_UPDATE.emit()
-        Provider.get_model(PlaylistsModel).fetchRecords()
+        Provider.get_model(PlaylistsModel).fetch_records()
         Provider.get_model(PlaylistsModel).TABLE_UPDATE.emit()
 
     def setHeaderLabels(self):
@@ -45,21 +45,21 @@ class LibraryTab:
 
     def connectLineEdit(self):
         self.ui.library_tab_lineedit.returnPressed.connect(lambda: (
-            self.model.searchTable(self.ui.library_tab_lineedit.text()),
+            self.model.search_table(self.ui.library_tab_lineedit.text()),
             self.setHeaderLabels()
         ))
         self.ui.library_tab_lineedit.textChanged.connect(lambda: (
-            self.model.searchTable(self.ui.library_tab_lineedit.text()),
+            self.model.search_table(self.ui.library_tab_lineedit.text()),
             self.setHeaderLabels()
         ))
         self.ui.library_tab_search_pushbutton.pressed.connect(lambda: (
-            self.model.searchTable(self.ui.library_tab_lineedit.text()),
+            self.model.search_table(self.ui.library_tab_lineedit.text()),
             self.setHeaderLabels()
         ))
 
     def connectTableView(self):
         self.ui.library_tableview.doubleClicked.connect(lambda item: (
-            Provider.get_model(QueueModel).addItemToQueueTop(
+            Provider.get_model(QueueModel).add_item_toqueue_top(
                 self.getRowDataAt(item.row(), ["file_id"])[0][0], self.getRowData(["file_id"])
             )
         ))
@@ -124,7 +124,7 @@ class LibraryTab:
         ))
         lv_1.addSeparator()
         lv_1.addAction("Delete Selected").triggered.connect(lambda: (
-            self.model.delete_ItemfromDB(self.getRowData(["file_id"], rows_selected = True))
+            self.model.delete_item_fromFS(self.getRowData(["file_id"], rows_selected = True))
         ))
         lv_1.addAction("Delete Selected Physically")
 
@@ -136,7 +136,7 @@ class LibraryTab:
         text, pressed = QtWidgets.QInputDialog.getText(None, "Add Folder/File", "Path:", flags = QtCore.Qt.Dialog)
         if pressed:
             text = os.path.normpath(text)
-            self.model.add_ItemFormFS(text)
+            self.model.add_itemfrom_FS(text)
             self.setHeaderLabels()
 
     def add_ToPlaylist(self):
@@ -147,7 +147,7 @@ class LibraryTab:
     def display_FileInfo(self):
         data = self.get_selected_rowData(['file_id'])
         if len(data) >= 1:
-            data = (self.model.getFileInfo(data.pop()))
+            data = (self.model.get_fileinfo(data.pop()))
             msg_bx = QtWidgets.QMessageBox()
             msg_bx.setWindowTitle("File Info")
             msg_bx.setInformativeText(f"Info About: {data.get('file_name')}")

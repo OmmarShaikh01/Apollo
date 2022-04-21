@@ -8,55 +8,76 @@ from PySide6.QtSql import QSqlQuery
 
 import apollo.utils
 from apollo.db.database import Connection, Database, QueryBuildFailed
-from apollo.utils import getConfigParser, writeConfig
+from apollo.utils import get_configparser, write_config
 
-CONFIG = getConfigParser()
+CONFIG = get_configparser()
 
 
 class PlaylistsModel(QStandardItemModel):
+    """Model for playlist table"""
     TABLE_UPDATE = QtCore.Signal()
 
     def __init__(self, parent: Optional[QtCore.QObject] = None) -> None:
+        """
+        Constructor
+
+        Args:
+            parent (QtCore.QObject): parent object for the model.
+        """
         super().__init__(parent)
         self.database = Database()
         self.fields = self.database.playlist_columns
 
-        # TODO: add loaded and all playlists field in config
         self.valid_playlists = eval(CONFIG['DEFAULT']["playlists"])
         self.loaded_playlist = ''
-        self.loadPlaylist(CONFIG['DEFAULT']["loaded_playlist"])
+        self.load_playlist(CONFIG['DEFAULT']["loaded_playlist"])
 
-    def loadPlaylist(self, name: typing.AnyStr):
+    def load_playlist(self, name: str):
+        """
+        load playlist into the model
+
+        Args:
+            name (str): name of the playlist to load
+        """
         if name:
-            self.fetchRecords(name)
+            self.fetch_records(name)
             self.create_playList(name)
             CONFIG['DEFAULT']["loaded_playlist"] = name
             self.loaded_playlist = name
-            writeConfig(CONFIG)
+            write_config(CONFIG)
 
-    def fillHeaderData(self):
+    def fill_headerdata(self):
+        """fills the header data for the loaded model with DB column headers"""
         for index, item in enumerate(self.database.library_columns):
             item = str(item).title().replace("_", " ")
             self.setHorizontalHeaderItem(index, QStandardItem(item))
 
-    def fetchRecords(self, name: typing.AnyStr = None):
-        if name is None:
-            return None
-        elif name in self.valid_playlists:
+    def fetch_records(self, name: str = None):
+        """
+        fetches data from the database into the model
+
+        Args:
+            name (str): name of the playlist to load
+        """
+        if name in self.valid_playlists and name is not None:
             columns = ", ".join([f"library.{i}" for i in self.database.library_columns])
             with Connection(self.database.database_file) as CONN:
                 query = self.database.exec_query(query = f"""
-                SELECT {columns} 
-                FROM {name} 
-                INNER JOIN library ON {name}.file_id = library.file_id
-                ORDER BY '{name}.play_order'
-                """, db = CONN)
-                self.refill_table(query)
+                        SELECT {columns} 
+                        FROM {name} 
+                        INNER JOIN library ON {name}.file_id = library.file_id
+                        ORDER BY '{name}.play_order'
+                        """, db = CONN)
+                self.fill_table(query)
                 self.loaded_playlist = name
-        else:
-            return None
 
-    def searchTable(self, text: typing.AnyStr):
+    def search_table(self, text: str):
+        """
+        Queries the table and filters the loaded models data
+
+        Args:
+            text (str): string to search for in tracktitle, artist, album, file_name columns
+        """
         try:
             if text:
                 name = self.loaded_playlist
@@ -78,21 +99,33 @@ class PlaylistsModel(QStandardItemModel):
                         """,
                             db = CONN
                     )
-                    self.refill_table(query)
+                    self.fill_table(query)
             else:
-                self.fetchRecords()
+                self.fetch_records()
         except QueryBuildFailed:
-            self.fetchRecords()
+            self.fetch_records()
 
-    def refill_table(self, query: QSqlQuery):
+    def fill_table(self, query: QSqlQuery):
+        """
+        Fetches the data from the query and fills the model
+
+        Args:
+            query (QSqlQuery): query to fetch data from and fill model with
+        """
         self.clear()
-        self.fillHeaderData()
+        self.fill_headerdata()
         for row in self.database.fetch_all(query, lambda x: QStandardItem(str(x))):
             self.appendRow(row)
 
     @apollo.utils.threadit
-    @apollo.utils.timeit
-    def create_playList(self, name: typing.AnyStr = None, ids: typing.List = None):
+    def create_playList(self, ids: list[str], name: str = None):
+        """
+        creates a playlist from file_ids
+
+        Args:
+            name (str): name of the playlist to create
+            ids (list[str]): list of files ids to add to the playlist
+        """
         if name is None:
             name = self.loaded_playlist
         if ids is None:
@@ -110,30 +143,40 @@ class PlaylistsModel(QStandardItemModel):
             with Connection(self.database.database_file) as CON:
                 self.database.exec_query(table_query, db = CON)
                 self.database.batchinsert_data(name, [{'file_id': key[0]} for key in ids], ['file_id'], CON)
-                self.addPlaylistToConfig(name)
+                self.add_playlist_toconfig(name)
             if name == self.loaded_playlist:
-                self.fetchRecords(name)
+                self.fetch_records(name)
             elif self.loaded_playlist == "":
-                self.loadPlaylist(name)
+                self.load_playlist(name)
             self.TABLE_UPDATE.emit()
 
-    def delete_ItemfromDB(self, ids: typing.List):
-        if ids is None:
-            ids = []
+    def delete_item_fromDB(self, ids: list[str]):
+        """
+        Deletes items from the playlist
+
+        Args:
+            ids (list[str]): file ids of the files to be removed from the playlist
+        """
         if len(ids) > 0:
             if len(ids) == 1:
                 ids = f"('{ids[0][0]}')"
             else:
                 ids = tuple(id[0] for id in ids)
             with Connection(self.database.database_file) as CON:
-                self.database.exec_query(f"""DELETE FROM '{self.loaded_playlist}' WHERE file_id IN {ids}""",
+                self.database.exec_query(f"DELETE FROM '{self.loaded_playlist}' WHERE file_id IN {ids}",
                                          db = CON, commit = True)
-                self.fetchRecords()
+                self.fetch_records()
             self.TABLE_UPDATE.emit()
 
-    def addPlaylistToConfig(self, name: typing.AnyStr):
+    def add_playlist_toconfig(self, name: str):
+        """
+        Adds the playlist name to the list of available playlist
+
+        Args:
+            name (str): name of the playlist to add
+        """
         playlist = eval(CONFIG['DEFAULT']["playlists"])
         if name not in playlist:
             playlist.append(name)
             CONFIG['DEFAULT']["playlists"] = str(playlist)
-            writeConfig(CONFIG)
+            write_config(CONFIG)

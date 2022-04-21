@@ -38,7 +38,7 @@ class QueueItemDelegate(QtWidgets.QStyledItemDelegate):
 
     def setPageItem(self, key: str, value: typing.Any):
         if len(self._page) > 20:
-            del self._page[self._page.keys().pop(0)]
+            del self._page[tuple(self._page.keys())[0]]
         self._page[key] = value
 
     def getPageItem(self, key: str):
@@ -155,13 +155,13 @@ class NowPlayingTab:
 
     def connectLineEdit(self):
         self.ui.queue_tab_lineedit.returnPressed.connect(lambda: (
-            self.model.searchTable(self.ui.queue_tab_lineedit.text())
+            self.model.search_table(self.ui.queue_tab_lineedit.text())
         ))
         self.ui.queue_tab_lineedit.textChanged.connect(lambda: (
-            self.model.searchTable(self.ui.queue_tab_lineedit.text())
+            self.model.search_table(self.ui.queue_tab_lineedit.text())
         ))
         self.ui.library_tab_search_pushbutton.pressed.connect(lambda: (
-            self.model.searchTable(self.ui.queue_tab_lineedit.text())
+            self.model.search_table(self.ui.queue_tab_lineedit.text())
         ))
 
     def connectTableView(self):
