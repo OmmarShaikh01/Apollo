@@ -168,8 +168,9 @@ QLineEdit {{
 }}
 
 QMenu::item {{
-  max-height: 32px;
-  border: 2px solid transparent;
+  max-height: 28px;
+  min-width: 96px;
+  border: 0px solid transparent;
   color: {QTMATERIAL_SECONDARYTEXTCOLOR};
 }}
 /* BUTTON STYLESHEETS */

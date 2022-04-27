@@ -202,3 +202,4 @@ cython_debug/
 /apollo/db/default.db
 /apollo/.ini
 /docs/build/
+/exclude/

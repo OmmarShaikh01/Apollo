@@ -1,157 +1,285 @@
-import json
 import os.path
+import pathlib
+from typing import Union
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from apollo.db.models import LibraryModel, PlaylistsModel, Provider, QueueModel
 from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
+from apollo.utils import ApolloSignal, get_configparser, get_logger
+
+LOGGER = get_logger(__name__)
+CONFIG = get_configparser()
+
+
+def placeholder(*args, **kwargs):
+    print(args, kwargs)
 
 
 class LibraryTab:
+    """
+    Library tab controller, manages all the UX related functions.
+    """
+    SHUTDOWN = ApolloSignal()
 
-    def __init__(self, ui: Apollo) -> None:
+    def __init__(self, ui: Union[Apollo, QtWidgets.QMainWindow]) -> None:
+        """
+        Constructor
+
+        Args:
+            ui (Apollo): Apollo UI Mainwindow
+        """
         super().__init__()
         self.ui = ui
+        self.init_viewmodels()
         self.setupUI()
 
     def setupUI(self):
-        # TODO save initial states into a temporary dump
-        self.setTableModel()
-        self.ui.library_tableview.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-
-        self.ui.library_tableview.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.ui.library_tableview.customContextMenuRequested.connect(self.table_ContextMenu)
-
+        """
+        Sets up tu UI and connects all the functions and signals
+        """
+        self.SHUTDOWN.connect(self.shutdown)
         self.connectLineEdit()
         self.connectTableView()
 
-    def setTableModel(self):
-        self.model = Provider.get_model(LibraryModel)
-        self.ui.library_tableview.setModel(self.model)
+        # call startup after all objects are created and started up
+        self.startup()
+
+    def shutdown(self):
+        """On application shutdown calls all the destructors and saves session state"""
+        LOGGER.info('SHUTDOWN')
+
+    def startup(self):
+        """On application startup calls all the constructor and loads session state"""
+        LOGGER.info('STARTUP')
+
+    # noinspection PyAttributeOutsideInit
+    def init_viewmodels(self):
+        """initializes the model for the main tableview"""
+        self.main_model = Provider.get_model(LibraryModel)
+        self.queue_model = Provider.get_model(QueueModel)
+        # TODO:
+        # self.playlist_model = Provider.get_model(PlaylistsModel)
+
+        self.ui.library_tableview.setModel(self.main_model)
+        self.ui.library_tableview.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.ui.library_tableview.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.ui.library_tableview.customContextMenuRequested.connect(self.table_ContextMenu)
         self.setHeaderLabels()
+
+    def setHeaderLabels(self):
+        """sets up the header view for the primary tableview"""
+        header = self.ui.library_tableview.horizontalHeader()
+        for index in range(header.model().columnCount()):
+            item = header.model().headerData(index, QtCore.Qt.Horizontal)
+            if str(item).lower().replace(" ", "_") in ['file_id', 'file_path']:
+                header.hideSection(index)
 
     def onModelUpdate(self):
         self.setHeaderLabels()
-        Provider.get_model(QueueModel).fetch_records()
-        Provider.get_model(QueueModel).TABLE_UPDATE.emit()
-        Provider.get_model(PlaylistsModel).fetch_records()
-        Provider.get_model(PlaylistsModel).TABLE_UPDATE.emit()
-
-    def setHeaderLabels(self):
-        header = self.ui.library_tableview.horizontalHeader()
-        for index in range(header.model().columnCount()):
-            if header.model().headerData(index, QtCore.Qt.Horizontal) in ["File Id", "File Path"]:
-                header.hideSection(index)
+        # TODO:
+        # self.queue_model.fetch_records()
+        # self.queue_model.TABLE_UPDATE.emit()
+        # self.playlist_model.fetch_records()
+        # self.playlist_model.TABLE_UPDATE.emit()
 
     def connectLineEdit(self):
-        self.ui.library_tab_lineedit.returnPressed.connect(lambda: (
-            self.model.search_table(self.ui.library_tab_lineedit.text()),
+        """connects callbacks to the line edit"""
+
+        def query_model():
+            """
+            queries and filters the library model for any str from the line_edit
+            """
+            self.main_model.search_table(self.ui.library_tab_lineedit.text()),
             self.setHeaderLabels()
-        ))
-        self.ui.library_tab_lineedit.textChanged.connect(lambda: (
-            self.model.search_table(self.ui.library_tab_lineedit.text()),
-            self.setHeaderLabels()
-        ))
-        self.ui.library_tab_search_pushbutton.pressed.connect(lambda: (
-            self.model.search_table(self.ui.library_tab_lineedit.text()),
-            self.setHeaderLabels()
-        ))
+
+        self.ui.library_tab_lineedit.returnPressed.connect(query_model)
+        self.ui.library_tab_lineedit.textChanged.connect(query_model)
+        self.ui.library_tab_search_pushbutton.pressed.connect(query_model)
 
     def connectTableView(self):
+        """connects callbacks to the table view"""
+
+        # is triggerd when an item is double-clicked
         self.ui.library_tableview.doubleClicked.connect(lambda item: (
-            Provider.get_model(QueueModel).add_item_toqueue_top(
-                self.getRowDataAt(item.row(), ["file_id"])[0][0], self.getRowData(["file_id"])
+            placeholder(  # TODO
+                first = self.getRowDataAt(item.row(), ["file_id"])[0][0],
+                remaining = self.getRowData(["file_id"], rows_selected = False)
             )
         ))
-        self.model.TABLE_UPDATE.connect(self.onModelUpdate)
 
-    def getRowDataAt(self, index: int, column: list[str] = None) -> list:
+        # connects the database table signal
+        self.main_model.TABLE_UPDATE.connect(self.onModelUpdate)
+
+    def getRowDataAt(self, index: int, column: list[str] = None) -> list[list]:
+        """
+        Gets row data at given index
+
+        Args:
+            index (int): index of the row to fetch data from
+            column (list[str]): columns to get data for
+
+        Returns:
+            list[list]: returns data
+        """
         if column is not None:
-            column = [self.model.fields.index(item) for item in column]
+            column = [self.main_model.fields.index(item) for item in column]
 
         row = []
         column_data = []
-        for col_index in range(self.model.columnCount()):
+        for col_index in range(self.main_model.columnCount()):
             if column is None:
-                column_data.append(data)
+                column_data.append(self.main_model.index(index, col_index).data())
             else:
                 if col_index in column:
-                    column_data.append(self.model.index(index, col_index).data())
+                    column_data.append(self.main_model.index(index, col_index).data())
         row.append(column_data)
         return row
 
-    def getRowData(self, column: str = None, rows_selected: bool = False) -> list[list]:
+    def getRowData(self, column: list[str] = None, rows_selected: bool = True) -> list[list]:
+        """
+        Gets row data in a table format
+
+        Args:
+            column (list[str]): columns to get data for
+            rows_selected (bool): to get only selected rows
+
+        Returns:
+            list[list]: returns data
+        """
         if rows_selected:
             rows = set(ModelIndex.row() for ModelIndex in self.ui.library_tableview.selectedIndexes())
         else:
-            rows = set(range(self.model.rowCount()))
+            rows = set(range(self.main_model.rowCount()))
 
         if column is not None:
-            column = [self.model.fields.index(item) for item in column]
+            column = [self.main_model.fields.index(item) for item in column]
 
         table = []
         column_data = []
         for row_index in rows:
-            for col_index in range(self.model.columnCount()):
+            for col_index in range(self.main_model.columnCount()):
                 if column is None:
-                    column_data.append(data)
+                    column_data.append(self.main_model.index(row_index, col_index).data())
                 else:
                     if col_index in column:
-                        column_data.append(self.model.index(row_index, col_index).data())
+                        column_data.append(self.main_model.index(row_index, col_index).data())
             table.append(column_data)
             column_data = []
         return table
 
+    # noinspection PyUnresolvedReferences
     def table_ContextMenu(self):
+        """
+        Context menu for the main table view
+        """
         lv_1 = QtWidgets.QMenu()
 
-        # adds the actions and menu related to Hide section
-        lv_1.addAction("Add Folder/File").triggered.connect(lambda: (
-            self.add_FoldertoLibrary()
+        # adds the actions and menu
+        lv_1.addAction("Play all").triggered.connect(
+            lambda: self.queue_model.create_playList(
+                    ids = self.getRowData(column = ['file_id'], rows_selected = False),
+                    _type = self.queue_model.PlayType.ALL
+            )
+        )
+        lv_1_1 = lv_1.addMenu("Play More")
+        lv_1_1.addAction("Play selected files").triggered.connect(
+            lambda: self.queue_model.create_playList(
+                    ids = self.getRowData(column = ['file_id']),
+                    _type = self.queue_model.PlayType.ALL
+            )
+        )
+        lv_1_1.addAction("Play similar artist").triggered.connect(
+            lambda: self.queue_model.create_playList(
+                    ids = self.getRowData(column = ['file_id']),
+                    _type = self.queue_model.PlayType.ARTIST
+            )
+        )
+        lv_1_1.addAction("Play similar genre").triggered.connect(
+            lambda: self.queue_model.create_playList(
+                    ids = self.getRowData(column = ['file_id']),
+                    _type = self.queue_model.PlayType.GENRE
+            )
+        )
+        lv_1.addSeparator()
+
+        lv_1.addAction("Add files").triggered.connect(self.launch_explorer_files)
+        lv_1.addAction("Add folder").triggered.connect(self.launch_explorer_directory)
+        lv_1.addAction("Add files to playlist").triggered.connect(
+            lambda: placeholder(items = self.getRowData(column = ['file_id']))  # TODO
+        )
+        lv_1.addSeparator()
+
+        lv_1.addAction("File info").triggered.connect(lambda: (
+            row := self.ui.library_tableview.selectedIndexes()[0].row(),
+            file_info := self.main_model.fetch_file_info(self.getRowDataAt(row, column = ['file_path'])[0][0]),
+            self.display_file_info(file_info)
         ))
-        lv_1.addAction("Add Selected to Playlist").triggered.connect(lambda: (
-            self.add_ToPlaylist()
+        lv_1.addAction("File location").triggered.connect(lambda: (
+            row := self.ui.library_tableview.selectedIndexes()[0].row(),
+            self.display_file_path(self.getRowDataAt(row, column = ['file_path'])[0][0])
         ))
-        lv_1.addAction("File Info").triggered.connect(lambda: (
-            self.display_FileInfo()
+        lv_1.addAction("Reload tags for selected").triggered.connect(lambda: (
+            row := self.ui.library_tableview.selectedIndexes()[0].row(),
+            self.main_model.reload_tags(self.getRowDataAt(row, column = ['file_path'])[0][0])
         ))
         lv_1.addSeparator()
-        lv_1.addAction("Play All").triggered.connect(lambda: (
-            Provider.get_model(QueueModel).create_playList("queue", self.getRowData(["file_id"]))
-        ))
-        lv_1.addAction("Play Selected").triggered.connect(lambda: (
-            Provider.get_model(QueueModel).create_playList("queue", self.getRowData(["file_id"], rows_selected = True))
-        ))
+
+        lv_1_2 = lv_1.addMenu("User rating")
+        lv_1_2.addAction("0").triggered.connect(
+            lambda: placeholder(items = self.getRowData(column = ['file_id']), rating = 0)  # TODO
+        )
+        lv_1_2.addAction("1").triggered.connect(
+            lambda: placeholder(items = self.getRowData(column = ['file_id']), rating = 1)  # TODO
+        )
+        lv_1_2.addAction("2").triggered.connect(
+            lambda: placeholder(items = self.getRowData(column = ['file_id']), rating = 2)  # TODO
+        )
+        lv_1_2.addAction("3").triggered.connect(
+            lambda: placeholder(items = self.getRowData(column = ['file_id']), rating = 3)  # TODO
+        )
+        lv_1_2.addAction("4").triggered.connect(
+            lambda: placeholder(items = self.getRowData(column = ['file_id']), rating = 4)  # TODO
+        )
+        lv_1_2.addAction("5").triggered.connect(
+            lambda: placeholder(items = self.getRowData(column = ['file_id']), rating = 5)  # TODO
+        )
         lv_1.addSeparator()
-        lv_1.addAction("Delete Selected").triggered.connect(lambda: (
-            self.model.delete_item_fromFS(self.getRowData(["file_id"], rows_selected = True))
-        ))
-        lv_1.addAction("Delete Selected Physically")
+
+        lv_1.addAction("Delete from library").triggered.connect(
+            lambda: placeholder(items = self.getRowData(column = ['file_id']))  # TODO
+        )
+        lv_1.addAction("Physically delete file").triggered.connect(
+            lambda: placeholder(items = self.getRowData(column = ['file_id']))  # TODO
+        )
+        lv_1.addSeparator()
+
+        lv_1.addAction("Refresh library").triggered.connect(
+            lambda: placeholder(items = self.getRowData(column = ['file_id']))  # TODO
+        )
+        lv_1.addAction("Statistics").triggered.connect(
+            lambda: placeholder(items = self.getRowData(column = ['file_id']))  # TODO
+        )
 
         # Execution
         cursor = QtGui.QCursor()
         lv_1.exec(cursor.pos())
 
-    def add_FoldertoLibrary(self):
-        text, pressed = QtWidgets.QInputDialog.getText(None, "Add Folder/File", "Path:", flags = QtCore.Qt.Dialog)
-        if pressed:
-            text = os.path.normpath(text)
-            self.model.add_itemfrom_FS(text)
-            self.setHeaderLabels()
+    def launch_explorer_directory(self):
+        files = QtWidgets.QFileDialog.getExistingDirectoryUrl(parent = self.ui,
+                                                              caption = "Add folders to library")
+        if files:
+            self.main_model.add_item_fromFS(files.toLocalFile())
 
-    def add_ToPlaylist(self):
-        text, pressed = QtWidgets.QInputDialog.getText(None, "Add To Playlist", "Playlist name:", flags = QtCore.Qt.Dialog)
-        if pressed and text != '':
-            Provider.get_model(PlaylistsModel).create_playList(text, ids = self.getRowData(["file_id"], rows_selected = True))
+    def launch_explorer_files(self):
+        files, _ = QtWidgets.QFileDialog.getOpenFileUrls(parent = self.ui,
+                                                         caption = "Add folders to library")
+        if files:
+            files = [file.toLocalFile() for file in files]
+            self.main_model.add_item_fromFS(files)
 
-    def display_FileInfo(self):
-        data = self.get_selected_rowData(['file_id'])
-        if len(data) >= 1:
-            data = (self.model.get_fileinfo(data.pop()))
-            msg_bx = QtWidgets.QMessageBox()
-            msg_bx.setWindowTitle("File Info")
-            msg_bx.setInformativeText(f"Info About: {data.get('file_name')}")
-            msg_bx.setStandardButtons(msg_bx.Ok | msg_bx.Cancel)
-            msg_bx.setDefaultButton(msg_bx.Ok)
-            msg_bx.setDetailedText(json.dumps(data, indent = 4))
-            msg_bx.exec()
+    def display_file_info(self, info: dict):
+        placeholder(info = info)
+
+    def display_file_path(self, path: str):
+        files, _ = QtWidgets.QInputDialog.getText(self.ui, "Local File Path", "", text = path, flags = QtCore.Qt.Dialog)

@@ -2,12 +2,14 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from apollo.db.models import LibraryModel, PlaylistsModel, Provider, QueueModel
 from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
-from apollo.utils import get_configparser
+from apollo.utils import ApolloSignal, get_configparser, get_logger
 
+LOGGER = get_logger(__name__)
 CONFIG = get_configparser()
 
 
 class PlaylistTab:
+    SHUTDOWN = ApolloSignal()
 
     def __init__(self, ui: Apollo) -> None:
         super().__init__()
@@ -25,6 +27,10 @@ class PlaylistTab:
         self.connectLineEdit()
         self.connectTableView()
         self.connectAddedPlaylistButton()
+        self.SHUTDOWN.connect(self.shutdown)
+
+    def shutdown(self):
+        LOGGER.info('SHUTDOWN')
 
     def setTableModel(self):
         self.model = Provider.get_model(PlaylistsModel)

@@ -1,8 +1,5 @@
-import sys
 import os
-import configparser
-import typing
-from pathlib import Path
+import sys
 
 from PySide6 import QtWidgets
 from PySide6.QtCore import QDir
@@ -13,14 +10,16 @@ try:
 except ModuleNotFoundError:
     sys.path.append(os.path.dirname(os.path.dirname(__file__)))
     from apollo.src.app import Apollo
-from apollo.utils import get_configparser, ROOT, ResourceGenerator
+from apollo.utils import get_configparser, get_logger, ROOT, ResourceGenerator
 # END REGION
 
 
 CONFIG = get_configparser()
+LOGGER = get_logger(__name__)
 STYLED = True
 
 
+# noinspection SpellCheckingInspection
 def set_icons_theme(theme: dict, parent: str = 'theme_customs') -> None:
     """
     Creates an icon pack for the given theme palette
@@ -31,11 +30,11 @@ def set_icons_theme(theme: dict, parent: str = 'theme_customs') -> None:
         theme (dict): theme colors to replace placeholders with
         parent (str, optional): parent folder name
     """
-    RESOURCES_PATH = os.path.join(ROOT, "assets", 'generated')
-    if not os.path.isdir(os.path.join(RESOURCES_PATH, parent)):
+    resources_path = os.path.join(ROOT, "assets", 'generated')
+    if not os.path.isdir(os.path.join(resources_path, parent)):
         source = os.path.join(ROOT, 'assets', 'icons')
         resources = ResourceGenerator(
-            root = RESOURCES_PATH,
+            root = resources_path,
             primary = theme['QTMATERIAL_PRIMARYCOLOR'],
             secondary = theme['QTMATERIAL_SECONDARYCOLOR'],
             disabled = theme['QTMATERIAL_SECONDARYLIGHTCOLOR'],
@@ -43,8 +42,8 @@ def set_icons_theme(theme: dict, parent: str = 'theme_customs') -> None:
             parent = parent
         )
         resources.generate()
-    if os.path.isdir(os.path.join(RESOURCES_PATH, parent)):
-        QDir.addSearchPath(parent, os.path.join(RESOURCES_PATH, parent))
+    if os.path.isdir(os.path.join(resources_path, parent)):
+        QDir.addSearchPath(parent, os.path.join(resources_path, parent))
 
 
 def style_app(app: QtWidgets.QApplication) -> None:
@@ -54,7 +53,7 @@ def style_app(app: QtWidgets.QApplication) -> None:
     Args:
         app (QtWidgets.QApplication): Application
     """
-    apply_stylesheet(app, theme = CONFIG['DEFAULT']['current_theme'])
+    apply_stylesheet(app, theme = CONFIG['GLOBALS']['current_theme'])
     with open(os.path.join(ROOT, 'assets', 'custom.css')) as file:
         set_icons_theme(dict(os.environ), "theme_custom")
         stylesheet = app.styleSheet()
@@ -70,6 +69,7 @@ def main() -> None:
     style_app(app)
     window = Apollo()
     window.show()
+    LOGGER.info(msg = "Application Started")
     app.exec()
 
 

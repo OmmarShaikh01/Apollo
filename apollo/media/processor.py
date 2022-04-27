@@ -1,326 +1,432 @@
-import inspect
 import itertools
 import math
+import os
 import sys
 import traceback
+from typing import (Optional, Union)
 
 import av
 import numpy as np
 import pyo
 
 import apollo.utils
+from apollo.utils import ApolloSignal
 from apollo.media import Mediafile
 
 
 class BufferTable:
-    def __init__(self, path: str = None) -> None:
-        super().__init__()
-        self.sample_rate = 44100
-        self.path = path
-        self.read(path)
+    """
+    Circular Audio Buffer to put and read audio samples.
+    """
+    EOF_SIGNAL = ApolloSignal()
+    SOF_SIGNAL = ApolloSignal()
+    STOP_SIGNAL = ApolloSignal()
+    PLAY_SIGNAL = ApolloSignal()
 
-        self.buffer_time = 10
-        self.buffer_length = int(44100) * self.buffer_time
-        self.indexes = pyo.Linseg([(0, 0), (self.buffer_time * 1, self.buffer_length)], loop = True)
-        self.table = pyo.DataTable(self.buffer_length, chnls = 2, init = np.zeros((2, self.buffer_length)).tolist())
+    def __init__(self, time: float, path: Optional[str] = None, chnls: Optional[int] = 2, sr: Optional[int] = 44100):
+        """
+        Constructor
+
+        Args:
+            time (float): Audio buffer time
+            path (str): path of the file to read samples from
+            chnls (int): channels of the audio table
+            sr (int): sampling rate
+        """
+        self.buffer_time = time
+        self.chnls = chnls
+        self.sample_rate = sr
+        self.path = path
+
+        self.buffer_sample_length = int(self.sample_rate) * self.buffer_time
+        self.table = pyo.DataTable(self.buffer_sample_length, chnls = self.chnls)
         self.shared_buffer = self.getBuffer()
+        self.indexes = pyo.Linseg([(0, 0), (self.buffer_time * 1, self.buffer_sample_length)], loop = True)
         self.reader = pyo.TableIndex(table = self.table, index = self.indexes)
 
-    def read(self, path: str):
         if path is not None:
-            self.media = Mediafile(path)
-            self.audio_decoder = self.media.Decoder
-            self.time_length = round(math.ceil(float(self.media.Tags['length'])))
-            self.buffer_virtual_length = round(int(self.media.Tags['samplerate']) * float(self.media.Tags['length']))
+            self.read(path)
+        else:
+            self.media = None
+            self.audio_decoder = None
+            self.time_length = 0
+            self.buffer_virtual_length = 0
 
-        self.call_at_SOF()
+            self.frame_pos = 0
+            self.actual_pos = 0
+            self.EOF = False
+            self.isPlaying = False
+            self.repeat = False
+
+    def read(self, path: str):
+        """
+        Reads the audio file and creates a decoded samples generator object
+
+        Args:
+            path (str): path to the audio file
+        """
+        self.media = Mediafile(path)
+        self.audio_decoder = self.media.Decoder
+        self.time_length = round(math.ceil(float(self.media.Tags['length'])))
+        self.buffer_virtual_length = round(int(self.media.Tags['samplerate']) * float(self.media.Tags['length']))
+
+        # Resets all flags
         self.frame_pos = 0
         self.actual_pos = 0
         self.EOF = False
         self.isPlaying = False
         self.repeat = False
 
-    def getBuffer(self):
-        return [np.asarray(self.table._base_objs[chnl].getTableStream()) for chnl in range(self.table.chnls)]
+        self.SOF_SIGNAL.emit(self.media)
 
-    def fetchMore(self):
-        if self.isPlaying:
-            space = 4410
-            if not hasattr(self, 'head_pos'):
-                self.head_pos = 0
-                # initilize and move ahead the initial samples
-                self.writeSamples(self.getSamples())
-                if not self.writeSamples(self.getSamples()):
-                    self.stop()
-                return None
+    def getBuffer(self) -> list[np.array]:
+        """ Initializes the shared buffer to write to"""
+        # noinspection PyProtectedMember
+        return [np.asarray(self.table._base_objs[chnl].getTableStream()) for chnl in range(self.chnls)]
 
-            self.read_pos = self.indexes.get()
-            if (self.read_pos <= self.head_pos) and ((self.head_pos - self.read_pos) < space):
-                if not self.writeSamples(self.getSamples()):
-                    self.stop()
-            elif (self.head_pos <= self.read_pos) and (self.buffer_length - (self.read_pos - self.head_pos) < space):
-                if not self.writeSamples(self.getSamples()):
-                    self.stop()
-            else:
-                return None
+    def getSamples(self) -> Union[np.array, None]:
+        """
+        Gets sample arrays from the decoder
 
-    def getSamples(self):
+        Returns:
+            Union[np.array, None]: numpy array filled of samples
+        """
         if not self.EOF:
             array: av.audio.AudioFrame = self.audio_decoder.get()
             if array is not None:
                 self.frame_pos = array.time
                 return array.to_ndarray()
             else:
-                self.call_at_EOF()
+                self.EOF_SIGNAL.emit()
                 self.EOF = True
                 if self.repeat:
                     self.reset()
                     self.repeat = False
                 return None
 
-    def writeSamples(self, samples):
+    def writeSamples(self, samples: np.array) -> bool:
+        """
+        Writes the fetched samples to the next available position.
+
+        Args:
+            samples (np.array): samples to write
+
+        Returns:
+            bool: if written true, otherwise false
+        """
         if samples is not None:
             sample_len = len(samples[0])
-            rng = range(self.head_pos, (self.head_pos + sample_len))
+            rng = range(self.write_pos, (self.write_pos + sample_len))
+
             for chan in range(self.table.chnls):
+                # converts mono audio into stereo channel
                 if self.table.chnls == 1:
                     self.shared_buffer[chan].put(rng, samples[0], 'wrap')
+                # stereo audio
                 elif self.table.chnls == 2:
                     self.shared_buffer[chan].put(rng, samples[chan], 'wrap')
-            if (self.head_pos + sample_len) < self.buffer_length:
-                self.head_pos = self.head_pos + sample_len
-            elif (self.head_pos + sample_len) > self.buffer_length:
-                self.head_pos = (self.head_pos + sample_len) - self.buffer_length
+
+            # updates the head position
+            if (self.write_pos + sample_len) < self.buffer_sample_length:
+                self.write_pos = self.write_pos + sample_len
+            elif (self.write_pos + sample_len) > self.buffer_sample_length:
+                self.write_pos = (self.write_pos + sample_len) - self.buffer_sample_length
             self.actual_pos += sample_len
+
             return True
         else:
             return False
 
-    def seek(self, time):
-        if (0 <= time) and (time) <= self.time_length:
+    def fetchMore(self):
+        """
+        Callback to fetch and  write more samples into the buffer
+        """
+        if self.isPlaying:
+            space = self.sample_rate / 10
+            # initialize and move ahead the initial samples
+            if not hasattr(self, 'write_pos'):
+                self.write_pos = 0
+                self.writeSamples(self.getSamples())
+                if not self.writeSamples(self.getSamples()):
+                    self.stop()
+                return None
+
+            self.read_pos = self.indexes.get()  # gets the read head position in samples
+
+            if (self.read_pos <= self.write_pos) and ((self.write_pos - self.read_pos) < space):
+                if not self.writeSamples(self.getSamples()):
+                    self.stop()
+            elif (self.write_pos <= self.read_pos) and (
+                    self.buffer_sample_length - (self.read_pos - self.write_pos) < space):
+                if not self.writeSamples(self.getSamples()):
+                    self.stop()
+            else:
+                return None
+
+    def seek(self, time: float):
+        """
+        Seeks to a time stamp on the audio file
+
+        Args:
+            time (float): time to seek to
+        """
+        if 0 <= time <= self.time_length:
             self.audio_decoder.seek(time)
-            self.actual_pos = self.mapTimetoIndex(time)
+            self.actual_pos = self.map_time_toindex(time)
         else:
             return None
 
     def play(self):
+        """starts playing the audio reader"""
         self.isPlaying = True
         self.indexes.play()
         self.reader.play()
+        self.PLAY_SIGNAL.emit()
 
     def stop(self):
+        """stops playing the audio reader"""
         self.isPlaying = False
         self.indexes.stop()
         self.reader.stop()
+        self.STOP_SIGNAL.emit()
 
     def reset(self):
-        self.call_at_SOF()
+        """resets the audio buffer and decoder"""
+        self.SOF_SIGNAL.emit(self.media)
         self.frame_pos = 0
         self.audio_decoder.reset_buffer()
         self.clear()
         self.EOF = False
-        if hasattr(self, "head_pos"):
-            del self.head_pos
+        if hasattr(self, "write_pos"):
+            del self.write_pos
 
     def clear(self):
+        """clears the audio buffer"""
         for chan in range(self.table.chnls):
             self.shared_buffer[chan].fill(0)
-        if hasattr(self, "head_pos"):
-            del self.head_pos
+        if hasattr(self, "write_pos"):
+            del self.write_pos
 
-    def mapIndextoTime(self, index: int, sr: int = 44100):
-        time = int(index) / int(sr)
-        return time
+    def time_to_end(self) -> float:
+        """
+        Time till EOF
 
-    def mapTimetoIndex(self, time: float, sr: int = 44100):
-        time = int(time) * int(sr)
-        return time
-
-    def getCurrentTime(self):
-        if not hasattr(self, 'head_pos'):
-            return 0
-        else:
-            return self.mapIndextoTime(self.actual_pos)
-
-    def time_to_end(self):
+        Returns:
+            float: Time till EOF
+        """
         if not hasattr(self, 'time_length'):
             return 0
         else:
-            return self.time_length - self.mapIndextoTime(self.actual_pos, 44100)
+            return self.time_length - self.map_index_totime(self.actual_pos, 44100)
 
-    def getMediaFile(self):
+    def getCurrentTime(self) -> float:
+        """
+        Gets current time of the writer head
+
+        Returns:
+            float: current time of the writer head
+        """
+        if not hasattr(self, 'write_pos'):
+            return 0
+        else:
+            return self.map_index_totime(self.actual_pos)
+
+    def getMediaFile(self) -> Union[Mediafile, None]:
+        """
+        Gets the currently loaded media file
+
+        Returns:
+            Union[Mediafile, None]: currently loaded media file
+        """
         if hasattr(self, "media"):
             return self.media
         else:
             return None
 
-    def call_at_EOF(self):
-        ...
+    @staticmethod
+    def map_index_totime(index: int, sr: int = 44100) -> float:
+        """
+        maps index to time
 
-    def call_at_SOF(self):
-        ...
+        Args:
+            index (int): index value corresponding to sample-rate
+            sr (int): sample-rate
+
+        Returns:
+            float: corresponding time stamp
+        """
+        time = int(index) / int(sr)
+        return time
+
+    @staticmethod
+    def map_time_toindex(time: float, sr: int = 44100) -> int:
+        """
+        maps time to index
+
+        Args:
+            time (float): time value corresponding to index
+            sr (int): sample-rate
+
+        Returns:
+            int: corresponding index
+        """
+        index = int(time) * int(sr)
+        return index
 
 
-class DSPInterface:
+class DynamicProcessingChain:
+    """
+    Dynamic Processing chain that handles all the DSP based functions.
+    """
+    FADED = ApolloSignal()
+    STREAM_ABOUT_TOEND = ApolloSignal()
+    STREAM_ELAPSEDTIME = ApolloSignal()
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.config_dict = {
-            "fadeout_time": 5,
-            "server_volume": 50,
-        }
-        self.server = pyo.Server(nchnls = 2, duplex = 0).boot()
-        self.server.start()
-        self.setVolume(self.config_dict.get("server_volume"))
-        self.init_processing_chain()
-        self.server.setCallback(self.server_callback)
-        self.addToCallbackChain(self.check_for_end)
-        self.addToCallbackChain(self.getCurrentStreamElapsedTime)
-
-    def server_callback(self):
-        for callback in self.callback_chain:
-            try:
-                callback()
-            except Exception as e:
-                pass
-                # print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
-
-    def addToCallbackChain(self, item):
-        for index, callback in enumerate(self.callback_chain):
-            if item == callback:
-                self.callback_chain[index] = item
-        else:
-            self.callback_chain.append(item)
-
-    def popFromCallbackChain(self, item):
-        for index, callback in enumerate(self.callback_chain):
-            if item == callback:
-                self.callback_chain.pop(index)
-
-    def init_processing_chain(self):
-        # Creating the main input fader; an entry point for multiple input feeds
-        self.callback_chain = []
-        self.fader = pyo.Linseg([(0, 0), (self.config_dict.get('fadeout_time') + 0.5, 1)])
-        self.fader_callback = pyo.TrigFunc(pyo.Thresh(self.fader, 0.99), self.remove_faded_table)
-        self.input_stream_0 = BufferTable()
-        self.input_stream_1 = BufferTable()
-        self.voices = itertools.cycle([
-            [(0, 1), (self.config_dict.get("fadeout_time"), 0)],
-            [(0, 0), (self.config_dict.get("fadeout_time"), 1)]
-        ])
-
+    def __init__(self):
+        """Constructor"""
+        # main fading envelope
+        self.env_time = 5
+        self.repeat_current_buffer = False
+        self.stream_reset = False
+        self.voices = itertools.cycle([[(0, 1), (self.env_time, 0)], [(0, 0), (self.env_time, 1)]])
         self.voice_switch = pyo.Linseg(next(self.voices))
+        self.loaded_stream = 0
+
+        # corresponding fader to notify end of a fading env
+        self.fader = pyo.Linseg([(0, 0), (self.env_time + 0.5, 1)])
+        self.fader_callback = pyo.TrigFunc(pyo.Thresh(self.fader, 0.99), (lambda: self.FADED.emit()))
+
+        # top level processing chain
+        self.input_stream_0, self.input_stream_1 = BufferTable(10), BufferTable(10)
         self.main_input = pyo.Selector([self.input_stream_0.reader, self.input_stream_1.reader], self.voice_switch)
-        self.main_output = pyo.Clip(self.main_input)
-        self.current_stream = 0
-        self.current_stream_obj = None
+        self.main_bypass = pyo.Selector([pyo.Sine(freq = 0), self.main_input], 1)
+        self.main_output = pyo.Clip(self.main_bypass).out()
 
-    def remove_faded_table(self):
-        if self.current_stream == 1 and hasattr(self, "input_stream_0"):
-            self.popFromCallbackChain(self.input_stream_0.fetchMore)
-            self.input_stream_0.stop()
-        elif self.current_stream == 0 and hasattr(self, "input_stream_1"):
-            self.popFromCallbackChain(self.input_stream_1.fetchMore)
-            self.input_stream_1.stop()
-        self.fader.stop()
+    def set_fade_env(self, time: float):
+        """
+        Sets the cross fading Envelope
 
-    def replay_table(self):
-        stream = self.get_active_stream()
-        if stream is not None:
-            stream.reset()
-            stream.play()
+        Args:
+            time (float): envelope time
+        """
+        self.env_time = time
+        self.voices = itertools.cycle([[(0, 1), (time, 0)], [(0, 0), (time, 1)]])
+        self.fader.setList([(0, 0), (time + 0.5, 1)])
 
-    def get_active_stream(self) -> BufferTable:
-        return self.current_stream_obj
+    def set_bypass(self, bypass: bool):
+        """
+        Bypasses the processing chain and plays buffers without any post-processing
 
-    def replaceTable(self, path: str, instant = False):
-        if instant:
-            self.remove_faded_table()
-
-        if self.current_stream == 0 and hasattr(self, "input_stream_0"):
-            stream = self.input_stream_1
-            self.current_stream = 1
-            self.current_stream_obj = stream
-        elif self.current_stream == 1 and hasattr(self, "input_stream_1"):
-            stream = self.input_stream_0
-            self.current_stream = 0
-            self.current_stream_obj = stream
+        Args:
+            bypass (bool): Bypasses the processing chain and plays buffer directly
+        """
+        if bypass:
+            self.main_bypass.setVoice(1)
         else:
-            return None
-        # manage then input switch rest works
+            self.main_bypass.setVoice(0)
+
+    def load_track(self, path: str, instant: bool = True):
+        """
+        Loads the track into the buffer and cross-fades between both
+
+        Args:
+            path (str): path to read into an audio buffer
+            instant (bool): instantly switches between the audio buffer rather than cross-fading.
+        """
+        if self.loaded_stream == 0:
+            stream = self.input_stream_1
+            self.loaded_stream = 1
+        else:
+            stream = self.input_stream_0
+            self.loaded_stream = 0
+
+        # manages the stream loading
         if stream is not None:
             stream.clear()
             stream.read(path)
             stream.fetchMore()
             stream.play()
-            self.addToCallbackChain(stream.fetchMore)
+            self.stream_reset = False
             self.voice_switch.setList(next(self.voices))
 
+        # manages the cross-fading
         if instant:
-            self.fader.replace([(0, 0), (self.config_dict.get('fadeout_time') + 0.5, 1)])
-            self.main_input.setVoice(self.current_stream)
+            self.fader.replace([(0, 0), (self.env_time + 0.5, 1)])
+            self.main_input.setVoice(self.loaded_stream)
+            self.stop_faded_table()
         else:
             self.main_input.setVoice(self.voice_switch)
             self.fader.play()
             self.voice_switch.play()
 
-    def check_for_end(self):
-        stream = self.get_active_stream()
-        if stream is not None:
-            switch = (0 < (self.config_dict.get("fadeout_time") - (stream.time_to_end())) <= 0.1)
-            if switch and (not self.fader.isPlaying()):
-                self.call_at_EOF()
+    def stop_faded_table(self):
+        """stops the secondary table"""
+        if self.loaded_stream == 1:
+            self.input_stream_0.stop()
+        elif self.loaded_stream == 0:
+            self.input_stream_1.stop()
+        self.fader.stop()
 
-    def seek(self, time):
-        stream = self.get_active_stream()
-        if stream is not None:
-            stream.seek(float(time / 100))
+    def recurring_server_callback(self):
+        """recurring callback attached to server. executed each time new samples are loaded"""
+        self.check_stream_end()
+        self.fetch_samples_intoStreams()
 
-    def getCurrentStreamElapsedTime(self):
-        stream = self.get_active_stream()
-        if stream is not None:
-            self.call_for_ElapsedTime(float(stream.getCurrentTime()))
+    def fetch_samples_intoStreams(self):
+        """fetches new samples from a decoder into the playing buffer"""
+        if self.input_stream_0.isPlaying:
+            self.input_stream_0.fetchMore()
+        if self.input_stream_1.isPlaying:
+            self.input_stream_1.fetchMore()
+
+    def check_stream_end(self):
+        """checks for the EOF of the stream in time elapsed"""
+        stream = self.active_stream
+        self.STREAM_ELAPSEDTIME.emit(float(stream.getCurrentTime()))
+        if 0 < (self.env_time - (stream.time_to_end())) <= 0.1:
+            if self.repeat_current_buffer and not self.stream_reset:
+                self.replay()
+            elif not self.fader.isPlaying():
+                self.STREAM_ABOUT_TOEND.emit()
+
+    def replay(self):
+        """replays the actively playing stream"""
+        stream = self.active_stream
+        self.stream_reset = True
+        stream.reset()
+        stream.play()
+
+    def play(self):
+        """starts the processing"""
+        return self.main_output.play()
 
     def stop(self):
-        self.server.stop()
+        """stops the processing"""
+        return self.main_output.stop()
 
-    def exit(self):
-        self.server.stop()
-
-    def output(self):
-        self.main_output.out()
-
-    def GUI(self, vars):
+    def output_sprectrum(self):
+        """render the audio spectrum"""
+        # noinspection PyAttributeOutsideInit
         self.spectrum_1 = pyo.Spectrum(self.main_output)
-        self.spectrum_2 = pyo.Spectrum(self.fader)
-        self.spectrum_3 = pyo.Spectrum(self.voice_switch)
-        self.server.gui(vars)
 
-    def ServerInfo(self):
-        info = dict(
-                pa_count_devices = pyo.pa_count_devices(),
-                pa_get_default_input = pyo.pa_get_default_input(),
-                pa_get_default_output = pyo.pa_get_default_output(),
-                pm_get_input_devices = pyo.pm_get_input_devices(),
-                pa_count_host_apis = pyo.pa_count_host_apis(),
-                pa_get_default_host_api = pyo.pa_get_default_host_api(),
-                pm_count_devices = pyo.pm_count_devices(),
-                pa_get_input_devices = pyo.pa_get_input_devices(),
-                pm_get_default_input = pyo.pm_get_default_input(),
-                pm_get_output_devices = pyo.pm_get_output_devices(),
-                pm_get_default_output = pyo.pm_get_default_output(),
-                pa_get_devices_infos = pyo.pa_get_devices_infos(),
-                pa_get_version = pyo.pa_get_version(),
-                pa_get_version_text = pyo.pa_get_version_text()
-        )
-        return info
+    @property
+    def active_stream(self) -> BufferTable:
+        """
+        Returns the Primary audio buffer
 
-    def setVolume(self, value: int):
-        value = ((2 * pow(value, 2)) / 100) * 0.01
-        self.server.setAmp(value if value >= 0.0001 else 0.0001)
+        Returns:
+            (BufferTable): Primary Audio Buffer
+        """
+        if self.loaded_stream == 0:
+            return self.input_stream_0
+        else:
+            return self.input_stream_1
 
-    def call_at_EOF(self):
-        ...
 
-    def call_for_ElapsedTime(self, time: float):
-        ...
+if __name__ == '__main__':
+    player = pyo.Server().boot().start()
+    chain = DynamicProcessingChain()
+    chain.main_output.out()
+    player.setCallback(chain.recurring_server_callback)
+    chain.load_track(r'D:\Music\03. Crown.mp3')
+    player.gui(locals())

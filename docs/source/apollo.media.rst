@@ -13,6 +13,7 @@ Subpackages
    :maxdepth: 4
 
    apollo.media.decoders
+   apollo.media.filters
 
 Submodules
 ----------

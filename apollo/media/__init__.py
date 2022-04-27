@@ -111,10 +111,9 @@ class Mediafile:
 
     @staticmethod
     def isSupported(path) -> bool:
-        supported = (
-            ".mp3"
-        )
-        if str(os.path.splitext(path)[1]).lower() in supported:
+        supported = [".mp3"]
+        path = str(os.path.splitext(path)[1]).lower()
+        if path in supported:
             return True
         else:
             return False

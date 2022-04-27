@@ -10,7 +10,10 @@ from apollo.db.models import QueueModel, Provider
 from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
 from apollo.src.playback_bar import PlayBackBar
 from apollo.media import Mediafile
-from apollo.utils import ROOT
+from apollo.utils import ROOT, ApolloSignal, get_configparser, get_logger
+
+LOGGER = get_logger(__name__)
+CONFIG = get_configparser()
 
 
 class QueueItemDelegate(QtWidgets.QStyledItemDelegate):
@@ -130,6 +133,7 @@ class QueueItemDelegate(QtWidgets.QStyledItemDelegate):
 
 
 class NowPlayingTab:
+    SHUTDOWN = ApolloSignal()
 
     def __init__(self, ui: Apollo) -> None:
         super().__init__()
@@ -141,9 +145,14 @@ class NowPlayingTab:
         # TODO save initial states into a temporary dump
         self.setTableModel()
         self.ui.queue_listview.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.SHUTDOWN.connect(self.shutdown)
 
         self.connectLineEdit()
         self.connectTableView()
+
+    def shutdown(self):
+        self.playback_bar_controller.SHUTDOWN.emit()
+        LOGGER.info('SHUTDOWN')
 
     def setTableModel(self):
         self.model = Provider.get_model(QueueModel)

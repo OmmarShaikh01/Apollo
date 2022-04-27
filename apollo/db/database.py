@@ -1,15 +1,15 @@
 import os
 import random
 from types import TracebackType
-from typing import Callable
+from typing import Callable, Union
 
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 from apollo.media import Mediafile
-from apollo.utils import get_configparser
+from apollo.utils import threadit, get_logger, get_configparser
 
 CONFIG = get_configparser()
-
+LOGGER = get_logger(__name__)
 
 class DBStructureError(Exception):
     """Raised when DB Tables or relations are not present"""
@@ -118,13 +118,14 @@ class Database:
         "bitspersample",
         "samplerate",
         "rating",
-        "isLiked"
+        "isLiked",
+        "play_count"
     ]
     playlist_columns = ["file_id", "order"]
     queue_columns = ["file_id", "order"]
 
     def __init__(self) -> None:
-        self.database_file = CONFIG["DEFAULT"]["database_location"]
+        self.database_file = CONFIG["GLOBALS"]["database_location"]
         self.init_structure()
 
     def init_structure(self):
@@ -160,6 +161,7 @@ class Database:
             "samplerate"	TEXT,
             "rating"	INTEGER  DEFAULT 0,
             "isLiked"	INTEGER  DEFAULT 0,
+            "play_count"	INTEGER  DEFAULT 0,
             PRIMARY KEY("file_id")
         );
         """
@@ -176,7 +178,7 @@ class Database:
             self.exec_query(table_query_queue, db = CON).exec()
             del CON
 
-    def exec_query(self, query: str, db: QSqlDatabase, commit: bool = True):
+    def exec_query(self, query: Union[str, QSqlQuery], db: QSqlDatabase, commit: bool = True):
         """
         Creates a connection to the DB that is linked to the main class
 
@@ -193,10 +195,14 @@ class Database:
             query = QSqlQuery(db = db)
             if not query.prepare(query_str):
                 connection_info = (str(db))
+                LOGGER.error(f"{connection_info}: {query_str}")
                 raise QueryBuildFailed(f"{connection_info}\n{query_str}")
 
         # executes the given query
         query_executed = query.exec()
+        log_msg = ''.join(part.strip() for part in str(query.lastQuery()).splitlines())
+        LOGGER.info(f"Executed: {log_msg}")
+
         if commit:
             db.commit()
 
@@ -206,11 +212,12 @@ class Database:
                   f"\nERROR: {(query.lastError().text())}" \
                   f"\nQuery: {query.lastQuery()}" \
                   f"\nConnection: {connection_info}"
+            LOGGER.error(f"FAILED: {log_msg}")
             raise QueryExecutionFailed(msg)
         else:
             return query
 
-    def fetch_all(self, query: QSqlQuery, to_obj: Callable = None, fltr_column: list[int] = None) -> list[list[any]]:
+    def fetch_all(self, query: QSqlQuery, to_obj: Callable = None, fltr_column: Union[list[int], int] = None) -> list[list[any]]:
         """
         fetches data from te executed query
 
@@ -222,20 +229,21 @@ class Database:
         Returns:
             list[list[any]]: table of the fetched data
         """
-        data = []
-
         if fltr_column is None:
-            fltr_column = query.record().count()
+            fltr_column = [query.record().count()]
+        if isinstance(fltr_column, int):
+            fltr_column = [fltr_column]
 
+        data = []
         if len(fltr_column) == 1:
+            fltr_column = range(fltr_column[0])
             if to_obj:
                 while query.next():
-                    data.append(to_obj(query.value(0)))
+                    data.append([to_obj(query.value(C)) for C in fltr_column])
             else:
                 while query.next():
-                    data.append(query.value(0))
+                    data.append([query.value(C) for C in fltr_column])
         else:
-            fltr_column = range(fltr_column)
             if to_obj:
                 while query.next():
                     data.append([to_obj(query.value(C)) for C in fltr_column])
@@ -312,6 +320,21 @@ class LibraryManager(Database):
 
     def __init__(self) -> None:
         super().__init__()
+
+    def loaded_directories(self):
+        """
+        Returns the directories the files are being loaded from
+
+        Returns:
+            list[list[str]]: directories the files are being loaded from
+        """
+        query = r"""
+        SELECT  rtrim(replace(file_path, file_name, ''), '\') AS 'directory' 
+        FROM library 
+        GROUP BY 'directory'
+        """
+        with Connection(self.database_file) as connection:
+            return self.fetch_all(self.exec_query(query, db = connection))
 
     def scan_directory(self, directory: str):
         """

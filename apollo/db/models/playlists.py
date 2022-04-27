@@ -28,9 +28,9 @@ class PlaylistsModel(QStandardItemModel):
         self.database = Database()
         self.fields = self.database.playlist_columns
 
-        self.valid_playlists = eval(CONFIG['DEFAULT']["playlists"])
+        self.valid_playlists = list(CONFIG['PLAYLISTS'].keys())
         self.loaded_playlist = ''
-        self.load_playlist(CONFIG['DEFAULT']["loaded_playlist"])
+        self.load_playlist(CONFIG['GLOBALS']["loaded_playlist"])
 
     def load_playlist(self, name: str):
         """
@@ -42,7 +42,7 @@ class PlaylistsModel(QStandardItemModel):
         if name:
             self.fetch_records(name)
             self.create_playList(name)
-            CONFIG['DEFAULT']["loaded_playlist"] = name
+            CONFIG['GLOBALS']["loaded_playlist"] = name
             self.loaded_playlist = name
             write_config(CONFIG)
 
@@ -175,8 +175,7 @@ class PlaylistsModel(QStandardItemModel):
         Args:
             name (str): name of the playlist to add
         """
-        playlist = eval(CONFIG['DEFAULT']["playlists"])
+        playlist = CONFIG['PLAYLISTS']
         if name not in playlist:
-            playlist.append(name)
-            CONFIG['DEFAULT']["playlists"] = str(playlist)
+            CONFIG['PLAYLISTS'][name] = ''
             write_config(CONFIG)
