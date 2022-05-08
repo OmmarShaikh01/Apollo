@@ -16,6 +16,7 @@ Subpackages
    apollo.db
    apollo.layout
    apollo.media
+   apollo.plugin
    apollo.src
 
 Submodules

@@ -1,10 +1,9 @@
-import os.path
-import pathlib
+import os
 from typing import Union
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from apollo.db.models import LibraryModel, PlaylistsModel, Provider, QueueModel
+from apollo.db.models import LibraryModel, Provider, QueueModel
 from apollo.layout.ui_mainwindow import Ui_MainWindow as Apollo
 from apollo.utils import ApolloSignal, get_configparser, get_logger
 
@@ -77,9 +76,9 @@ class LibraryTab:
 
     def onModelUpdate(self):
         self.setHeaderLabels()
+        self.queue_model.fetch_records()
+        self.queue_model.TABLE_UPDATE.emit()
         # TODO:
-        # self.queue_model.fetch_records()
-        # self.queue_model.TABLE_UPDATE.emit()
         # self.playlist_model.fetch_records()
         # self.playlist_model.TABLE_UPDATE.emit()
 
@@ -215,9 +214,9 @@ class LibraryTab:
             file_info := self.main_model.fetch_file_info(self.getRowDataAt(row, column = ['file_path'])[0][0]),
             self.display_file_info(file_info)
         ))
-        lv_1.addAction("File location").triggered.connect(lambda: (
+        lv_1.addAction("Open File location").triggered.connect(lambda: (
             row := self.ui.library_tableview.selectedIndexes()[0].row(),
-            self.display_file_path(self.getRowDataAt(row, column = ['file_path'])[0][0])
+            self.open_file_path(self.getRowDataAt(row, column = ['file_path'])[0][0])
         ))
         lv_1.addAction("Reload tags for selected").triggered.connect(lambda: (
             row := self.ui.library_tableview.selectedIndexes()[0].row(),
@@ -227,51 +226,53 @@ class LibraryTab:
 
         lv_1_2 = lv_1.addMenu("User rating")
         lv_1_2.addAction("0").triggered.connect(
-            lambda: placeholder(items = self.getRowData(column = ['file_id']), rating = 0)  # TODO
+            lambda: self.main_model.modify_rating(ids = self.getRowData(column = ['file_id']), rating = 0)
         )
         lv_1_2.addAction("1").triggered.connect(
-            lambda: placeholder(items = self.getRowData(column = ['file_id']), rating = 1)  # TODO
+            lambda: self.main_model.modify_rating(ids = self.getRowData(column = ['file_id']), rating = 1)
         )
         lv_1_2.addAction("2").triggered.connect(
-            lambda: placeholder(items = self.getRowData(column = ['file_id']), rating = 2)  # TODO
+            lambda: self.main_model.modify_rating(ids = self.getRowData(column = ['file_id']), rating = 2)
         )
         lv_1_2.addAction("3").triggered.connect(
-            lambda: placeholder(items = self.getRowData(column = ['file_id']), rating = 3)  # TODO
+            lambda: self.main_model.modify_rating(ids = self.getRowData(column = ['file_id']), rating = 3)
         )
         lv_1_2.addAction("4").triggered.connect(
-            lambda: placeholder(items = self.getRowData(column = ['file_id']), rating = 4)  # TODO
+            lambda: self.main_model.modify_rating(ids = self.getRowData(column = ['file_id']), rating = 4)
         )
         lv_1_2.addAction("5").triggered.connect(
-            lambda: placeholder(items = self.getRowData(column = ['file_id']), rating = 5)  # TODO
+            lambda: self.main_model.modify_rating(ids = self.getRowData(column = ['file_id']), rating = 5)
         )
         lv_1.addSeparator()
 
         lv_1.addAction("Delete from library").triggered.connect(
-            lambda: placeholder(items = self.getRowData(column = ['file_id']))  # TODO
+            lambda: self.del_file_path(self.getRowData(column = ['file_id', 'file_path']))
         )
         lv_1.addAction("Physically delete file").triggered.connect(
-            lambda: placeholder(items = self.getRowData(column = ['file_id']))  # TODO
+            lambda: self.del_file_path(self.getRowData(column = ['file_id', 'file_path']), True)
         )
         lv_1.addSeparator()
 
-        lv_1.addAction("Refresh library").triggered.connect(
-            lambda: placeholder(items = self.getRowData(column = ['file_id']))  # TODO
-        )
-        lv_1.addAction("Statistics").triggered.connect(
-            lambda: placeholder(items = self.getRowData(column = ['file_id']))  # TODO
-        )
+        lv_1.addAction("Refresh library").triggered.connect(self.main_model.refresh_table)
+        lv_1.addAction("Statistics").triggered.connect(self.display_table_stats)
 
         # Execution
         cursor = QtGui.QCursor()
         lv_1.exec(cursor.pos())
 
     def launch_explorer_directory(self):
+        """
+        open a file explorer in directory only mode
+        """
         files = QtWidgets.QFileDialog.getExistingDirectoryUrl(parent = self.ui,
                                                               caption = "Add folders to library")
         if files:
             self.main_model.add_item_fromFS(files.toLocalFile())
 
     def launch_explorer_files(self):
+        """
+        open a file explorer in files mode
+        """
         files, _ = QtWidgets.QFileDialog.getOpenFileUrls(parent = self.ui,
                                                          caption = "Add folders to library")
         if files:
@@ -281,5 +282,27 @@ class LibraryTab:
     def display_file_info(self, info: dict):
         placeholder(info = info)
 
-    def display_file_path(self, path: str):
-        files, _ = QtWidgets.QInputDialog.getText(self.ui, "Local File Path", "", text = path, flags = QtCore.Qt.Dialog)
+    def display_table_stats(self):
+        stats = self.main_model.fetch_table_stats()
+        placeholder(**stats)
+
+    # noinspection PyMethodMayBeStatic
+    def open_file_path(self, path: str):
+        """
+        opens file directory in explorer
+
+        Args:
+            path (str): location of the file
+        """
+        os.startfile(os.path.dirname(os.path.realpath(path)), 'explore')
+
+    def del_file_path(self, paths: list[list[str]], physically: bool = False):
+        """
+        deletes file from library and/or physically
+
+        Args:
+            paths (list[str]): location of the file
+            physically (bool): true deletes file physically
+        """
+        # TODO: check for detete item bugs
+        pass

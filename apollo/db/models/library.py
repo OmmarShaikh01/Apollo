@@ -135,23 +135,6 @@ class LibraryModel(QStandardItemModel):
         finally:
             self.TABLE_UPDATE.emit()
 
-    def delete_item_fromFS(self, ids: list[str]):
-        """
-        Deletes items from the filesystem
-
-        Args:
-            ids (list[str]): file ids of the files to be removed
-        """
-        if len(ids) > 0:
-            if len(ids) == 1:
-                ids = f"('{ids[0][0]}')"
-            else:
-                ids = tuple(_id[0] for _id in ids)
-            with Connection(self.database.database_file) as CON:
-                self.database.exec_query(f"DELETE FROM 'library' WHERE file_id IN {ids}", db = CON, commit = True)
-                self.fetch_records()
-            self.TABLE_UPDATE.emit()
-
     # noinspection PyMethodMayBeStatic
     def add_dir_to_watcher(self, path: str):
         config = get_configparser()
@@ -165,6 +148,7 @@ class LibraryModel(QStandardItemModel):
             if media.SynthTags['file_id']:
                 return media.SynthTags
 
+    @threadit
     def reload_tags(self, path: str):
         if Mediafile.isSupported(path):
             media = Mediafile(path)
@@ -185,5 +169,39 @@ class LibraryModel(QStandardItemModel):
                 self.database.exec_query(query, CON)
 
             for row in range(self.rowCount()):
-                if self.item(row, 0) == _id:
+                if self.item(row, 0).text() == _id:
                     self.insertRow(row, list(map(lambda x: QStandardItem(str(x)), tags)))
+
+    def modify_rating(self, ids: list[list], rating: int):
+
+        with Connection(self.database.database_file) as CON:
+            if len(ids) == 1:
+                str_ids = f"('{ids[0][0]}')"
+                ids = [ids[0][0]]
+            else:
+                str_ids = tuple(_id[0] for _id in ids)
+                ids = str_ids
+            query = f"""
+                    UPDATE 'library'
+                    SET rating = {rating}
+                    WHERE library.file_id IN {str_ids}
+                    """
+            self.database.exec_query(query, CON)
+
+        for row in range(self.rowCount()):
+            item = self.item(row, self.fields.index('file_id')).text()
+            if item in ids:
+                self.setItem(row, self.fields.index('rating'), QStandardItem(str(rating)))
+                LOGGER.info(f'updated rating for: {item}')
+
+    def fetch_table_stats(self) -> dict:
+        return self.database.get_table_stats('library')
+
+    @threadit
+    def refresh_table(self):
+        self.database.refresh_library()
+        self.TABLE_UPDATE.emit()
+
+    def delete_file(self, paths: list[str]):
+        self.database.delete_items('file_path', paths)
+        self.TABLE_UPDATE.emit()

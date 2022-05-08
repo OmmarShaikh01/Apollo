@@ -1,119 +1,83 @@
-import copy
-import hashlib
+import json
 import os
+from pathlib import PurePath
+from typing import Any, Union
 
-import music_tag
+from apollo.media.decoders.decode import Stream
+from apollo.media.decoders.mp3 import MP3_File
+from apollo.utils import get_logger
+from configs import settings
 
-from apollo.media.decoders import MP3_Decoder, WAV_Decoder
+LOGGER = get_logger(__name__)
+CONFIG = settings
 
 
 class Mediafile:
-    tags_fields = (
-        'file_id',
-        'file_name',
-        'file_path',
-        'tracktitle',
-        'artist',
-        'album',
-        'albumartist',
-        'composer',
-        'tracknumber',
-        'totaltracks',
-        'discnumber',
-        'totaldiscs',
-        'genre',
-        'year',
-        'compilation',
-        'lyrics',
-        'isrc',
-        'comment',
-        'artwork',
-        'bitrate',
-        'codec',
-        'length',
-        'channels',
-        'bitspersample',
-        'samplerate'
-    )
+    TAG_FRAMES = Stream.TAG_FRAMES
 
-    def __init__(self, path) -> None:
-        self.path = os.path.normpath(path)
-        self.file_obj = None
-        self.tags = dict.fromkeys(self.tags_fields, "")
+    def __init__(self, path: Union[str, PurePath]):
+        if self.isSupported(path):
+            if isinstance(path, str):
+                self.path = PurePath(path)
+            else:
+                self.path = path
+            LOGGER.debug(f"Read {self.path}")
+            self._stream = self._get_stream()
+        else:
+            LOGGER.error(f"Failed to read {path}")
+            raise NotImplementedError(str(os.path.splitext(path)[1]).lower())
 
-    @property
-    def Decoder(self):
-        ext = str(os.path.splitext(self.path)[1]).lower().replace(".", "")
-        if ext == 'wav':
-            self.decoder = WAV_Decoder(self.path)
-            return self.decoder
+    def __str__(self):
+        return json.dumps(self._stream.SynthTags, indent = 2)
+
+    def __bool__(self):
+        if self._stream is not None:
+            return True
+        else:
+            return False
+
+    def _get_stream(self):
+        ext = str(self.path.suffix).lower().replace(".", "")
         if ext == 'mp3':
-            self.decoder = MP3_Decoder(self.path)
-            return self.decoder
+            return MP3_File(self.path)
         else:
             return None
 
     @property
-    def File(self):
-        if self.isSupported(self.path):
-            self.file_obj = music_tag.load_file(self.path)
-        return self.file_obj
+    def Decoder(self) -> Union[Any, None]:
+        if self._stream is not None:
+            return self._stream.Decoder
+        else:
+            return None
 
     @property
-    def Tags(self):
-        self.tags['tracktitle'] = str(self.File['tracktitle'])
-        self.tags['artist'] = str(self.File['artist'])
-        self.tags['album'] = str(self.File['album'])
-        self.tags['albumartist'] = str(self.File['albumartist'])
-        self.tags['composer'] = str(self.File['composer'])
-        self.tags['tracknumber'] = str(self.File['tracknumber'])
-        self.tags['totaltracks'] = str(self.File['totaltracks'])
-        self.tags['discnumber'] = str(self.File['discnumber'])
-        self.tags['totaldiscs'] = str(self.File['totaldiscs'])
-        self.tags['genre'] = str(self.File['genre'])
-        self.tags['year'] = str(self.File['year'])
-        self.tags['compilation'] = str(self.File['compilation'])
-        self.tags['lyrics'] = str(self.File['lyrics'])
-        self.tags['isrc'] = str(self.File['isrc'])
-        self.tags['comment'] = str(self.File['comment'])
-        self.tags['artwork'] = str(self.File['artwork'])
-        self.tags['bitrate'] = str(self.File['#bitrate'])
-        self.tags['length'] = str(self.File['#length'])
-        self.tags['channels'] = str(self.File['#channels'])
-        self.tags['bitspersample'] = str(self.File['#bitspersample'])
-        self.tags['samplerate'] = str(self.File['#samplerate'])
-        self.tags['codec'] = str(os.path.splitext(self.path)[1]).lower().replace(".", "")
-        return self.tags
+    def Tags(self) -> Union[dict, None]:
+        if self._stream is not None:
+            return self._stream.Tags
+        else:
+            return None
 
     @property
-    def SynthTags(self):
-        tags = copy.deepcopy(self.Tags)
-        tags['file_id'] = self.FileHash
-        tags['file_name'] = os.path.split(self.path)[1]
-        tags['file_path'] = self.path
-        return tags
+    def SynthTags(self) -> Union[Any, None]:
+        if self._stream is not None:
+            return self._stream.SynthTags
+        else:
+            return None
 
     @property
-    def FileHash(self):
-        with open(self.path, "rb") as fobj:
-            return (hashlib.md5(fobj.read(1024 * 10))).hexdigest()
-
-    @property
-    def Artwork(self) -> bytes:
-        art = self.File['artwork'].first
-        try:
-            if art is None:
-                raise ValueError()
-            else:
-                return art.data
-        except ValueError:
-            return b''
+    def Artwork(self) -> Union[Any, None]:
+        if self._stream is not None:
+            return self._stream.Artwork
+        else:
+            return None
 
     @staticmethod
-    def isSupported(path) -> bool:
-        supported = [".mp3"]
-        path = str(os.path.splitext(path)[1]).lower()
-        if path in supported:
+    def isSupported(path: Union[str, PurePath]) -> bool:
+        if isinstance(path, str):
+            path = PurePath(path)
+        enabled = settings.enabled_formats
+        path = str(path.suffix).lower().replace(".", "")
+        if path in enabled:
             return True
         else:
             return False

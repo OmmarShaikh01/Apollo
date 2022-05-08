@@ -63,6 +63,8 @@ def style_app(app: QtWidgets.QApplication) -> None:
 def main() -> None:
     """
     Main entry point to launch Apollo
+
+    TODO: add support for hour long tracks
     """
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle('Fusion')

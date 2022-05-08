@@ -10,10 +10,13 @@ from typing import (Callable)
 
 import qt_material
 
-ROOT = os.path.dirname(__file__)
+from configs import settings as _settings
 
 
-def get_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
+ROOT = _settings.project_root
+
+
+def get_logger(name: str) -> logging.Logger:
     """
     returns a configured logger
 
@@ -25,15 +28,30 @@ def get_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
         logging.Logger: return the logger instance
     """
     logger = logging.getLogger(name)
-    formatter = logging.Formatter('%(asctime)s:%(levelname)s:: %(name)-12s: %(funcName)s: %(message)s')
-    file_handler = logging.FileHandler(os.path.join(os.path.dirname(ROOT), 'apollo.log'), mode = 'a')
-    file_handler.setFormatter(formatter)
-    formatter = logging.Formatter('%(levelname)s:: %(name)-12s: %(funcName)s: %(message)s')
-    stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setFormatter(formatter)
-    logger.addHandler(stream_handler)
-    logger.addHandler(file_handler)
-    logger.setLevel(level)
+    log_level = logging.INFO
+    env = str(_settings.current_env).upper()
+    if env in ['TESTING', 'PRODUCTION']:
+        if env == 'TESTING':
+            log_path = os.path.join(ROOT, 'apollo_test.log')
+            log_mode = "w"
+            log_level = logging.DEBUG
+        else:
+            log_path = os.path.join(ROOT, 'apollo_prod.log')
+            log_mode = "a"
+            log_level = logging.INFO
+
+        formatter = logging.Formatter('%(asctime)s: %(levelname)s:: %(name)-12s: %(funcName)s: %(message)s')
+        file_handler = logging.FileHandler(log_path, mode = log_mode)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+
+    if env in ['PRODUCTION']:
+        formatter = logging.Formatter('%(levelname)s:: %(name)-12s: %(funcName)s: %(message)s')
+        stream_handler = logging.StreamHandler(sys.stdout)
+        stream_handler.setFormatter(formatter)
+        logger.addHandler(stream_handler)
+
+    logger.setLevel(log_level)
     return logger
 
 
@@ -55,7 +73,7 @@ def timeit(method: Callable) -> Callable:
         try:
             t1 = time.time()
             method(*args, **kwargs)
-            print(method, round(time.time() - t1, 8))
+            _LOGGER.info(f"Method: {method}> Time: {round(time.time() - t1, 8)}")
         except Exception as e:
             print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
             _LOGGER.error(e)
@@ -75,11 +93,32 @@ def exec_line(msg: str, method: Callable):
     try:
         t1 = time.time()
         method()
-        print(msg, round(time.time() - t1, 8))
+        _LOGGER.info(f"Message: {msg}> Time: {round(time.time() - t1, 8)}")
     except Exception as e:
         print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
         _LOGGER.error(e)
         raise e
+
+
+def threadit(method: Callable) -> Callable:
+    """
+    Decorator for executing callbacks inside a thread
+
+    Args:
+        method (Callable): Callback object to be used
+
+    Returns:
+        a wrapped function object that can be executed
+    """
+
+    def exe(*args, **kwargs) -> None:
+        thread = threading.Thread(target = lambda: (
+            _LOGGER.info(f"Thread {thread.native_id}: {method}"),
+            method(*args, **kwargs)
+        ))
+        thread.start()
+
+    return exe
 
 
 def default_config() -> configparser.ConfigParser:
@@ -164,27 +203,6 @@ def add_to_config(key: str, value: str, config: configparser.ConfigParser, hasDu
 
     config[key] = temp_config
     return config
-
-
-def threadit(method: Callable) -> Callable:
-    """
-    Decorator for executing callbacks inside a thread
-
-    Args:
-        method (Callable): Callback object to be used
-
-    Returns:
-        a wrapped function object that can be executed
-    """
-
-    def exe(*args, **kwargs) -> None:
-        thread = threading.Thread(target = lambda: (
-            _LOGGER.info(f"Thread {thread.native_id}: {method}"),
-            method(*args, **kwargs)
-        ))
-        thread.start()
-
-    return exe
 
 
 class ResourceGenerator(qt_material.ResourseGenerator):

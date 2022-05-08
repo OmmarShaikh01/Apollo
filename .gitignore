@@ -194,12 +194,13 @@ dmypy.json
 cython_debug/
 
 # Misc Development files
-/.env.development
-/development.env
-/.ini
-/.idea/
+/.idea
 /apollo/assets/generated/
 /apollo/db/default.db
-/apollo/.ini
+/apollo/apollo.ini
 /docs/build/
 /exclude/
+/tests/coverage/
+
+# Ignore dynaconf secret files
+.secrets.*

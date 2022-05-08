@@ -150,7 +150,6 @@ class QueueModel(QStandardItemModel):
                         CON.transaction()
                         self.database.exec_query(selector_query, CON)
                     elif _type == self.PlayType.GENRE:
-                        ids = tuple([key[0] for key in ids])
                         selector_query = f"""
                         INSERT INTO queue (file_id)
                         SELECT library.file_id 
