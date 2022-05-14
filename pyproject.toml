@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "Apollo"
+version = "0.1.0"
+description = ""
+authors = ["Ommar Shaikh <93180825+OmmarShaikh01@users.noreply.github.com>"]
+license = "GPL-3.0-only"
+
+[tool.poetry.dependencies]
+python = ">=3.9, <3.11"
+PySide6 = "^6.3.0"
+qt-material = "^2.11"
+mutagen = "^1.45.1"
+av = "^9.2.0"
+dynaconf = "^3.1.8"
+pyo = "^1.0.4"
+
+[tool.poetry.dev-dependencies]
+Sphinx = "^4.5.0"
+sphinx-rtd-theme = "^1.0.0"
+autoclasstoc = "^1.5.1"
+pytest = "^7.1.2"
+pytest-cov = "^3.0.0"
+pytest-cases = "^3.6.12"
+pytest-mock = "^3.7.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

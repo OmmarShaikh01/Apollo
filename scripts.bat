@@ -13,6 +13,7 @@ SET "__BAT_NAME=%~nx0"
 SET "OptHelp="
 SET "OptVersion="
 SET "OptVerbose="
+SET "VENV=.\.venv"
 goto :parse
 
 :header
@@ -71,9 +72,9 @@ goto :parse
 
     if defined OptVerbose (
         echo **** DEBUG IS ON
-        .\venv\Scripts\pytest.exe --rootdir=.\tests\pytest -c .\pytest.ini -vv %class_id%
+        %VENV%\Scripts\pytest.exe --rootdir=.\tests\pytest -c .\pytest.ini -vv %class_id%
     ) ELSE (
-        .\venv\Scripts\pytest.exe -ra -q --rootdir=.\tests\pytest -c .\pytest.ini %class_id%
+        %VENV%\Scripts\pytest.exe -ra -q --rootdir=.\tests\pytest -c .\pytest.ini %class_id%
     )
     GOTO :eof
 
@@ -83,9 +84,9 @@ goto :parse
     if /i "%~1"=="--id" set class_id=.\tests\pytest\%~2
     if defined OptVerbose (
         echo **** DEBUG IS ON
-        .\venv\Scripts\pytest.exe --cov=.\apollo --rootdir=.\tests\pytest --cov-config=.coveragerc  -c pytest.ini  --cov-report=html -vv
+        %VENV%\Scripts\pytest.exe --cov=.\apollo --rootdir=.\tests\pytest --cov-config=.coveragerc  -c pytest.ini  --cov-report=html -vv
     ) ELSE (
-        .\venv\Scripts\pytest.exe -ra -q --cov=.\apollo --rootdir=.\tests\pytest --cov-config=.coveragerc  -c pytest.ini  --cov-report=html
+        %VENV%\Scripts\pytest.exe -ra -q --cov=.\apollo --rootdir=.\tests\pytest --cov-config=.coveragerc  -c pytest.ini  --cov-report=html
     )
     ECHO BUILD COVERAGE REPORT INTO [%__BAT_PATH%tests\pytest\coverage]
     ECHO COVERAGE REPORT %__BAT_PATH%tests\coverage\html\index.html
@@ -96,8 +97,8 @@ goto :parse
 
 :sphinx build doc
     ECHO started sphinx_build
-    .\venv\Scripts\sphinx-apidoc.exe -f -e -M -o .\docs\source\ .\apollo
-    .\venv\Scripts\sphinx-build.exe -b html .\docs\source .\docs\build
+    %VENV%\Scripts\sphinx-apidoc.exe -f -e -M -o .\docs\source\ .\apollo
+    %VENV%\Scripts\sphinx-build.exe -b html .\docs\source .\docs\build
     ECHO BUILD SPHINX DOCS INTO [%__BAT_PATH%docs\build]
     ECHO SPHINX DOCS %__BAT_PATH%docs\build\index.html
     start "" %__BAT_PATH%docs\build\index.html
@@ -105,7 +106,7 @@ goto :parse
 
 :qt compile
     ECHO started qt_compile
-    .\venv\Scripts\pyside6-uic.exe -g python -o .\apollo\layout\ui_mainwindow.py .\apollo\layout\mainwindow.ui
+    %VENV%\Scripts\pyside6-uic.exe -g python -o .\apollo\layout\ui_mainwindow.py .\apollo\layout\mainwindow.ui
     ECHO COMPILED [%__BAT_PATH%apollo\layout\mainwindow.ui] TO [%__BAT_PATH%apollo\layout\ui_mainwindow.py]
     GOTO :eof
 
