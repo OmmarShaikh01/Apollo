@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 import pytest
 
@@ -19,8 +18,7 @@ class Test_Mediafile:
                 _path = (os.path.normpath(os.path.join(dirct, file)))
                 if Mediafile.isSupported(_path):
                     media_file = Mediafile(_path)
-                    LOGGER.debug(media_file.SynthTags)
-                    assert media_file
+                    assert media_file.Info['file_ext'] == os.path.splitext(_path)[1]
                 else:
                     LOGGER.debug(f"SKIPPED: {_path}")
 

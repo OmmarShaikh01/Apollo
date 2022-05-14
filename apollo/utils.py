@@ -6,14 +6,17 @@ import sys
 import threading
 import time
 import traceback
-from typing import (Callable)
+from typing import (Callable, Optional)
 
+# noinspection PyUnresolvedReferences
+import PySide6
 import qt_material
 
 from configs import settings as _settings
 
 
 ROOT = _settings.project_root
+_LOGGER = None
 
 
 def get_logger(name: str) -> logging.Logger:
@@ -27,30 +30,36 @@ def get_logger(name: str) -> logging.Logger:
     Returns:
         logging.Logger: return the logger instance
     """
+    if _LOGGER is not None:
+        return _LOGGER
+
     logger = logging.getLogger(name)
     log_level = logging.INFO
     env = str(_settings.current_env).upper()
     if env in ['TESTING', 'PRODUCTION']:
+        formatter = logging.Formatter(
+            '%(asctime)s: %(levelname)8s:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s'
+        )
+
         if env == 'TESTING':
             log_path = os.path.join(ROOT, 'apollo_test.log')
             log_mode = "w"
             log_level = logging.DEBUG
+            formatter.default_time_format = '%H:%M:%S'
         else:
             log_path = os.path.join(ROOT, 'apollo_prod.log')
             log_mode = "a"
             log_level = logging.INFO
 
-        formatter = logging.Formatter('%(asctime)s: %(levelname)s:: %(name)-12s: %(funcName)s: %(message)s')
         file_handler = logging.FileHandler(log_path, mode = log_mode)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
 
     if env in ['PRODUCTION']:
-        formatter = logging.Formatter('%(levelname)s:: %(name)-12s: %(funcName)s: %(message)s')
+        formatter = logging.Formatter('%(levelname)8s:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s')
         stream_handler = logging.StreamHandler(sys.stdout)
         stream_handler.setFormatter(formatter)
         logger.addHandler(stream_handler)
-
     logger.setLevel(log_level)
     return logger
 
@@ -72,8 +81,9 @@ def timeit(method: Callable) -> Callable:
     def exe(*args, **kwargs):
         try:
             t1 = time.time()
-            method(*args, **kwargs)
-            _LOGGER.info(f"Method: {method}> Time: {round(time.time() - t1, 8)}")
+            result = method(*args, **kwargs)
+            _LOGGER.debug(f"{method} Executed in {round(time.time() - t1, 8)}s")
+            return result
         except Exception as e:
             print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
             _LOGGER.error(e)
@@ -93,7 +103,7 @@ def exec_line(msg: str, method: Callable):
     try:
         t1 = time.time()
         method()
-        _LOGGER.info(f"Message: {msg}> Time: {round(time.time() - t1, 8)}")
+        _LOGGER.debug(f"Message: {msg}> Time: {round(time.time() - t1, 8)}")
     except Exception as e:
         print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
         _LOGGER.error(e)
@@ -112,97 +122,11 @@ def threadit(method: Callable) -> Callable:
     """
 
     def exe(*args, **kwargs) -> None:
-        thread = threading.Thread(target = lambda: (
-            _LOGGER.info(f"Thread {thread.native_id}: {method}"),
-            method(*args, **kwargs)
-        ))
+        thread = threading.Thread(
+                target = lambda: (_LOGGER.info(f"Thread {thread.native_id}: {method}"), method(*args, **kwargs)))
         thread.start()
 
     return exe
-
-
-def default_config() -> configparser.ConfigParser:
-    """
-    Holds the factory configuration of the application that can be written and fetched at any time.
-
-    Returns:
-        a config parser that holds the application configuration.
-    """
-    config = configparser.ConfigParser()
-    path = os.path.join(ROOT, 'apollo.ini')
-    if not os.path.isfile(path):
-        with open(path, 'w') as file:
-            config["GLOBALS"] = dict(
-                    database_location = os.path.join(ROOT, 'db', 'default.db'),
-                    current_theme = 'dark_teal.xml',
-                    loaded_playlist = ''
-            )
-            config["PLAYLISTS"] = dict()
-            config["WATCHER/FILES"] = dict()
-            config["WATCHER/MONITOR"] = dict()
-            config["APPLICATION/MAIN"] = dict()
-            config["APPLICATION/LIBRARY"] = dict()
-            config["APPLICATION/QUEUE"] = dict()
-            config["APPLICATION/PLAYLIST"] = dict()
-            config["APPLICATION/PLAYBAR"] = dict()
-            config.write(file)
-    return config
-
-
-def get_configparser() -> configparser.ConfigParser:
-    """
-    Initializes a config parser that holds the application configuration.
-
-    Returns:
-        a config parser that holds the application configuration.
-    """
-    default_config()
-    config = configparser.ConfigParser()
-    config.read(os.path.join(ROOT, 'apollo.ini'))
-    return config
-
-
-def write_config(config: configparser.ConfigParser):
-    """
-    Writes the loaded config to a file
-
-    Args:
-        config (configparser.ConfigParser): config parser that holds config to be written
-    """
-    with open(os.path.join(ROOT, 'apollo.ini'), 'w') as file:
-        config.write(file)
-
-
-# noinspection PyPep8Naming
-def add_to_config(key: str, value: str, config: configparser.ConfigParser, hasDupes: bool = False):
-    """
-    appends an item to a config dict
-
-    Args:
-        key (str): top level key of the dict
-        value (str): value of the dict
-        config (configparser.ConfigParser): config to edit
-        hasDupes (bool): adds duplicates of true
-
-    Returns:
-        config (configparser.ConfigParser): edited config
-    """
-    temp_config = {}
-    index_key = 0
-    field = config[key].values()
-    if 0 < len(field):
-        for index_key, prev_value in enumerate(field):
-            temp_config['/'.join((key, str(index_key)))] = prev_value
-            index_key += 1
-
-    if not hasDupes:
-        if value not in field:
-            temp_config['/'.join((key, str(index_key)))] = value
-    else:
-        temp_config['/'.join((key, str(index_key)))] = value
-
-    config[key] = temp_config
-    return config
 
 
 class ResourceGenerator(qt_material.ResourseGenerator):
@@ -222,10 +146,8 @@ class ResourceGenerator(qt_material.ResourseGenerator):
         """
         self.index = os.path.join(root, parent)
 
-        self.contex = [
-            (os.path.join(self.index, 'disabled'), disabled),
-            (os.path.join(self.index, 'primary'), primary),
-        ]
+        self.contex = [(os.path.join(self.index, 'disabled'), disabled),
+                       (os.path.join(self.index, 'primary'), primary), ]
 
         self.source = source
         self.secondary = secondary

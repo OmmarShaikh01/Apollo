@@ -1,16 +1,22 @@
-import json
 import os
+import timeit
 import tempfile
+from pathlib import PurePath
 
 import pytest
+import pytest_cases
 from PySide6.QtSql import QSqlQuery
 
 from apollo.db.database import Connection, Database, LibraryManager, QueryBuildFailed, QueryExecutionFailed, RecordSet
 from apollo.utils import get_logger
 from configs import settings
+from tests.pytest.utils_for_tests import IDGen
 
+cases = "tests.pytest.db.case_db"
 LOGGER = get_logger(__name__)
 CONFIG = settings
+MEDIA_FOLDER = PurePath(CONFIG.assets_dir, "music_samples")
+BENCHMARK = CONFIG.benchmark_formats  # TODO: remove not
 
 
 # FIXTURES -------------------------------------------------------------------------------------------------------------
@@ -66,9 +72,8 @@ def get_filled_library_manager(get_library_manager: Database, records_library_ma
 class Test_Connection:
 
     def test_connection_is_valid(self):
-        with tempfile.TemporaryDirectory() as directory:
-            with Connection(os.path.join(directory, 'temp.db')) as connection:
-                assert connection.isValid()
+        with Connection(CONFIG.db_path) as connection:
+            assert connection.isValid()
 
     def test_connection_is_invalid(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -142,28 +147,9 @@ class Test_Database:
             assert db.execute("SELECT * FROM test_table", connection) == records
             db.execute(f"DROP TABLE IF EXISTS test_table", connection)
 
-    def test_import_export_data(self, get_database):
+    @pytest_cases.parametrize_with_cases('data', cases = cases, prefix = 'import_json_data', ids = IDGen)
+    def test_import_export_data(self, get_database: Database, data: dict):
         db = get_database
-        data = dict(
-                sql_table_schema = dict(
-                        test_table_0 = 'CREATE TABLE test_table_0 ("col_0" TEXT, "col_1" TEXT, "col_2" TEXT)',
-                        test_table_1 = 'CREATE TABLE test_table_1 ("col_0" TEXT, "col_1" TEXT, "col_2" TEXT)',
-                ),
-                test_table_0 = {
-                    0: dict(col_0 = 'test_1_0', col_1 = 'test_2_0', col_2 = 'test_3_0'),
-                    1: dict(col_0 = 'test_1_1', col_1 = 'test_2_1', col_2 = 'test_3_1'),
-                    2: dict(col_0 = 'test_1_2', col_1 = 'test_2_2', col_2 = 'test_3_2'),
-                    3: dict(col_0 = 'test_1_3', col_1 = 'test_2_3', col_2 = 'test_3_3'),
-                    4: dict(col_0 = 'test_1_4', col_1 = 'test_2_4', col_2 = 'test_3_4'),
-                },
-                test_table_1 = {
-                    0: dict(col_0 = 'test_1_0', col_1 = 'test_2_0', col_2 = 'test_3_0'),
-                    1: dict(col_0 = 'test_1_1', col_1 = 'test_2_1', col_2 = 'test_3_1'),
-                    2: dict(col_0 = 'test_1_2', col_1 = 'test_2_2', col_2 = 'test_3_2'),
-                    3: dict(col_0 = 'test_1_3', col_1 = 'test_2_3', col_2 = 'test_3_3'),
-                    4: dict(col_0 = 'test_1_4', col_1 = 'test_2_4', col_2 = 'test_3_4'),
-                }
-        )
         db.import_data(data)
         assert data == db.export_data()
         with db.connector as connection:
@@ -184,9 +170,112 @@ class Test_LibraryManager:
     def test_library_manager(self, get_library_manager: LibraryManager):
         db = get_library_manager
         with db.connector as connection:
-            assert db.execute("SELECT * FROM library", connection).fields == db.library_table_columns
-            assert db.execute("SELECT * FROM queue", connection).fields == db.queue_table_columns
+            assert all([a == b for a, b in
+                        zip(db.execute("SELECT * FROM library", connection).fields, db.library_table_columns)])
+            assert all([a == b for a, b in
+                        zip(db.execute("SELECT * FROM queue", connection).fields, db.queue_table_columns)])
 
-    def test_scan_directories(self, get_library_manager: LibraryManager):
+    @pytest_cases.parametrize('path', [MEDIA_FOLDER, MEDIA_FOLDER.as_posix(), [MEDIA_FOLDER, MEDIA_FOLDER]])
+    def test_scan_directories(self, get_library_manager: LibraryManager, path):
         db = get_library_manager
-        db.scan_directories(os.path.join(CONFIG.assets_dir, 'music_samples'))
+        db.scan_directories(path)
+        with db.connector as connection:
+            records = db.execute("SELECT * FROM library", connection)
+            LOGGER.debug(records)
+            assert records.fields
+            db.execute("DELETE FROM library", connection)
+
+    @pytest_cases.parametrize_with_cases('file_path', cases = cases, prefix = 'file_tagged_mp3', ids = IDGen)
+    def test_scan_files(self, get_library_manager: LibraryManager, file_path):
+        db = get_library_manager
+        db.scan_files(file_path)
+        with db.connector as connection:
+            records = db.execute("SELECT * FROM library", connection)
+            LOGGER.debug(records)
+            assert records.fields
+            db.execute("DELETE FROM library", connection)
+
+    @pytest.mark.skipif(not BENCHMARK, reason = f"Benchmarking: {BENCHMARK}")
+    def test_benchmark_scanning(self, get_library_manager: LibraryManager):
+        db = get_library_manager
+        file_path = [MEDIA_FOLDER / 'mp3' / "example_48000H_2C_TAGGED.mp3" for _ in range(1000)]
+        LOGGER.info("RUNTIME: {run}".format(run = timeit.timeit(lambda: db.scan_files(file_path), number = 5)))
+        with db.connector as connection:
+            records = db.execute("SELECT * FROM library", connection)
+            LOGGER.debug(records)
+            assert records.fields
+            db.execute("DELETE FROM library", connection)
+
+    def test_add_dir_to_watcher(self, get_library_manager: LibraryManager):
+        db = get_library_manager
+        with tempfile.TemporaryDirectory() as directory:
+            ROOT = PurePath(directory, "ROOT")
+            os.mkdir(ROOT)
+            ROOT_1 = PurePath(directory, "ROOT", "ROOT_1")
+            os.mkdir(ROOT_1)
+            ROOT_2 = PurePath(directory, "ROOT", "ROOT_2")
+            os.mkdir(ROOT_2)
+            ROOT_3 = PurePath(directory, "ROOT", "ROOT_3")
+            os.mkdir(ROOT_3)
+            ROOT_1_1 = PurePath(directory, "ROOT", "ROOT_1", "ROOT_1_1")
+            os.mkdir(ROOT_1_1)
+            ROOT_1_2 = PurePath(directory, "ROOT", "ROOT_1", "ROOT_1_2")
+            os.mkdir(ROOT_1_2)
+            ROOT_1_3 = PurePath(directory, "ROOT", "ROOT_1", "ROOT_1_3")
+            os.mkdir(ROOT_1_3)
+            ROOT_1_4 = PurePath(directory, "ROOT", "ROOT_1", "ROOT_1_4")
+            os.mkdir(ROOT_1_4)
+            ROOT_2_1 = PurePath(directory, "ROOT", "ROOT_2", "ROOT_2_1")
+            os.mkdir(ROOT_2_1)
+            ROOT_2_2 = PurePath(directory, "ROOT", "ROOT_2", "ROOT_2_2")
+            os.mkdir(ROOT_2_2)
+            ROOT_2_3 = PurePath(directory, "ROOT", "ROOT_2", "ROOT_2_3")
+            os.mkdir(ROOT_2_3)
+            ROOT_2_4 = PurePath(directory, "ROOT", "ROOT_2", "ROOT_2_4")
+            os.mkdir(ROOT_2_4)
+            ROOT_3_1 = PurePath(directory, "ROOT", "ROOT_3", "ROOT_3_1")
+            os.mkdir(ROOT_3_1)
+            ROOT_3_2 = PurePath(directory, "ROOT", "ROOT_3", "ROOT_3_2")
+            os.mkdir(ROOT_3_2)
+            ROOT_3_2_1 = PurePath(directory, "ROOT", "ROOT_3", "ROOT_3_2", "ROOT_3_2_1")
+            os.mkdir(ROOT_3_2)
+            ROOT_3_2_2 = PurePath(directory, "ROOT", "ROOT_3", "ROOT_3_2", "ROOT_3_2_2")
+            os.mkdir(ROOT_3_2)
+            ROOT_3_3 = PurePath(directory, "ROOT", "ROOT_3", "ROOT_3_3")
+            os.mkdir(ROOT_3_3)
+            ROOT_3_4 = PurePath(directory, "ROOT", "ROOT_3", "ROOT_3_4")
+            os.mkdir(ROOT_3_4)
+
+            db.add_dir_to_watcher(ROOT_1)
+            db.add_dir_to_watcher(ROOT_1_1)
+            db.add_dir_to_watcher(ROOT_1_2)
+            assert all([True if (a in [ROOT_1, ROOT_1_1, ROOT_1_2]) else False for a in db._dirs_watched])
+            db.add_dir_to_watcher(ROOT_1_3)
+            db.add_dir_to_watcher(ROOT_1_4)
+            assert db._dirs_watched == [ROOT_1]
+
+            db.add_dir_to_watcher(ROOT_2_1)
+            db.add_dir_to_watcher(ROOT_2_2)
+            exp = [ROOT_1, ROOT_2_1, ROOT_2_2, ROOT_2_3, ROOT_2_4]
+            assert all([True if (a in exp) else False for a in db._dirs_watched])
+            db.add_dir_to_watcher(ROOT_2_3)
+            db.add_dir_to_watcher(ROOT_2_4)
+            db.add_dir_to_watcher(ROOT_2)
+            exp = [ROOT_1, ROOT_2]
+            assert all([True if (a in exp) else False for a in db._dirs_watched])
+
+            db.add_dir_to_watcher(ROOT_3_1)
+            db.add_dir_to_watcher(ROOT_3_2)
+            db.add_dir_to_watcher(ROOT_3_2_1)
+            db.add_dir_to_watcher(ROOT_3_3)
+            db.add_dir_to_watcher(ROOT_3_4)
+            exp = [ROOT_1, ROOT_2, ROOT_3_1, ROOT_3_2, ROOT_3_3, ROOT_3_4, ROOT_3_2_1]
+            assert all([True if (a in exp) else False for a in db._dirs_watched])
+            db.add_dir_to_watcher(ROOT_3_2_2)
+            exp = [ROOT_1, ROOT_2, ROOT_3]
+            assert all([True if (a in exp) else False for a in db._dirs_watched])
+            db.add_dir_to_watcher(ROOT_3)
+            assert db._dirs_watched == [ROOT_1, ROOT_2, ROOT_3]
+
+            db.add_dir_to_watcher(ROOT)
+            assert db._dirs_watched == [ROOT]

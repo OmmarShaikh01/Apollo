@@ -10,12 +10,14 @@ import copy
 import dataclasses
 import os
 import uuid
+import warnings
 from pathlib import PurePath
 from types import TracebackType
-from typing import Union
+from typing import Any, Union
 
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
+import apollo.media
 from apollo.media import Mediafile
 from apollo.utils import get_logger
 from configs import settings
@@ -60,7 +62,7 @@ class Connection(QSqlDatabase):
         Returns:
             QSqlDatabase: a connection object used to execute queries
         """
-        LOGGER.debug(f"Connected {self.database} <{self.name}>")
+        LOGGER.debug(f"Connected {self} {self.database} <{self.name}>")
         if self.open() and self.isValid() and self.isOpen():
             self.exec("PRAGMA foreign_keys=ON")
             return self
@@ -131,13 +133,19 @@ class RecordSet:
         return not (len(self.fields) == 0 and len(self.records) == 0)
 
     def __str__(self) -> str:
+        def str_converter(item: Any):
+            if item:
+                return str(item)
+            else:
+                return str(None)
+
         if self:
             HEADER = " | ".join(item for item in self.fields)
             SEP = "-" * len(HEADER)
-            DATA = "\n".join(" | ".join(sub_item for sub_item in item) for item in self.records)
-            return f"{SEP}\n{HEADER}\n{SEP}\n{DATA}\n{SEP}"
+            DATA = '\n'.join(" | ".join(map(str_converter, row)) for row in self.records)
+            return f"\n{SEP}\n{HEADER}\n{SEP}\n{DATA}\n{SEP}\n"
         else:
-            return f"----\nEMPTY\n----\nEMPTY\n----"
+            return f"\n----\nEMPTY\n----\nEMPTY\n----\n"
 
 
 class Database:
@@ -284,175 +292,99 @@ class Database:
 
 
 class LibraryManager(Database):
-    library_table_columns = [
-        "file_id", "file_path", "file_name", "file_size", "file_ext", "track_title", "artist", "album",
-        "album_artist", "composer", "track_number", "total_tracks", "disc_number", "total_discs", "genre",
-        "year", "compilation", "lyrics", "isrc", "comment", "artwork", "bitrate", "codec", "play_length",
-        "channels", "bits_per_sample", "samplerate", "liked", "play_count", "rating",
-    ]
-    queue_table_columns = ["file_id", "play_order"]
+    library_table_columns = Mediafile.TAG_FRAMES
+    queue_table_columns = ["FILEID", "PLAYORDER"]
 
     def __init__(self, path: str = None):
         super().__init__(path)
         self.init_structure()
+        self._dirs_watched = []
 
     def init_structure(self):
-        library_table = """
+        cols = []
+        for K, V in Mediafile.TAG_FRAMES_FIELDS:
+            if K == "FILEID":
+                cols.append(f"{K} {V} PRIMARY KEY ON CONFLICT IGNORE")
+            elif K in ["FILEPATH", 'FILENAME', 'FILESIZE', 'FILEEXT']:
+                cols.append(f"{K} {V} NOT NULL")
+            else:
+                cols.append(f"{K} {V}")
+
+        library_table = f"""
         CREATE TABLE IF NOT EXISTS library (
-            -- Syntehtic tags        
-            file_id         STRING  PRIMARY KEY ON CONFLICT IGNORE,
-            file_path       STRING  NOT NULL,
-            file_name       STRING  NOT NULL,
-            file_size       INTEGER NOT NULL,
-            file_ext        STRING  NOT NULL,
-            
-            -- Actual tags
-            track_title     STRING,
-            artist          STRING,
-            album           STRING,
-            album_artist    STRING,
-            composer        STRING,
-            track_number    STRING,
-            total_tracks    STRING,
-            disc_number     STRING,
-            total_discs     STRING,
-            genre           STRING,
-            year            STRING,
-            compilation     STRING,
-            lyrics          STRING,
-            isrc            STRING,
-            comment         STRING,
-            
-            -- File info
-            artwork         BOOLEAN,
-            bitrate         STRING,
-            codec           STRING,            
-            play_length     FLOAT,
-            channels        INTEGER,
-            bits_per_sample INTEGER,
-            samplerate      INTEGER,
-            
-            -- User generated tags
-            liked           BOOLEAN DEFAULT FALSE,
-            play_count      INTEGER NOT NULL DEFAULT 0,
-            rating          INTEGER NOT NULL DEFAULT 0
+            {str(", ").join(cols)}
         )
         """
         queue_table = """
         CREATE TABLE IF NOT EXISTS queue (
-            file_id    STRING  REFERENCES library (file_id) ON DELETE CASCADE ON UPDATE CASCADE,
-            play_order INTEGER PRIMARY KEY
+            FILEID    STRING  REFERENCES library (FILEID) ON DELETE CASCADE ON UPDATE CASCADE,
+            PLAYORDER INTEGER PRIMARY KEY
         )
         """
         with self.connector as connection:
             self.execute(library_table, connection)
             self.execute(queue_table, connection)
 
+    def add_dir_to_watcher(self, path: PurePath):
+        if len(self._dirs_watched) == 0:
+            self._dirs_watched.append(path)
+        else:
+            if path not in self._dirs_watched:
+                self._dirs_watched.append(path)
+        LOGGER.info(self._dirs_watched)
+
     def scan_directories(self, path: Union[list[PurePath, str], str, PurePath]):
 
         def scan_directory(dir_path: str, connection: Connection):
             files_scanned = []
-            mediafile = None
             for dirct, subdirs, files in os.walk(dir_path):
                 for file in files:
-                    _path = (os.path.normpath(os.path.join(dirct, file)))
+                    _path = PurePath(dirct, file)
                     if Mediafile.isSupported(_path):
                         mediafile = Mediafile(_path)
-                        # TODO:
-                        # if mediafile.SynthTags['file_id'] and float(mediafile.Tags['length']) < 3600:
-                        #     files_scanned.append(list(mediafile.SynthTags.values()))
-                        files_scanned.append(list(mediafile.SynthTags.values()))
-            if mediafile is not None and len(files_scanned) > 0:
-                records = RecordSet(list(mediafile.SynthTags.keys()), files_scanned)
+                        if mediafile.SynthTags['FILEID'][0] and float(mediafile.SynthTags['SONGLEN'][0]) <= 3600:
+                            files_scanned.append(list(mediafile.Records.values()))
+                        else:
+                            LOGGER.warning(f"Skipped {_path}")
+                            warnings.warn(f"Skipped {_path}")
+            if len(files_scanned) > 0:
+                records = RecordSet(Mediafile.TAG_FRAMES, files_scanned)
                 self.batch_insert(records, 'library', connection)
 
         if isinstance(path, str):
-            path = PurePath(path)
+            path = [PurePath(path)]
 
         if not isinstance(path, list):
             path = [path]
+
+        if isinstance(path, list):
+            path = [item if not isinstance(item, str) else PurePath(item) for item in path]
 
         with self.connector as connection:
             for item in path:
                 LOGGER.info(f"Scanning directory: {item}")
                 scan_directory(str(item), connection)
 
-    def scan_files(self, path: Union[list[str], str]): ...
+    def scan_files(self, path: Union[list[PurePath, str], str, PurePath]):
+        if isinstance(path, str):
+            path = [PurePath(path)]
 
-# class LibraryManager(Database):
-#
-#     def __init__(self) -> None:
-#         super().__init__()
-#
-#     def scan_directory(self, directory: str):
-#         """
-#         Starts a recursive scan of the directory and inserts the metadata into the file
-#
-#         Args:
-#             directory (str): directory to scan files from
-#         """
-#         if not os.path.isdir(directory):
-#             return None
-#
-#         scanned_files = []
-#         for dirct, subdirs, files in os.walk(directory):
-#             for file in files:
-#                 path = (os.path.normpath(os.path.join(dirct, file)))
-#                 if Mediafile.isSupported(path):
-#                     mediafile = Mediafile(path)
-#                     if mediafile.SynthTags['file_id'] and float(mediafile.Tags['length']) < 3600:
-#                         scanned_files.append(mediafile.SynthTags)
-#         self.batchinsert_data('library', scanned_files, Mediafile.tags_fields)
-#
-#     def scan_file(self, path: str):
-#         """
-#         Starts a scan of the file and inserts the metadata into the library
-#
-#         Args:
-#             path (str): file to scan and insert into library
-#         """
-#         if not os.path.isfile(path):
-#             return None
-#
-#         if Mediafile.isSupported(path):
-#             mediafile = Mediafile(path)
-#             if mediafile.SynthTags['file_id'] and float(mediafile.Tags['length']) < 3600:
-#                 self.insert_Metadata(mediafile.SynthTags, Mediafile.tags_fields)
-#
-#     def refresh_library(self):
-#         """
-#         Starts a scan of all the files loades in the library model and refreshes the metadata
-#         """
-#         delete_queue = []
-#         insert_queue = []
-#         with Connection(self.database_file) as connection:
-#             files = self.fetch_all(self.exec_query('SELECT library.file_path from library', connection))
-#             for file in files:
-#                 path = (os.path.normpath(file[0]))
-#                 if not os.path.isfile(path):
-#                     delete_queue.append(path)
-#                 elif Mediafile.isSupported(path):
-#                     mediafile = Mediafile(path)
-#                     if mediafile.SynthTags['file_id'] and float(mediafile.Tags['length']) < 3600:
-#                         insert_queue.append(mediafile.SynthTags)
-#                 else:
-#                     continue
-#             self.delete_items('file_path', delete_queue, connection)
-#             if len(insert_queue) > 0:
-#                 self.batchinsert_data('library', insert_queue, Mediafile.tags_fields, connection)
-#
-#     def delete_items(self, field: str, delete_items: list[str], connection: QSqlDatabase = None):
-#         if len(delete_items) > 0:
-#             if len(delete_items) == 1:
-#                 str_delete_queue = f"('{delete_items[0]}')"
-#             else:
-#                 str_delete_queue = tuple(_id for _id in delete_items)
-#         else:
-#             return None
-#
-#         if connection is None:
-#             with Connection(self.database_file) as connection:
-#                 self.exec_query(f'DELETE FROM library WHERE library.{field} IN {str_delete_queue}', connection)
-#         else:
-#             self.exec_query(f'DELETE FROM library WHERE library.{field} IN {str_delete_queue}', connection)
-#         self.DATABASE_MODIFIED.emit()
+        if not isinstance(path, list):
+            path = [path]
+
+        if isinstance(path, list):
+            path = [item if not isinstance(item, str) else PurePath(item) for item in path]
+
+        with self.connector as connection:
+            files_scanned = []
+            for file_path in path:
+                if Mediafile.isSupported(file_path):
+                    mediafile = Mediafile(file_path)
+                    if mediafile.SynthTags['FILEID'][0] and float(mediafile.SynthTags['SONGLEN'][0]) <= 3600:
+                        files_scanned.append(list(mediafile.Records.values()))
+                    else:
+                        LOGGER.warning(f"Skipped {file_path}")
+                        warnings.warn(f"Skipped {file_path}")
+            if len(files_scanned) > 0:
+                records = RecordSet(Mediafile.TAG_FRAMES, files_scanned)
+                self.batch_insert(records, 'library', connection)

@@ -3,6 +3,8 @@ import os
 from pathlib import PurePath
 from typing import Any, Union
 
+import av
+
 from apollo.media.decoders.decode import Stream
 from apollo.media.decoders.mp3 import MP3_File
 from apollo.utils import get_logger
@@ -14,6 +16,7 @@ CONFIG = settings
 
 class Mediafile:
     TAG_FRAMES = Stream.TAG_FRAMES
+    TAG_FRAMES_FIELDS = Stream.TAG_FRAMES_FIELDS
 
     def __init__(self, path: Union[str, PurePath]):
         if self.isSupported(path):
@@ -21,7 +24,6 @@ class Mediafile:
                 self.path = PurePath(path)
             else:
                 self.path = path
-            LOGGER.debug(f"Read {self.path}")
             self._stream = self._get_stream()
         else:
             LOGGER.error(f"Failed to read {path}")
@@ -43,33 +45,39 @@ class Mediafile:
         else:
             return None
 
+    def get_frame(self) -> av.audio.frame.AudioFrame:
+        return self.Decoder.get()
+
     @property
-    def Decoder(self) -> Union[Any, None]:
+    def Decoder(self) -> Any:
         if self._stream is not None:
             return self._stream.Decoder
-        else:
-            return None
 
     @property
-    def Tags(self) -> Union[dict, None]:
+    def Tags(self) -> Any:
         if self._stream is not None:
             return self._stream.Tags
-        else:
-            return None
 
     @property
-    def SynthTags(self) -> Union[Any, None]:
+    def SynthTags(self) -> dict:
         if self._stream is not None:
             return self._stream.SynthTags
-        else:
-            return None
 
     @property
-    def Artwork(self) -> Union[Any, None]:
+    def Artwork(self) -> list:
         if self._stream is not None:
             return self._stream.Artwork
-        else:
-            return None
+
+    @property
+    def Records(self) -> dict:
+        if self._stream is not None:
+            return self._stream.Records
+
+    # noinspection PyAttributeOutsideInit
+    @property
+    def Info(self) -> dict:
+        if self._stream is not None:
+            return self._stream.stream_info
 
     @staticmethod
     def isSupported(path: Union[str, PurePath]) -> bool:
