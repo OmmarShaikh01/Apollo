@@ -14,7 +14,7 @@ LOGGER = get_logger(__name__)
 
 
 def create_temp_dir():
-    path = os.path.join(os.path.dirname(__file__), 'tempdir')
+    path = settings.temp_dir
     if os.path.isdir(path):
         shutil.rmtree(path)
     os.mkdir(path)
@@ -22,7 +22,7 @@ def create_temp_dir():
 
 
 def remove_temp_dir():
-    path = os.path.join(os.path.dirname(__file__), 'tempdir')
+    path = settings.temp_dir
     if os.path.isdir(path):
         shutil.rmtree(path)
         LOGGER.info(f"Deleted {path}")

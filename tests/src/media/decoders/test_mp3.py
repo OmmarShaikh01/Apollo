@@ -1,4 +1,3 @@
-import os
 import timeit
 from pathlib import PurePath
 
@@ -10,13 +9,13 @@ from apollo.media import Mediafile
 from apollo.utils import get_logger
 from configs import settings
 from tests.assets.music_samples.generate import create_mp3
-from tests.pytest.utils_for_tests import IDGen
+from tests.testing_utils import IDGen
 
 CONFIG = settings
 BENCHMARK = CONFIG.benchmark_formats  # TODO: remove not
 LOGGER = get_logger(__name__)
 create_mp3()
-cases = "tests.pytest.media.decoders.case_decoder"
+cases = "tests.src.media.decoders.case_decoder"
 
 
 class Test_Mediafile_MP3:
@@ -24,14 +23,13 @@ class Test_Mediafile_MP3:
     @pytest.mark.skipif(not BENCHMARK, reason = f"Benchmarking: {BENCHMARK}")
     @pytest_cases.parametrize_with_cases('file_path', cases = cases, prefix = 'files_mp3', ids = IDGen)
     def test_benchmark_load_times(self, file_path: PurePath):
-        LOGGER.info("RUNTIME: {run}".format(run = timeit.timeit(lambda: Mediafile(file_path), number = 2000)))
+        LOGGER.info("RUNTIME: {run}".format(run = timeit.timeit(lambda: Mediafile(file_path), number = CONFIG.benchmark_runs)))
 
     @pytest.mark.skipif(not BENCHMARK, reason = f"Benchmarking: {BENCHMARK}")
     @pytest_cases.parametrize_with_cases('file_path', cases = cases, prefix = 'files_mp3', ids = IDGen)
     def test_benchmark_full_load_times(self, file_path: PurePath):
-        LOGGER.info("RUNTIME: {run}".format(run = timeit.timeit(lambda: Mediafile(file_path).SynthTags, number = 2000)))
+        LOGGER.info("RUNTIME: {run}".format(run = timeit.timeit(lambda: Mediafile(file_path).SynthTags, number = CONFIG.benchmark_runs)))
 
-    @pytest.mark.skip
     @pytest_cases.parametrize_with_cases('file_path', cases = cases, prefix = 'files_mp3', ids = IDGen)
     def test_loading_files(self, file_path: PurePath):
         media = Mediafile(file_path)
@@ -40,7 +38,6 @@ class Test_Mediafile_MP3:
         else:
             assert len(media.Tags) == 0
 
-    @pytest.mark.skip
     @pytest_cases.parametrize_with_cases('file_path', cases = cases, prefix = 'files_mp3', ids = IDGen)
     def test_loading_decoders(self, file_path: PurePath):
         def validate_frame(_frame: av.AudioFrame):

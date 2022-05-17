@@ -24,8 +24,7 @@ def import_json_data():
     return data
 
 
-@parametrize('path', [(MEDIA_FOLDER / 'dsf' / "example.dsf"),
-                      (MEDIA_FOLDER / 'mp3' / "example_48000H_2C_TAGGED.mp3"),
+@parametrize('path', [(MEDIA_FOLDER / 'mp3' / "example_48000H_2C_TAGGED.mp3"),
                       (MEDIA_FOLDER / 'mp3' / "example_48000H_2C_TAGGED.mp3").as_posix(),
                       [(MEDIA_FOLDER / 'mp3' / "example_48000H_2C_TAGGED.mp3"),
                        (MEDIA_FOLDER / 'mp3' / "example_48000H_2C_TAGGED.mp3")]])

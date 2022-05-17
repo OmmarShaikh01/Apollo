@@ -68,25 +68,25 @@ goto :parse
 :pytest
     ECHO started pytest
     shift
-    if /i "%~1"=="--id" set class_id=.\tests\pytest\%~2
+    if /i "%~1"=="--id" set class_id=.\tests\src\%~2
 
     if defined OptVerbose (
         echo **** DEBUG IS ON
-        %VENV%\Scripts\pytest.exe --rootdir=.\tests\pytest -c .\pytest.ini -vv %class_id%
+        %VENV%\Scripts\pytest.exe --rootdir=.\tests\src -c .\pytest.ini -vv %class_id%
     ) ELSE (
-        %VENV%\Scripts\pytest.exe -ra -q --rootdir=.\tests\pytest -c .\pytest.ini %class_id%
+        %VENV%\Scripts\pytest.exe -ra -q --rootdir=.\tests\src -c .\pytest.ini %class_id%
     )
     GOTO :eof
 
 :coverage pytest
     ECHO started coverage_py
     shift
-    if /i "%~1"=="--id" set class_id=.\tests\pytest\%~2
+    if /i "%~1"=="--id" set class_id=.\tests\src\%~2
     if defined OptVerbose (
         echo **** DEBUG IS ON
-        %VENV%\Scripts\pytest.exe --cov=.\apollo --rootdir=.\tests\pytest --cov-config=.coveragerc  -c pytest.ini  --cov-report=html -vv
+        %VENV%\Scripts\pytest.exe --cov=.\apollo --rootdir=.\tests\src --cov-config=.coveragerc  -c pytest.ini  --cov-report=html -vv
     ) ELSE (
-        %VENV%\Scripts\pytest.exe -ra -q --cov=.\apollo --rootdir=.\tests\pytest --cov-config=.coveragerc  -c pytest.ini  --cov-report=html
+        %VENV%\Scripts\pytest.exe -ra -q --cov=.\apollo --rootdir=.\tests\src --cov-config=.coveragerc  -c pytest.ini  --cov-report=html
     )
     ECHO BUILD COVERAGE REPORT INTO [%__BAT_PATH%tests\pytest\coverage]
     ECHO COVERAGE REPORT %__BAT_PATH%tests\coverage\html\index.html

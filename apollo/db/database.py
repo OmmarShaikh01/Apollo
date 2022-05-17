@@ -1,8 +1,5 @@
 """
 DEV NOTES
-
-TODO: Document code
-TODO: Write unit tests
 """
 from __future__ import annotations
 
@@ -17,7 +14,6 @@ from typing import Any, Union
 
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
-import apollo.media
 from apollo.media import Mediafile
 from apollo.utils import get_logger
 from configs import settings
@@ -76,8 +72,8 @@ class Connection(QSqlDatabase):
             value (BaseException): Exception Value
             traceback (TracebackType): Traceback stack
         """
-        if any([exc_type, value, traceback]):
-            print(f"Type: {exc_type}\nValue: {value}\nTraceback:\n{traceback}")
+        if any([exc_type, value, traceback]):  # pragma: no cover
+            LOGGER.error(f"Type: {exc_type}\nValue: {value}\nTraceback:\n{traceback}")
         self.commit()
         self.close()
         QSqlDatabase.removeDatabase(self.name)
@@ -132,7 +128,7 @@ class RecordSet:
     def __bool__(self):
         return not (len(self.fields) == 0 and len(self.records) == 0)
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # pragma: no cover
         def str_converter(item: Any):
             if item:
                 return str(item)
@@ -176,7 +172,8 @@ class Database:
         Raises:
             QueryExecutionFailed: when a query fails to execute
         """
-        def _dedent_query(query_str: str):
+
+        def _dedent_query(query_str: str):  # pragma: no cover
             lines = query_str.splitlines()
             return "\n".join(line.lstrip() for line in lines)
 
@@ -189,7 +186,7 @@ class Database:
 
             LOGGER.debug(f"Batch Insert into: {table}")
             conn.transaction()
-            if not query.execBatch():
+            if not query.execBatch():  # pragma: no cover
                 connection_info = (str(conn))
                 msg = f"\nError: {(query.lastError().text())}" \
                       f"\nQuery: {_dedent_query(query.lastQuery())}" \
@@ -214,6 +211,7 @@ class Database:
             QueryBuildFailed: when a prepared query fails to build
             QueryExecutionFailed: when a query fails to execute
         """
+
         def _dedent_query(query_str: str):
             lines = query_str.splitlines()
             return "\n".join(line.lstrip() for line in lines)
@@ -271,10 +269,8 @@ class Database:
             for item in result:
                 table_name = item[0]
                 table_result = self.execute(f"SELECT * FROM {table_name}", connection)
-                table_result = {
-                    index: {k: v for k, v in zip(table_result.fields, row)}
-                    for index, row in enumerate(table_result.records)
-                }
+                table_result = {index: {k: v for k, v in zip(table_result.fields, row)} for index, row in
+                                enumerate(table_result.records)}
                 export[table_name] = table_result
         return export
 
@@ -291,14 +287,14 @@ class Database:
         return conn
 
 
-class LibraryManager(Database):
+class LibraryManager(Database):  # TODO: Documentation
     library_table_columns = Mediafile.TAG_FRAMES
     queue_table_columns = ["FILEID", "PLAYORDER"]
 
     def __init__(self, path: str = None):
         super().__init__(path)
         self.init_structure()
-        self._dirs_watched = []
+        self._dirs_watched = []  # Save To config
 
     def init_structure(self):
         cols = []
@@ -315,6 +311,7 @@ class LibraryManager(Database):
             {str(", ").join(cols)}
         )
         """
+
         queue_table = """
         CREATE TABLE IF NOT EXISTS queue (
             FILEID    STRING  REFERENCES library (FILEID) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -329,13 +326,23 @@ class LibraryManager(Database):
         if len(self._dirs_watched) == 0:
             self._dirs_watched.append(path)
         else:
-            if path not in self._dirs_watched:
+            if path.parent in self._dirs_watched:
+                LOGGER.warning(f"Skipped {path} parent directory exists")
+                warnings.warn(f"Skipped {path} parent directory exists")
+            elif path in [_path.parent for _path in self._dirs_watched]:
+                if all([(path / str(item)) in self._dirs_watched for item in os.listdir(path)]):
+                    self._dirs_watched.append(path)
+                    for file in os.listdir(path):
+                        self._dirs_watched.pop(self._dirs_watched.index(path / str(file)))
+            elif path not in self._dirs_watched:
                 self._dirs_watched.append(path)
-        LOGGER.info(self._dirs_watched)
+            else:
+                LOGGER.warning(f"Skipped {path}, is not monitored")
+                warnings.warn(f"Skipped {path}, is not monitored")
 
     def scan_directories(self, path: Union[list[PurePath, str], str, PurePath]):
 
-        def scan_directory(dir_path: str, connection: Connection):
+        def scan_directory(dir_path: PurePath, connection: Connection):
             files_scanned = []
             for dirct, subdirs, files in os.walk(dir_path):
                 for file in files:
@@ -347,9 +354,10 @@ class LibraryManager(Database):
                         else:
                             LOGGER.warning(f"Skipped {_path}")
                             warnings.warn(f"Skipped {_path}")
-            if len(files_scanned) > 0:
+            if len(files_scanned) > 0:  # pragma: no cover
                 records = RecordSet(Mediafile.TAG_FRAMES, files_scanned)
                 self.batch_insert(records, 'library', connection)
+                self.add_dir_to_watcher(dir_path)
 
         if isinstance(path, str):
             path = [PurePath(path)]
@@ -363,7 +371,7 @@ class LibraryManager(Database):
         with self.connector as connection:
             for item in path:
                 LOGGER.info(f"Scanning directory: {item}")
-                scan_directory(str(item), connection)
+                scan_directory(item, connection)
 
     def scan_files(self, path: Union[list[PurePath, str], str, PurePath]):
         if isinstance(path, str):
@@ -385,6 +393,27 @@ class LibraryManager(Database):
                     else:
                         LOGGER.warning(f"Skipped {file_path}")
                         warnings.warn(f"Skipped {file_path}")
-            if len(files_scanned) > 0:
+            if len(files_scanned) > 0:   # pragma: no cover
                 records = RecordSet(Mediafile.TAG_FRAMES, files_scanned)
                 self.batch_insert(records, 'library', connection)
+
+    def get_library_stats(self) -> RecordSet:
+        with self.connector as connection:
+            records = self.execute("""
+            SELECT 
+            count(FILEID) as TRACKS,
+            SUM(FILESIZE) as BYTESIZE,
+            round(SUM(SONGLEN), 4) as PLAYLEN,
+            (SELECT count(ARTIST) FROM library GROUP BY ARTIST) as ARTIST,
+            (SELECT count(ALBUM) FROM library GROUP BY ALBUM) as ALBUM
+            FROM library 
+            """, connection)
+        return records
+
+    def rescan_files(self):
+        with self.connector as connection:
+            recordset = self.execute("SELECT FILEPATH FROM library", connection)
+        self.scan_files([item[0] for item in recordset.records])
+
+    def rescan_folders(self):
+        self.scan_directories(self._dirs_watched)
