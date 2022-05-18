@@ -201,8 +201,8 @@ cython_debug/
 /docs/build/
 /exclude/
 /tests/coverage/
-/poetry.lock
 /dist
 
 # Ignore dynaconf secret files
 .secrets.*
+!/poetry.lock
