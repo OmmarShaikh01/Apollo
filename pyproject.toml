@@ -9,7 +9,6 @@ build = 'build.py'
 [tool.poetry.dependencies]
 python = ">=3.9, <3.11"
 PySide6 = "^6.3.0"
-qt-material = "^2.11"
 mutagen = "^1.45.1"
 av = "^9.2.0"
 dynaconf = "^3.1.8"
@@ -24,6 +23,7 @@ pytest-cov = "^3.0.0"
 pytest-cases = "^3.6.12"
 pytest-mock = "^3.7.0"
 nox = "^2022.1.7"
+Jinja2 = "^3.1.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

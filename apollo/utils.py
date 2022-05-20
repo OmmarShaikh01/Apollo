@@ -1,19 +1,12 @@
-import configparser
 import logging
 import os
-import shutil
 import sys
 import threading
 import time
 import traceback
-from typing import (Callable, Optional)
-
-# noinspection PyUnresolvedReferences
-import PySide6
-import qt_material
+from typing import (Callable)
 
 from configs import settings as _settings
-
 
 ROOT = _settings.project_root
 _LOGGER = None
@@ -38,8 +31,7 @@ def get_logger(name: str) -> logging.Logger:
     env = str(_settings.current_env).upper()
     if env in ['TESTING', 'PRODUCTION']:
         formatter = logging.Formatter(
-            '%(asctime)s: %(levelname)8s:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s'
-        )
+                '%(asctime)s: %(levelname)8s:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s')
 
         if env == 'TESTING':
             log_path = os.path.join(ROOT, 'apollo_test.log')
@@ -64,6 +56,7 @@ def get_logger(name: str) -> logging.Logger:
     return logger
 
 
+# noinspection PyRedeclaration
 _LOGGER = get_logger(__name__)
 
 
@@ -127,34 +120,6 @@ def threadit(method: Callable) -> Callable:
         thread.start()
 
     return exe
-
-
-class ResourceGenerator(qt_material.ResourseGenerator):
-
-    # noinspection PyMissingConstructor
-    def __init__(self, root: str, primary: str, secondary: str, disabled: str, source: str, parent: str = 'theme'):
-        """
-        Constructor
-
-        Args:
-            root(str): resource root folder
-            primary(str): primary colour value
-            secondary(str): secondary colour value
-            disabled(str): disabled colour value
-            source(str): source svg directory
-            parent(str, optional): parent directory name
-        """
-        self.index = os.path.join(root, parent)
-
-        self.contex = [(os.path.join(self.index, 'disabled'), disabled),
-                       (os.path.join(self.index, 'primary'), primary), ]
-
-        self.source = source
-        self.secondary = secondary
-
-        for folder, _ in self.contex:
-            shutil.rmtree(folder, ignore_errors = True)
-            os.makedirs(folder, exist_ok = True)
 
 
 class ApolloSignal:

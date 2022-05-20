@@ -1,6 +1,7 @@
 import os
 import sys
 
+import qt_material
 from PySide6 import QtWidgets
 from PySide6.QtCore import QDir
 from qt_material import apply_stylesheet
@@ -11,6 +12,7 @@ except ModuleNotFoundError:
     sys.path.append(os.path.dirname(os.path.dirname(__file__)))
     from apollo.src.app import Apollo
 from apollo.utils import get_configparser, get_logger, ROOT, ResourceGenerator
+
 # END REGION
 
 
@@ -33,14 +35,9 @@ def set_icons_theme(theme: dict, parent: str = 'theme_customs') -> None:
     resources_path = os.path.join(ROOT, "assets", 'generated')
     if not os.path.isdir(os.path.join(resources_path, parent)):
         source = os.path.join(ROOT, 'assets', 'icons')
-        resources = ResourceGenerator(
-            root = resources_path,
-            primary = theme['QTMATERIAL_PRIMARYCOLOR'],
-            secondary = theme['QTMATERIAL_SECONDARYCOLOR'],
-            disabled = theme['QTMATERIAL_SECONDARYLIGHTCOLOR'],
-            source = source,
-            parent = parent
-        )
+        resources = ResourceGenerator(root = resources_path, primary = theme['QTMATERIAL_PRIMARYCOLOR'],
+                secondary = theme['QTMATERIAL_SECONDARYCOLOR'], disabled = theme['QTMATERIAL_SECONDARYLIGHTCOLOR'],
+                source = source, parent = parent)
         resources.generate()
     if os.path.isdir(os.path.join(resources_path, parent)):
         QDir.addSearchPath(parent, os.path.join(resources_path, parent))

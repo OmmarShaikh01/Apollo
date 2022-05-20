@@ -193,16 +193,17 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# Ignore dynaconf secret files
+.secrets.*
+
 # Misc Development files
 /.idea
-/apollo/assets/generated/
 /apollo/db/default.db
 /apollo/apollo.ini
 /docs/build/
 /exclude/
 /tests/coverage/
 /dist
-
-# Ignore dynaconf secret files
-.secrets.*
-!/poetry.lock
+/apollo/assets/stylesheets/generated/
+/apollo/assets/stylesheets/build/
+/apollo/assets/app_themes/__loaded_theme__/
