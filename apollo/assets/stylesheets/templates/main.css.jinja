@@ -13,17 +13,61 @@ QTCOLOR_SUCCESS
 
 FONT_FAMILY
 
-FILTER_OPACITY
+FILTER_OPACITY(color: str, value: Optional[int] = (0 to 1))
+FILTER_LUMINOSITY(color: str, value: Optional[int] = (0 to 1))
 ---------------------------------------------------------------------------- */
 
 
 * {
     font-family: {{FONT_FAMILY}};
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
     color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
     selection-background-color: {{QTCOLOR_PRIMARYLIGHTCOLOR}};
     selection-color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    margin: 0;
+    padding: 0;
+    border: 0;
 }
 
 *:focus {
    outline: none;
 }
+
+QSplitter {
+    background-color: transparent;
+    border: none
+}
+
+QTabWidget::pane {
+    border: none;
+}
+
+QMainWindow::separator:vertical,
+QSplitter::handle:horizontal {
+    border: 0;
+}
+
+QMainWindow::separator:horizontal,
+QSplitter::handle:vertical {
+    border: 0;
+}
+
+QMainWindow::separator:vertical:hover,
+QSplitter::handle:horizontal:hover {
+    border: 1px solid {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};
+    border-radius: 1px;
+    margin: 2px 0px 2px 0px;
+}
+
+QMainWindow::separator:horizontal:hover,
+QSplitter::handle:vertical:hover {
+    border: 1px solid {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};
+    border-radius: 1px;
+    margin: 0px 2px 0px 2px;
+}
+
+
+
+{% include './containers.css.jinja' %}
+{% include './display_widgets.css.jinja' %}
+{% include './buttons.css.jinja' %}

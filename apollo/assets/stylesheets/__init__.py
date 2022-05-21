@@ -23,26 +23,47 @@ try:
     from jinja2 import Environment
     # noinspection PyUnresolvedReferences
     from jinja2.loaders import FileSystemLoader
+
     _JINJA = True
 except ImportError:
     _JINJA = False
 
 
 # Template functions anv variable declaration --------------------------------------------------------------------------
-def opacity(color: str, value: Optional[int] = 0.5):
+def opacity(color: str, value: Optional[float] = 0.5):
     """
     Colour opacity filter
 
     Args:
         color (str): color
-        value (Optional[int]): opacity value
+        value (Optional[float]): opacity value (0 to 1)
 
     Returns:
+        str: rgba string
+    """
+    r, g, b = color[1:][0:2], color[1:][2:4], color[1:][4:]
+    color = QtGui.QColor.fromRgb(int(r, 16), int(g, 16), int(b, 16))
+    color.setAlphaF(value)
+    rgba = "rgba({0}, {1}, {2}, {3})".format(*[color.red(), color.green(), color.blue(), round(color.alphaF(), 1)])
+    return rgba
 
+
+def luminosity(color: str, brightness: Optional[float] = 0):
+    """
+    Colour luminosity filter
+
+    Args:
+        color (str): color
+        brightness (Optional[float]): luminosity value (-1 to 1)
+
+    Returns:
+        str: rgba string
     """
     r, g, b = color[1:][0:2], color[1:][2:4], color[1:][4:]
     r, g, b = int(r, 16), int(g, 16), int(b, 16)
-    return f'rgba({r}, {g}, {b}, {value})'
+    lumin = lambda x: int(min(255, (x + (255 * brightness))))
+    return f'rgba({lumin(r)}, {lumin(g)}, {lumin(b)}, {1})'
+
 
 # End region -----------------------------------------------------------------------------------------------------------
 
@@ -69,10 +90,11 @@ def get_stylesheet(colors: dict) -> str:
     theme['QTCOLOR_SUCCESS'] = '#17A2B8'
 
     theme['FILTER_OPACITY'] = opacity
+    theme['FILTER_LUMINOSITY'] = luminosity
 
     template_root = PurePath(os.path.dirname(__file__), 'templates')
     loader = jinja2.FileSystemLoader(template_root.as_posix())
-    env = Environment(loader = loader, autoescape = False)
+    env = Environment(loader = loader, autoescape = False, trim_blocks = True)
 
     template = env.get_template('main.css.jinja')
     rendered = template.render(theme)
@@ -182,10 +204,11 @@ class ResourceGenerator:
         """
         Builds the theme pack for the application
         """
+        rgba = lambda r, g, b, a: f"#{hex(r)}{hex(g)}{hex(b)}".replace('0x', '')
         self.generate_theme_icons(
-            self.app_theme['QTCOLOR_PRIMARYLIGHTCOLOR'],
-            self.app_theme['QTCOLOR_PRIMARYLIGHTCOLOR'],
-            self.app_theme['QTCOLOR_PRIMARYLIGHTCOLOR']
+            eval(luminosity(self.app_theme['QTCOLOR_PRIMARYTEXTCOLOR'], 0.3)),
+            eval(luminosity(self.app_theme['QTCOLOR_SECONDARYLIGHTCOLOR'], 0.4)),
+            eval(luminosity(self.app_theme['QTCOLOR_PRIMARYLIGHTCOLOR'], 0.5))
         )
         self.generate_theme_stylesheet()
 
@@ -262,7 +285,7 @@ def load_theme(app: QtWidgets.QApplication, name: Optional[str] = None, recompil
     if os.path.exists(loaded_theme):
         QtCore.QDir.addSearchPath('icons_primary', (loaded_theme / 'icons' / 'primary').as_posix())
         QtCore.QDir.addSearchPath('icons_secondary', (loaded_theme / 'icons' / 'secondary').as_posix())
-        QtCore.QDir.addSearchPath('icons_default', (loaded_theme / 'icons' / 'disabled').as_posix())
+        QtCore.QDir.addSearchPath('icons_disabled', (loaded_theme / 'icons' / 'disabled').as_posix())
         filtr = filter(lambda ext: str(os.path.splitext(ext)[1]).lower() == '.ttf', os.listdir(ResourceGenerator.FONTS))
         for file in filtr:
             QtGui.QFontDatabase.addApplicationFont((ResourceGenerator.FONTS / str(file)).as_posix())
@@ -270,7 +293,3 @@ def load_theme(app: QtWidgets.QApplication, name: Optional[str] = None, recompil
         with open(loaded_theme / 'stylesheet.css') as file_output:
             app.setStyleSheet(file_output.read())
             app.setStyle('Fusion')
-
-
-if __name__ == '__main__':
-    load_theme(QtWidgets.QApplication(), recompile = True)

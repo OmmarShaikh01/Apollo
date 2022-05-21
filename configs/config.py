@@ -21,6 +21,7 @@ settings.validators.register(
     Validator('supported_formats', default = ['aac', 'aiff', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav'], must_exist = True, env = env),
     Validator('enabled_formats', default = ['mp3'], must_exist = True, env = env),
     Validator('loaded_theme', default = 'material_dark', must_exist = True, env = env),
+    Validator('recompile_theme', default = False, must_exist = True, env = env),  # NO DEFAULTS
     (
         Validator("server.rate", env = env, must_exist = True, default = 44100) &
         Validator("server.chnl", env = env, must_exist = True, default = 2) &
@@ -34,13 +35,15 @@ settings.validators.register(
     Validator('temp_dir', default = os.path.join(settings.project_root, 'tests', 'tempdir'), must_exist = True, env = env),
     Validator('assets_dir', default = os.path.join(settings.project_root, 'tests', 'assets'), must_exist = True, env = env),
     Validator('db_path', default = os.path.join(settings.project_root, 'tests', 'tempdir', 'testing.db'), must_exist = True, env = env),
-    Validator('sox_path', must_exist = True, env = env, messages = {"must_exist_true": "Download and Set DYNACONF_SOX_PATH envvar sox from http://sox.sourceforge.net/"}),  # NO DEFAULTS,
 
     Validator('supported_formats', default = ['aac', 'aiff', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav'], must_exist = True, env = env),
     Validator('enabled_formats', default = ['mp3'], must_exist = True, env = env),
     Validator('loaded_theme', default = 'material_dark', must_exist = True, env = env),
     Validator('benchmark_runs', default = 1000, must_exist = True, env = env),
-    Validator('benchmark_formats', default = False, must_exist = True, env = env, messages = {"must_exist_true": "Set DYNACONF_BENCHMARK_FORMATS envvar"}),  # NO DEFAULTS,
+
+    Validator('benchmark_formats', default = False, must_exist = True, env = env, messages = {"must_exist_true": "Set DYNACONF_BENCHMARK_FORMATS envvar"}),  # NO DEFAULTS
+    Validator('sox_path', must_exist = True, env = env, messages = {"must_exist_true": "Download and Set DYNACONF_SOX_PATH envvar sox from http://sox.sourceforge.net/"}),  # NO DEFAULTS
+    Validator('recompile_theme', must_exist = True, env = env, messages = {"must_exist_true": "Set DYNACONF_RECOMPILE_THEME envvar"}),  # NO DEFAULTS
     (
         Validator("server.rate", env = env, must_exist = True, default = 44100) &
         Validator("server.chnl", env = env, must_exist = True, default = 2) &

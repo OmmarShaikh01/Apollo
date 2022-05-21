@@ -197,7 +197,7 @@ cython_debug/
 .secrets.*
 
 # Misc Development files
-/.idea
+desktop.ini
 /apollo/db/default.db
 /apollo/apollo.ini
 /docs/build/

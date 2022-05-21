@@ -1,0 +1,49 @@
+{% macro style_label(name = '', luminosity = 0.1) -%}
+
+QLabel{% if name != '' %}#{{name}}{% endif %}{
+    border: none;
+    background: transparent;
+    color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    padding-left: 2px;
+}
+{%- endmacro %}
+
+
+{% macro style_slider(name = '', orientation = 'horizontal') -%}
+
+QSlider {
+    background-color: transparent;
+}
+
+QSlider::groove:{{orientation}} {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    background-color: transparent;
+}
+
+QSlider::handle:{{orientation}} {
+    background: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYDARKCOLOR, 0.4)}};
+    border-radius: 2px;
+    margin: 0 -4px; /* expand outside the groove */
+}
+
+QSlider::add-page:{{orientation}} {
+    background: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+    margin: 2px -4px;
+    border-radius: 2px;
+}
+
+QSlider::sub-page:{{orientation}} {
+    background: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYDARKCOLOR, 0.4)}};
+    margin: 2px -4px;
+    border-radius: 2px;
+}
+{%- endmacro %}
+/* END REGION -------------------------------------------------------------- */ 
+
+
+/* Default Style */
+{{ style_label() }}
+{{ style_slider() }}
+{{ style_slider(orientation = 'vertical') }}
