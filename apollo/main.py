@@ -29,7 +29,10 @@ def main() -> None:
     window = Apollo()
     LOGGER.info(msg = "Application Started")
     load_theme(app, recompile = CONFIG.recompile_theme)  # TODO: Disable recompile in production
-    # window.pushButton_2.pressed.connect(lambda: load_theme(app, recompile = CONFIG.recompile_theme))  # TODO: Disable
+
+    # TODO: Disable
+    # window.playback_button_play_pause.pressed.connect(lambda: load_theme(app, recompile = CONFIG.recompile_theme))
+
     window.show()
     app.exec()
 

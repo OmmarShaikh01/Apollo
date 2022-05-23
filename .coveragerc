@@ -3,7 +3,11 @@
 source = apollo
 branch = True
 data_file = tests\coverage\.coverage
-omit = venv tests\*
+omit =
+    venv
+    tests\*
+    apollo\utils.py
+    apollo\__main__.py
 
 [report]
 # Regexes for lines to exclude from consideration

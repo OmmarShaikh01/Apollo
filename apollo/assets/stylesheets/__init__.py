@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import re
 import shutil
 import warnings
 from pathlib import PurePath
@@ -30,7 +31,7 @@ except ImportError:
 
 
 # Template functions anv variable declaration --------------------------------------------------------------------------
-def opacity(color: str, value: Optional[float] = 0.5):
+def opacity(color: str, value: Optional[float] = 0.5) -> str:
     """
     Colour opacity filter
 
@@ -44,11 +45,10 @@ def opacity(color: str, value: Optional[float] = 0.5):
     r, g, b = color[1:][0:2], color[1:][2:4], color[1:][4:]
     color = QtGui.QColor.fromRgb(int(r, 16), int(g, 16), int(b, 16))
     color.setAlphaF(value)
-    rgba = "rgba({0}, {1}, {2}, {3})".format(*[color.red(), color.green(), color.blue(), round(color.alphaF(), 1)])
-    return rgba
+    return f"rgba({color.red()}, {color.green()}, {color.blue()}, {round(color.alphaF(), 3)})"
 
 
-def luminosity(color: str, brightness: Optional[float] = 0):
+def luminosity(color: str, brightness: Optional[float] = 0) -> str:
     """
     Colour luminosity filter
 
@@ -62,7 +62,7 @@ def luminosity(color: str, brightness: Optional[float] = 0):
     r, g, b = color[1:][0:2], color[1:][2:4], color[1:][4:]
     r, g, b = int(r, 16), int(g, 16), int(b, 16)
     lumin = lambda x: int(min(255, (x + (255 * brightness))))
-    return f'rgba({lumin(r)}, {lumin(g)}, {lumin(b)}, {1})'
+    return f'rgba({lumin(r)}, {lumin(g)}, {lumin(b)}, {float(1)})'
 
 
 # End region -----------------------------------------------------------------------------------------------------------
@@ -85,20 +85,19 @@ def get_stylesheet(colors: dict) -> str:
     theme = copy.deepcopy(colors)
 
     theme['FONT_FAMILY'] = 'Roboto'
-    theme['QTCOLOR_DANGER'] = '#DC3545'
-    theme['QTCOLOR_WARNING'] = '#FFC107'
-    theme['QTCOLOR_SUCCESS'] = '#17A2B8'
 
     theme['FILTER_OPACITY'] = opacity
     theme['FILTER_LUMINOSITY'] = luminosity
 
     template_root = PurePath(os.path.dirname(__file__), 'templates')
     loader = jinja2.FileSystemLoader(template_root.as_posix())
-    env = Environment(loader = loader, autoescape = False, trim_blocks = True)
+    env = Environment(loader = loader, autoescape = False, trim_blocks = True, lstrip_blocks = True)
 
     template = env.get_template('main.css.jinja')
     rendered = template.render(theme)
-    LOGGER.debug("\n" + rendered)
+    rendered, _ = re.subn('/\*.*\*/', '', rendered)
+    rendered = rendered.replace(";\n", '; ').replace("{\n", '{ ').replace("    ", '')
+    rendered = '\n'.join(filter(lambda x: x != '', rendered.splitlines()))
 
     return rendered
 
@@ -144,6 +143,9 @@ class ResourceGenerator:
             self.app_theme['QTCOLOR_SECONDARYDARKCOLOR'] = theme["secondaryDarkColor"]
             self.app_theme['QTCOLOR_PRIMARYTEXTCOLOR'] = theme["primaryTextColor"]
             self.app_theme['QTCOLOR_SECONDARYTEXTCOLOR'] = theme["secondaryTextColor"]
+            self.app_theme['QTCOLOR_DANGER'] = '#DC3545'
+            self.app_theme['QTCOLOR_WARNING'] = '#FFC107'
+            self.app_theme['QTCOLOR_SUCCESS'] = '#17A2B8'
         except KeyError:
             raise KeyError("Theme dict has missing keys")
 
@@ -169,7 +171,7 @@ class ResourceGenerator:
                         file_output.write(self.replace_svg_colour(content, disabled))
 
     @staticmethod
-    def replace_svg_colour(content: str, replace: str, placeholder: Optional[str] = '#0000ff') -> str:
+    def replace_svg_colour(content: str, replace: str, placeholder: Optional[str] = '#0000FF') -> str:
         """
         Replaces the placeholder fill colour in svg files
 
@@ -181,7 +183,8 @@ class ResourceGenerator:
         Returns:
             str: modified contents of the svg file
         """
-        content = content.replace(placeholder, replace)
+        content = content.replace(placeholder.upper(), replace)
+        content = content.replace(placeholder.lower(), replace)
         replace = '#ffffff00'
         placeholder = '#000000'
         content = content.replace(placeholder, replace)
@@ -263,7 +266,9 @@ def load_theme(app: QtWidgets.QApplication, name: Optional[str] = None, recompil
     """
     name = name if name is not None else CONFIG.loaded_theme
     loaded_theme = PurePath(ASSETS / 'app_themes' / '__loaded_theme__')
+    LOGGER.debug(loaded_theme)
     if not os.path.exists(loaded_theme):
+        os.mkdir(ASSETS / 'app_themes')
         os.mkdir(loaded_theme)
     theme_zip = ASSETS / 'app_themes' / (name + '.zip')
 
@@ -273,9 +278,14 @@ def load_theme(app: QtWidgets.QApplication, name: Optional[str] = None, recompil
             res.build_theme()
             res.package_theme()
             shutil.move(res.BUILD / (name + '.zip'), theme_zip)
+            shutil.rmtree(res.BUILD)
         else:
-            warnings.warn('Failed to build theme pack, Jinja is Missing')
-            LOGGER.warning('Failed to build theme pack, Jinja is Missing')
+            if not (name + '.json') in os.listdir(ResourceGenerator.THEMES):
+                warnings.warn("Theme JSON missing")
+                LOGGER.warning("Theme JSON missing")
+            if not _JINJA:
+                warnings.warn('Failed to build theme pack, Jinja is Missing')
+                LOGGER.warning('Failed to build theme pack, Jinja is Missing')
             app.setStyle('Fusion')
             return None
 

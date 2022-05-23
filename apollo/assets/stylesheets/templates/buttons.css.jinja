@@ -1,74 +1,133 @@
-{% macro style_pushbutton(name = '', state = '', image = {}, padding = '0px 4px') -%}
+{% macro style_pushbutton(name = '', state = '', image = '', padding = '0px 4px') %}
+    QPushButton{% if name != '' %}#{{name}}{% endif %}{{state}} {
+        {% if image != '' %}
+            image: url('icons_primary:/{{image}}');
+        {% else %}
+            image: none;
+        {%- endif %}
+        background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYCOLOR, 0)}};
+        color: {{FILTER_OPACITY(QTCOLOR_PRIMARYTEXTCOLOR, 0.6)}};
+        text-transform: uppercase;
+        font-weight: bold;
+        border-radius: 4px;
+        margin: 0px;
+        padding: {{padding}};
+    }
 
-QPushButton{{name}}{{state}} {
-    {% if image != {} -%} image: url('icons_primary:/{{image}}'); {%- endif %}
-    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYCOLOR, 0)}};
-    color: {{FILTER_OPACITY(QTCOLOR_PRIMARYTEXTCOLOR, 0.6)}};
-    text-transform: uppercase;        
-    font-weight: bold;    
-    border-radius: 4px;
-    margin: 0px;
-    padding: {{padding}};
-}
+    QPushButton:flat{% if name != '' %}#{{name}}{% endif %}{{state}} {
+        {% if image != '' %}
+            image: url('icons_primary:/{{image}}');
+        {% else %}
+            image: none;
+        {%- endif %}
+        background-color: transparent;
+        color: {{FILTER_OPACITY(QTCOLOR_PRIMARYTEXTCOLOR, 0.6)}};
+        text-transform: uppercase;
+        font-weight: bold;
+        border-radius: 4px;
+        margin: 0px;
+        padding: {{padding}};
+    }
 
-QPushButton:flat{{name}}{{state}} {
-    {% if image != {} -%} image: url('icons_primary:/{{image}}'); {%- endif %}
-    background-color: transparent;
-    color: {{FILTER_OPACITY(QTCOLOR_PRIMARYTEXTCOLOR, 0.6)}};
-    text-transform: uppercase;
-    font-weight: bold;
-    border-radius: 4px;
-    margin: 0px;
-    padding: {{padding}};
-}
+    QPushButton:hover{% if name != '' %}#{{name}}{% endif %}{{state}} {
+        {% if image != '' %}
+            image: url('icons_secondary:/{{image}}');
+        {% else %}
+            image: none;
+        {%- endif %}
+        background-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};
+    }
 
-QPushButton:hover{{name}}{{state}} {
-    {% if image != {} -%} image: url('icons_secondary:/{{image}}'); {%- endif %}
-    background-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};
-}
+    QPushButton:flat:hover{% if name != '' %}#{{name}}{% endif %}{{state}} {
+        {% if image != '' %}
+            image: url('icons_secondary:/{{image}}');
+        {% else %}
+            image: none;
+        {%- endif %}
+        background-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};
+    }
 
-QPushButton:flat:hover{{name}}{{state}} {
-    {% if image != {} -%} image: url('icons_secondary:/{{image}}'); {%- endif %}
-    background-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};
-}
+    QPushButton:checked{% if name != '' %}#{{name}}{% endif %}{{state}},
+    QPushButton:pressed{% if name != '' %}#{{name}}{% endif %}{{state}} {
+        {% if image != '' %}
+            image: url('icons_secondary:/{{image}}');
+        {% else %}
+            image: none;
+        {%- endif %}
+        color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.4)}};
+        background-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.175)}};
+    }
 
-QPushButton:checked{{name}}{{state}},
-QPushButton:pressed{{name}}{{state}} {
-    {% if image != {} -%} image: url('icons_secondary:/{{image}}'); {%- endif %}
-    color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.4)}};
-    background-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.175)}};
-}
+    QPushButton:flat:pressed{% if name != '' %}#{{name}}{% endif %}{{state}},
+    QPushButton:flat:checked{% if name != '' %}#{{name}}{% endif %}{{state}} {
+        {%- if image != '' %}
+            image: url('icons_secondary:/{{image}}');
+        {% else %}
+            image: none;
+        {%- endif %}
+        color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.4)}};
+        background-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.175)}};
+    }
 
-QPushButton:flat:pressed{{name}}{{state}},
-QPushButton:flat:checked{{name}}{{state}} {
-    {%- if image != {} -%} image: url('icons_secondary:/{{image}}'); {%- endif -%}
-    color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.4)}};
-    background-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.175)}};
-}
+    QPushButton:disabled{% if name != '' %}#{{name}}{% endif %}{{state}} {
+        {% if image != '' %}
+            image: url('icons_disabled:/{{image}}');
+        {% else %}
+            image: none;
+        {%- endif %}
+        color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};
+        background-color: transparent;
+        border-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};;
+    }
 
-QPushButton:disabled{{name}}{{state}} {
-    {% if image != {} -%} image: url('icons_disabled:/{{image}}'); {%- endif %}
-    color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};
-    background-color: transparent;
-    border-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};;
-}
+    QPushButton:flat:disabled{% if name != '' %}#{{name}}{% endif %}{{state}} {
+        {% if image != '' %}
+            image: url('icons_disabled:/{{image}}');
+        {% else %}
+            image: none;
+        {%- endif %}
+        color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};
+        background-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.25)}};
+        border: none;
+    }
 
-QPushButton:flat:disabled{{name}}{{state}} {
-    {% if image != {} -%} image: url('icons_disabled:/{{image}}'); {%- endif %}
-    color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};
-    background-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.25)}};
-    border: none;
-}
-
-QPushButton:checked:disabled{{name}}{{state}} {
-    {% if image != {} -%} image: url('icons_disabled:/{{image}}'); {%- endif %}
-    color: {{FILTER_OPACITY(QTCOLOR_SECONDARYCOLOR, 1)}};
-    background-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 1)}};
-    border-color:  {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 1)}};
-}
+    QPushButton:checked:disabled{% if name != '' %}#{{name}}{% endif %}{{state}} {
+        {% if image != '' %}
+            image: url('icons_disabled:/{{image}}');
+        {% else %}
+            image: none;
+        {%- endif %}
+        color: {{FILTER_OPACITY(QTCOLOR_SECONDARYCOLOR, 1)}};
+        background-color: {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 1)}};
+        border-color:  {{FILTER_OPACITY(QTCOLOR_SECONDARYLIGHTCOLOR, 1)}};
+    }
 {%- endmacro %}
 /* END REGION -------------------------------------------------------------- */
 
 
 {{style_pushbutton()}}
-{{style_pushbutton(image = 'alert-triangle.1.svg')}}
+{{style_pushbutton(name = 'library_tab_switch_button', padding = '0px 16px') }}
+{{style_pushbutton(name = 'now_playing_tab_switch_button', padding = '0px 16px') }}
+{{style_pushbutton(name = 'playlist_tab_switch_button', padding = '0px 16px') }}
+{{style_pushbutton(name = 'audiofx_tab_switch_button', padding = '0px 16px') }}
+
+{{style_pushbutton(name = 'playback_button_play_pause', image='PLAY_ARROW.svg', state = '[PLAY_STATE=PLAYING]') }}
+{{style_pushbutton(name = 'playback_button_play_pause', image='PAUSE.svg', state = '[PLAY_STATE=PAUSED]') }}
+{{style_pushbutton(name = 'playback_button_prev', image='SKIP_PREVIOUS.svg', padding = '2px') }}
+{{style_pushbutton(name = 'playback_button_next', image='SKIP_NEXT.svg', padding = '2px') }}
+{{style_pushbutton(name = 'search_button', padding='3px', image='SEARCH.svg') }}
+{{style_pushbutton(name = 'settings_button', padding='3px', image='SETTINGS.svg') }}
+{{style_pushbutton(name = 'playback_button_play_settings', image='EQUALIZER.svg') }}
+{{style_pushbutton(name = 'playback_button_audio_bypass', image='POWER_SETTINGS_NEW.svg') }}
+
+{{style_pushbutton(name = 'playback_button_play_shuffle', image='SHUFFLE.svg', state = '[PLAY_SHUFFLE_TYPE=NONE]') }}
+{{style_pushbutton(name = 'playback_button_play_shuffle', image='SHUFFLE_OFF.svg', state = '[PLAY_SHUFFLE_TYPE=SHUFFLE]') }}
+
+{{style_pushbutton(name = 'playback_button_play_repeat', image='REPEAT_OFF.svg', state = '[PLAY_REPEAT_TYPE=NONE]') }}
+{{style_pushbutton(name = 'playback_button_play_repeat', image='REPEAT_ONE_ON.svg', state = '[PLAY_REPEAT_TYPE=TRACK]') }}
+{{style_pushbutton(name = 'playback_button_play_repeat', image='REPEAT_ON.svg', state = '[PLAY_REPEAT_TYPE=QUEUE]') }}
+
+{{style_pushbutton(name = 'playback_button_volume_control', image='VOLUME_OFF.svg', state = '[VOLUME_CONTROL_TYPE=MUTE]') }}
+{{style_pushbutton(name = 'playback_button_volume_control', image='VOLUME_MUTE.svg', state = '[VOLUME_CONTROL_TYPE=QUARTER]') }}
+{{style_pushbutton(name = 'playback_button_volume_control', image='VOLUME_DOWN.svg', state = '[VOLUME_CONTROL_TYPE=HALF]') }}
+{{style_pushbutton(name = 'playback_button_volume_control', image='VOLUME_UP.svg', state = '[VOLUME_CONTROL_TYPE=FULL]') }}
