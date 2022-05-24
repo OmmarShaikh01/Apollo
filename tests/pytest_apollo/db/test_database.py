@@ -17,7 +17,7 @@ from apollo.media.decoders import Stream
 from configs import settings
 from tests.testing_utils import IDGen
 
-cases = "tests.src.db.case_db"
+cases = "tests.pytest_apollo.db.case_database"
 LOGGER = get_logger(__name__)
 CONFIG = settings
 MEDIA_FOLDER = PurePath(CONFIG.assets_dir, "music_samples")

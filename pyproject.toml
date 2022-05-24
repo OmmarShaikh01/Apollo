@@ -4,7 +4,13 @@ version = "0.1.0"
 description = ""
 authors = ["Ommar Shaikh <93180825+OmmarShaikh01@users.noreply.github.com>"]
 license = "GPL-3.0-only"
+packages = [
+    { include = "apollo" },
+    { include = "configs" },
+]
+include = ["apollo/assets/app_themes"]
 build = 'build.py'
+
 
 [tool.poetry.dependencies]
 python = ">=3.9, <3.11"
@@ -13,6 +19,8 @@ mutagen = "^1.45.1"
 av = "^9.2.0"
 dynaconf = "^3.1.8"
 pyo = "^1.0.4"
+numpy = "^1.22.4"
+requests = "^2.27.1"
 
 [tool.poetry.dev-dependencies]
 Sphinx = "^4.5.0"
@@ -24,6 +32,7 @@ pytest-cases = "^3.6.12"
 pytest-mock = "^3.7.0"
 nox = "^2022.1.7"
 Jinja2 = "^3.1.2"
+pytest-qt = "^4.0.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

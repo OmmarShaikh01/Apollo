@@ -15,7 +15,7 @@ CONFIG = settings
 BENCHMARK = CONFIG.benchmark_formats  # TODO: remove not
 LOGGER = get_logger(__name__)
 create_mp3()
-cases = "tests.src.media.decoders.case_decoder"
+cases = "tests.pytest_apollo.media.decoders.case_decoder"
 
 
 class Test_Mediafile_MP3:

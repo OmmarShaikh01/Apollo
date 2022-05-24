@@ -14,6 +14,7 @@ import apollo.assets.stylesheets
 from apollo.assets.stylesheets import ResourceGenerator, load_theme, ASSETS
 from apollo.utils import get_logger
 from configs import settings
+from tests.testing_utils import get_qt_application
 
 CONFIG = settings
 LOGGER = get_logger(__name__)
@@ -26,10 +27,7 @@ def get_generator() -> ResourceGenerator:
 
 
 class Test_ResourceGenerator:
-    if not QtWidgets.QApplication.instance():
-        _qt_application = QtWidgets.QApplication()
-    else:
-        _qt_application = QtWidgets.QApplication.instance()
+    _qt_application = get_qt_application()
 
     @classmethod
     def setup_class(cls):

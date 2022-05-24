@@ -7,4 +7,5 @@ except ModuleNotFoundError:
     sys.path.append(os.path.dirname(__file__))
     from apollo.main import main
 
-main()
+if __name__ == '__main__':
+    main()

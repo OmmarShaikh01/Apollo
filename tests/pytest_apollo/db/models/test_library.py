@@ -10,8 +10,9 @@ from apollo.db.database import LibraryManager
 from apollo.db.models.library import LibraryModel
 from apollo.utils import get_logger
 from configs import settings
+from tests.testing_utils import get_qt_application
 
-cases = "tests.src.models.case_models"
+cases = "tests.pytest_apollo.models.case_models"
 LOGGER = get_logger(__name__)
 CONFIG = settings
 MEDIA_FOLDER = PurePath(CONFIG.assets_dir, "music_samples")
@@ -33,10 +34,7 @@ def model_provider(mocker: pytest_mock.MockerFixture) -> LibraryModel:
 
 
 class Test_LibraryModel:
-    if not QtWidgets.QApplication.instance():
-        _qt_application = QtWidgets.QApplication()
-    else:
-        _qt_application = QtWidgets.QApplication.instance()
+    _qt_application = get_qt_application()
 
     @classmethod
     def setup_class(cls):

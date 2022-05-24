@@ -1,20 +1,28 @@
 import os
+import shutil
+from pathlib import PurePath
 
 import nox
+import tomli
+
+from configs import settings
 
 SUPPORTED_PYTHON = ['3.9']
-SILENT = True
+SILENT = settings.NOX_EXECUTION_VERBOSITY_DISALED
 
 nox.options.pythons = SUPPORTED_PYTHON
 nox.options.reuse_existing_virtualenvs = True
 
 
-def _upgrade_basic(session: nox.Session):
+def _upgrade_basic(session: nox.Session, install_dev: bool = True):
     session.install("--upgrade", "pip", silent = SILENT)
     session.install("--upgrade", "setuptools", silent = SILENT)
     session.install("poetry", silent = SILENT)
     session.run_always('poetry', 'shell', silent = SILENT)
-    session.run_always('poetry', 'install', silent = SILENT)
+    cmd = ['poetry', 'install']
+    if not install_dev:
+        cmd.append('--no-dev')
+    session.run_always(*cmd, silent = SILENT)
 
 
 @nox.session(python = SUPPORTED_PYTHON)
@@ -23,7 +31,7 @@ def testing_pytest(session: nox.Session):
     _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS = 'false')
-    session.run('pytest', '--rootdir', './tests/src', '-c', './pytest.ini', env = envvars, silent = SILENT)
+    session.run('pytest', '-c', './pytest.ini', env = envvars, silent = SILENT)
 
 
 @nox.session(python = SUPPORTED_PYTHON)
@@ -32,8 +40,8 @@ def testing_coverage(session: nox.Session):
     _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS = 'false')
-    session.run('pytest', '--cov', './apollo', '--rootdir', './tests/src', '--cov-config', '.coveragerc', '-c',
-                'pytest.ini', '--cov-report', 'html', env = envvars, silent = SILENT)
+    session.run('pytest', '--cov', './apollo', '--cov-config', '.coveragerc', '-c', 'pytest.ini', '--cov-report',
+                'html', env = envvars, silent = SILENT)
 
 
 @nox.session(python = SUPPORTED_PYTHON)
@@ -42,4 +50,48 @@ def testing_benchmarked(session: nox.Session):
     _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS = 'true')
-    session.run('pytest', '--rootdir', './tests/src', '-c', './pytest.ini', env = envvars, silent = SILENT)
+    session.run('pytest', '-c', './pytest.ini', env = envvars, silent = SILENT)
+
+
+@nox.session(python = SUPPORTED_PYTHON)
+def build_documentation_sphinx(session: nox.Session):
+    os.chdir(os.path.dirname(__file__))
+    _upgrade_basic(session)
+    # session.run('sphinx-autogen.exe', '-o', './docs/source/_autosummary', './docs/source/index.rst', silent = SILENT)
+    session.run('sphinx-apidoc.exe', '-f', '-e', '-M', '-o', './docs/source/_modules', './apollo', silent = SILENT)
+    session.run('sphinx-build.exe', '-b', 'html', './docs/source', './docs/build', silent = SILENT)
+
+
+@nox.session(python = SUPPORTED_PYTHON)
+def production_build(session: nox.Session):
+    os.chdir(os.path.dirname(__file__))
+    _upgrade_basic(session)
+    # Builds Apollo
+    session.run('poetry', 'build', '-f', 'sdist', silent = SILENT)
+
+
+@nox.session(python = SUPPORTED_PYTHON)
+def production_launch(session: nox.Session):
+    os.chdir(os.path.dirname(__file__))
+    toml = PurePath(os.path.dirname(__file__), 'pyproject.toml')
+
+    # Extracts Package
+    file = os.listdir("./dist")[0]
+    os.chdir('./dist')
+    pycmd = f"import tarfile; file = tarfile.open('{file}'); file.extractall('.'); file.close()"
+    session.run(*['python', '-c', pycmd], silent = SILENT)
+    os.chdir(file.replace('.tar.gz', ''))
+
+    # Executes Apollo
+    try:
+        with open(toml, 'rb') as file:
+            parsed = tomli.load(file).get('tool').get('poetry').get('dependencies')
+            del parsed['python']
+            packages = list(f'{k}{v}'.replace('^', '==') for k, v in parsed.items())
+        session.run('pip', 'install', *packages, silent = SILENT)
+
+        session.run(*['python', '-m', 'apollo'], silent = SILENT)
+    finally:
+        # Cleanup
+        os.chdir(os.path.dirname(__file__))
+        shutil.rmtree('./dist')

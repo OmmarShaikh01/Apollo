@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Nox Execute (No Coverage)" type="ShConfigurationType">
-    <option name="SCRIPT_TEXT" value=".\.venv\Scripts\nox.exe --session testing_pytest" />
+  <configuration default="false" name="Nox Execute (Production)" type="ShConfigurationType">
+    <option name="SCRIPT_TEXT" value=".\.venv\Scripts\nox.exe --session production_build production_launch" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="" />
     <option name="SCRIPT_OPTIONS" value="" />

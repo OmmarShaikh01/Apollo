@@ -268,7 +268,8 @@ def load_theme(app: QtWidgets.QApplication, name: Optional[str] = None, recompil
     loaded_theme = PurePath(ASSETS / 'app_themes' / '__loaded_theme__')
     LOGGER.debug(loaded_theme)
     if not os.path.exists(loaded_theme):
-        os.mkdir(ASSETS / 'app_themes')
+        if not os.path.exists(ASSETS / 'app_themes'):
+            os.mkdir(ASSETS / 'app_themes')
         os.mkdir(loaded_theme)
     theme_zip = ASSETS / 'app_themes' / (name + '.zip')
 
@@ -287,7 +288,6 @@ def load_theme(app: QtWidgets.QApplication, name: Optional[str] = None, recompil
                 warnings.warn('Failed to build theme pack, Jinja is Missing')
                 LOGGER.warning('Failed to build theme pack, Jinja is Missing')
             app.setStyle('Fusion')
-            return None
 
     if len(os.listdir(loaded_theme)) == 0 or recompile:
         shutil.unpack_archive(theme_zip, loaded_theme)

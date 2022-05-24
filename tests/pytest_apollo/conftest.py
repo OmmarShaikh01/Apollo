@@ -6,7 +6,9 @@ import pytest
 from apollo.utils import get_logger
 from configs import settings
 
+from tests.testing_utils import get_qt_application
 # SESSION STARTUP
+
 settings.setenv("testing")
 settings.validators.validate()
 
@@ -34,5 +36,5 @@ def create_session():
     yield None
     remove_temp_dir()
     LOGGER.info(f"CONFIG {settings.to_dict()}")
-
+    LOGGER.info(f"Application Exited with Error code: {get_qt_application().exit()}")
 # END REGION

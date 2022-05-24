@@ -13,8 +13,9 @@ from apollo.media.decoders.decode import Stream
 from apollo.utils import get_logger
 from configs import settings
 from apollo.db.models.proxy_filter import TableFilterModel
+from tests.testing_utils import get_qt_application
 
-cases = "tests.src.models.case_models"
+cases = "tests.pytest_apollo.models.case_models"
 LOGGER = get_logger(__name__)
 CONFIG = settings
 MEDIA_FOLDER = PurePath(CONFIG.assets_dir, "music_samples")
@@ -49,10 +50,7 @@ def get_init_filter_model(temporary_item_model) -> TableFilterModel:
 
 
 class Test_LibraryProxyFilter:
-    if not QtWidgets.QApplication.instance():
-        _qt_application = QtWidgets.QApplication()
-    else:
-        _qt_application = QtWidgets.QApplication.instance()
+    _qt_application = get_qt_application()
 
     @classmethod
     def setup_class(cls):

@@ -37,8 +37,8 @@ autodoc_default_options = {
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.napoleon',
     "autoclasstoc",
+    "sphinx.ext.napoleon",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.mathjax",
@@ -52,8 +52,11 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ['__main__.py']
 
+# Turn on sphinx.ext.autosummary
+autosummary_generate = True
+autosummary_generate_overwrite = False
 
 # -- Options for HTML output -------------------------------------------------
 

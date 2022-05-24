@@ -31,7 +31,8 @@ def get_logger(name: str) -> logging.Logger:
     env = str(_settings.current_env).upper()
     if env in ['TESTING', 'PRODUCTION']:
         formatter = logging.Formatter(
-                '%(asctime)s: %(levelname)8s:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s')
+            '%(asctime)s: %(levelname)8s:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s'
+        )
 
         if env == 'TESTING':
             log_path = os.path.join(ROOT, 'apollo_test.log')

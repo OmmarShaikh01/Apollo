@@ -1,5 +1,5 @@
 .. Apollo documentation master file, created by
-   sphinx-quickstart on Tue Apr 19 16:14:07 2022.
+   sphinx-quickstart on Tue May 24 17:48:31 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
@@ -7,8 +7,20 @@ Welcome to Apollo's documentation!
 ==================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+
+.. autosummary::
+   :toctree: _autosummary
+   :recursive:
+
+   apollo.assets
+   apollo.db
+   apollo.layout
+   apollo.main
+   apollo.media
+   apollo.plugin
+   apollo.src
+   apollo.utils
+
 
 
 
