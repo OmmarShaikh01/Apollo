@@ -37,13 +37,15 @@ def create_mp3():
     os.system(f"{SOX} {RAW_FILE} -C{COMPRESSION} -r 32000 -c 2 {OUTPUT}")
 
     # adds tags
-    OUTPUT = ROOT_DIR / 'mp3' / 'example_48000H_2C_TAGGED.mp3'
-    os.system(f"{SOX} {RAW_FILE} -C{COMPRESSION} -r 48000 -c 2 {OUTPUT}")
     # noinspection PyBroadException
     try:
+        OUTPUT = ROOT_DIR / 'mp3' / 'example_48000H_2C_TAGGED.mp3'
+        os.system(f"{SOX} {RAW_FILE} -C{COMPRESSION} -r 48000 -c 2 {OUTPUT}")
+
         FILE = mutagen.File(OUTPUT)
         FILE.add_tags()
         TAGS = FILE.tags
+
         for name, item in Frames.items():
             try:
                 if name == 'APIC':
@@ -56,9 +58,11 @@ def create_mp3():
                 else:
                     TAGS.add(item(text = ["TESTING"]))
                 FILE.save()
+
             except (ValueError, SpecError) as e:
                 LOGGER.exception(f"{name} EXCEPTION: {e}")
                 TAGS.delall(name)
+
     except Exception as e:
         LOGGER.exception(f"EXCEPTION: {e}")
 

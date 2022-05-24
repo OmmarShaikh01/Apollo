@@ -7,6 +7,8 @@
 
 
 # Apollo
+![MainWindow](./examples/MAINWINDOW.png "MainWindow")
+
 #### Apollo is a Open-Source music player for playback and organization of audio files on Microsoft   Windows, built using Python.
 
 - Audio playback: MP3, AAC, M4A, MPC, OGG, FLAC, ALAC, APE, Opus, TAK, WavPack, WMA, WAV, MIDI, MOD, UMX, XM.
@@ -21,44 +23,52 @@
 - Sleep & Shutdown modes, for scheduled exit with gradual volume fade out function.
 - Web scraping: integrates Fanart.tv, and similar providers, to retrieve high-quality pictures of artists and album covers for music in library
 
-# New Features!
-- customizable audio-processors
-- theme-support
+# Executing From Source
+Apollo can be executed directly after an virtual environment has been set up using poetry.
 
-### Screenshots(Expected to change over time)
-
-![MainWindow](examples\MAINWINDOW.png "MainWindow")
-### Tech
-
-Apollo uses a number of open source projects to work properly:
-
-* [PySide6] - Qt is a widget toolkit for creating graphical user interfaces as well as cross-platform applications that run on various software and hardware platforms such as Linux, Windows, macOS, Android or embedded systems
-* [mutagen] - Mutagen is a Python module to handle audio metadata.
-* [pyo] - Pyo is a Python module written in C to help digital signal processing script creation.
-
-### Installation
-
-Apollo requires [Python3.8] or above to run.\
-Install the dependencies and devDependencies
-```sh
-   python -m venv --copies <dest dir>
-   python -m pip install -r requirements.txt
+### Cloning the repository locally
+```shell
+$ git clone https://github.com/OmmarShaikh01/Apollo.git Apollo
 ```
-Launching Apollo
-```sh
-python -m apollo
+Once that command completes successfully, you should see a new Apollo folder in your current directory.
+
+### Setting up poetry on the global interpreter
+```shell
+$ pip install --user poetry
+```
+Once that command completes successfully, update poetry to the latest stable version available
+```shell 
+$ poetry self update
 ```
 
+### Creating venv using poetry
+```shell
+$ cd Apollo
+$ poetry shell
+```
+Activates the local venv shell using the local .venv file
 
-### Plugins
+### Installing Production Dependencies
+```shell
+$ poetry install --no-dev
+```
 
-Apollo currently dosent support plugins
+### Setup Local Environment for Development
+```shell
+$ poetry install 
+```
 
-### Todos
+### Executing Apollo
+If venv not already activated,
+```shell
+$ cd Apollo
+$ poetry shell
+```
+Execute Module
+```shell
+$ python.exe -m apollo
+```
 
- - Write MORE Tests
- - Add Audio Processors
- - Add File decoding and playback
 
 License
 ----
