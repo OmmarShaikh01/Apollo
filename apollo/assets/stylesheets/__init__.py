@@ -149,15 +149,18 @@ class ResourceGenerator:
         except KeyError:
             raise KeyError("Theme dict has missing keys")
 
-    def generate_theme_icons(self, primary: str, secondary: str, disabled: str):
+    def generate_theme_icons(self):
         """
         Uses the themes colours to generate the icon pack
-
-        Args:
-            primary: Primary Color
-            secondary: Secondary Color
-            disabled: Disabled Color
         """
+        rgba = lambda r, g, b, a: f"#{hex(r)}{hex(g)}{hex(b)}".replace('0x', '')
+        primary = str(eval(luminosity(self.app_theme['QTCOLOR_PRIMARYCOLOR'], 0.4)))
+        secondary = str(eval(luminosity(self.app_theme['QTCOLOR_SECONDARYLIGHTCOLOR'], 0.4)))
+        disabled = str(eval(luminosity(self.app_theme['QTCOLOR_PRIMARYLIGHTCOLOR'], 0.5)))
+        success = str(eval(luminosity(self.app_theme['QTCOLOR_SUCCESS'], 0)))
+        warning = str(eval(luminosity(self.app_theme['QTCOLOR_WARNING'], 0)))
+        danger = str(eval(luminosity(self.app_theme['QTCOLOR_DANGER'], 0)))
+
         self._validate_output_dir()
         for _dir, _sdir, _files in os.walk(self.ICONS):
             for file in filter(lambda ext: str(os.path.splitext(ext)[1]).lower() == '.svg', _files):
@@ -169,6 +172,12 @@ class ResourceGenerator:
                         file_output.write(self.replace_svg_colour(content, secondary))
                     with open((self.GENERATED / 'icons' / 'disabled' / file), 'w') as file_output:
                         file_output.write(self.replace_svg_colour(content, disabled))
+                    with open((self.GENERATED / 'icons' / 'success' / file), 'w') as file_output:
+                        file_output.write(self.replace_svg_colour(content, success))
+                    with open((self.GENERATED / 'icons' / 'warning' / file), 'w') as file_output:
+                        file_output.write(self.replace_svg_colour(content, warning))
+                    with open((self.GENERATED / 'icons' / 'danger' / file), 'w') as file_output:
+                        file_output.write(self.replace_svg_colour(content, danger))
 
     @staticmethod
     def replace_svg_colour(content: str, replace: str, placeholder: Optional[str] = '#0000FF') -> str:
@@ -207,12 +216,7 @@ class ResourceGenerator:
         """
         Builds the theme pack for the application
         """
-        rgba = lambda r, g, b, a: f"#{hex(r)}{hex(g)}{hex(b)}".replace('0x', '')
-        self.generate_theme_icons(
-            eval(luminosity(self.app_theme['QTCOLOR_PRIMARYTEXTCOLOR'], 0.3)),
-            eval(luminosity(self.app_theme['QTCOLOR_SECONDARYLIGHTCOLOR'], 0.4)),
-            eval(luminosity(self.app_theme['QTCOLOR_PRIMARYLIGHTCOLOR'], 0.5))
-        )
+        self.generate_theme_icons()
         self.generate_theme_stylesheet()
 
     def package_theme(self):
@@ -229,25 +233,19 @@ class ResourceGenerator:
         """
         Validates the output directory for the theme pack
         """
-        path = self.GENERATED
-        if not os.path.exists(path):
-            os.mkdir(path)
-
-        path = self.GENERATED / 'icons'
-        if not os.path.exists(path):
-            os.mkdir(path)
-
-        path = self.GENERATED / 'icons' / 'primary'
-        if not os.path.exists(path):
-            os.mkdir(path)
-
-        path = self.GENERATED / 'icons' / 'secondary'
-        if not os.path.exists(path):
-            os.mkdir(path)
-
-        path = self.GENERATED / 'icons' / 'disabled'
-        if not os.path.exists(path):
-            os.mkdir(path)
+        paths = (
+            self.GENERATED,
+            self.GENERATED / 'icons',
+            self.GENERATED / 'icons' / 'primary',
+            self.GENERATED / 'icons' / 'secondary',
+            self.GENERATED / 'icons' / 'disabled',
+            self.GENERATED / 'icons' / 'success',
+            self.GENERATED / 'icons' / 'warning',
+            self.GENERATED / 'icons' / 'danger',
+        )
+        for path in paths:
+            if not os.path.exists(path):
+                os.mkdir(path)
 
         path = self.GENERATED / 'stylesheet.css'
         if not os.path.exists(path):
@@ -255,26 +253,40 @@ class ResourceGenerator:
                 file.close()
 
 
-def load_theme(app: QtWidgets.QApplication, name: Optional[str] = None, recompile: Optional[bool] = False):
+def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool] = False):
     """
     Loads the theme into the applicationto display
 
     Args:
         app (QtWidgets.QApplication): QtApplication
-        name (Optional[str]): theme pack name
+        name (str): theme pack name
         recompile (Optional[Boolean]): Recompile resources
     """
-    name = name if name is not None else CONFIG.loaded_theme
-    loaded_theme = PurePath(ASSETS / 'app_themes' / '__loaded_theme__')
-    LOGGER.debug(loaded_theme)
+    def loader(_loaded_theme: PurePath):
+        if os.path.exists(_loaded_theme):
+            QtCore.QDir.addSearchPath('icons_primary', (_loaded_theme / 'icons' / 'primary').as_posix())
+            QtCore.QDir.addSearchPath('icons_secondary', (_loaded_theme / 'icons' / 'secondary').as_posix())
+            QtCore.QDir.addSearchPath('icons_disabled', (_loaded_theme / 'icons' / 'disabled').as_posix())
+            QtCore.QDir.addSearchPath('icons_success', (_loaded_theme / 'icons' / 'success').as_posix())
+            QtCore.QDir.addSearchPath('icons_danger', (_loaded_theme / 'icons' / 'danger').as_posix())
+            QtCore.QDir.addSearchPath('icons_warning', (_loaded_theme / 'icons' / 'warning').as_posix())
+            filtr = filter(lambda ext: os.path.splitext(ext)[1].lower() == '.ttf', os.listdir(ResourceGenerator.FONTS))
+            for file in filtr:
+                QtGui.QFontDatabase.addApplicationFont((ResourceGenerator.FONTS / str(file)).as_posix())
+
+            with open(_loaded_theme / 'stylesheet.css') as file_output:
+                app.setStyleSheet(file_output.read())
+                app.setStyle('Fusion')
+
+    app_theme = ASSETS / 'app_themes'
+    loaded_theme = app_theme / '__loaded_theme__'
+    theme_zip = app_theme / (name + '.zip')
+
     if not os.path.exists(loaded_theme):
-        if not os.path.exists(ASSETS / 'app_themes'):
-            os.mkdir(ASSETS / 'app_themes')
         os.mkdir(loaded_theme)
-    theme_zip = ASSETS / 'app_themes' / (name + '.zip')
 
     if not os.path.exists(theme_zip) or recompile:
-        if (name + '.json') in os.listdir(ResourceGenerator.THEMES) and _JINJA:
+        if ((name + '.json') in os.listdir(ResourceGenerator.THEMES)) and _JINJA:
             res = ResourceGenerator(name)
             res.build_theme()
             res.package_theme()
@@ -287,19 +299,11 @@ def load_theme(app: QtWidgets.QApplication, name: Optional[str] = None, recompil
             if not _JINJA:
                 warnings.warn('Failed to build theme pack, Jinja is Missing')
                 LOGGER.warning('Failed to build theme pack, Jinja is Missing')
-            app.setStyle('Fusion')
 
-    if len(os.listdir(loaded_theme)) == 0 or recompile:
+    if os.path.exists(theme_zip):
+        if os.path.exists((loaded_theme / 'icons')):
+            shutil.rmtree(loaded_theme / 'icons')
+        if os.path.exists((loaded_theme / 'stylesheet.css')):
+            os.remove(loaded_theme / 'stylesheet.css')
         shutil.unpack_archive(theme_zip, loaded_theme)
-
-    if os.path.exists(loaded_theme):
-        QtCore.QDir.addSearchPath('icons_primary', (loaded_theme / 'icons' / 'primary').as_posix())
-        QtCore.QDir.addSearchPath('icons_secondary', (loaded_theme / 'icons' / 'secondary').as_posix())
-        QtCore.QDir.addSearchPath('icons_disabled', (loaded_theme / 'icons' / 'disabled').as_posix())
-        filtr = filter(lambda ext: str(os.path.splitext(ext)[1]).lower() == '.ttf', os.listdir(ResourceGenerator.FONTS))
-        for file in filtr:
-            QtGui.QFontDatabase.addApplicationFont((ResourceGenerator.FONTS / str(file)).as_posix())
-
-        with open(loaded_theme / 'stylesheet.css') as file_output:
-            app.setStyleSheet(file_output.read())
-            app.setStyle('Fusion')
+        loader(loaded_theme)

@@ -75,11 +75,13 @@ class Test_ResourceGenerator:
 
     def test_generate_theme_icons(self, get_generator: ResourceGenerator):
         res = get_generator
-        res.generate_theme_icons(res.app_theme['QTCOLOR_PRIMARYLIGHTCOLOR'], res.app_theme['QTCOLOR_PRIMARYLIGHTCOLOR'],
-                                 res.app_theme['QTCOLOR_PRIMARYLIGHTCOLOR'])
+        res.generate_theme_icons()
         assert os.path.exists(res.GENERATED / 'icons' / 'primary')
         assert os.path.exists(res.GENERATED / 'icons' / 'secondary')
         assert os.path.exists(res.GENERATED / 'icons' / 'disabled')
+        assert os.path.exists(res.GENERATED / 'icons' / 'success')
+        assert os.path.exists(res.GENERATED / 'icons' / 'warning')
+        assert os.path.exists(res.GENERATED / 'icons' / 'danger')
 
     def test_generate_theme_stylesheet(self, get_generator: ResourceGenerator):
         res = get_generator
@@ -95,20 +97,23 @@ class Test_ResourceGenerator:
 
     def test_load_theme_1(self, get_generator: ResourceGenerator, mocker: pytest_mock.MockerFixture):
         with tempfile.TemporaryDirectory() as directory:
-            name = 'material_dark'
-
             mocker.patch("apollo.assets.stylesheets.ASSETS", PurePath(directory))
             mocker.patch("apollo.assets.stylesheets._JINJA", True)
             res = get_generator
-            load_theme(self._qt_application, name)
-            load_theme(self._qt_application, name)
-
             theme = PurePath(directory, 'app_themes')
+            os.mkdir(theme)
+            load_theme(self._qt_application, 'material_dark')
+            load_theme(self._qt_application, 'material_light')
+
             assert bool(os.path.exists(theme / '__loaded_theme__'))
             assert bool(os.listdir(theme / '__loaded_theme__') == ['icons', 'stylesheet.css'])
-            assert bool(os.path.exists(theme / (name + '.zip')))
+            assert bool(os.path.exists(theme / 'material_dark.zip'))
+            assert bool(os.path.exists(theme / 'material_light.zip'))
             assert not bool(os.path.exists(res.BUILD))
             assert not bool(os.path.exists(res.GENERATED))
+
+            with open(theme / '__loaded_theme__' / 'stylesheet.css') as file_output:
+                assert self._qt_application.styleSheet() == (file_output.read())
 
     def test_load_theme_2(self, get_generator: ResourceGenerator, mocker: pytest_mock.MockerFixture):
         with tempfile.TemporaryDirectory() as directory:
@@ -118,6 +123,8 @@ class Test_ResourceGenerator:
             mocker.patch("apollo.assets.stylesheets._JINJA", False)
             mocker.patch("apollo.assets.stylesheets.ResourceGenerator.THEMES", PurePath(directory))
             pattern = 'Failed to build theme pack, Jinja is Missing|Theme JSON missing'
+            theme = PurePath(directory, 'app_themes')
+            os.mkdir(theme)
             with pytest.warns(UserWarning, match = pattern):
                 load_theme(self._qt_application, name)
 

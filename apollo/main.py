@@ -28,7 +28,7 @@ def main() -> None:
     app = QtWidgets.QApplication(sys.argv)
     window = Apollo()
     LOGGER.info(msg = "Application Started")
-    load_theme(app, recompile = CONFIG.recompile_theme)  # TODO: Disable recompile in production
+    load_theme(app, CONFIG.loaded_theme, recompile = CONFIG.recompile_theme)
 
     # TODO: Disable
     # window.playback_button_play_pause.pressed.connect(lambda: load_theme(app, recompile = CONFIG.recompile_theme))
