@@ -8,6 +8,16 @@
 {% endmacro %}
 
 
+{% macro style_qtwidget_transparent(name = '', custom = '') %}
+    QWidget{% if name != '' %}#{{name}}{% endif %} {
+        background-color: {{FILTER_OPACITY(QTCOLOR_PRIMARYDARKCOLOR, 0)}};
+        {% if custom != '' %}
+            {{custom}}
+        {% endif %}
+    }
+{% endmacro %}
+
+
 {% macro style_qtframe(name = '', luminosity = 0, custom = '') %}
     QFrame{% if name != '' %}#{{name}}{% endif %} {
         background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, luminosity)}};
@@ -46,6 +56,7 @@
 {{ style_qtwidget() }}
 {{ style_qtwidget('menubar', 0.075) }}
 {{ style_qtwidget('centralwidget', 0.075) }}
+{{ style_qtwidget_transparent('playback_footer_track_rating') }}
 
 
 {{ style_qtframe() }}
@@ -64,3 +75,6 @@
 {{ style_qtframe_transparent('playback_footer_frame_L') }}
 {{ style_qtframe_transparent('playback_footer_frame_M') }}
 {{ style_qtframe_transparent('playback_footer_frame_R') }}
+{{ style_qtframe_transparent('playback_footer_frame_M_info') }}
+{{ style_qtframe_rounded('main_tabs_track_info_frame', 0.15, custom = 'padding: 4px 0px 0px 0px;') }}
+{{ style_qtframe_rounded('track_info_cover_pixmap', 0.125, custom = 'padding: 2px; image: url("icons_secondary:/MUSIC_NOTE.svg");') }}

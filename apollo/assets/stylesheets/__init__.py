@@ -9,7 +9,7 @@ from typing import Optional, Union
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from apollo.utils import get_logger
+from apollo.utils import ApolloWarning, get_logger
 from configs import settings
 
 CONFIG = settings
@@ -153,11 +153,11 @@ class ResourceGenerator:
         """
         Uses the themes colours to generate the icon pack
         """
-        rgba = lambda r, g, b, a: f"#{hex(r)}{hex(g)}{hex(b)}".replace('0x', '')
-        primary = str(eval(luminosity(self.app_theme['QTCOLOR_PRIMARYCOLOR'], 0.4)))
+        rgba = lambda r, g, b, a: QtGui.QColor.fromRgb(r, g, b, a).name()
+        primary = str(eval(luminosity(self.app_theme['QTCOLOR_PRIMARYTEXTCOLOR'], 0.4)))
         secondary = str(eval(luminosity(self.app_theme['QTCOLOR_SECONDARYLIGHTCOLOR'], 0.4)))
         disabled = str(eval(luminosity(self.app_theme['QTCOLOR_PRIMARYLIGHTCOLOR'], 0.5)))
-        success = str(eval(luminosity(self.app_theme['QTCOLOR_SUCCESS'], 0)))
+        success = str(eval(luminosity(self.app_theme['QTCOLOR_SUCCESS'], 0.1)))
         warning = str(eval(luminosity(self.app_theme['QTCOLOR_WARNING'], 0)))
         danger = str(eval(luminosity(self.app_theme['QTCOLOR_DANGER'], 0)))
 
@@ -233,16 +233,10 @@ class ResourceGenerator:
         """
         Validates the output directory for the theme pack
         """
-        paths = (
-            self.GENERATED,
-            self.GENERATED / 'icons',
-            self.GENERATED / 'icons' / 'primary',
-            self.GENERATED / 'icons' / 'secondary',
-            self.GENERATED / 'icons' / 'disabled',
-            self.GENERATED / 'icons' / 'success',
-            self.GENERATED / 'icons' / 'warning',
-            self.GENERATED / 'icons' / 'danger',
-        )
+        paths = (self.GENERATED, self.GENERATED / 'icons', self.GENERATED / 'icons' / 'primary',
+                 self.GENERATED / 'icons' / 'secondary', self.GENERATED / 'icons' / 'disabled',
+                 self.GENERATED / 'icons' / 'success', self.GENERATED / 'icons' / 'warning',
+                 self.GENERATED / 'icons' / 'danger',)
         for path in paths:
             if not os.path.exists(path):
                 os.mkdir(path)
@@ -262,6 +256,7 @@ def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool]
         name (str): theme pack name
         recompile (Optional[Boolean]): Recompile resources
     """
+
     def loader(_loaded_theme: PurePath):
         if os.path.exists(_loaded_theme):
             QtCore.QDir.addSearchPath('icons_primary', (_loaded_theme / 'icons' / 'primary').as_posix())
@@ -294,11 +289,10 @@ def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool]
             shutil.rmtree(res.BUILD)
         else:
             if not (name + '.json') in os.listdir(ResourceGenerator.THEMES):
-                warnings.warn("Theme JSON missing")
-                LOGGER.warning("Theme JSON missing")
+                ApolloWarning("Theme JSON missing")
+
             if not _JINJA:
-                warnings.warn('Failed to build theme pack, Jinja is Missing')
-                LOGGER.warning('Failed to build theme pack, Jinja is Missing')
+                ApolloWarning('Failed to build theme pack, Jinja is Missing')
 
     if os.path.exists(theme_zip):
         if os.path.exists((loaded_theme / 'icons')):

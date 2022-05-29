@@ -1,4 +1,6 @@
 
 # Ignore dynaconf secret files
-.secrets.*
+./.secrets.*
+./settings.local.toml
+./testing_settings.local.toml
 ../.env

@@ -52,6 +52,12 @@ class Stream(ABC):
     def __str__(self):  # pragma: no cover
         return json.dumps(self.SynthTags, indent = 2)
 
+    def __bool__(self):  # pragma: no cover
+        return all([
+            (self.SynthTags.get('FILEID', '') != ''),
+            (self.SynthTags.get("SONGLEN") < (24 * 3600))
+        ])
+
     def _file_id(self):
         with open(self.path, "rb") as fobj:
             return (hashlib.md5(fobj.read(1024 * 10))).hexdigest()

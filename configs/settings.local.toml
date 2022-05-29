@@ -1,0 +1,19 @@
+[PRODUCTION]
+LOAD_DOTENV = true
+LOADED_THEME = "material_dark"
+RECOMPILE_THEME = true
+SUPPORTED_FORMATS = [ "aac", "aiff", "flac", "m4a", "mp3", "ogg", "opus", "wav",]
+ENABLED_FORMATS = [ "mp3",]
+DB_PATH = "D:\\Dev\\Apollo\\apollo\\db\\apollo.db"
+
+[PRODUCTION.SERVER]
+format = "s16"
+chnl = 2
+rate = 44100
+
+[PRODUCTION.APOLLO.PLAYBACK_BAR]
+LOADED_TRACK = "D:\\Music\\07 Late Night Driving.mp3"
+VOLUME_LEVEL = 50
+STATE_REPEAT = "NONE"
+STATE_SHUFFLE = "NONE"
+STATE_PLAY = "PAUSE"

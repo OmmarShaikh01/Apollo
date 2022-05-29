@@ -15,7 +15,7 @@ from typing import Any, Union
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 from apollo.media import Mediafile
-from apollo.utils import get_logger
+from apollo.utils import ApolloWarning, get_logger
 from configs import settings
 
 CONFIG = settings
@@ -287,16 +287,28 @@ class Database:
         return conn
 
 
-class LibraryManager(Database):  # TODO: Documentation
+class LibraryManager(Database):
+    """
+    Library Manager, Manages all media files indexed by Apollo
+    """
     library_table_columns = Mediafile.TAG_FRAMES
     queue_table_columns = ["FILEID", "PLAYORDER"]
 
     def __init__(self, path: str = None):
+        """
+        Constructor
+
+        Args:
+            path (str): Database Path
+        """
         super().__init__(path)
         self.init_structure()
-        self._dirs_watched = []  # Save To config
+        self._dirs_watched = []  # TODO: Save To config
 
     def init_structure(self):
+        """
+        Creates the Tables For Apollo
+        """
         cols = []
         for K, V in Mediafile.TAG_FRAMES_FIELDS:
             if K == "FILEID":
@@ -323,12 +335,18 @@ class LibraryManager(Database):  # TODO: Documentation
             self.execute(queue_table, connection)
 
     def add_dir_to_watcher(self, path: PurePath):
+        """
+        Adds Directories to files monitor
+
+        Args:
+            path (PurePath): Directory Path
+        """
         if len(self._dirs_watched) == 0:
             self._dirs_watched.append(path)
         else:
             if path.parent in self._dirs_watched:
-                LOGGER.warning(f"Skipped {path} parent directory exists")
-                warnings.warn(f"Skipped {path} parent directory exists")
+
+                ApolloWarning(f"Skipped {path} parent directory exists")
             elif path in [_path.parent for _path in self._dirs_watched]:
                 if all([(path / str(item)) in self._dirs_watched for item in os.listdir(path)]):
                     self._dirs_watched.append(path)
@@ -337,11 +355,16 @@ class LibraryManager(Database):  # TODO: Documentation
             elif path not in self._dirs_watched:
                 self._dirs_watched.append(path)
             else:
-                LOGGER.warning(f"Skipped {path}, is not monitored")
-                warnings.warn(f"Skipped {path}, is not monitored")
+
+                ApolloWarning(f"Skipped {path}, is not monitored")
 
     def scan_directories(self, path: Union[list[PurePath, str], str, PurePath]):
+        """
+        Scans a directory Recursively
 
+        Args:
+            path Union[list[PurePath, str], str, PurePath]: Paths to the directory
+        """
         def scan_directory(dir_path: PurePath, connection: Connection):
             files_scanned = []
             for dirct, subdirs, files in os.walk(dir_path):
@@ -349,11 +372,11 @@ class LibraryManager(Database):  # TODO: Documentation
                     _path = PurePath(dirct, file)
                     if Mediafile.isSupported(_path):
                         mediafile = Mediafile(_path)
-                        if mediafile.SynthTags['FILEID'][0] and float(mediafile.SynthTags['SONGLEN'][0]) <= 3600:
+                        if mediafile:
                             files_scanned.append(list(mediafile.Records.values()))
                         else:
-                            LOGGER.warning(f"Skipped {_path}")
-                            warnings.warn(f"Skipped {_path}")
+
+                            ApolloWarning(f"Skipped {_path}")
             if len(files_scanned) > 0:  # pragma: no cover
                 records = RecordSet(Mediafile.TAG_FRAMES, files_scanned)
                 self.batch_insert(records, 'library', connection)
@@ -374,6 +397,12 @@ class LibraryManager(Database):  # TODO: Documentation
                 scan_directory(item, connection)
 
     def scan_files(self, path: Union[list[PurePath, str], str, PurePath]):
+        """
+        Scans files
+
+        Args:
+            path Union[list[PurePath, str], str, PurePath]: Paths to the files
+        """
         if isinstance(path, str):
             path = [PurePath(path)]
 
@@ -388,16 +417,22 @@ class LibraryManager(Database):  # TODO: Documentation
             for file_path in path:
                 if Mediafile.isSupported(file_path):
                     mediafile = Mediafile(file_path)
-                    if mediafile.SynthTags['FILEID'][0] and float(mediafile.SynthTags['SONGLEN'][0]) <= 3600:
+                    if mediafile:
                         files_scanned.append(list(mediafile.Records.values()))
                     else:
-                        LOGGER.warning(f"Skipped {file_path}")
-                        warnings.warn(f"Skipped {file_path}")
+
+                        ApolloWarning(f"Skipped {file_path}")
             if len(files_scanned) > 0:   # pragma: no cover
                 records = RecordSet(Mediafile.TAG_FRAMES, files_scanned)
                 self.batch_insert(records, 'library', connection)
 
     def get_library_stats(self) -> RecordSet:
+        """
+        Get Vital Stats of the library Table
+
+        Returns:
+            RecordSet: Library Table Stats
+        """
         with self.connector as connection:
             records = self.execute("""
             SELECT 
@@ -411,9 +446,15 @@ class LibraryManager(Database):  # TODO: Documentation
         return records
 
     def rescan_files(self):
+        """
+        Rescans Files present in the library Table
+        """
         with self.connector as connection:
             recordset = self.execute("SELECT FILEPATH FROM library", connection)
         self.scan_files([item[0] for item in recordset.records])
 
     def rescan_folders(self):
+        """
+        Rescans Directories that are monitored
+        """
         self.scan_directories(self._dirs_watched)

@@ -34,7 +34,7 @@ class Mediafile:
 
     def __bool__(self):
         if self._stream is not None:
-            return True
+            return bool(self._stream)
         else:
             return False
 

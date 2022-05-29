@@ -1,0 +1,28 @@
+[QT_TESTING]
+LOAD_DOTENV = true
+RECOMPILE_THEME = true
+LOADED_THEME = "material_dark"
+NOX_EXECUTION_VERBOSITY_DISABLED = true
+BENCHMARK_FORMATS = false
+SUPPORTED_FORMATS = [ "aac", "aiff", "flac", "m4a", "mp3", "ogg", "opus", "wav",]
+ENABLED_FORMATS = [ "mp3",]
+
+[TESTING]
+LOAD_DOTENV = true
+RECOMPILE_THEME = true
+LOADED_THEME = "material_dark"
+NOX_EXECUTION_VERBOSITY_DISABLED = true
+BENCHMARK_FORMATS = false
+SUPPORTED_FORMATS = [ "aac", "aiff", "flac", "m4a", "mp3", "ogg", "opus", "wav",]
+ENABLED_FORMATS = [ "mp3",]
+BENCHMARK_RUNS = 1000
+
+[QT_TESTING.SERVER]
+format = "s16"
+chnl = 2
+rate = 44100
+
+[TESTING.SERVER]
+format = "s16"
+chnl = 2
+rate = 44100

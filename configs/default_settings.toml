@@ -1,0 +1,11 @@
+[PRODUCTION]
+LOAD_DOTENV = true
+LOADED_THEME = "material_dark"
+RECOMPILE_THEME = false
+SUPPORTED_FORMATS = [ "aac", "aiff", "flac", "m4a", "mp3", "ogg", "opus", "wav",]
+ENABLED_FORMATS = [ "mp3",]
+
+[PRODUCTION.SERVER]
+format = "s16"
+chnl = 2
+rate = 44100

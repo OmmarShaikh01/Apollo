@@ -9,7 +9,7 @@ from configs import settings
 from tests.testing_utils import get_qt_application
 # SESSION STARTUP
 
-settings.setenv("testing")
+settings.setenv("TESTING")
 settings.validators.validate()
 
 LOGGER = get_logger(__name__)

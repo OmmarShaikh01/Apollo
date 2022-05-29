@@ -7,8 +7,10 @@ import tomli
 
 from configs import settings
 
+
+settings.validators.validate()
 SUPPORTED_PYTHON = ['3.9']
-SILENT = settings.NOX_EXECUTION_VERBOSITY_DISALED
+SILENT = settings.NOX_EXECUTION_VERBOSITY_DISABLED
 
 nox.options.pythons = SUPPORTED_PYTHON
 nox.options.reuse_existing_virtualenvs = True

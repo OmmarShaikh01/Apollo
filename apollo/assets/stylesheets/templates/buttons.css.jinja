@@ -111,8 +111,8 @@
 {{style_pushbutton(name = 'playlist_tab_switch_button', padding = '0px 16px') }}
 {{style_pushbutton(name = 'audiofx_tab_switch_button', padding = '0px 16px') }}
 
-{{style_pushbutton(name = 'playback_button_play_pause', image='PLAY_ARROW.svg', state = '[PLAY_STATE=PLAYING]') }}
-{{style_pushbutton(name = 'playback_button_play_pause', image='PAUSE.svg', state = '[PLAY_STATE=PAUSED]') }}
+{{style_pushbutton(name = 'playback_button_play_pause', image='PLAY_ARROW.svg', padding = '0px', state = '[STATE_PLAY=PLAY]') }}
+{{style_pushbutton(name = 'playback_button_play_pause', image='PAUSE.svg', padding = '0px', state = '[STATE_PLAY=PAUSE]') }}
 {{style_pushbutton(name = 'playback_button_prev', image='SKIP_PREVIOUS.svg', padding = '2px') }}
 {{style_pushbutton(name = 'playback_button_next', image='SKIP_NEXT.svg', padding = '2px') }}
 {{style_pushbutton(name = 'search_button', padding='3px', image='SEARCH.svg') }}
@@ -120,14 +120,14 @@
 {{style_pushbutton(name = 'playback_button_play_settings', image='EQUALIZER.svg') }}
 {{style_pushbutton(name = 'playback_button_audio_bypass', image='POWER_SETTINGS_NEW.svg') }}
 
-{{style_pushbutton(name = 'playback_button_play_shuffle', image='SHUFFLE.svg', state = '[PLAY_SHUFFLE_TYPE=NONE]') }}
-{{style_pushbutton(name = 'playback_button_play_shuffle', image='SHUFFLE_OFF.svg', state = '[PLAY_SHUFFLE_TYPE=SHUFFLE]') }}
+{{style_pushbutton(name = 'playback_button_play_shuffle', image='SHUFFLE_OFF.svg', state = '[STATE_SHUFFLE=NONE]') }}
+{{style_pushbutton(name = 'playback_button_play_shuffle', image='SHUFFLE.svg', state = '[STATE_SHUFFLE=SHUFFLE]') }}
 
-{{style_pushbutton(name = 'playback_button_play_repeat', image='REPEAT_OFF.svg', state = '[PLAY_REPEAT_TYPE=NONE]') }}
-{{style_pushbutton(name = 'playback_button_play_repeat', image='REPEAT_ONE_ON.svg', state = '[PLAY_REPEAT_TYPE=TRACK]') }}
-{{style_pushbutton(name = 'playback_button_play_repeat', image='REPEAT_ON.svg', state = '[PLAY_REPEAT_TYPE=QUEUE]') }}
+{{style_pushbutton(name = 'playback_button_play_repeat', image='REPEAT_OFF.svg', state = '[STATE_REPEAT=NONE]') }}
+{{style_pushbutton(name = 'playback_button_play_repeat', image='REPEAT_ON.svg', state = '[STATE_REPEAT=REPEAT]') }}
+{{style_pushbutton(name = 'playback_button_play_repeat', image='REPEAT_ONE_ON.svg', state = '[STATE_REPEAT=REPEAT_ONE]') }}
 
-{{style_pushbutton(name = 'playback_button_volume_control', image='VOLUME_OFF.svg', state = '[VOLUME_CONTROL_TYPE=MUTE]') }}
-{{style_pushbutton(name = 'playback_button_volume_control', image='VOLUME_MUTE.svg', state = '[VOLUME_CONTROL_TYPE=QUARTER]') }}
-{{style_pushbutton(name = 'playback_button_volume_control', image='VOLUME_DOWN.svg', state = '[VOLUME_CONTROL_TYPE=HALF]') }}
-{{style_pushbutton(name = 'playback_button_volume_control', image='VOLUME_UP.svg', state = '[VOLUME_CONTROL_TYPE=FULL]') }}
+{{style_pushbutton(name = 'playback_button_volume_control', image='VOLUME_OFF.svg', state = '[STATE_VOLUME_LEVEL=MUTE]') }}
+{{style_pushbutton(name = 'playback_button_volume_control', image='VOLUME_MUTE.svg', state = '[STATE_VOLUME_LEVEL=QUARTER]') }}
+{{style_pushbutton(name = 'playback_button_volume_control', image='VOLUME_DOWN.svg', state = '[STATE_VOLUME_LEVEL=HALF]') }}
+{{style_pushbutton(name = 'playback_button_volume_control', image='VOLUME_UP.svg', state = '[STATE_VOLUME_LEVEL=FULL]') }}

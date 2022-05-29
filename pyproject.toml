@@ -9,6 +9,7 @@ packages = [
     { include = "configs" },
 ]
 include = ["apollo/assets/app_themes"]
+exclude = ["configs/testing_settings.toml", "configs/settings.toml"]
 build = 'build.py'
 
 

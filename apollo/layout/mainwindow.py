@@ -218,6 +218,7 @@ class Ui_MainWindow(object):
         self.playback_footer_frame_M.setSizePolicy(sizePolicy3)
         self.playback_footer_frame_M.setMinimumSize(QSize(0, 48))
         self.playback_footer_frame_M.setMaximumSize(QSize(800, 48))
+        self.playback_footer_frame_M.setMouseTracking(True)
         self.gridLayout_4 = QGridLayout(self.playback_footer_frame_M)
         self.gridLayout_4.setSpacing(4)
         self.gridLayout_4.setContentsMargins(4, 4, 4, 4)
@@ -225,54 +226,68 @@ class Ui_MainWindow(object):
         self.gridLayout_4.setHorizontalSpacing(4)
         self.gridLayout_4.setVerticalSpacing(2)
         self.gridLayout_4.setContentsMargins(4, 4, 4, 2)
-        self.label_9 = QLabel(self.playback_footer_frame_M)
-        self.label_9.setObjectName(u"label_9")
+        self.playback_footer_track_seek_slider = QSlider(self.playback_footer_frame_M)
+        self.playback_footer_track_seek_slider.setObjectName(u"playback_footer_track_seek_slider")
+        sizePolicy2.setHeightForWidth(self.playback_footer_track_seek_slider.sizePolicy().hasHeightForWidth())
+        self.playback_footer_track_seek_slider.setSizePolicy(sizePolicy2)
+        self.playback_footer_track_seek_slider.setMinimumSize(QSize(0, 8))
+        self.playback_footer_track_seek_slider.setMaximumSize(QSize(16777215, 8))
+        self.playback_footer_track_seek_slider.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_4.addWidget(self.playback_footer_track_seek_slider, 1, 0, 1, 2)
+
+        self.playback_footer_frame_M_info = QFrame(self.playback_footer_frame_M)
+        self.playback_footer_frame_M_info.setObjectName(u"playback_footer_frame_M_info")
+        self.playback_footer_frame_M_info.setMouseTracking(True)
+        self.playback_footer_frame_M_info.setFrameShape(QFrame.NoFrame)
+        self.playback_footer_frame_M_info.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_5 = QHBoxLayout(self.playback_footer_frame_M_info)
+        self.horizontalLayout_5.setSpacing(2)
+        self.horizontalLayout_5.setContentsMargins(4, 4, 4, 4)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.horizontalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.playback_footer_track_rating = QWidget(self.playback_footer_frame_M_info)
+        self.playback_footer_track_rating.setObjectName(u"playback_footer_track_rating")
         sizePolicy4 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
-        self.label_9.setSizePolicy(sizePolicy4)
-        self.label_9.setMinimumSize(QSize(0, 28))
-        self.label_9.setMaximumSize(QSize(16777215, 28))
-        self.label_9.setAlignment(Qt.AlignCenter)
+        sizePolicy4.setHeightForWidth(self.playback_footer_track_rating.sizePolicy().hasHeightForWidth())
+        self.playback_footer_track_rating.setSizePolicy(sizePolicy4)
+        self.playback_footer_track_rating.setMinimumSize(QSize(100, 28))
+        self.playback_footer_track_rating.setMaximumSize(QSize(100, 28))
+        self.playback_footer_track_rating.setMouseTracking(True)
 
-        self.gridLayout_4.addWidget(self.label_9, 0, 0, 1, 1)
+        self.horizontalLayout_5.addWidget(self.playback_footer_track_rating)
 
-        self.label_11 = QLabel(self.playback_footer_frame_M)
-        self.label_11.setObjectName(u"label_11")
-        sizePolicy4.setHeightForWidth(self.label_11.sizePolicy().hasHeightForWidth())
-        self.label_11.setSizePolicy(sizePolicy4)
-        self.label_11.setMinimumSize(QSize(0, 28))
-        self.label_11.setMaximumSize(QSize(16777215, 28))
-        self.label_11.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_4.addWidget(self.label_11, 0, 2, 1, 1, Qt.AlignVCenter)
-
-        self.label_10 = QLabel(self.playback_footer_frame_M)
-        self.label_10.setObjectName(u"label_10")
-        sizePolicy3.setHeightForWidth(self.label_10.sizePolicy().hasHeightForWidth())
-        self.label_10.setSizePolicy(sizePolicy3)
-        self.label_10.setMinimumSize(QSize(0, 28))
-        self.label_10.setMaximumSize(QSize(16777215, 28))
+        self.playback_footer_track_title = QLabel(self.playback_footer_frame_M_info)
+        self.playback_footer_track_title.setObjectName(u"playback_footer_track_title")
+        sizePolicy3.setHeightForWidth(self.playback_footer_track_title.sizePolicy().hasHeightForWidth())
+        self.playback_footer_track_title.setSizePolicy(sizePolicy3)
+        self.playback_footer_track_title.setMinimumSize(QSize(0, 28))
+        self.playback_footer_track_title.setMaximumSize(QSize(16777215, 28))
         font = QFont()
         font.setFamilies([u"Segoe UI"])
         font.setPointSize(10)
         font.setBold(True)
-        self.label_10.setFont(font)
-        self.label_10.setScaledContents(False)
-        self.label_10.setAlignment(Qt.AlignCenter)
+        self.playback_footer_track_title.setFont(font)
+        self.playback_footer_track_title.setScaledContents(False)
+        self.playback_footer_track_title.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_4.addWidget(self.label_10, 0, 1, 1, 1)
+        self.horizontalLayout_5.addWidget(self.playback_footer_track_title)
 
-        self.horizontalSlider_2 = QSlider(self.playback_footer_frame_M)
-        self.horizontalSlider_2.setObjectName(u"horizontalSlider_2")
-        sizePolicy2.setHeightForWidth(self.horizontalSlider_2.sizePolicy().hasHeightForWidth())
-        self.horizontalSlider_2.setSizePolicy(sizePolicy2)
-        self.horizontalSlider_2.setMinimumSize(QSize(0, 8))
-        self.horizontalSlider_2.setMaximumSize(QSize(16777215, 8))
-        self.horizontalSlider_2.setOrientation(Qt.Horizontal)
+        self.playback_footer_track_elapsed = QLabel(self.playback_footer_frame_M_info)
+        self.playback_footer_track_elapsed.setObjectName(u"playback_footer_track_elapsed")
+        sizePolicy4.setHeightForWidth(self.playback_footer_track_elapsed.sizePolicy().hasHeightForWidth())
+        self.playback_footer_track_elapsed.setSizePolicy(sizePolicy4)
+        self.playback_footer_track_elapsed.setMinimumSize(QSize(100, 28))
+        self.playback_footer_track_elapsed.setMaximumSize(QSize(100, 28))
+        self.playback_footer_track_elapsed.setFont(font)
+        self.playback_footer_track_elapsed.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.gridLayout_4.addWidget(self.horizontalSlider_2, 1, 0, 1, 3)
+        self.horizontalLayout_5.addWidget(self.playback_footer_track_elapsed)
+
+
+        self.gridLayout_4.addWidget(self.playback_footer_frame_M_info, 0, 0, 1, 2)
 
 
         self.horizontalLayout.addWidget(self.playback_footer_frame_M)
@@ -294,7 +309,7 @@ class Ui_MainWindow(object):
         self.playback_button_play_shuffle.setObjectName(u"playback_button_play_shuffle")
         self.playback_button_play_shuffle.setMinimumSize(QSize(28, 28))
         self.playback_button_play_shuffle.setMaximumSize(QSize(28, 28))
-        self.playback_button_play_shuffle.setCheckable(True)
+        self.playback_button_play_shuffle.setCheckable(False)
         self.playback_button_play_shuffle.setFlat(True)
 
         self.gridLayout_5.addWidget(self.playback_button_play_shuffle, 0, 2, 1, 1)
@@ -336,13 +351,13 @@ class Ui_MainWindow(object):
 
         self.gridLayout_5.addWidget(self.playback_button_audio_bypass, 0, 5, 1, 1)
 
-        self.horizontalSlider = QSlider(self.playback_footer_frame_R)
-        self.horizontalSlider.setObjectName(u"horizontalSlider")
-        self.horizontalSlider.setMinimumSize(QSize(0, 8))
-        self.horizontalSlider.setMaximumSize(QSize(16777215, 8))
-        self.horizontalSlider.setOrientation(Qt.Horizontal)
+        self.playback_slider_volume_control = QSlider(self.playback_footer_frame_R)
+        self.playback_slider_volume_control.setObjectName(u"playback_slider_volume_control")
+        self.playback_slider_volume_control.setMinimumSize(QSize(0, 8))
+        self.playback_slider_volume_control.setMaximumSize(QSize(16777215, 8))
+        self.playback_slider_volume_control.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_5.addWidget(self.horizontalSlider, 1, 1, 1, 5)
+        self.gridLayout_5.addWidget(self.playback_slider_volume_control, 1, 1, 1, 5)
 
 
         self.horizontalLayout.addWidget(self.playback_footer_frame_R, 0, Qt.AlignRight)
@@ -381,6 +396,12 @@ class Ui_MainWindow(object):
         self.page_2 = QWidget()
         self.page_2.setObjectName(u"page_2")
         self.stackedWidget.addWidget(self.page_2)
+        self.page_3 = QWidget()
+        self.page_3.setObjectName(u"page_3")
+        self.stackedWidget.addWidget(self.page_3)
+        self.page_4 = QWidget()
+        self.page_4.setObjectName(u"page_4")
+        self.stackedWidget.addWidget(self.page_4)
 
         self.gridLayout_10.addWidget(self.stackedWidget, 0, 0, 1, 1)
 
@@ -457,58 +478,6 @@ class Ui_MainWindow(object):
         self.gridLayout_9.setContentsMargins(4, 4, 4, 4)
         self.gridLayout_9.setObjectName(u"gridLayout_9")
         self.gridLayout_9.setContentsMargins(2, 2, 2, 2)
-        self.label_17 = QLabel(self.main_tabs_queue_frame_trackinfo)
-        self.label_17.setObjectName(u"label_17")
-        sizePolicy3.setHeightForWidth(self.label_17.sizePolicy().hasHeightForWidth())
-        self.label_17.setSizePolicy(sizePolicy3)
-        font3 = QFont()
-        font3.setFamilies([u"Segoe UI"])
-        font3.setPointSize(16)
-        font3.setBold(True)
-        self.label_17.setFont(font3)
-        self.label_17.setFrameShape(QFrame.StyledPanel)
-        self.label_17.setScaledContents(True)
-        self.label_17.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_9.addWidget(self.label_17, 6, 0, 1, 1)
-
-        self.verticalLayout = QVBoxLayout()
-        self.verticalLayout.setSpacing(4)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(2, -1, -1, -1)
-        self.label_12 = QLabel(self.main_tabs_queue_frame_trackinfo)
-        self.label_12.setObjectName(u"label_12")
-        self.label_12.setFont(font)
-
-        self.verticalLayout.addWidget(self.label_12)
-
-        self.label_13 = QLabel(self.main_tabs_queue_frame_trackinfo)
-        self.label_13.setObjectName(u"label_13")
-
-        self.verticalLayout.addWidget(self.label_13)
-
-        self.label_14 = QLabel(self.main_tabs_queue_frame_trackinfo)
-        self.label_14.setObjectName(u"label_14")
-
-        self.verticalLayout.addWidget(self.label_14)
-
-        self.label_15 = QLabel(self.main_tabs_queue_frame_trackinfo)
-        self.label_15.setObjectName(u"label_15")
-
-        self.verticalLayout.addWidget(self.label_15)
-
-        self.label_16 = QLabel(self.main_tabs_queue_frame_trackinfo)
-        self.label_16.setObjectName(u"label_16")
-        font4 = QFont()
-        font4.setFamilies([u"Segoe UI"])
-        font4.setPointSize(7)
-        self.label_16.setFont(font4)
-
-        self.verticalLayout.addWidget(self.label_16)
-
-
-        self.gridLayout_9.addLayout(self.verticalLayout, 5, 0, 1, 1)
-
         self.label_18 = QLabel(self.main_tabs_queue_frame_trackinfo)
         self.label_18.setObjectName(u"label_18")
         self.label_18.setMinimumSize(QSize(0, 24))
@@ -516,6 +485,70 @@ class Ui_MainWindow(object):
         self.label_18.setFont(font2)
 
         self.gridLayout_9.addWidget(self.label_18, 0, 0, 1, 1)
+
+        self.main_tabs_track_info_frame = QFrame(self.main_tabs_queue_frame_trackinfo)
+        self.main_tabs_track_info_frame.setObjectName(u"main_tabs_track_info_frame")
+        self.main_tabs_track_info_frame.setFrameShape(QFrame.StyledPanel)
+        self.main_tabs_track_info_frame.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_2 = QVBoxLayout(self.main_tabs_track_info_frame)
+        self.verticalLayout_2.setSpacing(2)
+        self.verticalLayout_2.setContentsMargins(4, 4, 4, 4)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout.setSpacing(4)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(2, -1, -1, -1)
+        self.track_info_title = QLabel(self.main_tabs_track_info_frame)
+        self.track_info_title.setObjectName(u"track_info_title")
+        self.track_info_title.setFont(font)
+
+        self.verticalLayout.addWidget(self.track_info_title)
+
+        self.track_info_misc_1 = QLabel(self.main_tabs_track_info_frame)
+        self.track_info_misc_1.setObjectName(u"track_info_misc_1")
+
+        self.verticalLayout.addWidget(self.track_info_misc_1)
+
+        self.track_info_misc_2 = QLabel(self.main_tabs_track_info_frame)
+        self.track_info_misc_2.setObjectName(u"track_info_misc_2")
+
+        self.verticalLayout.addWidget(self.track_info_misc_2)
+
+        self.track_info_misc_3 = QLabel(self.main_tabs_track_info_frame)
+        self.track_info_misc_3.setObjectName(u"track_info_misc_3")
+
+        self.verticalLayout.addWidget(self.track_info_misc_3)
+
+        self.track_info_stream = QLabel(self.main_tabs_track_info_frame)
+        self.track_info_stream.setObjectName(u"track_info_stream")
+        font3 = QFont()
+        font3.setFamilies([u"Segoe UI"])
+        font3.setPointSize(7)
+        self.track_info_stream.setFont(font3)
+
+        self.verticalLayout.addWidget(self.track_info_stream)
+
+
+        self.verticalLayout_2.addLayout(self.verticalLayout)
+
+        self.track_info_cover_pixmap = QLabel(self.main_tabs_track_info_frame)
+        self.track_info_cover_pixmap.setObjectName(u"track_info_cover_pixmap")
+        sizePolicy3.setHeightForWidth(self.track_info_cover_pixmap.sizePolicy().hasHeightForWidth())
+        self.track_info_cover_pixmap.setSizePolicy(sizePolicy3)
+        font4 = QFont()
+        font4.setFamilies([u"Segoe UI"])
+        font4.setPointSize(16)
+        font4.setBold(True)
+        self.track_info_cover_pixmap.setFont(font4)
+        self.track_info_cover_pixmap.setFrameShape(QFrame.StyledPanel)
+        self.track_info_cover_pixmap.setScaledContents(True)
+        self.track_info_cover_pixmap.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_2.addWidget(self.track_info_cover_pixmap)
+
+
+        self.gridLayout_9.addWidget(self.main_tabs_track_info_frame, 1, 0, 1, 1)
 
         self.main_tabs_queue_frame_splitter.addWidget(self.main_tabs_queue_frame_trackinfo)
 
@@ -556,21 +589,20 @@ class Ui_MainWindow(object):
         self.playback_button_prev.setText("")
         self.playback_button_play_pause.setText("")
         self.playback_button_next.setText("")
-        self.label_9.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
-        self.label_11.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
-        self.label_10.setText(QCoreApplication.translate("MainWindow", u"Apollo - Media Player", None))
+        self.playback_footer_track_title.setText(QCoreApplication.translate("MainWindow", u"Apollo - Media Player", None))
+        self.playback_footer_track_elapsed.setText(QCoreApplication.translate("MainWindow", u"-00:00:00", None))
         self.playback_button_play_shuffle.setText("")
         self.playback_button_play_repeat.setText("")
         self.playback_button_volume_control.setText("")
         self.playback_button_play_settings.setText("")
         self.playback_button_audio_bypass.setText("")
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"Playing Queue", None))
-        self.label_17.setText(QCoreApplication.translate("MainWindow", u"Cover Art", None))
-        self.label_12.setText(QCoreApplication.translate("MainWindow", u"Track Title", None))
-        self.label_13.setText(QCoreApplication.translate("MainWindow", u"Misc Info 1", None))
-        self.label_14.setText(QCoreApplication.translate("MainWindow", u"Misc Info 2", None))
-        self.label_15.setText(QCoreApplication.translate("MainWindow", u"Misc Info 3", None))
-        self.label_16.setText(QCoreApplication.translate("MainWindow", u"Stream Info", None))
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"Track Information", None))
+        self.track_info_title.setText(QCoreApplication.translate("MainWindow", u"Track Title", None))
+        self.track_info_misc_1.setText(QCoreApplication.translate("MainWindow", u"Misc Info 1", None))
+        self.track_info_misc_2.setText(QCoreApplication.translate("MainWindow", u"Misc Info 2", None))
+        self.track_info_misc_3.setText(QCoreApplication.translate("MainWindow", u"Misc Info 3", None))
+        self.track_info_stream.setText(QCoreApplication.translate("MainWindow", u"Stream Info", None))
+        self.track_info_cover_pixmap.setText("")
     # retranslateUi
 

@@ -8,7 +8,7 @@ from mutagen.id3 import ID3
 from mutagen.mp3 import MP3
 
 from apollo.media.decoders.decode import Stream
-from apollo.utils import get_logger
+from apollo.utils import ApolloWarning, get_logger
 from configs import settings
 
 CONFIG = settings
@@ -170,8 +170,7 @@ class MP3_File(Stream):
         elif tags.version == (2, 4, 0):
             parser = self.V2_4
         else:
-            LOGGER.warning(f"Parser doesnt support Version {tags.version}")
-            warnings.warn(f"Parser doesnt support Version {tags.version}")
+            ApolloWarning(f"Parser doesnt support Version {tags.version}")
             return None
 
         tags_dict = into
@@ -186,7 +185,8 @@ class MP3_File(Stream):
                 elif frame_key == "PICTURE":
                     tags_dict[frame_key] = [False if len(tags.getall(tag_key)) == 0 else True]
                 else:
-                    tags_dict[frame_key] = list(map(str, tags.getall(tag_key)))
+                    data = list(map(str, tags.getall(tag_key)))
+                    tags_dict[frame_key] = [] if len(data) == 0 else data
         return tags_dict
 
     # noinspection PyAttributeOutsideInit
@@ -260,8 +260,8 @@ class MP3_File(Stream):
             elif tags.version == (2, 4, 0):
                 parser = self.V2_4
             else:
-                LOGGER.warning(f"Parser doesnt support Version {tags.version}")
-                warnings.warn(f"Parser doesnt support Version {tags.version}")
+
+                ApolloWarning(f"Parser doesnt support Version {tags.version}")
                 return []
 
             for (frame_key, tag_key) in parser:

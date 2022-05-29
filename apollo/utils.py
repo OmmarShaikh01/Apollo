@@ -4,6 +4,7 @@ import sys
 import threading
 import time
 import traceback
+import warnings
 from typing import (Callable)
 
 from configs import settings as _settings
@@ -31,8 +32,7 @@ def get_logger(name: str) -> logging.Logger:
     env = str(_settings.current_env).upper()
     if env in ['TESTING', 'PRODUCTION']:
         formatter = logging.Formatter(
-            '%(asctime)s: %(levelname)8s:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s'
-        )
+                '%(asctime)s: %(levelname)8s:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s')
 
         if env == 'TESTING':
             log_path = os.path.join(ROOT, 'apollo_test.log')
@@ -41,15 +41,16 @@ def get_logger(name: str) -> logging.Logger:
             formatter.default_time_format = '%H:%M:%S'
         else:
             log_path = os.path.join(ROOT, 'apollo_prod.log')
-            log_mode = "a"
+            log_mode = "w"
             log_level = logging.INFO
+            formatter.default_time_format = '%H:%M:%S'
 
         file_handler = logging.FileHandler(log_path, mode = log_mode)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
 
     if env in ['PRODUCTION']:
-        formatter = logging.Formatter('%(levelname)8s:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s')
+        formatter = logging.Formatter('[%(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s')
         stream_handler = logging.StreamHandler(sys.stdout)
         stream_handler.setFormatter(formatter)
         logger.addHandler(stream_handler)
@@ -155,3 +156,10 @@ class ApolloSignal:
         """
         if self.connected_callback is not None:
             self.connected_callback(*args, **kwargs)
+
+
+class ApolloWarning:
+
+    def __init__(self, msg: str) -> None:
+        warnings.warn(UserWarning(msg))
+        _LOGGER.warning(msg)
