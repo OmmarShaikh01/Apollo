@@ -1,17 +1,18 @@
 import os
 import shutil
+from pathlib import PurePath
 
 import pytest
 
-from apollo.utils import get_logger
 from configs import settings
-
-from tests.testing_utils import get_qt_application
-# SESSION STARTUP
-
 settings.setenv("TESTING")
 settings.validators.validate()
 
+from apollo.utils import get_logger
+from tests.testing_utils import get_qt_application
+
+
+# SESSION STARTUP
 LOGGER = get_logger(__name__)
 
 
@@ -30,11 +31,18 @@ def remove_temp_dir():
         LOGGER.info(f"Deleted {path}")
 
 
+def remove_local_config():
+    path = PurePath(settings.project_root, 'configs', 'qt_testing_settings.local.toml')
+    if os.path.isdir(path):
+        os.remove(path)
+
+
 @pytest.fixture(scope = 'session', autouse = True)
 def create_session():
     create_temp_dir()
     yield None
     remove_temp_dir()
+    remove_local_config()
     LOGGER.info(f"CONFIG {settings.to_dict()}")
     LOGGER.info(f"Application Exited with Error code: {get_qt_application().exit()}")
 # END REGION

@@ -1,4 +1,5 @@
 [PRODUCTION]
+LOGGER_LEVEL = "error"
 LOAD_DOTENV = true
 LOADED_THEME = "material_dark"
 RECOMPILE_THEME = false

@@ -5,13 +5,8 @@ from pathlib import PurePath
 import nox
 import tomli
 
-from configs import settings
-
-
-settings.validators.validate()
 SUPPORTED_PYTHON = ['3.9']
-SILENT = settings.NOX_EXECUTION_VERBOSITY_DISABLED
-
+SILENT = True
 nox.options.pythons = SUPPORTED_PYTHON
 nox.options.reuse_existing_virtualenvs = True
 
@@ -33,17 +28,7 @@ def testing_pytest(session: nox.Session):
     _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS = 'false')
-    session.run('pytest', '-c', './pytest.ini', env = envvars, silent = SILENT)
-
-
-@nox.session(python = SUPPORTED_PYTHON)
-def testing_coverage(session: nox.Session):
-    os.chdir(os.path.dirname(__file__))
-    _upgrade_basic(session)
-
-    envvars = dict(DYNACONF_BENCHMARK_FORMATS = 'false')
-    session.run('pytest', '--cov', './apollo', '--cov-config', '.coveragerc', '-c', 'pytest.ini', '--cov-report',
-                'html', env = envvars, silent = SILENT)
+    session.run('pytest', '--show-capture', 'no', '-c', './pytest.ini', env = envvars)
 
 
 @nox.session(python = SUPPORTED_PYTHON)
@@ -52,7 +37,17 @@ def testing_benchmarked(session: nox.Session):
     _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS = 'true')
-    session.run('pytest', '-c', './pytest.ini', env = envvars, silent = SILENT)
+    session.run('pytest', '-r', 'fE', '--show-capture', 'no', '-c', './pytest.ini', env = envvars)
+
+
+@nox.session(python = SUPPORTED_PYTHON)
+def testing_coverage(session: nox.Session):
+    os.chdir(os.path.dirname(__file__))
+    _upgrade_basic(session)
+
+    envvars = dict(DYNACONF_BENCHMARK_FORMATS = 'false')
+    session.run('pytest', '--show-capture', 'no', '--cov', './apollo', '--cov-config', '.coveragerc',
+                '-c', 'pytest.ini', '--cov-report', 'html', env = envvars)
 
 
 @nox.session(python = SUPPORTED_PYTHON)

@@ -1,4 +1,4 @@
-[TESTING]
+[QT_TESTING]
 LOGGER_LEVEL = "debug"
 LOAD_DOTENV = true
 RECOMPILE_THEME = true
@@ -6,10 +6,9 @@ LOADED_THEME = "material_dark"
 BENCHMARK_FORMATS = false
 SUPPORTED_FORMATS = [ "aac", "aiff", "flac", "m4a", "mp3", "ogg", "opus", "wav",]
 ENABLED_FORMATS = [ "mp3",]
-BENCHMARK_RUNS = 1000
 SOX_PATH="@none "
 
-[TESTING.SERVER]
+[QT_TESTING.SERVER]
 format = "s16"
 chnl = 2
 rate = 44100

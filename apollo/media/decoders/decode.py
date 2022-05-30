@@ -55,7 +55,7 @@ class Stream(ABC):
     def __bool__(self):  # pragma: no cover
         return all([
             (self.SynthTags.get('FILEID', '') != ''),
-            (self.SynthTags.get("SONGLEN") < (24 * 3600))
+            (self.SynthTags.get("SONGLEN")[0] < (24 * 3600))
         ])
 
     def _file_id(self):

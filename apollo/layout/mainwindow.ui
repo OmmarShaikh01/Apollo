@@ -958,14 +958,17 @@
          <number>0</number>
         </property>
         <item row="0" column="0">
-         <widget class="QStackedWidget" name="stackedWidget">
+         <widget class="QStackedWidget" name="main_tabs_stack_widget">
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
-          <widget class="QWidget" name="page"/>
-          <widget class="QWidget" name="page_2"/>
-          <widget class="QWidget" name="page_3"/>
-          <widget class="QWidget" name="page_4"/>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="library_main_tab"/>
+          <widget class="QWidget" name="now_playing_main_tab"/>
+          <widget class="QWidget" name="playlist_main_tab"/>
+          <widget class="QWidget" name="audiofx_main_tab"/>
          </widget>
         </item>
        </layout>

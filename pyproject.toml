@@ -9,7 +9,16 @@ packages = [
     { include = "configs" },
 ]
 include = ["apollo/assets/app_themes"]
-exclude = ["configs/testing_settings.toml", "configs/settings.toml"]
+exclude = [
+    'configs\default_testing_settings.toml',
+    'configs\default_qt_testing_settings.toml',
+    'configs\settings.toml',
+    'configs\testing_settings.toml',
+    'configs\qt_testing_settings.toml',
+    'configs\settings.local.toml',
+    'configs\testing_settings.local.toml',
+    'configs\qt_testing_settings.local.toml',
+]
 build = 'build.py'
 
 

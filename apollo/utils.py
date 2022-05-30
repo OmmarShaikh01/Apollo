@@ -27,33 +27,41 @@ def get_logger(name: str) -> logging.Logger:
     if _LOGGER is not None:
         return _LOGGER
 
+    if _settings.LOGGER_LEVEL == 'debug':
+        log_level = logging.DEBUG
+    elif _settings.LOGGER_LEVEL == 'info':
+        log_level = logging.INFO
+    elif _settings.LOGGER_LEVEL == 'warning':
+        log_level = logging.WARNING
+    elif _settings.LOGGER_LEVEL == 'error':
+        log_level = logging.ERROR
+    elif _settings.LOGGER_LEVEL == 'critical':
+        log_level = logging.CRITICAL
+    else:
+        log_level = logging.INFO
+
     logger = logging.getLogger(name)
-    log_level = logging.INFO
     env = str(_settings.current_env).upper()
-    if env in ['TESTING', 'PRODUCTION']:
+
+    if env in ['TESTING', 'PRODUCTION', 'QT_TESTING']:
         formatter = logging.Formatter(
-                '%(asctime)s: %(levelname)8s:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s')
-
-        if env == 'TESTING':
-            log_path = os.path.join(ROOT, 'apollo_test.log')
-            log_mode = "w"
-            log_level = logging.DEBUG
-            formatter.default_time_format = '%H:%M:%S'
-        else:
-            log_path = os.path.join(ROOT, 'apollo_prod.log')
-            log_mode = "w"
-            log_level = logging.INFO
-            formatter.default_time_format = '%H:%M:%S'
-
+            f'[{env}] [%(asctime)s: %(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s'
+        )
+        log_path = os.path.join(ROOT, 'apollo.log')
+        log_mode = "w"
+        formatter.default_time_format = '%H:%M:%S'
         file_handler = logging.FileHandler(log_path, mode = log_mode)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
 
     if env in ['PRODUCTION']:
-        formatter = logging.Formatter('[%(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s')
+        formatter = logging.Formatter(
+            f'[{env}] [%(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s'
+        )
         stream_handler = logging.StreamHandler(sys.stdout)
         stream_handler.setFormatter(formatter)
         logger.addHandler(stream_handler)
+
     logger.setLevel(log_level)
     return logger
 

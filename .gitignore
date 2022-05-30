@@ -195,6 +195,12 @@ cython_debug/
 
 # Ignore dynaconf secret files
 .secrets.*
+qt_testing_settings.local.toml
+settings.local.toml
+testing_settings.local.toml
+qt_testing_settings.toml
+settings.toml
+testing_settings.toml
 
 # Misc Development files
 desktop.ini
@@ -203,6 +209,7 @@ desktop.ini
 /docs/build/
 /exclude/
 /tests/coverage/
+/tests/pytest_qt_apollo/output/
 /dist
 /apollo/assets/stylesheets/generated/
 /apollo/assets/stylesheets/build/
