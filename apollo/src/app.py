@@ -14,10 +14,14 @@ class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
 
     def __init__(self) -> None:
         super().__init__()
-        self.setupUi(self)
-        self.setup_interactions()
-        self.setup_defaults()
+        self.playback_bar = None
 
+        self.setupUi(self)
+        self.setup_defaults()
+        self.setup_interactions()
+        self.setup_subtabs()
+
+    def setup_subtabs(self):
         self.playback_bar = Playback_Bar(self)
 
     def setup_interactions(self):

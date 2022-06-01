@@ -12,16 +12,10 @@ def validate(settings: dynaconf.Dynaconf):
         settings (dynaconf.Dynaconf): Settings
     """
     # REGISTER VALIDATORS FOR [SHARED SESSION]
-    ENVS = ('TESTING', 'QT_TESTING', 'PRODUCTION')
-    for ENV in ENVS:
-        settings.validators.register(
-            Validator('logger_level', env = ENV, must_exist = True),
-            Validator('loaded_theme', env = ENV, must_exist = True),
-            Validator('recompile_theme', env = ENV, must_exist = True),
-            Validator('supported_formats', env = ENV, must_exist = True),
-            Validator('enabled_formats', env = ENV, must_exist = True),
-            Validator("server.rate", "server.chnl", "server.format", env = ENV, must_exist = True)
-        )
+    FIELDS = ('logger_level', 'loaded_theme', 'recompile_theme', 'supported_formats', 'enabled_formats')
+    settings.validators.register(
+        Validator(*FIELDS, "server.rate", "server.chnl", "server.format", env = ['TESTING', 'QT_TESTING', 'PRODUCTION'], must_exist = True)
+    )
 
     # REGISTER VALIDATORS FOR [PRODUCTION]
     env = 'PRODUCTION'
@@ -35,7 +29,7 @@ def validate(settings: dynaconf.Dynaconf):
             'APOLLO.PLAYBACK_BAR.VOLUME_LEVEL',
             'APOLLO.PLAYBACK_BAR.LOADED_TRACK',
             'APOLLO.PLAYBACK_BAR.BYPASS_PROCESSOR',
-            'APOLLO.PLAYBACK_BAR.ELAPSED_TIME',
+            'APOLLO.PLAYBACK_BAR.ELAPSED_TIME'
         ),
     )
 
@@ -58,7 +52,7 @@ def validate(settings: dynaconf.Dynaconf):
             'APOLLO.PLAYBACK_BAR.VOLUME_LEVEL',
             'APOLLO.PLAYBACK_BAR.LOADED_TRACK',
             'APOLLO.PLAYBACK_BAR.BYPASS_PROCESSOR',
-            'APOLLO.PLAYBACK_BAR.ELAPSED_TIME',
+            'APOLLO.PLAYBACK_BAR.ELAPSED_TIME'
         ),
     )
 
@@ -73,5 +67,3 @@ def validate(settings: dynaconf.Dynaconf):
         Validator('benchmark_formats', must_exist = True, env = env),  # NO DEFAULTS
         Validator('sox_path', must_exist = True, env = env, messages = {"must_exist_true": "Download and Set SOX_PATH sox from http://sox.sourceforge.net/"}),  # NO DEFAULTS
     )
-
-    settings.validators.validate()

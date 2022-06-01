@@ -1,4 +1,6 @@
+import cProfile
 import os
+import pstats
 import shutil
 from pathlib import PurePath
 
@@ -7,9 +9,8 @@ from PySide6 import QtWidgets
 from pytestqt.qtbot import QtBot
 
 from configs import settings
-
 settings.setenv("QT_TESTING")
-settings.validators.validate()
+settings.validators.validate(only_current_env = True)
 
 from apollo.utils import get_logger
 from apollo.assets.stylesheets import load_theme
@@ -41,20 +42,35 @@ def remove_local_config():
         os.remove(path)
 
 
-@pytest.fixture
-def get_apollo(qtbot) -> tuple[Apollo, QtBot]:
-    APOLLO = Apollo()
-    APOLLO.setScreen(QtWidgets.QApplication.screens()[0])
-    APOLLO.showFullScreen()
-    load_theme(get_qt_application(), settings.loaded_theme, recompile = settings.recompile_theme)
-    return APOLLO, qtbot
+def profile_stats(prof: cProfile.Profile):
+    with open(os.path.join(os.path.dirname(__file__), '.profile'), 'w') as stats_file:
+        stats = pstats.Stats(prof, stream = stats_file)
+        stats.strip_dirs().sort_stats('tottime').print_stats()
+
+def clean_output():
+    path = os.path.join(os.path.dirname(__file__), 'output')
+    if os.path.exists(path):
+        shutil.rmtree(path)
 
 
-@pytest.fixture(scope = 'session', autouse = True)
+@pytest.fixture(scope = 'package', autouse = True)
 def create_session():
+    settings.setenv("QT_TESTING")
+    settings.validators.validate()
+    LOGGER.info(f"CONFIG {settings.current_env}: {settings.to_dict()}")
+    clean_output()
     create_temp_dir()
+    load_theme(get_qt_application(), settings.loaded_theme, recompile = settings.recompile_theme)
+    prof = cProfile.Profile()
+    prof.enable()
     yield None
+    prof.disable()
+    profile_stats(prof)
+
     remove_temp_dir()
     remove_local_config()
-    LOGGER.info(f"CONFIG {settings.to_dict()}")
-    LOGGER.info(f"Application Exited with Error code: {get_qt_application().exit()}")  # END REGION
+
+    LOGGER.info(f"CONFIG {settings.current_env}: {settings.to_dict()}")
+    LOGGER.info(f"Application Exited with Error code: {get_qt_application().exit()}")
+    LOGGER.info(f"Completed {os.path.dirname(__file__)}")
+# END REGION

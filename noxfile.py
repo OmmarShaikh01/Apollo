@@ -28,7 +28,9 @@ def testing_pytest(session: nox.Session):
     _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS = 'false')
-    session.run('pytest', '--show-capture', 'no', '-c', './pytest.ini', env = envvars)
+    for test_directory in ['pytest_apollo', 'pytest_qt_apollo']:
+        test_directory = os.path.join(os.path.dirname(__file__), 'tests', test_directory)
+        session.run('pytest', '--show-capture=no', '-c', './pytest.ini', test_directory, env = envvars)
 
 
 @nox.session(python = SUPPORTED_PYTHON)
@@ -37,7 +39,9 @@ def testing_benchmarked(session: nox.Session):
     _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS = 'true')
-    session.run('pytest', '-r', 'fE', '--show-capture', 'no', '-c', './pytest.ini', env = envvars)
+    for test_directory in ['pytest_apollo', 'pytest_qt_apollo']:
+        test_directory = os.path.join(os.path.dirname(__file__), 'tests', test_directory)
+        session.run('pytest', '-r', 'fE', '--show-capture', 'no', '-c', './pytest.ini', test_directory, env = envvars)
 
 
 @nox.session(python = SUPPORTED_PYTHON)
@@ -46,8 +50,10 @@ def testing_coverage(session: nox.Session):
     _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS = 'false')
-    session.run('pytest', '--show-capture', 'no', '--cov', './apollo', '--cov-config', '.coveragerc',
-                '-c', 'pytest.ini', '--cov-report', 'html', env = envvars)
+    for test_directory in ['pytest_apollo', 'pytest_qt_apollo']:
+        test_directory = os.path.join(os.path.dirname(__file__), 'tests', test_directory)
+        session.run('pytest', '--show-capture', 'no', '--cov', './apollo', '--cov-config', '.coveragerc',
+                '-c', 'pytest.ini', '--cov-report', 'html', test_directory, env = envvars)
 
 
 @nox.session(python = SUPPORTED_PYTHON)

@@ -96,7 +96,7 @@ def get_stylesheet(colors: dict) -> str:
     template = env.get_template('main.css.jinja')
     rendered = template.render(theme)
     rendered, _ = re.subn('/\*.*\*/', '', rendered)
-    rendered = rendered.replace(";\n", '; ').replace("{\n", '{ ').replace("    ", '')
+    rendered = rendered.replace(";\n", '; ').replace(",\n", ', ').replace("{\n", '{ ').replace("    ", '')
     rendered = '\n'.join(filter(lambda x: x != '', rendered.splitlines()))
 
     return rendered

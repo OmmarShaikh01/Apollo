@@ -1,21 +1,17 @@
 import abc
-import datetime
 import enum
 import math
-import os.path
 import time
-from abc import ABC
 from pathlib import PurePath
 from typing import Optional, Union
 
-from PySide6 import QtCore, QtGui, QtSvg, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
-from configs import settings
-from apollo.layout.mainwindow import Ui_MainWindow as Apollo
-from apollo.utils import ApolloWarning, get_logger
-from apollo.media import Mediafile
-from apollo.assets.stylesheets import ASSETS
 from apollo.assets import AppIcons
+from apollo.layout.mainwindow import Ui_MainWindow as Apollo
+from apollo.media import Mediafile
+from apollo.utils import get_logger
+from configs import settings
 
 CONFIG = settings
 LOGGER = get_logger(__name__)
@@ -57,14 +53,17 @@ class TrackRatingWidget(QtWidgets.QWidget):
     def setRating(self, rating: Optional[float] = 0):
         self._rating = rating
         self.rating = rating
+        self.RatingChangedSignal.emit(rating)
         self.update()
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent) -> None:
+        print(QtGui.QCursor.pos())
         width = (round(self.mapFromGlobal(QtGui.QCursor.pos()).x() / self.width(), 1) / 2) * 10
         self._rating = width
         self.update()
 
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
+        print(QtGui.QCursor.pos())
         width = (round(self.mapFromGlobal(QtGui.QCursor.pos()).x() / self.width(), 1) / 2) * 10
         self._rating = width
         self.rating = width
@@ -72,6 +71,7 @@ class TrackRatingWidget(QtWidgets.QWidget):
         self.RatingChangedSignal.emit(width)
 
     def leaveEvent(self, event: QtCore.QEvent) -> None:
+        print(QtGui.QCursor.pos())
         self._rating = self.rating
         self.update()
 
@@ -118,13 +118,13 @@ class Playback_Bar_Interactions(abc.ABC):
 
     def __init__(self, ui: Apollo) -> None:
         self.ui = ui
-        self.setup_interactions()
         self.setup_defaults()
+        self.setup_interactions()
 
     def setup_interactions(self):
         self.ui.playback_button_play_pause.pressed.connect(lambda: (self.state_change_play()))
-        self.ui.playback_button_prev.pressed.connect(self.call_track_prev)
-        self.ui.playback_button_next.pressed.connect(self.call_track_next)
+        self.ui.playback_button_prev.pressed.connect(lambda: self.call_track_prev())
+        self.ui.playback_button_next.pressed.connect(lambda: self.call_track_next())
         self.ui.playback_button_audio_bypass.clicked.connect(
             lambda: self.state_change_processor_bypass(self.ui.playback_button_audio_bypass.isChecked())
         )
@@ -134,10 +134,9 @@ class Playback_Bar_Interactions(abc.ABC):
         self.ui.playback_slider_volume_control.valueChanged.connect(lambda x: (self.state_change_volume_level(x)))
         self.ui.playback_button_volume_control.pressed.connect(lambda: (self.state_change_volume_level()))
         self.ui.playback_button_play_settings.pressed.connect(lambda: (
-            self.ui.main_tabs_stack_widget.setCurrentIndex(3)
+            self.ui.audiofx_tab_switch_button.click()
         ))
-        self.ui.playback_footer_track_rating = TrackRatingWidget(self.ui.playback_footer_frame_M)
-        self.ui.playback_footer_track_rating.RatingChangedSignal.connect(self.call_track_rating)
+        self.ui.playback_footer_track_rating.RatingChangedSignal.connect(lambda x: self.call_track_rating(x))
 
     def setup_defaults(self):
         self.state_change_play(self._STATE_PLAY)
@@ -147,8 +146,9 @@ class Playback_Bar_Interactions(abc.ABC):
         self.ui.playback_slider_volume_control.setValue(self._VOLUME_LEVEL)
         self.state_change_processor_bypass(self._BYPASS_PROCESSOR)
         self.load_track_info()
-        self.load_rating()
         self.ui.playback_footer_track_seek_slider.setValue(self._ELAPSED_TIME)
+        self.ui.playback_footer_track_rating = TrackRatingWidget(self.ui.playback_footer_frame_M)
+        self.load_rating()
 
     def save_states(self):
         CONFIG['APOLLO.PLAYBACK_BAR.STATE_PLAY'] = self._STATE_PLAY

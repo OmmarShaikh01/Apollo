@@ -15,11 +15,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
-    QLabel, QLineEdit, QListView, QMainWindow,
-    QMenuBar, QPushButton, QSizePolicy, QSlider,
-    QSpacerItem, QSplitter, QStackedWidget, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QFrame, QGridLayout,
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+    QListView, QMainWindow, QMenuBar, QPushButton,
+    QSizePolicy, QSlider, QSpacerItem, QSplitter,
+    QStackedWidget, QTableView, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -27,7 +27,9 @@ class Ui_MainWindow(object):
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(800, 600)
         MainWindow.setMinimumSize(QSize(800, 600))
+        MainWindow.setWindowOpacity(1.000000000000000)
         MainWindow.setStyleSheet(u"")
+        MainWindow.setUnifiedTitleAndToolBarOnMac(False)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -58,38 +60,49 @@ class Ui_MainWindow(object):
         self.navbar_header_button_frame.setFrameShape(QFrame.NoFrame)
         self.navbar_header_button_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_4 = QHBoxLayout(self.navbar_header_button_frame)
-        self.horizontalLayout_4.setSpacing(2)
+        self.horizontalLayout_4.setSpacing(6)
         self.horizontalLayout_4.setContentsMargins(4, 4, 4, 4)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.horizontalLayout_4.setContentsMargins(2, 0, 2, 0)
         self.library_tab_switch_button = QPushButton(self.navbar_header_button_frame)
+        self.buttonGroup = QButtonGroup(MainWindow)
+        self.buttonGroup.setObjectName(u"buttonGroup")
+        self.buttonGroup.addButton(self.library_tab_switch_button)
         self.library_tab_switch_button.setObjectName(u"library_tab_switch_button")
         self.library_tab_switch_button.setMinimumSize(QSize(0, 24))
         self.library_tab_switch_button.setMaximumSize(QSize(16777215, 24))
+        self.library_tab_switch_button.setCheckable(True)
+        self.library_tab_switch_button.setChecked(True)
         self.library_tab_switch_button.setFlat(True)
 
         self.horizontalLayout_4.addWidget(self.library_tab_switch_button, 0, Qt.AlignLeft|Qt.AlignVCenter)
 
         self.now_playing_tab_switch_button = QPushButton(self.navbar_header_button_frame)
+        self.buttonGroup.addButton(self.now_playing_tab_switch_button)
         self.now_playing_tab_switch_button.setObjectName(u"now_playing_tab_switch_button")
         self.now_playing_tab_switch_button.setMinimumSize(QSize(0, 24))
         self.now_playing_tab_switch_button.setMaximumSize(QSize(16777215, 24))
+        self.now_playing_tab_switch_button.setCheckable(True)
         self.now_playing_tab_switch_button.setFlat(True)
 
         self.horizontalLayout_4.addWidget(self.now_playing_tab_switch_button)
 
         self.playlist_tab_switch_button = QPushButton(self.navbar_header_button_frame)
+        self.buttonGroup.addButton(self.playlist_tab_switch_button)
         self.playlist_tab_switch_button.setObjectName(u"playlist_tab_switch_button")
         self.playlist_tab_switch_button.setMinimumSize(QSize(0, 24))
         self.playlist_tab_switch_button.setMaximumSize(QSize(16777215, 24))
+        self.playlist_tab_switch_button.setCheckable(True)
         self.playlist_tab_switch_button.setFlat(True)
 
         self.horizontalLayout_4.addWidget(self.playlist_tab_switch_button)
 
         self.audiofx_tab_switch_button = QPushButton(self.navbar_header_button_frame)
+        self.buttonGroup.addButton(self.audiofx_tab_switch_button)
         self.audiofx_tab_switch_button.setObjectName(u"audiofx_tab_switch_button")
         self.audiofx_tab_switch_button.setMinimumSize(QSize(0, 24))
         self.audiofx_tab_switch_button.setMaximumSize(QSize(16777215, 24))
+        self.audiofx_tab_switch_button.setCheckable(True)
         self.audiofx_tab_switch_button.setFlat(True)
 
         self.horizontalLayout_4.addWidget(self.audiofx_tab_switch_button)
@@ -174,7 +187,7 @@ class Ui_MainWindow(object):
         self.playback_footer_frame_L.setFrameShape(QFrame.NoFrame)
         self.playback_footer_frame_L.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_2 = QHBoxLayout(self.playback_footer_frame_L)
-        self.horizontalLayout_2.setSpacing(8)
+        self.horizontalLayout_2.setSpacing(4)
         self.horizontalLayout_2.setContentsMargins(4, 4, 4, 4)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setContentsMargins(4, 4, 4, 4)
@@ -392,6 +405,18 @@ class Ui_MainWindow(object):
         self.main_tabs_stack_widget.setFrameShape(QFrame.StyledPanel)
         self.library_main_tab = QWidget()
         self.library_main_tab.setObjectName(u"library_main_tab")
+        self.verticalLayout_3 = QVBoxLayout(self.library_main_tab)
+        self.verticalLayout_3.setSpacing(0)
+        self.verticalLayout_3.setContentsMargins(4, 4, 4, 4)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.library_main_tableview = QTableView(self.library_main_tab)
+        self.library_main_tableview.setObjectName(u"library_main_tableview")
+        self.library_main_tableview.setFrameShape(QFrame.NoFrame)
+        self.library_main_tableview.verticalHeader().setVisible(False)
+
+        self.verticalLayout_3.addWidget(self.library_main_tableview)
+
         self.main_tabs_stack_widget.addWidget(self.library_main_tab)
         self.now_playing_main_tab = QWidget()
         self.now_playing_main_tab.setObjectName(u"now_playing_main_tab")
@@ -440,13 +465,13 @@ class Ui_MainWindow(object):
         self.gridLayout_8.setContentsMargins(4, 4, 4, 4)
         self.gridLayout_8.setObjectName(u"gridLayout_8")
         self.gridLayout_8.setContentsMargins(2, 2, 2, 2)
-        self.listView = QListView(self.main_tabs_queue_frame_queue)
-        self.listView.setObjectName(u"listView")
-        sizePolicy.setHeightForWidth(self.listView.sizePolicy().hasHeightForWidth())
-        self.listView.setSizePolicy(sizePolicy)
-        self.listView.setMinimumSize(QSize(0, 156))
+        self.queue_main_listview = QListView(self.main_tabs_queue_frame_queue)
+        self.queue_main_listview.setObjectName(u"queue_main_listview")
+        sizePolicy.setHeightForWidth(self.queue_main_listview.sizePolicy().hasHeightForWidth())
+        self.queue_main_listview.setSizePolicy(sizePolicy)
+        self.queue_main_listview.setMinimumSize(QSize(0, 156))
 
-        self.gridLayout_8.addWidget(self.listView, 1, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.queue_main_listview, 1, 0, 1, 1)
 
         self.label_19 = QLabel(self.main_tabs_queue_frame_queue)
         self.label_19.setObjectName(u"label_19")
@@ -578,7 +603,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Apollo", None))
         self.library_tab_switch_button.setText(QCoreApplication.translate("MainWindow", u"Library", None))
         self.now_playing_tab_switch_button.setText(QCoreApplication.translate("MainWindow", u"Now Playing", None))
         self.playlist_tab_switch_button.setText(QCoreApplication.translate("MainWindow", u"Playlist", None))

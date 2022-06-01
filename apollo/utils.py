@@ -47,7 +47,9 @@ def get_logger(name: str) -> logging.Logger:
         formatter = logging.Formatter(
             f'[{env}] [%(asctime)s: %(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s'
         )
-        log_path = os.path.join(ROOT, 'apollo.log')
+        if not os.path.isdir(os.path.join(ROOT, 'logs')):
+            os.mkdir(os.path.join(ROOT, 'logs'))
+        log_path = os.path.join(ROOT, 'logs', f'apollo_{env.lower()}.log')
         log_mode = "w"
         formatter.default_time_format = '%H:%M:%S'
         file_handler = logging.FileHandler(log_path, mode = log_mode)

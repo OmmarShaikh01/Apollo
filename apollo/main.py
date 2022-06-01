@@ -24,7 +24,7 @@ def main() -> None:
 
     # TODO: Disable
     # window.playback_button_play_pause.pressed.connect(
-    #     lambda: load_theme(app, name = CONFIG.loaded_theme, recompile = CONFIG.recompile_theme)
+    #     lambda: load_theme(app, name = CONFIG.loaded_theme, recompile = not CONFIG.recompile_theme)
     # )
 
     window.show()
