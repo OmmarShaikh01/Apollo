@@ -52,8 +52,10 @@ def testing_coverage(session: nox.Session):
     envvars = dict(DYNACONF_BENCHMARK_FORMATS = 'false')
     for test_directory in ['pytest_apollo', 'pytest_qt_apollo']:
         test_directory = os.path.join(os.path.dirname(__file__), 'tests', test_directory)
-        session.run('pytest', '--show-capture', 'no', '--cov', './apollo', '--cov-config', '.coveragerc',
-                '-c', 'pytest.ini', '--cov-report', 'html', test_directory, env = envvars)
+        CMD = ['pytest', '--show-capture', 'no', '--cov', './apollo', '--cov-config',
+               '.coveragerc', '-c', 'pytest.ini', '--cov-report', 'html'
+        ]
+        session.run(*CMD, test_directory, env = envvars)
 
 
 @nox.session(python = SUPPORTED_PYTHON)

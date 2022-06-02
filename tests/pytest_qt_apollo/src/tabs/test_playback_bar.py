@@ -40,9 +40,10 @@ def get_Playback_Bar(qtbot) -> tuple[Apollo_MOCK, QtBot]:
     app.sub_tabs = Playback_Bar(app)
     app.setScreen(QtWidgets.QApplication.screens()[0])
     app.showFullScreen()
+    app.closeEvent = lambda eve: (app.sub_tabs.shutdown())
     return app, bot
 
-
+@pytest.mark.skip
 class Test_TrackRatingWidget:
 
     def test_init(self, get_TrackRatingWidget: (TrackRatingWidget, QtBot)):
@@ -95,32 +96,60 @@ class Test_Playback_Bar:
         app, bot = get_Playback_Bar
 
         screenshot_widget(app, "Test_Playback_Bar.test_default_interactions")
-        mocked_obj = lambda *x, **kx: LOGGER.info("MOCKED")
+        mocked_obj = lambda *x, **kx: LOGGER.info(f"MOCKED args: {x}, kwargs: {kx}")
 
         mocker.patch.object(app.sub_tabs, 'call_state_change_play', mocked_obj)
         spy = mocker.spy(app.sub_tabs, 'call_state_change_play')
         app.playback_button_play_pause.click()
-        assert spy.called
+        spy.assert_called_with('PLAY')
+        app.playback_button_play_pause.click()
+        spy.assert_called_with('PAUSE')
 
         mocker.patch.object(app.sub_tabs, 'call_state_change_shuffle', mocked_obj)
         spy = mocker.spy(app.sub_tabs, 'call_state_change_shuffle')
         app.playback_button_play_shuffle.click()
-        assert spy.called
+        spy.assert_called_with("SHUFFLE")
+        app.playback_button_play_shuffle.click()
+        spy.assert_called_with("NONE")
 
         mocker.patch.object(app.sub_tabs, 'call_state_change_repeat', mocked_obj)
         spy = mocker.spy(app.sub_tabs, 'call_state_change_repeat')
         app.playback_button_play_repeat.click()
-        assert spy.called
+        spy.assert_called_with('REPEAT')
+        app.playback_button_play_repeat.click()
+        spy.assert_called_with('REPEAT_ONE')
+        app.playback_button_play_repeat.click()
+        spy.assert_called_with('NONE')
 
         mocker.patch.object(app.sub_tabs, 'call_state_change_volume_level', mocked_obj)
         spy = mocker.spy(app.sub_tabs, 'call_state_change_volume_level')
-        app.playback_slider_volume_control.setValue(40)
-        assert spy.called
+        app.playback_slider_volume_control.setValue(0)
+        spy.assert_called_with(0)
+        assert app.playback_button_volume_control.property('STATE_VOLUME_LEVEL') == 'MUTE'
+        app.playback_slider_volume_control.setValue(25)
+        spy.assert_called_with(25)
+        assert app.playback_button_volume_control.property('STATE_VOLUME_LEVEL') == 'QUARTER'
+        app.playback_slider_volume_control.setValue(50)
+        spy.assert_called_with(50)
+        assert app.playback_button_volume_control.property('STATE_VOLUME_LEVEL') == 'HALF'
+        app.playback_slider_volume_control.setValue(99)
+        spy.assert_called_with(99)
+        assert app.playback_button_volume_control.property('STATE_VOLUME_LEVEL') == 'FULL'
 
         mocker.patch.object(app.sub_tabs, 'call_state_change_volume_level', mocked_obj)
         spy = mocker.spy(app.sub_tabs, 'call_state_change_volume_level')
         app.playback_button_volume_control.click()
-        assert spy.called
+        assert app.playback_slider_volume_control.value() == 0
+        spy.assert_called_with(0)
+        app.playback_button_volume_control.click()
+        assert app.playback_slider_volume_control.value() == 25
+        spy.assert_called_with(25)
+        app.playback_button_volume_control.click()
+        assert app.playback_slider_volume_control.value() == 50
+        spy.assert_called_with(50)
+        app.playback_button_volume_control.click()
+        assert app.playback_slider_volume_control.value() == 99
+        spy.assert_called_with(99)
 
         mocker.patch.object(app.sub_tabs, 'call_track_prev', mocked_obj)
         spy = mocker.spy(app.sub_tabs, 'call_track_prev')
@@ -146,5 +175,9 @@ class Test_Playback_Bar:
         spy = mocker.spy(app.sub_tabs, 'call_track_rating')
         app.playback_footer_track_rating.setRating(4)
         assert spy.called
+        spy.assert_called_with(4)
 
+        mocker.patch.object(app.sub_tabs, 'call_on_shutdown', mocked_obj)
+        spy = mocker.spy(app.sub_tabs, 'call_on_shutdown')
         app.close()
+        assert spy.called

@@ -41,9 +41,18 @@ class STATE_VOLUME_LEVEL(enum.Enum):
 
 
 class TrackRatingWidget(QtWidgets.QWidget):
+    """
+    Rating Widget, modifies and displays track rating
+    """
     RatingChangedSignal = QtCore.Signal(float)
 
     def __init__(self, parent: Optional[QtWidgets.QWidget] = None) -> None:
+        """
+        Constructor
+
+        Args:
+            parent (Optional[QtWidgets.QWidget]): Parent widget
+        """
         super().__init__(parent)
         self.setMouseTracking(True)
         self.rating = 0
@@ -51,6 +60,12 @@ class TrackRatingWidget(QtWidgets.QWidget):
         self._temp_rating = self._rating
 
     def setRating(self, rating: Optional[float] = 0):
+        """
+        Modifies the currently displayed rating
+
+        Args:
+            rating (Optional[float]): rating to set
+        """
         self._rating = rating
         self.rating = rating
         self.RatingChangedSignal.emit(rating)
@@ -102,11 +117,23 @@ class TrackRatingWidget(QtWidgets.QWidget):
         painter.end()
 
     @staticmethod
-    def paint_star(star, painter, pos, size):
+    def paint_star(star: str, painter: QtGui.QPainter, pos: int, size: int):
+        """
+        Paints a star pixmap
+
+        Args:
+            star (str): location of the image file
+            painter (QtGui.QPainter): Widget painter
+            pos (int): Position to draw star at
+            size (int): Size of the pixmap
+        """
         painter.drawPixmap(QtCore.QPoint(pos, 6), QtGui.QPixmap.fromImage(QtGui.QImage(star)).scaled(size, size))
 
 
 class Playback_Bar_Interactions(abc.ABC):
+    """
+    Playback Bar Interactions
+    """
     _STATE_PLAY = CONFIG.get('APOLLO.PLAYBACK_BAR.STATE_PLAY', STATE_PLAY.PAUSE.name)
     _STATE_SHUFFLE = CONFIG.get('APOLLO.PLAYBACK_BAR.STATE_SHUFFLE', STATE_SHUFFLE.NONE.name)
     _STATE_REPEAT = CONFIG.get('APOLLO.PLAYBACK_BAR.STATE_REPEAT', STATE_REPEAT.NONE.name)
@@ -117,28 +144,39 @@ class Playback_Bar_Interactions(abc.ABC):
     _ELAPSED_TIME = CONFIG.get('APOLLO.PLAYBACK_BAR.ELAPSED_TIME', 0)
 
     def __init__(self, ui: Apollo) -> None:
+        """
+        Constructor
+
+        Args:
+            ui (Apollo): UI objects
+        """
         self.ui = ui
+        self.ui.playback_footer_track_rating = TrackRatingWidget(self.ui.playback_footer_frame_M)
+
         self.setup_defaults()
         self.setup_interactions()
 
     def setup_interactions(self):
+        """
+        Sets up interactions
+        """
         self.ui.playback_button_play_pause.pressed.connect(lambda: (self.state_change_play()))
         self.ui.playback_button_prev.pressed.connect(lambda: self.call_track_prev())
         self.ui.playback_button_next.pressed.connect(lambda: self.call_track_next())
         self.ui.playback_button_audio_bypass.clicked.connect(
-            lambda: self.state_change_processor_bypass(self.ui.playback_button_audio_bypass.isChecked())
-        )
+                lambda: self.state_change_processor_bypass(self.ui.playback_button_audio_bypass.isChecked()))
         self.ui.playback_footer_track_seek_slider.valueChanged.connect(lambda x: (self.state_change_seek_slider(x)))
         self.ui.playback_button_play_shuffle.pressed.connect(lambda: (self.state_change_shuffle()))
         self.ui.playback_button_play_repeat.pressed.connect(lambda: (self.state_change_repeat()))
         self.ui.playback_slider_volume_control.valueChanged.connect(lambda x: (self.state_change_volume_level(x)))
         self.ui.playback_button_volume_control.pressed.connect(lambda: (self.state_change_volume_level()))
-        self.ui.playback_button_play_settings.pressed.connect(lambda: (
-            self.ui.audiofx_tab_switch_button.click()
-        ))
+        self.ui.playback_button_play_settings.pressed.connect(lambda: (self.ui.audiofx_tab_switch_button.click()))
         self.ui.playback_footer_track_rating.RatingChangedSignal.connect(lambda x: self.call_track_rating(x))
 
     def setup_defaults(self):
+        """
+        Sets up default states
+        """
         self.state_change_play(self._STATE_PLAY)
         self.state_change_shuffle(self._STATE_SHUFFLE)
         self.state_change_repeat(self._STATE_REPEAT)
@@ -147,10 +185,12 @@ class Playback_Bar_Interactions(abc.ABC):
         self.state_change_processor_bypass(self._BYPASS_PROCESSOR)
         self.load_track_info()
         self.ui.playback_footer_track_seek_slider.setValue(self._ELAPSED_TIME)
-        self.ui.playback_footer_track_rating = TrackRatingWidget(self.ui.playback_footer_frame_M)
         self.load_rating()
 
     def save_states(self):
+        """
+        saves session states of Apollo
+        """
         CONFIG['APOLLO.PLAYBACK_BAR.STATE_PLAY'] = self._STATE_PLAY
         CONFIG['APOLLO.PLAYBACK_BAR.STATE_SHUFFLE'] = self._STATE_SHUFFLE
         CONFIG['APOLLO.PLAYBACK_BAR.STATE_REPEAT'] = self._STATE_REPEAT
@@ -160,13 +200,29 @@ class Playback_Bar_Interactions(abc.ABC):
         CONFIG['APOLLO.PLAYBACK_BAR.ELAPSED_TIME'] = self.ui.playback_footer_track_seek_slider.value()
 
     def shutdown(self):
+        """
+        Shutdown callback
+        """
+        self.call_on_shutdown()
         self.save_states()
 
     def state_change_processor_bypass(self, state: bool):
+        """
+        Enables and disables the bypass of output through the processor
+
+        Args:
+            state (bool): bypass state
+        """
         self._BYPASS_PROCESSOR = state
         self.call_bypass_processor(state)
 
     def state_change_play(self, state: Optional[Union[STATE_PLAY, str]] = None):
+        """
+        plays and pauses the audio stream
+
+        Args:
+            state (Optional[Union[STATE_PLAY, str]]): PLAY/PAUSE state
+        """
         # APPLIES VISUAL CHANGES
         button = self.ui.playback_button_play_pause
         if state is not None:
@@ -193,6 +249,12 @@ class Playback_Bar_Interactions(abc.ABC):
         self.call_state_change_play(self._STATE_PLAY)
 
     def state_change_shuffle(self, state: Optional[Union[STATE_SHUFFLE, str]] = None):
+        """
+        Shuffles and orders the current playing queue
+
+        Args:
+            state (Optional[Union[STATE_SHUFFLE, str]]): SHUFFLE/NONE states
+        """
         # APPLIES VISUAL CHANGES
         button = self.ui.playback_button_play_shuffle
         if state is not None:
@@ -219,6 +281,12 @@ class Playback_Bar_Interactions(abc.ABC):
         self.call_state_change_shuffle(self._STATE_SHUFFLE)
 
     def state_change_repeat(self, state: Optional[Union[STATE_REPEAT, str]] = None):
+        """
+        Repeats the current queue or track
+
+        Args:
+            state (Optional[Union[STATE_REPEAT, str]]): REPEAT/REPEAT_ONE/NONE states
+        """
         # APPLIES VISUAL CHANGES
         button = self.ui.playback_button_play_repeat
         if state is not None:
@@ -230,11 +298,11 @@ class Playback_Bar_Interactions(abc.ABC):
                 self._STATE_REPEAT = state
         else:
             current = button.property('STATE_REPEAT')
-            if (current is not None) and (current == STATE_REPEAT.REPEAT_ONE.name):
+            if (current is not None) and (current == STATE_REPEAT.NONE.name):
                 self._STATE_REPEAT = STATE_REPEAT.REPEAT.name
-            elif (current is not None) and (current == STATE_REPEAT.NONE.name):
-                self._STATE_REPEAT = STATE_REPEAT.REPEAT_ONE.name
             elif (current is not None) and (current == STATE_REPEAT.REPEAT.name):
+                self._STATE_REPEAT = STATE_REPEAT.REPEAT_ONE.name
+            elif (current is not None) and (current == STATE_REPEAT.REPEAT_ONE.name):
                 self._STATE_REPEAT = STATE_REPEAT.NONE.name
             else:
                 pass
@@ -247,6 +315,12 @@ class Playback_Bar_Interactions(abc.ABC):
         self.call_state_change_repeat(self._STATE_REPEAT)
 
     def state_change_volume_level(self, level: Optional[int] = None):
+        """
+        Modifies the volume level of the processing server
+
+        Args:
+            level (Optional[int]): Audio Level (0 - 99)
+        """
         button = self.ui.playback_button_volume_control
         # APPLIES VISUAL CHANGES
         if level is not None and isinstance(level, int):
@@ -274,18 +348,24 @@ class Playback_Bar_Interactions(abc.ABC):
 
         else:
             current = button.property('STATE_VOLUME_LEVEL')
-            if current == STATE_VOLUME_LEVEL.FULL.name:
-                self.ui.playback_slider_volume_control.setValue(0)
-            elif current == STATE_VOLUME_LEVEL.MUTE.name:
+            if current == STATE_VOLUME_LEVEL.MUTE.name:
                 self.ui.playback_slider_volume_control.setValue(25)
             elif current == STATE_VOLUME_LEVEL.QUARTER.name:
                 self.ui.playback_slider_volume_control.setValue(50)
             elif current == STATE_VOLUME_LEVEL.HALF.name:
                 self.ui.playback_slider_volume_control.setValue(99)
+            elif current == STATE_VOLUME_LEVEL.FULL.name:
+                self.ui.playback_slider_volume_control.setValue(0)
             else:
                 pass
 
     def load_track_info(self, metadata: Optional[Mediafile] = None):
+        """
+        Loads the track metadata into the UI
+
+        Args:
+            metadata (Optional[Mediafile]): Audio Metadata
+        """
         if metadata is None:
             self.ui.playback_footer_track_title.setText('Apollo - Media Player')
             self.ui.playback_footer_track_seek_slider.setRange(0, 100)
@@ -337,10 +417,22 @@ class Playback_Bar_Interactions(abc.ABC):
                 widget.setPixmap(pixmap)
 
     def load_rating(self, rating: Optional[float] = 0):
+        """
+        Loads the user defined rating of the current track
+
+        Args:
+            rating (Optional[float]): track rating
+        """
         widget: TrackRatingWidget = self.ui.playback_footer_track_rating
         widget.setRating(rating)
 
     def state_change_seek_slider(self, value: int):
+        """
+        Seeks to a given time on the audio buffer
+
+        Args:
+            value (int): Value in seconds
+        """
         if value != 0:
             value = self.ui.playback_footer_track_seek_slider.maximum() - value
             self.ui.playback_footer_track_elapsed.setText(f"-{time.strftime('%H:%M:%S', time.gmtime(value))}")
@@ -385,8 +477,12 @@ class Playback_Bar_Interactions(abc.ABC):
     def call_bypass_processor(self, state: bool):
         pass
 
+    @abc.abstractmethod
+    def call_on_shutdown(self):
+        pass
 
-class Playback_Bar(Playback_Bar_Interactions):
+
+class Playback_Bar(Playback_Bar_Interactions):  # TODO: Documentation
 
     def __init__(self, ui: Apollo) -> None:
         super().__init__(ui)
@@ -417,3 +513,6 @@ class Playback_Bar(Playback_Bar_Interactions):
 
     def call_state_change_seek_slider(self, time_s: int):
         LOGGER.debug(time_s)
+
+    def call_on_shutdown(self):
+        LOGGER.debug('SHUTDOWN')
