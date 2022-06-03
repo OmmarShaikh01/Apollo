@@ -233,22 +233,10 @@ class Ui_MainWindow(object):
         self.playback_footer_frame_M.setMaximumSize(QSize(800, 48))
         self.playback_footer_frame_M.setMouseTracking(True)
         self.gridLayout_4 = QGridLayout(self.playback_footer_frame_M)
-        self.gridLayout_4.setSpacing(4)
+        self.gridLayout_4.setSpacing(2)
         self.gridLayout_4.setContentsMargins(4, 4, 4, 4)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
-        self.gridLayout_4.setHorizontalSpacing(4)
-        self.gridLayout_4.setVerticalSpacing(2)
-        self.gridLayout_4.setContentsMargins(4, 4, 4, 2)
-        self.playback_footer_track_seek_slider = QSlider(self.playback_footer_frame_M)
-        self.playback_footer_track_seek_slider.setObjectName(u"playback_footer_track_seek_slider")
-        sizePolicy2.setHeightForWidth(self.playback_footer_track_seek_slider.sizePolicy().hasHeightForWidth())
-        self.playback_footer_track_seek_slider.setSizePolicy(sizePolicy2)
-        self.playback_footer_track_seek_slider.setMinimumSize(QSize(0, 8))
-        self.playback_footer_track_seek_slider.setMaximumSize(QSize(16777215, 8))
-        self.playback_footer_track_seek_slider.setOrientation(Qt.Horizontal)
-
-        self.gridLayout_4.addWidget(self.playback_footer_track_seek_slider, 1, 0, 1, 2)
-
+        self.gridLayout_4.setContentsMargins(4, 4, 4, 6)
         self.playback_footer_frame_M_info = QFrame(self.playback_footer_frame_M)
         self.playback_footer_frame_M_info.setObjectName(u"playback_footer_frame_M_info")
         self.playback_footer_frame_M_info.setMouseTracking(True)
@@ -302,6 +290,16 @@ class Ui_MainWindow(object):
 
         self.gridLayout_4.addWidget(self.playback_footer_frame_M_info, 0, 0, 1, 2)
 
+        self.playback_footer_track_seek_slider = QSlider(self.playback_footer_frame_M)
+        self.playback_footer_track_seek_slider.setObjectName(u"playback_footer_track_seek_slider")
+        sizePolicy2.setHeightForWidth(self.playback_footer_track_seek_slider.sizePolicy().hasHeightForWidth())
+        self.playback_footer_track_seek_slider.setSizePolicy(sizePolicy2)
+        self.playback_footer_track_seek_slider.setMinimumSize(QSize(0, 8))
+        self.playback_footer_track_seek_slider.setMaximumSize(QSize(16777215, 8))
+        self.playback_footer_track_seek_slider.setOrientation(Qt.Horizontal)
+
+        self.gridLayout_4.addWidget(self.playback_footer_track_seek_slider, 1, 0, 1, 2)
+
 
         self.horizontalLayout.addWidget(self.playback_footer_frame_M)
 
@@ -317,28 +315,7 @@ class Ui_MainWindow(object):
         self.gridLayout_5.setSpacing(4)
         self.gridLayout_5.setContentsMargins(4, 4, 4, 4)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.gridLayout_5.setContentsMargins(4, 4, 8, 2)
-        self.playback_button_play_shuffle = QPushButton(self.playback_footer_frame_R)
-        self.playback_button_play_shuffle.setObjectName(u"playback_button_play_shuffle")
-        self.playback_button_play_shuffle.setMinimumSize(QSize(28, 28))
-        self.playback_button_play_shuffle.setMaximumSize(QSize(28, 28))
-        self.playback_button_play_shuffle.setCheckable(False)
-        self.playback_button_play_shuffle.setFlat(True)
-
-        self.gridLayout_5.addWidget(self.playback_button_play_shuffle, 0, 2, 1, 1)
-
-        self.playback_button_play_repeat = QPushButton(self.playback_footer_frame_R)
-        self.playback_button_play_repeat.setObjectName(u"playback_button_play_repeat")
-        self.playback_button_play_repeat.setMinimumSize(QSize(28, 28))
-        self.playback_button_play_repeat.setMaximumSize(QSize(28, 28))
-        self.playback_button_play_repeat.setFlat(True)
-
-        self.gridLayout_5.addWidget(self.playback_button_play_repeat, 0, 3, 1, 1)
-
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.gridLayout_5.addItem(self.horizontalSpacer_3, 0, 0, 2, 1)
-
+        self.gridLayout_5.setContentsMargins(4, 4, 8, 6)
         self.playback_button_volume_control = QPushButton(self.playback_footer_frame_R)
         self.playback_button_volume_control.setObjectName(u"playback_button_volume_control")
         self.playback_button_volume_control.setMinimumSize(QSize(28, 28))
@@ -355,14 +332,17 @@ class Ui_MainWindow(object):
 
         self.gridLayout_5.addWidget(self.playback_button_play_settings, 0, 4, 1, 1)
 
-        self.playback_button_audio_bypass = QPushButton(self.playback_footer_frame_R)
-        self.playback_button_audio_bypass.setObjectName(u"playback_button_audio_bypass")
-        self.playback_button_audio_bypass.setMinimumSize(QSize(28, 28))
-        self.playback_button_audio_bypass.setMaximumSize(QSize(28, 28))
-        self.playback_button_audio_bypass.setCheckable(True)
-        self.playback_button_audio_bypass.setFlat(True)
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.gridLayout_5.addWidget(self.playback_button_audio_bypass, 0, 5, 1, 1)
+        self.gridLayout_5.addItem(self.horizontalSpacer_3, 0, 0, 2, 1)
+
+        self.playback_button_play_repeat = QPushButton(self.playback_footer_frame_R)
+        self.playback_button_play_repeat.setObjectName(u"playback_button_play_repeat")
+        self.playback_button_play_repeat.setMinimumSize(QSize(28, 28))
+        self.playback_button_play_repeat.setMaximumSize(QSize(28, 28))
+        self.playback_button_play_repeat.setFlat(True)
+
+        self.gridLayout_5.addWidget(self.playback_button_play_repeat, 0, 3, 1, 1)
 
         self.playback_slider_volume_control = QSlider(self.playback_footer_frame_R)
         self.playback_slider_volume_control.setObjectName(u"playback_slider_volume_control")
@@ -371,6 +351,24 @@ class Ui_MainWindow(object):
         self.playback_slider_volume_control.setOrientation(Qt.Horizontal)
 
         self.gridLayout_5.addWidget(self.playback_slider_volume_control, 1, 1, 1, 5)
+
+        self.playback_button_play_shuffle = QPushButton(self.playback_footer_frame_R)
+        self.playback_button_play_shuffle.setObjectName(u"playback_button_play_shuffle")
+        self.playback_button_play_shuffle.setMinimumSize(QSize(28, 28))
+        self.playback_button_play_shuffle.setMaximumSize(QSize(28, 28))
+        self.playback_button_play_shuffle.setCheckable(False)
+        self.playback_button_play_shuffle.setFlat(True)
+
+        self.gridLayout_5.addWidget(self.playback_button_play_shuffle, 0, 2, 1, 1)
+
+        self.playback_button_audio_bypass = QPushButton(self.playback_footer_frame_R)
+        self.playback_button_audio_bypass.setObjectName(u"playback_button_audio_bypass")
+        self.playback_button_audio_bypass.setMinimumSize(QSize(28, 28))
+        self.playback_button_audio_bypass.setMaximumSize(QSize(28, 28))
+        self.playback_button_audio_bypass.setCheckable(True)
+        self.playback_button_audio_bypass.setFlat(True)
+
+        self.gridLayout_5.addWidget(self.playback_button_audio_bypass, 0, 5, 1, 1)
 
 
         self.horizontalLayout.addWidget(self.playback_footer_frame_R, 0, Qt.AlignRight)
@@ -617,10 +615,10 @@ class Ui_MainWindow(object):
         self.playback_button_next.setText("")
         self.playback_footer_track_title.setText(QCoreApplication.translate("MainWindow", u"Apollo - Media Player", None))
         self.playback_footer_track_elapsed.setText(QCoreApplication.translate("MainWindow", u"-00:00:00", None))
-        self.playback_button_play_shuffle.setText("")
-        self.playback_button_play_repeat.setText("")
         self.playback_button_volume_control.setText("")
         self.playback_button_play_settings.setText("")
+        self.playback_button_play_repeat.setText("")
+        self.playback_button_play_shuffle.setText("")
         self.playback_button_audio_bypass.setText("")
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"Playing Queue", None))
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"Track Information", None))

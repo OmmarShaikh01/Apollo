@@ -157,7 +157,37 @@ class Database:
             path: path to the db file
         """
         self.db_path = Connection.is_valid_db(path) if path is not None else CONFIG.db_path
+        self.init_structure()
         LOGGER.info(f"Database Connected: {self.db_path}")
+
+    def init_structure(self):
+        """
+        Creates the Tables For Apollo
+        """
+        cols = []
+        for K, V in Mediafile.TAG_FRAMES_FIELDS:
+            if K == "FILEID":
+                cols.append(f"{K} {V} PRIMARY KEY ON CONFLICT IGNORE")
+            elif K in ["FILEPATH", 'FILENAME', 'FILESIZE', 'FILEEXT']:
+                cols.append(f"{K} {V} NOT NULL")
+            else:
+                cols.append(f"{K} {V}")
+
+        library_table = f"""
+        CREATE TABLE IF NOT EXISTS library (
+            {str(", ").join(cols)}
+        )
+        """
+
+        queue_table = """
+        CREATE TABLE IF NOT EXISTS queue (
+            FILEID    STRING  REFERENCES library (FILEID) ON DELETE CASCADE ON UPDATE CASCADE,
+            PLAYORDER INTEGER PRIMARY KEY
+        )
+        """
+        with self.connector as connection:
+            self.execute(library_table, connection)
+            self.execute(queue_table, connection)
 
     @staticmethod
     def batch_insert(records: RecordSet, table: str, conn: Connection):
@@ -302,37 +332,7 @@ class LibraryManager(Database):
             path (str): Database Path
         """
         super().__init__(path)
-        self.init_structure()
         self._dirs_watched = []  # TODO: Save To config
-
-    def init_structure(self):
-        """
-        Creates the Tables For Apollo
-        """
-        cols = []
-        for K, V in Mediafile.TAG_FRAMES_FIELDS:
-            if K == "FILEID":
-                cols.append(f"{K} {V} PRIMARY KEY ON CONFLICT IGNORE")
-            elif K in ["FILEPATH", 'FILENAME', 'FILESIZE', 'FILEEXT']:
-                cols.append(f"{K} {V} NOT NULL")
-            else:
-                cols.append(f"{K} {V}")
-
-        library_table = f"""
-        CREATE TABLE IF NOT EXISTS library (
-            {str(", ").join(cols)}
-        )
-        """
-
-        queue_table = """
-        CREATE TABLE IF NOT EXISTS queue (
-            FILEID    STRING  REFERENCES library (FILEID) ON DELETE CASCADE ON UPDATE CASCADE,
-            PLAYORDER INTEGER PRIMARY KEY
-        )
-        """
-        with self.connector as connection:
-            self.execute(library_table, connection)
-            self.execute(queue_table, connection)
 
     def add_dir_to_watcher(self, path: PurePath):
         """
@@ -436,11 +436,11 @@ class LibraryManager(Database):
         with self.connector as connection:
             records = self.execute("""
             SELECT 
-            count(FILEID) as TRACKS,
-            SUM(FILESIZE) as BYTESIZE,
-            round(SUM(SONGLEN), 4) as PLAYLEN,
-            (SELECT count(ARTIST) FROM library GROUP BY ARTIST) as ARTIST,
-            (SELECT count(ALBUM) FROM library GROUP BY ALBUM) as ALBUM
+                count(FILEID) as TRACKS,
+                SUM(FILESIZE) as BYTESIZE,
+                round(SUM(SONGLEN), 4) as PLAYLEN,
+                (SELECT count(ARTIST) FROM library GROUP BY ARTIST) as ARTIST,
+                (SELECT count(ALBUM) FROM library GROUP BY ALBUM) as ALBUM
             FROM library 
             """, connection)
         return records

@@ -13,6 +13,7 @@ from apollo.media import Mediafile
 from apollo.utils import get_logger
 from configs import settings
 
+
 CONFIG = settings
 LOGGER = get_logger(__name__)
 
@@ -72,13 +73,11 @@ class TrackRatingWidget(QtWidgets.QWidget):
         self.update()
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent) -> None:
-        print(QtGui.QCursor.pos())
         width = (round(self.mapFromGlobal(QtGui.QCursor.pos()).x() / self.width(), 1) / 2) * 10
         self._rating = width
         self.update()
 
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
-        print(QtGui.QCursor.pos())
         width = (round(self.mapFromGlobal(QtGui.QCursor.pos()).x() / self.width(), 1) / 2) * 10
         self._rating = width
         self.rating = width
@@ -86,7 +85,6 @@ class TrackRatingWidget(QtWidgets.QWidget):
         self.RatingChangedSignal.emit(width)
 
     def leaveEvent(self, event: QtCore.QEvent) -> None:
-        print(QtGui.QCursor.pos())
         self._rating = self.rating
         self.update()
 
@@ -153,8 +151,8 @@ class Playback_Bar_Interactions(abc.ABC):
         self.ui = ui
         self.ui.playback_footer_track_rating = TrackRatingWidget(self.ui.playback_footer_frame_M)
 
-        self.setup_defaults()
         self.setup_interactions()
+        self.setup_defaults()
 
     def setup_interactions(self):
         """

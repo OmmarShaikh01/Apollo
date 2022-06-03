@@ -19,8 +19,8 @@ class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
         self.playback_bar = None
 
         self.setupUi(self)
-        self.setup_defaults()
         self.setup_interactions()
+        self.setup_defaults()
         self.setup_subtabs()
 
     def setup_subtabs(self):
@@ -42,7 +42,17 @@ class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
         """
         sets up defaults states
         """
-        self.main_tabs_stack_widget.setCurrentIndex(CONFIG.get('APOLLO.MAIN.CURRENT_TAB', 0))
+        current = CONFIG.get('APOLLO.MAIN.CURRENT_TAB', 0)
+        if current == 0:
+            self.library_tab_switch_button.click()
+        elif current == 1:
+            self.now_playing_tab_switch_button.click()
+        elif current == 2:
+            self.playlist_tab_switch_button.click()
+        elif current == 3:
+            self.audiofx_tab_switch_button.click()
+        else:
+            pass
 
     def save_states(self):
         """

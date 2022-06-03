@@ -1,19 +1,19 @@
 from typing import Optional
 
 import PySide6.QtCore
-from PySide6 import QtCore, QtSql, QtWidgets, QtGui
+from PySide6 import QtGui
 
-from apollo.db.database import LibraryManager, RecordSet
 from apollo.media.decoders.decode import Stream
+from apollo.db.database import Database, RecordSet
 
 
-class LibraryModel(QtGui.QStandardItemModel):
+class QueueModel(QtGui.QStandardItemModel):
     COLUMNS = Stream.TAG_FRAMES
     PRIVATE_FIELDS = ['FILEID', 'FILEPATH', 'FILENAME', 'FILESIZE', 'FILEEXT']
 
     def __init__(self) -> None:
         super().__init__()
-        self.database = LibraryManager()
+        self.database = Database()
         self.load_data()
 
     def __str__(self):
@@ -29,8 +29,9 @@ class LibraryModel(QtGui.QStandardItemModel):
 
     def load_data(self):
         with self.database.connector as connection:
-            cols = ", ".join(self.COLUMNS)
-            result = self.database.execute(f'SELECT {cols} FROM library', connection)
+            cols = ", ".join(map(lambda x: f'library.{x}', self.COLUMNS))
+            query = f"SELECT {cols} FROM queue INNER JOIN library ON queue.FILEID = library.FILEID ORDER BY queue.PLAYORDER"
+            result = self.database.execute(query, connection)
         self.clear()
         for col_index, col in enumerate(self.COLUMNS):
             self.setHorizontalHeaderItem(col_index, QtGui.QStandardItem(str(col)))
