@@ -215,3 +215,6 @@ desktop.ini
 /apollo/assets/stylesheets/build/
 /apollo/assets/app_themes/__loaded_theme__/
 /logs
+/tests/.profiles/
+.pymon
+.profile
