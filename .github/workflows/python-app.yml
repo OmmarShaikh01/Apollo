@@ -29,4 +29,4 @@ jobs:
         poetry install 
     - name: Test with pytest
       run: |
-        .\.venv\Scripts\nox.exe --session testing_pytest
+        .\.venv\Scripts\nox.exe --session testing_benchmarked
