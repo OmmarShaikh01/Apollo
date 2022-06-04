@@ -10,6 +10,9 @@
       <excludeFolder url="file://$MODULE_DIR$/apollo.egg-info" />
       <excludeFolder url="file://$MODULE_DIR$/logs" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/apollo/assets/app_themes/__loaded_theme__" />
+      <excludeFolder url="file://$MODULE_DIR$/tests/pytest_apollo/.pytest_cache" />
+      <excludeFolder url="file://$MODULE_DIR$/tests/.profiles" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

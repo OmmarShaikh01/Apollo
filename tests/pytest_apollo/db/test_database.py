@@ -1,8 +1,7 @@
-import itertools
 import os
 import random
-import timeit
 import tempfile
+import timeit
 import uuid
 from pathlib import PurePath
 
@@ -12,8 +11,8 @@ import pytest_mock
 from PySide6.QtSql import QSqlQuery
 
 from apollo.db.database import Connection, Database, LibraryManager, QueryBuildFailed, QueryExecutionFailed, RecordSet
-from apollo.utils import get_logger
 from apollo.media.decoders import Stream
+from apollo.utils import get_logger
 from configs import settings
 from tests.testing_utils import IDGen
 
@@ -34,6 +33,23 @@ def records() -> RecordSet:
                            ['test_1_6', 'test_2_6', 'test_3_6'], ['test_1_7', 'test_2_7', 'test_3_7'],
                            ['test_1_8', 'test_2_8', 'test_3_8'], ['test_1_9', 'test_2_9', 'test_3_9']])
     return recordset
+
+
+@pytest.fixture
+def library_table_records_row():
+    row = []
+    for col_index, (col, _type) in enumerate(Stream.TAG_FRAMES_FIELDS):
+        if col == "FILEID":
+            row.append(str(uuid.uuid4()))
+        elif _type == "STRING":
+            row.append(f"TESTING_{col}_{random.randint(0, 100)}")
+        elif _type == "INTEGER":
+            row.append(random.randint(0, 100))
+        elif _type == "BOOLEAN":
+            row.append(True)
+        else:
+            continue
+    return row
 
 
 @pytest.fixture
@@ -169,6 +185,11 @@ class Test_Database:
     @pytest_cases.parametrize_with_cases('data', cases = cases, prefix = 'import_json_data', ids = IDGen)
     def test_import_export_data(self, get_database: Database, data: dict):
         db = get_database
+        # clean all the init tables to run tests on custom tables
+        with db.connector as connection:
+            db.execute(f"DROP TABLE IF EXISTS library", connection)
+            db.execute(f"DROP TABLE IF EXISTS queue", connection)
+
         db.import_data(data)
         assert data == db.export_data()
         with db.connector as connection:
@@ -203,7 +224,6 @@ class Test_LibraryManager:
         with db.connector as connection:
             records = db.execute("SELECT * FROM library", connection)
             assert records.records  # checks if the tracks are added
-            LOGGER.debug(records)
             db.execute("DELETE FROM library", connection)
 
     @pytest_cases.parametrize_with_cases('file_path', cases = cases, prefix = 'file_tagged_mp3', ids = IDGen)
@@ -213,20 +233,30 @@ class Test_LibraryManager:
         with db.connector as connection:
             records = db.execute("SELECT * FROM library", connection)
             assert records.records  # checks if the tracks are added
-            LOGGER.debug(records)
             db.execute("DELETE FROM library", connection)
 
     @pytest.mark.skipif(not BENCHMARK, reason = f"Benchmarking: {BENCHMARK}")
-    def test_benchmark_scanning(self, get_library_manager: LibraryManager, mocker: pytest_mock.MockerFixture):
+    def test_benchmark_scanning(self, get_library_manager: LibraryManager, library_table_records_row: list, mocker: pytest_mock.MockerFixture):
         db = get_library_manager
-        file_path = [MEDIA_FOLDER / 'mp3' / "example_48000H_2C_TAGGED.mp3" for _ in range(CONFIG.benchmark_runs)]
-        mocker.patch.multiple("apollo.media.decoders.Stream", __abstractmethods__ = set(),
-                              _file_id = lambda x: str(uuid.uuid4()))
-        LOGGER.info("RUNTIME: {run}".format(run = timeit.timeit(lambda: db.scan_files(file_path), number = 5)))
+        benchmark_runs, iterations = CONFIG.benchmark_runs + 100, 5
+        file_path = [MEDIA_FOLDER / 'mp3' / "example_48000H_2C_TAGGED.mp3" for _ in range(benchmark_runs)]
+        mocker.patch.multiple("apollo.media.decoders.Stream", _file_id = lambda x: str(uuid.uuid4()))
+        LOGGER.info("RUNTIME: {run}".format(run = timeit.timeit(lambda: db.scan_files(file_path), number = iterations)))
         with db.connector as connection:
             result = db.execute("SELECT * FROM library", connection)
-            LOGGER.debug(result)
-            assert len(result.records) == CONFIG.benchmark_runs * 5
+            assert len(result.records) == benchmark_runs * iterations
+            db.execute("DELETE FROM library", connection)
+
+    @pytest.mark.skipif(not BENCHMARK, reason = f"Benchmarking: {BENCHMARK}")
+    def test_benchmark_scanning_dirs(self, get_library_manager: LibraryManager, library_table_records_row: list, mocker: pytest_mock.MockerFixture):
+        db = get_library_manager
+        benchmark_runs, iterations = 100, 5
+        file_path = [MEDIA_FOLDER / 'mp3' for _ in range(benchmark_runs)]
+        mocker.patch.multiple("apollo.media.decoders.Stream", _file_id = lambda x: str(uuid.uuid4()))
+        LOGGER.info("RUNTIME: {run}".format(run = timeit.timeit(lambda: db.scan_directories(file_path), number = iterations)))
+        with db.connector as connection:
+            result = db.execute("SELECT * FROM library", connection)
+            assert len(result.records) == (len(os.listdir(MEDIA_FOLDER / 'mp3')) * benchmark_runs * iterations)
             db.execute("DELETE FROM library", connection)
 
     def test_add_dir_to_watcher(self, get_library_manager: LibraryManager):

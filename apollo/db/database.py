@@ -6,8 +6,9 @@ from __future__ import annotations
 import copy
 import dataclasses
 import os
+import traceback
 import uuid
-import warnings
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import PurePath
 from types import TracebackType
 from typing import Any, Union
@@ -365,23 +366,6 @@ class LibraryManager(Database):
         Args:
             path Union[list[PurePath, str], str, PurePath]: Paths to the directory
         """
-        def scan_directory(dir_path: PurePath, connection: Connection):
-            files_scanned = []
-            for dirct, subdirs, files in os.walk(dir_path):
-                for file in files:
-                    _path = PurePath(dirct, file)
-                    if Mediafile.isSupported(_path):
-                        mediafile = Mediafile(_path)
-                        if mediafile:
-                            files_scanned.append(list(mediafile.Records.values()))
-                        else:
-
-                            ApolloWarning(f"Skipped {_path}")
-            if len(files_scanned) > 0:  # pragma: no cover
-                records = RecordSet(Mediafile.TAG_FRAMES, files_scanned)
-                self.batch_insert(records, 'library', connection)
-                self.add_dir_to_watcher(dir_path)
-
         if isinstance(path, str):
             path = [PurePath(path)]
 
@@ -391,10 +375,13 @@ class LibraryManager(Database):
         if isinstance(path, list):
             path = [item if not isinstance(item, str) else PurePath(item) for item in path]
 
-        with self.connector as connection:
-            for item in path:
-                LOGGER.info(f"Scanning directory: {item}")
-                scan_directory(item, connection)
+        paths = []
+        for item in path:
+            LOGGER.info(f"Scanning directory: {item}")
+            self.add_dir_to_watcher(item)
+            for dirct, subdirs, files in os.walk(item):
+                paths.extend([PurePath(dirct, file) for file in files])
+        self.scan_files(paths)
 
     def scan_files(self, path: Union[list[PurePath, str], str, PurePath]):
         """
@@ -403,6 +390,28 @@ class LibraryManager(Database):
         Args:
             path Union[list[PurePath, str], str, PurePath]: Paths to the files
         """
+
+        def exe(_path: list):
+            try:
+                files_scanned = []
+                for file_path in _path:
+                    if Mediafile.isSupported(file_path):
+                        mediafile = Mediafile(file_path)
+                        if mediafile:
+                            files_scanned.append(list(mediafile.Records.values()))
+                        else:
+                            ApolloWarning(f"Skipped {file_path}")
+                    else:
+                        ApolloWarning(f"Skipped {file_path}")
+                if len(files_scanned) > 0:  # pragma: no cover
+                    records = RecordSet(Mediafile.TAG_FRAMES, files_scanned)
+                    with self.connector as connection:
+                        self.batch_insert(records, 'library', connection)
+                else:
+                    ApolloWarning(f"Skipped {len(_path)} Files")
+            except Exception as e:
+                LOGGER.error(f"Type: {e}\nValue: {e.__cause__}\nTraceback:\n{traceback.print_tb()}")
+
         if isinstance(path, str):
             path = [PurePath(path)]
 
@@ -412,19 +421,24 @@ class LibraryManager(Database):
         if isinstance(path, list):
             path = [item if not isinstance(item, str) else PurePath(item) for item in path]
 
-        with self.connector as connection:
-            files_scanned = []
-            for file_path in path:
-                if Mediafile.isSupported(file_path):
-                    mediafile = Mediafile(file_path)
-                    if mediafile:
-                        files_scanned.append(list(mediafile.Records.values()))
+        part = 250
+        if len(path) <= part:
+            exe(path)
+        else:
+            cuts = int(round(len(path) / part, 0))
+            with ThreadPoolExecutor(max_workers = 8) as executor:
+                thread = 0
+                start, end = 0, part
+                for cut in range(cuts):
+                    executor.submit(exe, (path[start:end]))
+                    if (cut + 1) > cuts:
+                        start, end = start + part, end + part
+                        thread += 1
                     else:
-
-                        ApolloWarning(f"Skipped {file_path}")
-            if len(files_scanned) > 0:   # pragma: no cover
-                records = RecordSet(Mediafile.TAG_FRAMES, files_scanned)
-                self.batch_insert(records, 'library', connection)
+                        executor.submit(exe, (path[end:]))
+                        thread += 1
+                        break
+                LOGGER.debug(thread)
 
     def get_library_stats(self) -> RecordSet:
         """
