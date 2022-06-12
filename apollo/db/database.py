@@ -59,7 +59,6 @@ class Connection(QSqlDatabase):
         Returns:
             QSqlDatabase: a connection object used to execute queries
         """
-        LOGGER.debug(f"Connected {self} {self.database} <{self.name}>")
         if self.open() and self.isValid() and self.isOpen():
             self.exec("PRAGMA foreign_keys=ON")
             return self
@@ -78,7 +77,6 @@ class Connection(QSqlDatabase):
         self.commit()
         self.close()
         QSqlDatabase.removeDatabase(self.name)
-        LOGGER.debug(f"Disconnected {self.database} <{self.name}>")
 
     @staticmethod
     def is_valid_db(db_path: Union[str, PurePath]) -> Union[str, PurePath]:
@@ -127,7 +125,7 @@ class RecordSet:
         return records
 
     def __bool__(self):
-        return not (len(self.fields) == 0 and len(self.records) == 0)
+        return len(self.records) != 0
 
     def __str__(self) -> str:  # pragma: no cover
         def str_converter(item: Any):
@@ -159,7 +157,6 @@ class Database:
         """
         self.db_path = Connection.is_valid_db(path) if path is not None else CONFIG.db_path
         self.init_structure()
-        LOGGER.info(f"Database Connected: {self.db_path}")
 
     def init_structure(self):
         """
@@ -256,7 +253,7 @@ class Database:
 
         query_executed = query.exec()
         if query_executed:
-            LOGGER.debug(f"Executed: {_dedent_query(query.lastQuery())}")
+            LOGGER.debug(f"Executed: {_dedent_query(query.executedQuery())}")
         else:
             msg = f"\nExe: {query_executed}" \
                   f"\nError: {(query.lastError().text())}" \

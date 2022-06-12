@@ -1,18 +1,16 @@
-import faulthandler
-import os
+import random
 import random
 import uuid
 from pathlib import PurePath
 
 import pytest
-import pytest_mock
-from PySide6 import QtCore, QtSql, QtWidgets, QtGui
+from PySide6 import QtGui
 
 from apollo.db.database import LibraryManager
+from apollo.db.models.proxy_filter import TableFilterModel
 from apollo.media.decoders.decode import Stream
 from apollo.utils import get_logger
 from configs import settings
-from apollo.db.models.proxy_filter import TableFilterModel
 from tests.testing_utils import get_qt_application
 
 cases = "tests.pytest_apollo.models.case_models"
@@ -20,7 +18,7 @@ LOGGER = get_logger(__name__)
 CONFIG = settings
 MEDIA_FOLDER = PurePath(CONFIG.assets_dir, "music_samples")
 BENCHMARK = CONFIG.benchmark_formats  # TODO: remove not
-MODEL_ROWS, MODEL_COLUMNS = 10, len(LibraryManager.library_table_columns)
+MODEL_ROWS, MODEL_COLUMNS = 100, len(LibraryManager.library_table_columns)
 
 
 @pytest.fixture
@@ -49,6 +47,7 @@ def get_init_filter_model(temporary_item_model) -> TableFilterModel:
     return filter_model
 
 
+@pytest.mark.skip
 class Test_LibraryProxyFilter:
     _qt_application = get_qt_application()
 

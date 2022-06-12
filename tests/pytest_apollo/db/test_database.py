@@ -104,6 +104,17 @@ class Test_Connection:
         with Connection(CONFIG.db_path) as connection:
             assert connection.isValid()
 
+    @pytest.mark.skipif(not BENCHMARK, reason = f"Benchmarking: {BENCHMARK}")
+    def test_benchmark_connection_is_valid(self):
+        def exe():
+            with Connection(CONFIG.db_path) as connection:
+                assert connection.isValid()
+
+        assert Connection.is_valid_db(PurePath(CONFIG.db_path))
+        assert Connection.is_valid_db(CONFIG.db_path)
+        run = timeit.timeit(lambda: exe(), number = 1000)
+        LOGGER.info(f"RUNTIME:- 1000 runs: {run}")
+
     def test_connection_is_invalid(self):
         with tempfile.TemporaryDirectory() as directory:
             with pytest.raises(ConnectionError):

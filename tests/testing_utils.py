@@ -1,8 +1,11 @@
 import os
-from pathlib import PurePath
+import random
+import uuid
 
 from PySide6 import QtCore, QtGui, QtWidgets
 from pytest_cases import get_case_id
+
+from apollo.media import Stream
 
 
 def IDGen(case_fun) -> str:
@@ -28,3 +31,25 @@ def screenshot_widget(widget: QtWidgets.QWidget, name: str):
         os.mkdir(os.path.join(os.path.dirname(__file__), 'pytest_qt_apollo', 'output'))
     pixmap.save(os.path.join(os.path.dirname(__file__), 'pytest_qt_apollo', 'output', name + '.png'))
     painter.end()
+
+
+def get_library_table(rows: int = 1111):
+    table = []
+    for row_index in range(rows):
+        row = []
+        for col_index, (col, _type) in enumerate(Stream.TAG_FRAMES_FIELDS):
+            if col == "FILEID":
+                row.append(str(uuid.uuid4()))
+            elif _type == "STRING":
+                row.append(f"TESTING_{col}_{row_index}")
+            elif _type == "INTEGER":
+                row.append(random.randint(0, 100))
+            elif _type == "BOOLEAN":
+                row.append(True)
+            else:
+                continue
+        table.append(row)
+    return table
+
+
+LIBRARY_TABLE = get_library_table()
