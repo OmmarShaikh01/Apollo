@@ -29,4 +29,4 @@ class _Provider:
             return None
 
 
-Provider = _Provider()
+ModelProvider = _Provider()

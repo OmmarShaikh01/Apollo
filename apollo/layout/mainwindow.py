@@ -8,18 +8,14 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QButtonGroup, QFrame, QGridLayout,
-    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-    QListView, QMainWindow, QMenuBar, QPushButton,
-    QSizePolicy, QSlider, QSpacerItem, QSplitter,
-    QStackedWidget, QTableView, QVBoxLayout, QWidget)
+from PySide6.QtCore import (QCoreApplication, QMetaObject, QRect,
+                            QSize, Qt)
+from PySide6.QtGui import (QFont)
+from PySide6.QtWidgets import (QButtonGroup, QFrame, QGridLayout,
+                               QHBoxLayout, QLabel, QLineEdit,
+                               QListView, QMenuBar, QPushButton,
+                               QSizePolicy, QSlider, QSpacerItem, QSplitter,
+                               QStackedWidget, QTableView, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -459,9 +455,11 @@ class Ui_MainWindow(object):
         self.main_tabs_queue_frame_queue.setFont(font1)
         self.main_tabs_queue_frame_queue.setFrameShape(QFrame.NoFrame)
         self.gridLayout_8 = QGridLayout(self.main_tabs_queue_frame_queue)
-        self.gridLayout_8.setSpacing(2)
+        self.gridLayout_8.setSpacing(4)
         self.gridLayout_8.setContentsMargins(4, 4, 4, 4)
         self.gridLayout_8.setObjectName(u"gridLayout_8")
+        self.gridLayout_8.setHorizontalSpacing(0)
+        self.gridLayout_8.setVerticalSpacing(2)
         self.gridLayout_8.setContentsMargins(2, 2, 2, 2)
         self.queue_main_listview = QListView(self.main_tabs_queue_frame_queue)
         self.queue_main_listview.setObjectName(u"queue_main_listview")
@@ -483,7 +481,7 @@ class Ui_MainWindow(object):
         font2.setStyleStrategy(QFont.PreferDefault)
         self.label_19.setFont(font2)
 
-        self.gridLayout_8.addWidget(self.label_19, 0, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.label_19, 0, 0, 1, 2)
 
         self.main_tabs_queue_frame_splitter.addWidget(self.main_tabs_queue_frame_queue)
         self.main_tabs_queue_frame_trackinfo = QFrame(self.main_tabs_queue_frame_splitter)
@@ -629,4 +627,3 @@ class Ui_MainWindow(object):
         self.track_info_stream.setText(QCoreApplication.translate("MainWindow", u"Stream Info", None))
         self.track_info_cover_pixmap.setText("")
     # retranslateUi
-

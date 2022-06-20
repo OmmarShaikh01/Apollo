@@ -1,5 +1,4 @@
 import os
-import random
 import uuid
 
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -43,7 +42,7 @@ def get_library_table(rows: int = 1111):
             elif _type == "STRING":
                 row.append(f"TESTING_{col}_{row_index}")
             elif _type == "INTEGER":
-                row.append(random.randint(0, 100))
+                row.append(row_index)
             elif _type == "BOOLEAN":
                 row.append(True)
             else:

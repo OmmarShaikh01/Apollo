@@ -1,10 +1,10 @@
-from PySide6 import QtWidgets, QtCore, QtGui
+from PySide6 import QtGui, QtWidgets
 
+from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
+from apollo.src.tabs import Library_Tab, Playback_Bar
+from apollo.utils import get_logger
 from configs import settings
 from configs.config import write_config
-from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
-from apollo.utils import get_logger
-from apollo.src.tabs.playback_bar import Playback_Bar
 
 CONFIG = settings
 LOGGER = get_logger(__name__)
@@ -23,10 +23,12 @@ class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
         self.setup_defaults()
         self.setup_subtabs()
 
+    # noinspection PyAttributeOutsideInit
     def setup_subtabs(self):
         """
         Sets up sub tabs and interactions
         """
+        self.lirary_tab = Library_Tab(self)
         self.playback_bar = Playback_Bar(self)
 
     def setup_interactions(self):

@@ -1,8 +1,8 @@
 import os
 from pathlib import PurePath
+from typing import Any
 
 import pytest
-import pytest_mock
 
 from apollo.db.database import LibraryManager, RecordSet
 from apollo.db.models.library import LibraryModel
@@ -16,7 +16,7 @@ LOGGER = get_logger(__name__)
 CONFIG = settings
 MEDIA_FOLDER = PurePath(CONFIG.assets_dir, "music_samples")
 BENCHMARK = CONFIG.benchmark_formats  # TODO: remove not
-MODEL_ROWS, MODEL_COLUMNS = len(LIBRARY_TABLE), len(LibraryManager.library_table_columns)
+MODEL_ROWS, MODEL_COLUMNS = len(LIBRARY_TABLE), len(Stream.TAG_FRAMES)
 
 
 @pytest.fixture
@@ -32,6 +32,19 @@ def model_provider() -> LibraryModel:
         db.execute("DELETE FROM library", connection)
 
 
+# noinspection PyProtectedMember
+def check_for_model_start_end(col_index: int, model: LibraryModel, start: Any, end: Any) -> bool:
+    for _ in range(int(model._window.global_count / model._window.fetch_limit) + 3):
+        model.fetch_data(model.FETCH_SCROLL_DOWN)
+    assert str(model.index(model.rowCount() - 1, col_index).data()) == str(end)
+
+    for _ in range(int(model._window.global_count / model._window.fetch_limit) + 3):
+        model.fetch_data(model.FETCH_SCROLL_UP)
+    assert str(model.index(0, col_index).data()) == str(start)
+
+    return bool(model)
+
+
 class Test_LibraryModel:
     _qt_application = get_qt_application()
 
@@ -45,47 +58,15 @@ class Test_LibraryModel:
             os.remove(CONFIG.db_path)
             return None
 
-    @pytest.mark.skip
     def test_provider(self):
-        from apollo.db.models import Provider
-        assert isinstance(Provider.get_model(LibraryModel), LibraryModel)
+        from apollo.db.models import ModelProvider
+        assert isinstance(ModelProvider.get_model(LibraryModel), LibraryModel)
 
-    @pytest.mark.skip
     def test_init_model_with_data(self, model_provider: LibraryModel):
         model = model_provider
-        assert model.rowCount() == model._window.fetch_limit
-
-    def test_prefetch_scroll(self, model_provider: LibraryModel, mocker: pytest_mock.MockerFixture):
-        model = model_provider
-        test_column = 'FILEPATH'
-        with model._db.connector as conn:
-            result = model._db.execute(f'SELECT {test_column} FROM library ORDER BY {test_column} ASC', conn)
-        model._window.fetch_limit = 10
-        model._window.window_size = 20
-        model.sort(model.COLUMNS.index(f'{test_column}'))
+        col_index = len(model.Columns) - 1
+        model.sort(col_index)
+        assert check_for_model_start_end(col_index, model, 0, 1110)
 
         model.clear()
-        offset = 0
-        for _ in range(11):
-            model.prefetch(model.FETCH_SCROLL_DOWN)
-            data = [model.index(row, model.COLUMNS.index(test_column)).data() for row in range(model.rowCount())]
-            if model.rowCount() == 10:
-                assert all([x == [y] for x, y in zip(result.records[0:(offset + model._window.fetch_limit)], data)])
-            elif model.rowCount() == 20:
-                assert all([x == [y] for x, y in zip(result.records[offset:offset + 20], data)])
-                offset = (offset + model._window.fetch_limit)
-            else:
-                assert False
-            LOGGER.debug(('FETCH_SCROLL_DOWN', data))
-
-        for _ in range(11):
-            model.prefetch(model.FETCH_SCROLL_UP)
-            data = [model.index(row, model.COLUMNS.index(test_column)).data() for row in range(model.rowCount())]
-            if model.rowCount() == 20 and 0 < offset:
-                assert all([x == [y] for x, y in zip(result.records[(offset - 20):offset], data)])
-                offset = (offset - model._window.fetch_limit)
-            elif model.rowCount() == 20:
-                all([x == [y] for x, y in zip(result.records[0:model._window.window_size], data)])
-            else:
-                assert False
-            LOGGER.debug(('FETCH_SCROLL_UP', data))
+        assert not model

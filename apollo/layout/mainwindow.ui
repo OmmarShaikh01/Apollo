@@ -1109,7 +1109,10 @@
             <property name="bottomMargin">
              <number>2</number>
             </property>
-            <property name="spacing">
+            <property name="horizontalSpacing">
+             <number>0</number>
+            </property>
+            <property name="verticalSpacing">
              <number>2</number>
             </property>
             <item row="1" column="0">
@@ -1128,7 +1131,7 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
+            <item row="0" column="0" colspan="2">
              <widget class="QLabel" name="label_19">
               <property name="minimumSize">
                <size>

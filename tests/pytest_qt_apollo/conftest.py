@@ -5,16 +5,14 @@ import shutil
 from pathlib import PurePath
 
 import pytest
-from PySide6 import QtWidgets
-from pytestqt.qtbot import QtBot
 
 from configs import settings
+
 settings.setenv("QT_TESTING")
 settings.validators.validate(only_current_env = True)
 
 from apollo.utils import get_logger
 from apollo.assets.stylesheets import load_theme
-from apollo.src.app import Apollo
 from tests.testing_utils import get_qt_application
 
 # SESSION STARTUP
@@ -43,7 +41,8 @@ def remove_local_config():
 
 
 def profile_stats(prof: cProfile.Profile):
-    with open(os.path.join(os.path.dirname(__file__), '.profile'), 'w') as stats_file:
+    path = PurePath(settings.project_root, 'tests', '.profiles', f'{settings.current_env}.profile')
+    with open(path, 'w') as stats_file:
         stats = pstats.Stats(prof, stream = stats_file)
         stats.strip_dirs().sort_stats('tottime').print_stats()
 

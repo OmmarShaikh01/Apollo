@@ -135,7 +135,7 @@ class RecordSet:
                 return str(None)
 
         if self:
-            HEADER = " | ".join(item for item in self.fields)
+            HEADER = " | ".join(str(item) for item in self.fields)
             SEP = "-" * len(HEADER)
             DATA = '\n'.join(" | ".join(map(str_converter, row)) for row in self.records)
             return f"\n{SEP}\n{HEADER}\n{SEP}\n{DATA}\n{SEP}\n"
@@ -258,6 +258,7 @@ class Database:
             msg = f"\nExe: {query_executed}" \
                   f"\nError: {(query.lastError().text())}" \
                   f"\nQuery: {_dedent_query(query.lastQuery())}" \
+                  f"\nQueryValues: {_dedent_query(str(query.boundValues()))}" \
                   f"\nConnection: {connection_info}"
             raise QueryExecutionFailed(msg)
 

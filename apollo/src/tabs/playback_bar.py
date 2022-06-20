@@ -8,11 +8,11 @@ from typing import Optional, Union
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from apollo.assets import AppIcons
+from apollo.db.models import LibraryModel, ModelProvider, QueueModel
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo
 from apollo.media import Mediafile
 from apollo.utils import get_logger
 from configs import settings
-
 
 CONFIG = settings
 LOGGER = get_logger(__name__)
@@ -440,50 +440,62 @@ class Playback_Bar_Interactions(abc.ABC):
         self.call_state_change_seek_slider(value)
 
     @abc.abstractmethod
-    def call_state_change_seek_slider(self, time_s: int):
-        pass
+    def call_state_change_seek_slider(self, time_s: int): ...
 
     @abc.abstractmethod
-    def call_state_change_play(self, state: Optional[Union[STATE_PLAY, str]]):
-        pass
+    def call_state_change_play(self, state: Optional[Union[STATE_PLAY, str]]): ...
 
     @abc.abstractmethod
-    def call_state_change_shuffle(self, state: Optional[Union[STATE_SHUFFLE, str]]):
-        pass
+    def call_state_change_shuffle(self, state: Optional[Union[STATE_SHUFFLE, str]]): ...
 
     @abc.abstractmethod
-    def call_state_change_repeat(self, state: Optional[Union[STATE_REPEAT, str]]):
-        pass
+    def call_state_change_repeat(self, state: Optional[Union[STATE_REPEAT, str]]): ...
 
     @abc.abstractmethod
-    def call_state_change_volume_level(self, volume: int):
-        pass
+    def call_state_change_volume_level(self, volume: int): ...
 
     @abc.abstractmethod
-    def call_track_prev(self):
-        pass
+    def call_track_prev(self): ...
 
     @abc.abstractmethod
-    def call_track_next(self):
-        pass
+    def call_track_next(self): ...
 
     @abc.abstractmethod
-    def call_track_rating(self, rating: float):
-        pass
+    def call_track_rating(self, rating: float): ...
 
     @abc.abstractmethod
-    def call_bypass_processor(self, state: bool):
-        pass
+    def call_bypass_processor(self, state: bool): ...
 
     @abc.abstractmethod
-    def call_on_shutdown(self):
-        pass
+    def call_on_shutdown(self): ...
 
 
-class Playback_Bar(Playback_Bar_Interactions):  # TODO: Documentation
+class Playback_Bar_Controller:
+
+    def __init__(self) -> None:
+        self.library_model = ModelProvider.get_model(LibraryModel)
+        self.queue_model = ModelProvider.get_model(QueueModel)
+
+    def bind_models(self, view: QtWidgets.QAbstractItemView):
+        view.setModel(self.queue_model)
+        view.verticalScrollbarValueChanged = lambda x: (self.scroll_paging(view, x))
+        self.queue_model.fetch_data(self.queue_model.FETCH_SCROLL_DOWN)
+
+    def scroll_paging(self, view: QtWidgets.QAbstractItemView, value: int):
+        if value == view.verticalScrollBar().minimum():
+            if self.queue_model.fetch_data(self.queue_model.FETCH_SCROLL_UP):
+                view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
+        if value == view.verticalScrollBar().maximum():
+            if self.queue_model.fetch_data(self.queue_model.FETCH_SCROLL_DOWN):
+                view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
+
+
+class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO: Documentation
 
     def __init__(self, ui: Apollo) -> None:
-        super().__init__(ui)
+        Playback_Bar_Interactions.__init__(self, ui)
+        Playback_Bar_Controller.__init__(self)
+        self.bind_models(self.ui.queue_main_listview)
 
     def call_state_change_play(self, state: Optional[Union[STATE_PLAY, str]]):
         LOGGER.debug(state)
