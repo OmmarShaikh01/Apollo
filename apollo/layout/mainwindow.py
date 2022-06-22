@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'mainwindow.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.3.0
+## Created by: Qt User Interface Compiler version 6.3.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -11,11 +11,12 @@
 from PySide6.QtCore import (QCoreApplication, QMetaObject, QRect,
                             QSize, Qt)
 from PySide6.QtGui import (QFont)
-from PySide6.QtWidgets import (QButtonGroup, QFrame, QGridLayout,
-                               QHBoxLayout, QLabel, QLineEdit,
-                               QListView, QMenuBar, QPushButton,
-                               QSizePolicy, QSlider, QSpacerItem, QSplitter,
-                               QStackedWidget, QTableView, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractItemView, QButtonGroup, QFrame,
+                               QGridLayout, QHBoxLayout, QLabel,
+                               QLineEdit, QListView, QMenuBar,
+                               QPushButton, QSizePolicy, QSlider, QSpacerItem,
+                               QSplitter, QStackedWidget, QTableView, QVBoxLayout,
+                               QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -407,6 +408,11 @@ class Ui_MainWindow(object):
         self.library_main_tableview = QTableView(self.library_main_tab)
         self.library_main_tableview.setObjectName(u"library_main_tableview")
         self.library_main_tableview.setFrameShape(QFrame.NoFrame)
+        self.library_main_tableview.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.library_main_tableview.setShowGrid(False)
+        self.library_main_tableview.setGridStyle(Qt.NoPen)
+        self.library_main_tableview.setCornerButtonEnabled(False)
+        self.library_main_tableview.horizontalHeader().setMinimumSectionSize(32)
         self.library_main_tableview.verticalHeader().setVisible(False)
 
         self.verticalLayout_3.addWidget(self.library_main_tableview)

@@ -66,6 +66,40 @@ QSplitter::handle:vertical:hover {
     margin: 0px 2px 0px 2px;
 }
 
+QScrollBar:horizontal {
+    border: 0;
+    background: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};;
+    height: 8px;
+}
+
+QScrollBar:vertical {
+    border: 0;
+    background: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};;
+    width: 8px;
+}
+
+QScrollBar::handle {
+    background: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYLIGHTCOLOR, 0.1)}};
+    border-radius: 4px;
+}
+
+QScrollBar::handle:vertical:hover,
+QScrollBar::handle:horizontal:hover {
+    background: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYLIGHTCOLOR, 0.175)}};
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical,
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    border: 0;
+    background: transparent;
+    width: 0px;
+    height: 0px;
+}
+
+
+{% include './view.css.jinja' %}
 {% include './containers.css.jinja' %}
 {% include './display_widgets.css.jinja' %}
 {% include './buttons.css.jinja' %}

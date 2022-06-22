@@ -1,0 +1,55 @@
+QHeaderView {
+    height: 24px;
+}
+
+QHeaderView::section {
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    text-transform: uppercase;
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+    padding: 0px 8px;
+    height: 24px;
+    border-radius: 0px;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+QHeaderView::section:vertical {
+
+}
+
+QHeaderView::section:horizontal {
+
+}
+
+QTableView QTableCornerButton::section {
+  background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+  border: 0px solid {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+}
+
+QTableView {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+QTableView::item {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+    padding: 4px;
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border-bottom: 1px solid black;
+}
+
+QTableView::item:selected {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+}
+
+QTableView::item:selected:focus {
+    border-bottom: 1px solid {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+}
+
+QTableView::item:disabled {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+}

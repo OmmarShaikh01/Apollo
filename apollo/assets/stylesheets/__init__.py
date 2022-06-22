@@ -3,9 +3,8 @@ import json
 import os
 import re
 import shutil
-import warnings
 from pathlib import PurePath
-from typing import Optional, Union
+from typing import Optional
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
@@ -247,6 +246,42 @@ class ResourceGenerator:
                 file.close()
 
 
+def generate_resource(name: str, recompile: Optional[bool] = False):
+    """
+    Generates the theme
+
+    Args:
+        name (str): theme pack name
+        recompile (Optional[Boolean]): Recompile resources
+    """
+    app_theme = ASSETS / 'app_themes'
+    loaded_theme = app_theme / '__loaded_theme__'
+    theme_zip = app_theme / (name + '.zip')
+
+    if not os.path.exists(loaded_theme):
+        os.mkdir(loaded_theme)
+
+    if not os.path.exists(theme_zip) or recompile:
+        if ((name + '.json') in os.listdir(ResourceGenerator.THEMES)) and _JINJA:
+            res = ResourceGenerator(name)
+            res.build_theme()
+            res.package_theme()
+            shutil.move(res.BUILD / (name + '.zip'), theme_zip)
+            shutil.rmtree(res.BUILD)
+        else:
+            if not (name + '.json') in os.listdir(ResourceGenerator.THEMES):
+                ApolloWarning("Theme JSON missing")
+
+            if not _JINJA:
+                ApolloWarning('Failed to build theme pack, Jinja is Missing')
+
+    if os.path.exists((loaded_theme / 'icons')):
+        shutil.rmtree(loaded_theme / 'icons')
+    if os.path.exists((loaded_theme / 'stylesheet.css')):
+        os.remove(loaded_theme / 'stylesheet.css')
+    shutil.unpack_archive(theme_zip, loaded_theme)
+
+
 def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool] = False):
     """
     Loads the theme into the applicationto display
@@ -277,27 +312,6 @@ def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool]
     loaded_theme = app_theme / '__loaded_theme__'
     theme_zip = app_theme / (name + '.zip')
 
-    if not os.path.exists(loaded_theme):
-        os.mkdir(loaded_theme)
-
     if not os.path.exists(theme_zip) or recompile:
-        if ((name + '.json') in os.listdir(ResourceGenerator.THEMES)) and _JINJA:
-            res = ResourceGenerator(name)
-            res.build_theme()
-            res.package_theme()
-            shutil.move(res.BUILD / (name + '.zip'), theme_zip)
-            shutil.rmtree(res.BUILD)
-        else:
-            if not (name + '.json') in os.listdir(ResourceGenerator.THEMES):
-                ApolloWarning("Theme JSON missing")
-
-            if not _JINJA:
-                ApolloWarning('Failed to build theme pack, Jinja is Missing')
-
-    if os.path.exists(theme_zip):
-        if os.path.exists((loaded_theme / 'icons')):
-            shutil.rmtree(loaded_theme / 'icons')
-        if os.path.exists((loaded_theme / 'stylesheet.css')):
-            os.remove(loaded_theme / 'stylesheet.css')
-        shutil.unpack_archive(theme_zip, loaded_theme)
-        loader(loaded_theme)
+        generate_resource(name, recompile)
+    loader(loaded_theme)

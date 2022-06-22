@@ -2,6 +2,11 @@ import os
 from collections import namedtuple
 from pathlib import PurePath
 
+from apollo.assets import generate_resource
+from configs import settings
+
+CONFIG = settings
+
 
 class _AppIcons:
     __slots__ = ['ADD', 'ARROW_BACK', 'ARROW_FORWARD', 'AUDIO_FILE', 'CHECK_BOX', 'CHECK_BOX_OUTLINE_BLANK', 'CLOSE',
@@ -11,22 +16,31 @@ class _AppIcons:
         'RADIO_BUTTON_UNCHECKED', 'REPEAT_OFF', 'REPEAT_ON', 'REPEAT_ONE_ON', 'SEARCH', 'SETTINGS', 'SHUFFLE',
         'SHUFFLE_OFF', 'SKIP_NEXT', 'SKIP_PREVIOUS', 'STAR', 'STAR_HALF', 'VOLUME_DOWN', 'VOLUME_MUTE', 'VOLUME_OFF',
         'VOLUME_UP']
-    Icon = namedtuple('Icon', ['danger', 'disabled', 'primary', 'secondary', 'success', 'warning'])
 
     def __init__(self):
         self._init_attrs()
 
     def _init_attrs(self):
-        path = PurePath(os.path.dirname(__file__), '__loaded_theme__', 'icons')
-        if os.path.exists(path):
+
+        def loader():
+            Icon = namedtuple('Icon', ['danger', 'disabled', 'primary', 'secondary', 'success', 'warning'])
+            path = PurePath(os.path.dirname(__file__), '__loaded_theme__', 'icons')
             for file in os.listdir(path / 'primary'):
                 name, ext = os.path.splitext(file)
-                value = self.Icon(*[
-                    (path / 'danger' / str(file)), (path / 'disabled' / str(file)),
-                    (path / 'primary' / str(file)), (path / 'secondary' / str(file)),
-                    (path / 'success' / str(file)), (path / 'warning' / str(file))
+                value = Icon(*[
+                    str((path / 'danger' / str(file)).as_posix()),
+                    str((path / 'disabled' / str(file)).as_posix()),
+                    str((path / 'primary' / str(file)).as_posix()),
+                    str((path / 'secondary' / str(file)).as_posix()),
+                    str((path / 'success' / str(file)).as_posix()),
+                    str((path / 'warning' / str(file)).as_posix())
                 ])
-                setattr(self, str(name), value)
+                object.__setattr__(self, str(name), value)
+
+        path = PurePath(os.path.dirname(__file__), '__loaded_theme__', 'icons')
+        if not os.path.exists(path):
+            generate_resource(CONFIG.loaded_theme, recompile = True)
+        loader()
 
     def __getattribute__(self, item):
         try:
@@ -39,4 +53,4 @@ class _AppIcons:
 AppIcons = _AppIcons()
 
 if __name__ == '__main__':
-    print(AppIcons.HOME)
+    print(AppIcons.HOME.danger)
