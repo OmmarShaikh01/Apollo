@@ -2,7 +2,7 @@ import os
 from collections import namedtuple
 from pathlib import PurePath
 
-from apollo.assets import generate_resource
+from apollo.assets.stylesheets import generate_resource
 from configs import settings
 
 CONFIG = settings
@@ -10,12 +10,12 @@ CONFIG = settings
 
 class _AppIcons:
     __slots__ = ['ADD', 'ARROW_BACK', 'ARROW_FORWARD', 'AUDIO_FILE', 'CHECK_BOX', 'CHECK_BOX_OUTLINE_BLANK', 'CLOSE',
-        'DELETE', 'DONE', 'EQUALIZER', 'EXPAND_LESS', 'EXPAND_MORE', 'FAVORITE', 'FAVORITE_FILLED', 'FILE_DOWNLOAD',
-        'STAR_OUTLINE', 'HOME', 'INDETERMINATE_CHECK_BOX', 'LIBRARY_MUSIC', 'MENU', 'MUSIC_NOTE', 'PAUSE', 'PLAYLIST_ADD',
-        'PLAYLIST_PLAY', 'PLAY_ARROW', 'POWER_SETTINGS_NEW', 'QUEUE_MUSIC', 'RADIO_BUTTON_CHECKED',
-        'RADIO_BUTTON_UNCHECKED', 'REPEAT_OFF', 'REPEAT_ON', 'REPEAT_ONE_ON', 'SEARCH', 'SETTINGS', 'SHUFFLE',
-        'SHUFFLE_OFF', 'SKIP_NEXT', 'SKIP_PREVIOUS', 'STAR', 'STAR_HALF', 'VOLUME_DOWN', 'VOLUME_MUTE', 'VOLUME_OFF',
-        'VOLUME_UP']
+                 'DELETE', 'DONE', 'EQUALIZER', 'EXPAND_LESS', 'EXPAND_MORE', 'FAVORITE', 'FAVORITE_FILLED',
+                 'FILE_DOWNLOAD', 'STAR_OUTLINE', 'HOME', 'INDETERMINATE_CHECK_BOX', 'LIBRARY_MUSIC', 'MENU',
+                 'MUSIC_NOTE', 'PAUSE', 'PLAYLIST_ADD', 'PLAYLIST_PLAY', 'PLAY_ARROW', 'POWER_SETTINGS_NEW',
+                 'QUEUE_MUSIC', 'RADIO_BUTTON_CHECKED', 'RADIO_BUTTON_UNCHECKED', 'REPEAT_OFF', 'REPEAT_ON',
+                 'REPEAT_ONE_ON', 'SEARCH', 'SETTINGS', 'SHUFFLE', 'SHUFFLE_OFF', 'SKIP_NEXT', 'SKIP_PREVIOUS', 'STAR',
+                 'STAR_HALF', 'VOLUME_DOWN', 'VOLUME_MUTE', 'VOLUME_OFF', 'VOLUME_UP']
 
     def __init__(self):
         self._init_attrs()
@@ -27,14 +27,11 @@ class _AppIcons:
             path = PurePath(os.path.dirname(__file__), '__loaded_theme__', 'icons')
             for file in os.listdir(path / 'primary'):
                 name, ext = os.path.splitext(file)
-                value = Icon(*[
-                    str((path / 'danger' / str(file)).as_posix()),
-                    str((path / 'disabled' / str(file)).as_posix()),
-                    str((path / 'primary' / str(file)).as_posix()),
-                    str((path / 'secondary' / str(file)).as_posix()),
-                    str((path / 'success' / str(file)).as_posix()),
-                    str((path / 'warning' / str(file)).as_posix())
-                ])
+                value = Icon(
+                    *[str((path / 'danger' / str(file)).as_posix()), str((path / 'disabled' / str(file)).as_posix()),
+                        str((path / 'primary' / str(file)).as_posix()),
+                        str((path / 'secondary' / str(file)).as_posix()),
+                        str((path / 'success' / str(file)).as_posix()), str((path / 'warning' / str(file)).as_posix())])
                 object.__setattr__(self, str(name), value)
 
         path = PurePath(os.path.dirname(__file__), '__loaded_theme__', 'icons')
