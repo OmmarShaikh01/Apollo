@@ -100,3 +100,26 @@ def production_launch(session: nox.Session):
         # Cleanup
         os.chdir(os.path.dirname(__file__))
         shutil.rmtree('./dist')
+
+
+# custom sessions for githu workflows
+@nox.session(python = SUPPORTED_PYTHON)
+def unit_testing_apollo(session: nox.Session):
+    os.chdir(os.path.dirname(__file__))
+    _upgrade_basic(session)
+
+    envvars = dict(DYNACONF_BENCHMARK_FORMATS = 'true')
+    for test_directory in ['pytest_apollo']:
+        test_directory = os.path.join(os.path.dirname(__file__), 'tests', test_directory)
+    session.run('pytest', '--show-capture=no', '-c', './pytest.ini', test_directory, env = envvars)
+
+
+@nox.session(python = SUPPORTED_PYTHON)
+def production_testing_apollo(session: nox.Session):
+    os.chdir(os.path.dirname(__file__))
+    _upgrade_basic(session)
+
+    envvars = dict(DYNACONF_BENCHMARK_FORMATS = 'true')
+    for test_directory in ['pytest_qt_apollo']:
+        test_directory = os.path.join(os.path.dirname(__file__), 'tests', test_directory)
+        session.run('pytest', '--show-capture=no', '-c', './pytest.ini', test_directory, env = envvars)

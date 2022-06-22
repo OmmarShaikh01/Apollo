@@ -28,10 +28,13 @@ class _AppIcons:
             for file in os.listdir(path / 'primary'):
                 name, ext = os.path.splitext(file)
                 value = Icon(
-                    *[str((path / 'danger' / str(file)).as_posix()), str((path / 'disabled' / str(file)).as_posix()),
-                        str((path / 'primary' / str(file)).as_posix()),
-                        str((path / 'secondary' / str(file)).as_posix()),
-                        str((path / 'success' / str(file)).as_posix()), str((path / 'warning' / str(file)).as_posix())])
+                    danger = str((path / 'danger' / str(file)).as_posix()),
+                    disabled = str((path / 'disabled' / str(file)).as_posix()),
+                    primary = str((path / 'primary' / str(file)).as_posix()),
+                    secondary = str((path / 'secondary' / str(file)).as_posix()),
+                    success = str((path / 'success' / str(file)).as_posix()),
+                    warning = str((path / 'warning' / str(file)).as_posix())
+                )
                 object.__setattr__(self, str(name).upper(), value)
 
         path = PurePath(os.path.dirname(__file__), '__loaded_theme__', 'icons')
