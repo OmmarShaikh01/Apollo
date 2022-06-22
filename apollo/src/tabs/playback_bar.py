@@ -100,18 +100,18 @@ class TrackRatingWidget(QtWidgets.QWidget):
         size = 24
         if stars == 0:
             for index, pos in enumerate(range(0, (size - 5) * 5, (size - 5))):
-                self.paint_star(AppIcons.STAR_OUTLINE.secondary.as_posix(), painter, pos, size)
+                self.paint_star(AppIcons.STAR_OUTLINE.secondary, painter, pos, size)
         elif stars == 5:
             for index, pos in enumerate(range(0, (size - 5) * 5, (size - 5))):
-                self.paint_star(AppIcons.STAR.secondary.as_posix(), painter, pos, size)
+                self.paint_star(AppIcons.STAR.secondary, painter, pos, size)
         else:
             for index, pos in enumerate(range(0, (size - 5) * 5, (size - 5))):
                 if math.ceil(stars) == (index + 1):
-                    self.paint_star(AppIcons.STAR_HALF.secondary.as_posix(), painter, pos, size)
+                    self.paint_star(AppIcons.STAR_HALF.secondary, painter, pos, size)
                 elif (index + 1) <= math.floor(stars):
-                    self.paint_star(AppIcons.STAR.secondary.as_posix(), painter, pos, size)
+                    self.paint_star(AppIcons.STAR.secondary, painter, pos, size)
                 else:
-                    self.paint_star(AppIcons.STAR_OUTLINE.secondary.as_posix(), painter, pos, size)
+                    self.paint_star(AppIcons.STAR_OUTLINE.secondary, painter, pos, size)
         painter.end()
 
     @staticmethod

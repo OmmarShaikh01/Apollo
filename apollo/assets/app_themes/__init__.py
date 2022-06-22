@@ -32,7 +32,7 @@ class _AppIcons:
                         str((path / 'primary' / str(file)).as_posix()),
                         str((path / 'secondary' / str(file)).as_posix()),
                         str((path / 'success' / str(file)).as_posix()), str((path / 'warning' / str(file)).as_posix())])
-                object.__setattr__(self, str(name), value)
+                object.__setattr__(self, str(name).upper(), value)
 
         path = PurePath(os.path.dirname(__file__), '__loaded_theme__', 'icons')
         if not os.path.exists(path):
