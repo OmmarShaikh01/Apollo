@@ -46,6 +46,7 @@ def profile_stats(prof: cProfile.Profile):
         stats = pstats.Stats(prof, stream = stats_file)
         stats.strip_dirs().sort_stats('tottime').print_stats()
 
+
 def clean_output():
     path = os.path.join(os.path.dirname(__file__), 'output')
     if os.path.exists(path):
@@ -60,11 +61,8 @@ def create_session():
     clean_output()
     create_temp_dir()
     load_theme(get_qt_application(), settings.loaded_theme, recompile = settings.recompile_theme)
-    prof = cProfile.Profile()
-    prof.enable()
+
     yield None
-    prof.disable()
-    profile_stats(prof)
 
     remove_temp_dir()
     remove_local_config()
