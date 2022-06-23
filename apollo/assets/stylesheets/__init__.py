@@ -246,13 +246,16 @@ class ResourceGenerator:
                 file.close()
 
 
-def generate_resource(name: str, recompile: Optional[bool] = False):
+def generate_resource(name: str, recompile: Optional[bool] = False) -> bool:
     """
     Generates the theme
 
     Args:
         name (str): theme pack name
         recompile (Optional[Boolean]): Recompile resources
+
+    Returns:
+        bool: true when theme is generated, otherwise false
     """
     app_theme = ASSETS / 'app_themes'
     loaded_theme = app_theme / '__loaded_theme__'
@@ -262,7 +265,7 @@ def generate_resource(name: str, recompile: Optional[bool] = False):
         os.mkdir(loaded_theme)
 
     if not os.path.exists(theme_zip) or recompile:
-        if ((name + '.json') in os.listdir(ResourceGenerator.THEMES)) and _JINJA:
+        if (name + '.json') in os.listdir(ResourceGenerator.THEMES) and _JINJA:
             res = ResourceGenerator(name)
             res.build_theme()
             res.package_theme()
@@ -271,15 +274,18 @@ def generate_resource(name: str, recompile: Optional[bool] = False):
         else:
             if not (name + '.json') in os.listdir(ResourceGenerator.THEMES):
                 ApolloWarning("Theme JSON missing")
-
             if not _JINJA:
                 ApolloWarning('Failed to build theme pack, Jinja is Missing')
 
-    if os.path.exists((loaded_theme / 'icons')):
-        shutil.rmtree(loaded_theme / 'icons')
-    if os.path.exists((loaded_theme / 'stylesheet.css')):
-        os.remove(loaded_theme / 'stylesheet.css')
-    shutil.unpack_archive(theme_zip, loaded_theme)
+    if os.path.exists(theme_zip):
+        if os.path.exists((loaded_theme / 'icons')):
+            shutil.rmtree(loaded_theme / 'icons')
+        if os.path.exists((loaded_theme / 'stylesheet.css')):
+            os.remove(loaded_theme / 'stylesheet.css')
+        shutil.unpack_archive(theme_zip, loaded_theme)
+        return True
+    else:
+        return False
 
 
 def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool] = False):
@@ -293,7 +299,7 @@ def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool]
     """
 
     def loader(_loaded_theme: PurePath):
-        if os.path.exists(_loaded_theme):
+        if os.path.exists(_loaded_theme) and len(os.listdir(_loaded_theme)) != 0:
             QtCore.QDir.addSearchPath('icons_primary', (_loaded_theme / 'icons' / 'primary').as_posix())
             QtCore.QDir.addSearchPath('icons_secondary', (_loaded_theme / 'icons' / 'secondary').as_posix())
             QtCore.QDir.addSearchPath('icons_disabled', (_loaded_theme / 'icons' / 'disabled').as_posix())
