@@ -5,6 +5,8 @@ from abc import ABC, abstractmethod
 from pathlib import PurePath
 from typing import Any
 
+from mutagen.id3 import APIC
+
 
 class Stream(ABC):
     # noinspection SpellCheckingInspection
@@ -83,7 +85,7 @@ class Stream(ABC):
 
     @property
     @abstractmethod  # pragma: no cover
-    def Artwork(self) -> list[bytes]:
+    def Artwork(self) -> list[APIC]:
         pass
 
     @property

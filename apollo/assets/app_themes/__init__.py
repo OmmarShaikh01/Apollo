@@ -61,6 +61,8 @@ def get_apptheme() -> dict:
         dict: Apptheme load
     """
     path = PurePath(os.path.dirname(__file__), '__loaded_theme__', 'apptheme.json')
+    if not os.path.exists(path):
+        generate_resource(CONFIG.loaded_theme, recompile = True)
     with open(path) as file:
         return json.load(file)
 

@@ -1,10 +1,9 @@
-import warnings
 from pathlib import PurePath
-from typing import Any, Iterator, Optional, Union
+from pathlib import PurePath
+from typing import Any, Iterator, Union
 
 import av
-import mutagen
-from mutagen.id3 import ID3
+from mutagen.id3 import APIC, ID3
 from mutagen.mp3 import MP3
 
 from apollo.media.decoders.decode import Stream
@@ -231,7 +230,7 @@ class MP3_File(Stream):
         self._synth_tags["FILEEXT"] = [self.stream_info['file_ext']]
 
         info = self._file_obj.info
-        self._synth_tags["SONGLEN"] = [info.length]
+        self._synth_tags["SONGLEN"] = [float(info.length)]
         self._synth_tags["BITRATE"] = [info.bitrate]
         self._synth_tags["CHANNELS"] = [info.channels]
         self._synth_tags["SAMPLERATE"] = [info.sample_rate]
@@ -244,7 +243,7 @@ class MP3_File(Stream):
 
     # noinspection PyAttributeOutsideInit
     @property
-    def Artwork(self) -> list[bytes]:
+    def Artwork(self) -> list[APIC]:
         """
         Mediafile Artwork Getter
 
@@ -262,7 +261,7 @@ class MP3_File(Stream):
             else:
 
                 ApolloWarning(f"Parser doesnt support Version {tags.version}")
-                return []
+                return [APIC()]
 
             for (frame_key, tag_key) in parser:
                 if frame_key == "PICTURE":
@@ -300,6 +299,8 @@ class MP3_File(Stream):
                         tags[k] = str(v[0])
                     elif dt == "INTEGER":
                         tags[k] = int(v[0])
+                    elif dt == "FLOAT":
+                        tags[k] = float(v[0])
                     else:
                         continue
         return tags

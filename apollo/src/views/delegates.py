@@ -1,5 +1,4 @@
 import copy
-import copy
 import datetime
 import enum
 import os.path
@@ -10,6 +9,10 @@ from PySide6.QtCore import Qt
 
 from apollo.assets.app_themes import AppIcons, AppTheme
 from apollo.db.models import QueueModel
+from apollo.media import Mediafile
+from apollo.utils import get_logger
+
+LOGGER = get_logger(__name__)
 
 
 class CustomItemDelegate(QtWidgets.QStyledItemDelegate):
@@ -17,7 +20,20 @@ class CustomItemDelegate(QtWidgets.QStyledItemDelegate):
     def __init__(self, parent: Optional[QtCore.QObject] = None) -> None:
         self._palette = copy.deepcopy(AppTheme)
         self._style = QtWidgets.QApplication.style()
+
+        self._default_cover = QtGui.QPixmap(AppIcons.MUSIC_NOTE.primary)
+        self._cover_cache = {}
+
         super().__init__(parent)
+
+    def get_cover_from_cache(self, fid: str) -> QtGui.QPixmap:
+        return self._cover_cache.get(fid, self._default_cover)
+
+    def set_cover_to_cache(self, fid: str, data: QtGui.QPixmap):
+        if 0 <= len(self._cover_cache.keys()) < 50:
+            self._cover_cache[fid] = data
+        else:
+            self._cover_cache.popitem()
 
     def get_widget(self, option: QtWidgets.QStyleOptionViewItem,
                    index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
@@ -30,6 +46,9 @@ class CustomItemDelegate(QtWidgets.QStyledItemDelegate):
 
 
 class TrackDelegate_Small(CustomItemDelegate):
+
+    def __init__(self, parent: Optional[QtCore.QObject] = None):
+        super().__init__(parent)
 
     def paint(self, painter: QtGui.QPainter, option: QtWidgets.QStyleOptionViewItem,
               index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]) -> None:
@@ -191,13 +210,7 @@ class TrackDelegate_Small(CustomItemDelegate):
 
         # widget set data
         TrackDelegate_Small_Cover_Pixmap.setText("")
-        current_index_path = index.model().index(index.row(), 1).data()
-        if os.path.exists(current_index_path):
-            pixmap = QtGui.QPixmap(AppIcons.MUSIC_NOTE.primary)
-            TrackDelegate_Small_Cover_Pixmap.setPixmap(pixmap)
-        else:
-            pixmap = QtGui.QPixmap(AppIcons.MUSIC_NOTE.primary)
-            TrackDelegate_Small_Cover_Pixmap.setPixmap(pixmap)
+        self.set_cover_img(TrackDelegate_Small_Cover_Pixmap, index)
 
         TrackDelegate_Small_isLiked_Pixmap.setText("")
         rating = float(index.model().index(index.row(), 71).data())
@@ -216,6 +229,25 @@ class TrackDelegate_Small(CustomItemDelegate):
 
         song_len = datetime.timedelta(seconds = float(index.model().index(index.row(), 34).data()))
         TrackDelegate_Small_time_label.setText(str(song_len))
+
+    def set_cover_img(self, widget: QtWidgets.QLabel, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        current_index_id = index.model().index(index.row(), 0).data()
+        if current_index_id not in self._cover_cache.keys():
+            current_index_path = index.model().index(index.row(), 1).data()
+            if os.path.exists(current_index_path) and Mediafile.isSupported(current_index_path):
+                # noinspection PyUnresolvedReferences
+                data = Mediafile(current_index_path).Artwork[0].data
+                pixmap = QtGui.QPixmap()
+                pixmap.loadFromData(data)
+                pixmap = pixmap.scaled(widget.size())
+                widget.setPixmap(pixmap)
+                self.set_cover_to_cache(current_index_id, pixmap)
+                return None
+
+        pixmap = self.get_cover_from_cache(current_index_id)
+        if pixmap.size() != widget.size():
+            pixmap = pixmap.scaled(widget.size())
+        widget.setPixmap(pixmap)
 
 
 class ViewDelegates(enum.Enum):

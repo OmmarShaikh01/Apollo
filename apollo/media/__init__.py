@@ -4,6 +4,7 @@ from pathlib import PurePath
 from typing import Any, Union
 
 import av
+from mutagen.id3 import APIC
 
 from apollo.media.decoders.decode import Stream
 from apollo.media.decoders.mp3 import MP3_File
@@ -64,7 +65,7 @@ class Mediafile:
             return self._stream.SynthTags
 
     @property
-    def Artwork(self) -> list:
+    def Artwork(self) -> list[APIC]:
         if self._stream is not None:
             return self._stream.Artwork
 

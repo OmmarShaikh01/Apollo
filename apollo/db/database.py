@@ -213,6 +213,7 @@ class Database:
                 query.bindValue(col, [records.records[row][col] for row in range(len(records.records))])
 
             LOGGER.debug(f"Batch Insert into: {table}")
+            LOGGER.critical(records)
             conn.transaction()
             if not query.execBatch():  # pragma: no cover
                 connection_info = (str(conn))
