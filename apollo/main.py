@@ -1,12 +1,11 @@
-import os
 import sys
 
-from PySide6 import QtCore, QtWidgets
+from PySide6 import QtWidgets
 
-from configs import settings
+from apollo.assets.stylesheets import load_theme
 from apollo.src.app import Apollo
 from apollo.utils import get_logger
-from apollo.assets.stylesheets import load_theme
+from configs import settings
 
 CONFIG = settings
 LOGGER = get_logger(__name__)
@@ -18,9 +17,9 @@ def main() -> None:
     """
 
     app = QtWidgets.QApplication(sys.argv)
+    load_theme(app, CONFIG.loaded_theme, recompile = CONFIG.recompile_theme)
     window = Apollo()
     LOGGER.info(msg = "Application Started")
-    load_theme(app, CONFIG.loaded_theme, recompile = CONFIG.recompile_theme)
 
     # TODO: Disable
     # window.playback_button_play_pause.pressed.connect(

@@ -12,11 +12,10 @@ from PySide6.QtCore import (QCoreApplication, QMetaObject, QRect,
                             QSize, Qt)
 from PySide6.QtGui import (QFont)
 from PySide6.QtWidgets import (QAbstractItemView, QButtonGroup, QFrame,
-                               QGridLayout, QHBoxLayout, QLabel,
-                               QLineEdit, QListView, QMenuBar,
-                               QPushButton, QSizePolicy, QSlider, QSpacerItem,
-                               QSplitter, QStackedWidget, QTableView, QVBoxLayout,
-                               QWidget)
+                               QGridLayout, QHBoxLayout, QLabel, QLineEdit,
+                               QListView, QMenuBar, QPushButton,
+                               QSizePolicy, QSlider, QSpacerItem, QSplitter,
+                               QStackedWidget, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -405,17 +404,14 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.setContentsMargins(4, 4, 4, 4)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.library_main_tableview = QTableView(self.library_main_tab)
-        self.library_main_tableview.setObjectName(u"library_main_tableview")
-        self.library_main_tableview.setFrameShape(QFrame.NoFrame)
-        self.library_main_tableview.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.library_main_tableview.setShowGrid(False)
-        self.library_main_tableview.setGridStyle(Qt.NoPen)
-        self.library_main_tableview.setCornerButtonEnabled(False)
-        self.library_main_tableview.horizontalHeader().setMinimumSectionSize(32)
-        self.library_main_tableview.verticalHeader().setVisible(False)
+        self.library_main_listview = QListView(self.library_main_tab)
+        self.library_main_listview.setObjectName(u"library_main_listview")
+        self.library_main_listview.setFrameShape(QFrame.NoFrame)
+        self.library_main_listview.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.library_main_listview.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.library_main_listview.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-        self.verticalLayout_3.addWidget(self.library_main_tableview)
+        self.verticalLayout_3.addWidget(self.library_main_listview)
 
         self.main_tabs_stack_widget.addWidget(self.library_main_tab)
         self.now_playing_main_tab = QWidget()
@@ -469,9 +465,11 @@ class Ui_MainWindow(object):
         self.gridLayout_8.setContentsMargins(2, 2, 2, 2)
         self.queue_main_listview = QListView(self.main_tabs_queue_frame_queue)
         self.queue_main_listview.setObjectName(u"queue_main_listview")
-        sizePolicy.setHeightForWidth(self.queue_main_listview.sizePolicy().hasHeightForWidth())
-        self.queue_main_listview.setSizePolicy(sizePolicy)
+        sizePolicy3.setHeightForWidth(self.queue_main_listview.sizePolicy().hasHeightForWidth())
+        self.queue_main_listview.setSizePolicy(sizePolicy3)
         self.queue_main_listview.setMinimumSize(QSize(0, 156))
+        self.queue_main_listview.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.queue_main_listview.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
         self.gridLayout_8.addWidget(self.queue_main_listview, 1, 0, 1, 1)
 

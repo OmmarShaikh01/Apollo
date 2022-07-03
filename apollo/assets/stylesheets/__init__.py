@@ -217,6 +217,8 @@ class ResourceGenerator:
         """
         self.generate_theme_icons()
         self.generate_theme_stylesheet()
+        with open(self.GENERATED / 'apptheme.json', 'w') as f_json:
+            json.dump(self.app_theme, f_json)
 
     def package_theme(self):
         """
@@ -241,6 +243,11 @@ class ResourceGenerator:
                 os.mkdir(path)
 
         path = self.GENERATED / 'stylesheet.css'
+        if not os.path.exists(path):
+            with open(path, 'w') as file:
+                file.close()
+
+        path = self.GENERATED / 'apptheme.json'
         if not os.path.exists(path):
             with open(path, 'w') as file:
                 file.close()
@@ -277,16 +284,6 @@ def generate_resource(name: str, recompile: Optional[bool] = False) -> bool:
             if not _JINJA:
                 ApolloWarning('Failed to build theme pack, Jinja is Missing')
 
-    if os.path.exists(theme_zip):
-        if os.path.exists((loaded_theme / 'icons')):
-            shutil.rmtree(loaded_theme / 'icons')
-        if os.path.exists((loaded_theme / 'stylesheet.css')):
-            os.remove(loaded_theme / 'stylesheet.css')
-        shutil.unpack_archive(theme_zip, loaded_theme)
-        return True
-    else:
-        return False
-
 
 def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool] = False):
     """
@@ -320,4 +317,18 @@ def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool]
 
     if not os.path.exists(theme_zip) or recompile:
         generate_resource(name, recompile)
+
+    if os.path.exists(theme_zip) and (len(os.listdir(loaded_theme)) == 0 or recompile):
+        if os.path.exists(loaded_theme):
+            shutil.rmtree(loaded_theme)
+        os.mkdir(loaded_theme)
+        shutil.unpack_archive(theme_zip, loaded_theme)
+
     loader(loaded_theme)
+
+
+if __name__ == '__main__':
+    for name in os.listdir(ResourceGenerator.THEMES):
+        name, ext = os.path.splitext(name)
+        _, name = os.path.split(name)
+        generate_resource(str(name), True)

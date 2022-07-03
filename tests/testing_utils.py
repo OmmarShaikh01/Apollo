@@ -1,4 +1,5 @@
 import os
+import random
 import uuid
 
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -39,6 +40,8 @@ def get_library_table(rows: int = 1111):
         for col_index, (col, _type) in enumerate(Stream.TAG_FRAMES_FIELDS):
             if col == "FILEID":
                 row.append(str(uuid.uuid4()))
+            elif col == "SONGLEN":
+                row.append(random.randint(30, 240))
             elif _type == "STRING":
                 row.append(f"TESTING_{col}_{row_index}")
             elif _type == "INTEGER":

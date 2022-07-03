@@ -84,3 +84,15 @@ class Test_PagedTable:
 
         model.clear()
         assert not model
+
+    def test_group_scroll(self, model_provider: MockPagedTableModel):
+        model = model_provider
+        col_index = model.Columns.index('library.FILEPATH')
+        model.sort(col_index)
+        model.group(col_index)
+        assert check_for_model_start_end(col_index, model, 'TESTING_FILEPATH_0', 'TESTING_FILEPATH_999')
+        model.set_filter(-1, 'TESTING_FILENAME_0')
+        assert check_for_model_start_end(col_index, model, 'TESTING_FILEPATH_0', 'TESTING_FILEPATH_0')
+
+        model.clear()
+        assert not model

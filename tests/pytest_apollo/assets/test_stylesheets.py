@@ -1,17 +1,12 @@
 import os
-import re
 import shutil
 import tempfile
-import time
 from pathlib import PurePath
-from re import Pattern
 
 import pytest
 import pytest_mock
-from PySide6 import QtWidgets
 
-import apollo.assets.stylesheets
-from apollo.assets.stylesheets import ResourceGenerator, load_theme, ASSETS
+from apollo.assets.stylesheets import ResourceGenerator, load_theme
 from apollo.utils import get_logger
 from configs import settings
 from tests.testing_utils import get_qt_application
@@ -90,7 +85,7 @@ class Test_ResourceGenerator:
     def test_build_package_theme(self, get_generator: ResourceGenerator):
         res = get_generator
         res.build_theme()
-        assert len(os.listdir(res.GENERATED)) == 2
+        assert len(os.listdir(res.GENERATED)) == 3
         res.package_theme()
         assert not os.path.exists(res.GENERATED)
         assert os.listdir(res.BUILD) != 0
@@ -106,7 +101,7 @@ class Test_ResourceGenerator:
             load_theme(self._qt_application, 'material_light')
 
             assert bool(os.path.exists(theme / '__loaded_theme__'))
-            assert bool(os.listdir(theme / '__loaded_theme__') == ['icons', 'stylesheet.css'])
+            assert bool(sorted(os.listdir(theme / '__loaded_theme__')) == sorted(['icons', 'stylesheet.css', 'apptheme.json']))
             assert bool(os.path.exists(theme / 'material_dark.zip'))
             assert bool(os.path.exists(theme / 'material_light.zip'))
             assert not bool(os.path.exists(res.BUILD))

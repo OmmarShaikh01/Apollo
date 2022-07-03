@@ -14,26 +14,23 @@ QHeaderView::section {
     border-bottom: 1px solid black;
 }
 
-QHeaderView::section:vertical {
+QHeaderView::section:vertical {}
 
-}
+QHeaderView::section:horizontal {}
 
-QHeaderView::section:horizontal {
-
-}
 
 QTableView QTableCornerButton::section {
   background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
   border: 0px solid {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
 }
 
-QTableView {
+QTableView, QListView {
     background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
     border: 1px solid transparent;
     border-radius: 4px;
 }
 
-QTableView::item {
+QTableView::item, QListView::item {
     background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
     padding: 4px;
     min-height: 24px;
@@ -42,14 +39,66 @@ QTableView::item {
     border-bottom: 1px solid black;
 }
 
-QTableView::item:selected {
+QTableView::item:selected, QListView::item:selected {
     background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
 }
 
-QTableView::item:selected:focus {
+QTableView::item:selected:focus, QListView::item:selected:focus {
     border-bottom: 1px solid {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
 }
 
-QTableView::item:disabled {
+QTableView::item:disabled, QListView::item:disabled {
     background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+}
+
+
+/* TrackDelegate_Small_Frame ---------------------------------------------------------------------------------------- */
+
+QFrame#TrackDelegate_Small_Frame[STATE='DEFAULT'] {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border-bottom: 1px solid black;
+}
+
+QFrame#TrackDelegate_Small_Frame[STATE='IS_PLAYING'] {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYDARKCOLOR, 0.075)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border-bottom: 1px solid black;
+}
+
+QFrame#TrackDelegate_Small_Frame[STATE='SELECTED'], QFrame#TrackDelegate_Small_Frame[STATE='HOVER'] {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.15)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border-bottom: 1px solid black;
+}
+
+QFrame#TrackDelegate_Small_Frame[STATE='DEFAULT'] QFrame {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+}
+
+QFrame#TrackDelegate_Small_Frame[STATE='IS_PLAYING'] QFrame {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYDARKCOLOR, 0.075)}};
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+}
+
+QFrame#TrackDelegate_Small_Frame[STATE='SELECTED'] QFrame, QFrame#TrackDelegate_Small_Frame[STATE='HOVER'] QFrame {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.15)}};
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+}
+
+QFrame#TrackDelegate_Small_Frame QFrame#TrackDelegate_Small_title_label {
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    font-weight: bold;
+    font-size: 14px;
 }

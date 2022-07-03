@@ -1,3 +1,4 @@
+import json
 import os
 from collections import namedtuple
 from pathlib import PurePath
@@ -9,6 +10,9 @@ CONFIG = settings
 
 
 class _AppIcons:
+    """
+    Container for AppIcon paths
+    """
     __slots__ = ['ADD', 'ARROW_BACK', 'ARROW_FORWARD', 'AUDIO_FILE', 'CHECK_BOX', 'CHECK_BOX_OUTLINE_BLANK', 'CLOSE',
                  'DELETE', 'DONE', 'EQUALIZER', 'EXPAND_LESS', 'EXPAND_MORE', 'FAVORITE', 'FAVORITE_FILLED',
                  'FILE_DOWNLOAD', 'STAR_OUTLINE', 'HOME', 'INDETERMINATE_CHECK_BOX', 'LIBRARY_MUSIC', 'MENU',
@@ -17,11 +21,17 @@ class _AppIcons:
                  'REPEAT_ONE_ON', 'SEARCH', 'SETTINGS', 'SHUFFLE', 'SHUFFLE_OFF', 'SKIP_NEXT', 'SKIP_PREVIOUS', 'STAR',
                  'STAR_HALF', 'VOLUME_DOWN', 'VOLUME_MUTE', 'VOLUME_OFF', 'VOLUME_UP']
 
-    def __init__(self):
-        self._init_attrs()
+    def __getattribute__(self, item):
+        try:
+            return object.__getattribute__(self, item)
+        except AttributeError:
+            self._init_attrs()
+            return object.__getattribute__(self, item)
 
     def _init_attrs(self):
-
+        """
+        lazy loader for all icon paths
+        """
         def loader():
             Icon = namedtuple('Icon', ['danger', 'disabled', 'primary', 'secondary', 'success', 'warning'])
             path = PurePath(os.path.dirname(__file__), '__loaded_theme__', 'icons')
@@ -42,14 +52,20 @@ class _AppIcons:
             generate_resource(CONFIG.loaded_theme, recompile = True)
         loader()
 
-    def __getattribute__(self, item):
-        try:
-            return object.__getattribute__(self, item)
-        except AttributeError:
-            self._init_attrs()
-            return object.__getattribute__(self, item)
+
+def get_apptheme() -> dict:
+    """
+    Loads the application theme pallete
+
+    Returns:
+        dict: Apptheme load
+    """
+    path = PurePath(os.path.dirname(__file__), '__loaded_theme__', 'apptheme.json')
+    with open(path) as file:
+        return json.load(file)
 
 
+AppTheme = get_apptheme()
 AppIcons = _AppIcons()
 
 if __name__ == '__main__':

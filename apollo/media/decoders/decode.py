@@ -3,7 +3,7 @@ import json
 import os
 from abc import ABC, abstractmethod
 from pathlib import PurePath
-from typing import Any, Union
+from typing import Any
 
 
 class Stream(ABC):
@@ -30,7 +30,7 @@ class Stream(ABC):
     ('PARTINSET', 'STRING'), ('ISRC', 'STRING'), ('DATE', 'STRING'), ('YEAR', 'STRING'), ('TIME', 'STRING'),
     ('RECORDINGDATES', 'STRING'), ('RECORDINGTIME', 'STRING'), ('ORIGYEAR', 'STRING'), ('ORIGRELEASETIME', 'STRING'),
     ('BPM', 'STRING'), ('MEDIATYPE', 'STRING'), ('FILETYPE', 'STRING'), ('COPYRIGHT', 'STRING'),
-    ('PUBLISHER', 'STRING'), ('ENCODEDBY', 'STRING'), ('ENCODERSETTINGS', 'STRING'), ('SONGLEN', 'STRING'),
+    ('PUBLISHER', 'STRING'), ('ENCODEDBY', 'STRING'), ('ENCODERSETTINGS', 'STRING'), ('SONGLEN', 'FLOAT'),
     ('SIZE', 'STRING'), ('INITIALKEY', 'STRING'), ('ORIGALBUM', 'STRING'), ('ORIGFILENAME', 'STRING'),
     ('ORIGARTIST', 'STRING'), ('ORIGLYRICIST', 'STRING'), ('FILEOWNER', 'STRING'), ('NETRADIOSTATION', 'STRING'),
     ('NETRADIOOWNER', 'STRING'), ('SETSUBTITLE', 'STRING'), ('MOOD', 'STRING'), ('PRODUCEDNOTICE', 'STRING'),

@@ -1,4 +1,5 @@
 import abc
+import datetime
 import enum
 import math
 import time
@@ -383,8 +384,8 @@ class Playback_Bar_Interactions(abc.ABC):
             self.ui.playback_footer_track_title.setText(tags.get('TITLE', ['Apollo - Media Player'])[0])
             self.ui.playback_footer_track_rating.setText('')
 
-            time_sec = int(tags.get('SONGLEN', 0)[0])
-            self.ui.playback_footer_track_elapsed.setText(f"-{time.strftime('%H:%M:%S', time.gmtime(time_sec))}")
+            time_sec = song_len = datetime.timedelta(seconds = float(tags.get('SONGLEN', 0)[0]))
+            self.ui.playback_footer_track_elapsed.setText(f"{time_sec}")
             self.ui.playback_footer_track_seek_slider.setRange(0, time_sec)
             self.ui.playback_footer_track_seek_slider.setSingleStep(5)
 
@@ -478,6 +479,7 @@ class Playback_Bar_Controller:
 
     def bind_models(self, view: QtWidgets.QAbstractItemView):
         view.setModel(self.queue_model)
+        # set_delegate(view, ViewDelegates.TrackDelegate_Small)
         view.verticalScrollbarValueChanged = lambda x: (self.scroll_paging(view, x))
         self.queue_model.fetch_data(self.queue_model.FETCH_SCROLL_DOWN)
 

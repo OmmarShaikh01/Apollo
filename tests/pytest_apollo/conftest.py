@@ -21,7 +21,7 @@ from tests.testing_utils import get_qt_application
 
 # SESSION STARTUP
 LOGGER = get_logger(__name__)
-PROFILE = not False
+PROFILE = False # disable profiling when debugging
 
 
 def create_temp_dir():
@@ -104,6 +104,7 @@ def create_session():
     yield None
     remove_temp_dir()
     remove_local_config()
+
     LOGGER.info(f"CONFIG {settings.current_env}: {settings.to_dict()}")
     LOGGER.info(f"Application Exited with Error code: {get_qt_application().exit()}")
     LOGGER.info(f"Completed {os.path.dirname(__file__)} in {round(time.time() - t1, 4)}sec")

@@ -4,6 +4,7 @@ from PySide6 import QtWidgets
 
 from apollo.db.models import LibraryModel, ModelProvider, QueueModel
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo
+from apollo.src.views.delegates import ViewDelegates, set_delegate
 
 
 class Library_Tab_Interactions(abc.ABC):
@@ -28,6 +29,7 @@ class Library_Tab_Controller:
 
     def bind_models(self, view: QtWidgets.QAbstractItemView):
         view.setModel(self.library_model)
+        set_delegate(view, ViewDelegates.TrackDelegate_Small)
         view.verticalScrollbarValueChanged = lambda x: (self.scroll_paging(view, x))
         self.library_model.fetch_data(self.library_model.FETCH_SCROLL_DOWN)
 
@@ -45,4 +47,4 @@ class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):  # TODO: Do
     def __init__(self, ui: Apollo) -> None:
         Library_Tab_Interactions.__init__(self, ui)
         Library_Tab_Controller.__init__(self)
-        self.bind_models(self.ui.library_main_tableview)
+        self.bind_models(self.ui.library_main_listview)

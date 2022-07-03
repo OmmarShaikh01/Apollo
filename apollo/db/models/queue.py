@@ -4,6 +4,7 @@ from apollo.media import Stream
 
 
 class QueueModel(PagedTableModel):
+    CURRENT_FILE_ID = None
     PRIVATE_FIELDS = ['PLAYORDER', 'FILEID', 'FILEPATH', 'FILENAME', 'FILESIZE', 'FILEEXT']
 
     def __init__(self) -> None:
