@@ -68,5 +68,5 @@ jobs:
           poetry install
       - name: Test Production
         run: |
-          .\.venv\Scripts\nox.exe --session production_launch
+          .\.venv\Scripts\nox.exe --session production_build production_launch
           exit
