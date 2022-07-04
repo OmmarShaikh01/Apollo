@@ -67,8 +67,9 @@ def get_apptheme() -> dict:
         return json.load(file)
 
 
-AppTheme = get_apptheme()
-AppIcons = _AppIcons()
+path = PurePath(os.path.dirname(__file__), '__loaded_theme__')
+if not os.path.exists(path):
+    generate_resource(CONFIG.loaded_theme, recompile = True)
 
-if __name__ == '__main__':
-    print(AppIcons.HOME.danger)
+AppIcons = _AppIcons()
+AppTheme = get_apptheme()

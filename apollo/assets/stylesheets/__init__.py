@@ -283,6 +283,14 @@ def generate_resource(name: str, recompile: Optional[bool] = False) -> bool:
                 ApolloWarning("Theme JSON missing")
             if not _JINJA:
                 ApolloWarning('Failed to build theme pack, Jinja is Missing')
+            return False
+
+    if os.path.exists(theme_zip) and (len(os.listdir(loaded_theme)) == 0 or recompile):
+        if os.path.exists(loaded_theme):
+            shutil.rmtree(loaded_theme)
+        os.mkdir(loaded_theme)
+        shutil.unpack_archive(theme_zip, loaded_theme)
+        return True
 
 
 def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool] = False):
@@ -317,12 +325,6 @@ def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool]
 
     if not os.path.exists(theme_zip) or recompile:
         generate_resource(name, recompile)
-
-    if os.path.exists(theme_zip) and (len(os.listdir(loaded_theme)) == 0 or recompile):
-        if os.path.exists(loaded_theme):
-            shutil.rmtree(loaded_theme)
-        os.mkdir(loaded_theme)
-        shutil.unpack_archive(theme_zip, loaded_theme)
 
     loader(loaded_theme)
 
