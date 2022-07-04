@@ -66,7 +66,7 @@ jobs:
           poetry shell
           poetry self update
           poetry install
-      - name: Test with pytest
+      - name: Test Production
         run: |
           .\.venv\Scripts\nox.exe --session production_launch
           exit
