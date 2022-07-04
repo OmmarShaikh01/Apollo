@@ -81,8 +81,8 @@ def production_launch(session: nox.Session):
     toml = PurePath(os.path.dirname(__file__), 'pyproject.toml')
 
     # Extracts Package
-    file = os.listdir("./dist")[0]
-    os.chdir('./dist')
+    os.chdir(os.path.join(os.path.dirname(__file__), "dist"))
+    file = os.listdir(os.getcwd())[0]
     pycmd = f"import tarfile; file = tarfile.open('{file}'); file.extractall('.'); file.close()"
     session.run(*['python', '-c', pycmd], silent = SILENT)
     os.chdir(file.replace('.tar.gz', ''))
@@ -99,7 +99,7 @@ def production_launch(session: nox.Session):
     finally:
         # Cleanup
         os.chdir(os.path.dirname(__file__))
-        shutil.rmtree('./dist')
+        shutil.rmtree(os.path.join(os.path.dirname(__file__), "dist"))
 
 
 # custom sessions for githu workflows
