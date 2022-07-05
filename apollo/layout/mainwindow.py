@@ -408,8 +408,12 @@ class Ui_MainWindow(object):
         self.library_main_listview.setObjectName(u"library_main_listview")
         self.library_main_listview.setFrameShape(QFrame.NoFrame)
         self.library_main_listview.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.library_main_listview.setProperty("showDropIndicator", False)
         self.library_main_listview.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.library_main_listview.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.library_main_listview.setSpacing(1)
+        self.library_main_listview.setUniformItemSizes(True)
+        self.library_main_listview.setItemAlignment(Qt.AlignLeading)
 
         self.verticalLayout_3.addWidget(self.library_main_listview)
 
@@ -469,7 +473,11 @@ class Ui_MainWindow(object):
         self.queue_main_listview.setSizePolicy(sizePolicy3)
         self.queue_main_listview.setMinimumSize(QSize(0, 156))
         self.queue_main_listview.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.queue_main_listview.setProperty("showDropIndicator", False)
         self.queue_main_listview.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.queue_main_listview.setSpacing(1)
+        self.queue_main_listview.setUniformItemSizes(True)
+        self.queue_main_listview.setItemAlignment(Qt.AlignLeading)
 
         self.gridLayout_8.addWidget(self.queue_main_listview, 1, 0, 1, 1)
 

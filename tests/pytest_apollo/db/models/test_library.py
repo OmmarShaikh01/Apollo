@@ -35,11 +35,11 @@ def model_provider() -> LibraryModel:
 # noinspection PyProtectedMember
 def check_for_model_start_end(col_index: int, model: LibraryModel, start: Any, end: Any) -> bool:
     for _ in range(int(model._window.global_count / model._window.fetch_limit) + 3):
-        model.fetch_data(model.FETCH_SCROLL_DOWN)
+        model.fetch_data(model.FETCH_DATA_DOWN)
     assert str(model.index(model.rowCount() - 1, col_index).data()) == str(end)
 
     for _ in range(int(model._window.global_count / model._window.fetch_limit) + 3):
-        model.fetch_data(model.FETCH_SCROLL_UP)
+        model.fetch_data(model.FETCH_DATA_UP)
     assert str(model.index(0, col_index).data()) == str(start)
 
     return bool(model)

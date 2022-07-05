@@ -325,6 +325,13 @@ def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool]
 
     if not os.path.exists(theme_zip) or recompile:
         generate_resource(name, recompile)
+    else:
+        if os.path.exists(theme_zip) and (len(os.listdir(loaded_theme)) == 0 or recompile):
+            if os.path.exists(loaded_theme):
+                shutil.rmtree(loaded_theme)
+            os.mkdir(loaded_theme)
+            shutil.unpack_archive(theme_zip, loaded_theme)
+            return True
 
     loader(loaded_theme)
 

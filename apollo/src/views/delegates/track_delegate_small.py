@@ -1,48 +1,17 @@
-import copy
 import datetime
-import enum
 import os.path
 from typing import Optional, Union
 
 from PySide6 import QtCore, QtGui, QtWidgets
 from PySide6.QtCore import Qt
 
-from apollo.assets.app_themes import AppIcons, AppTheme
+from apollo.assets.app_themes import AppIcons
 from apollo.db.models import QueueModel
 from apollo.media import Mediafile
+from apollo.src.views.delegates._base_delegate import CustomItemDelegate
 from apollo.utils import get_logger
 
 LOGGER = get_logger(__name__)
-
-
-class CustomItemDelegate(QtWidgets.QStyledItemDelegate):
-
-    def __init__(self, parent: Optional[QtCore.QObject] = None) -> None:
-        self._palette = copy.deepcopy(AppTheme)
-        self._style = QtWidgets.QApplication.style()
-
-        self._default_cover = QtGui.QPixmap(AppIcons.MUSIC_NOTE.primary)
-        self._cover_cache = {}
-
-        super().__init__(parent)
-
-    def get_cover_from_cache(self, fid: str) -> QtGui.QPixmap:
-        return self._cover_cache.get(fid, self._default_cover)
-
-    def set_cover_to_cache(self, fid: str, data: QtGui.QPixmap):
-        if 0 <= len(self._cover_cache.keys()) < 50:
-            self._cover_cache[fid] = data
-        else:
-            self._cover_cache.popitem()
-
-    def get_widget(self, option: QtWidgets.QStyleOptionViewItem,
-                   index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
-                   parent: Optional[QtWidgets.QWidget] = None) -> QtWidgets.QWidget:
-        raise NotImplementedError
-
-    def draw_widget(self, painter: QtGui.QPainter, option: QtWidgets.QStyleOptionViewItem,
-                    index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]) -> None:
-        raise NotImplementedError
 
 
 class TrackDelegate_Small(CustomItemDelegate):
@@ -67,7 +36,7 @@ class TrackDelegate_Small(CustomItemDelegate):
 
         # Draws widget into delegate
         s_painter = QtGui.QPainter(pixmap)
-        widget = self.get_widget(option.widget, index)
+        widget = self.get_widget(option, index, option.widget)
         widget.setGeometry(option.rect)
 
         # Checks state
@@ -106,7 +75,7 @@ class TrackDelegate_Small(CustomItemDelegate):
                    index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
                    parent: Optional[QtWidgets.QWidget] = None) -> QtWidgets.QWidget:
         # widget creation
-        TrackDelegate_Small_Frame = QtWidgets.QFrame(parent)
+        TrackDelegate_Small_Frame = QtWidgets.QFrame(None)
         TrackDelegate_Small_Frame.setObjectName(u"TrackDelegate_Small_Frame")
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(1)
@@ -135,6 +104,7 @@ class TrackDelegate_Small(CustomItemDelegate):
         TrackDelegate_Small_Cover_Pixmap.setMinimumSize(QtCore.QSize(40, 40))
         TrackDelegate_Small_Cover_Pixmap.setMaximumSize(QtCore.QSize(40, 40))
         TrackDelegate_Small_Cover_Pixmap.setFrameShape(QtWidgets.QFrame.NoFrame)
+        TrackDelegate_Small_Cover_Pixmap.setAlignment(Qt.AlignCenter)
 
         gridLayout_2.addWidget(TrackDelegate_Small_Cover_Pixmap, 0, 1, 1, 1)
 
@@ -216,11 +186,11 @@ class TrackDelegate_Small(CustomItemDelegate):
         rating = float(index.model().index(index.row(), 71).data())
         if rating == 5:
             pixmap = QtGui.QPixmap(AppIcons.FAVORITE_FILLED.primary)
-            pixmap = pixmap.scaled(QtCore.QSize(24, 24))
+            pixmap = pixmap.scaled(QtCore.QSize(24, 24), mode = Qt.SmoothTransformation)
             TrackDelegate_Small_isLiked_Pixmap.setPixmap(pixmap)
         else:
             pixmap = QtGui.QPixmap(AppIcons.FAVORITE.primary)
-            pixmap = pixmap.scaled(QtCore.QSize(24, 24))
+            pixmap = pixmap.scaled(QtCore.QSize(24, 24), mode = Qt.SmoothTransformation)
             TrackDelegate_Small_isLiked_Pixmap.setPixmap(pixmap)
 
         TrackDelegate_Small_title_label.setText(str(index.model().index(index.row(), 6).data()))
@@ -239,35 +209,12 @@ class TrackDelegate_Small(CustomItemDelegate):
                 data = Mediafile(current_index_path).Artwork[0].data
                 pixmap = QtGui.QPixmap()
                 pixmap.loadFromData(data)
-                pixmap = pixmap.scaled(widget.size())
+                pixmap = pixmap.scaled(widget.size(), mode = Qt.SmoothTransformation)
                 widget.setPixmap(pixmap)
                 self.set_cover_to_cache(current_index_id, pixmap)
                 return None
 
         pixmap = self.get_cover_from_cache(current_index_id)
         if pixmap.size() != widget.size():
-            pixmap = pixmap.scaled(widget.size())
+            pixmap = pixmap.scaled(widget.size(), mode = Qt.SmoothTransformation)
         widget.setPixmap(pixmap)
-
-
-class ViewDelegates(enum.Enum):
-    TrackDelegate_Small = 'TrackDelegate_Small'
-    TrackDelegate_Small_Queue = 'TrackDelegate_Small_Queue'
-    TrackDelegate_Mid = 'TrackDelegate_Mid'
-    TrackDelegate_Mid_Queue = 'TrackDelegate_Mid_Queue'
-    TrackDelegate_Large = 'TrackDelegate_Large'
-    TrackDelegate_Large_Queue = 'TrackDelegate_Large_Queue'
-
-    AlbumDelegate_Large = 'AlbumDelegate_Large'
-    ArtistDelegate_Large = 'ArtistDelegate_Large'
-
-
-def set_delegate(view: QtWidgets.QAbstractItemView, delegate: Optional[ViewDelegates] = None):
-    if delegate is None:
-        view.setItemDelegate(QtWidgets.QStyledItemDelegate())
-
-    elif delegate.name == 'TrackDelegate_Small':
-        view.setItemDelegate(TrackDelegate_Small())
-
-    else:
-        return None

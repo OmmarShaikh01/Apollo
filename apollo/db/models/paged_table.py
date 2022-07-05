@@ -14,31 +14,39 @@ LOGGER = get_logger(__name__)
 
 @dataclasses.dataclass
 class Filter:
-    query: str = ''
-    value: list = None
+    """
+    Page Window filter the model uses to filter model data
+    """
+    query: str = ''  # query to use to filter
+    value: list = None  # value to use to filter
 
 
 @dataclasses.dataclass
 class PageWindow:
+    """
+    Page Window the model uses to fetch and display data
+    """
+    global_count: int = 0  # Total number of rows in the database
+    global_pointer: int = 0  # index of the last row relative to global count
 
-    global_count: int = 0
-    global_pointer: int = 0
+    offset: int = 0  # seeking offset from the top
+    fetch_limit: int = 50  # rows to fetch each query
+    window_size: int = fetch_limit * 2  # size of each page
+    window_max: Any = None  # max value of the last fetch
+    window_min: Any = None  # min value of the last fetch
 
-    offset: int = 0
-    fetch_limit: int = 50
-    window_size: int = fetch_limit * 2
-    window_max: Any = None
-    window_min: Any = None
-
-    sort_order: QtCore.Qt.SortOrder = None
-    sort_col: str = None
-    group_col: str = None
-    filter: Filter = dataclasses.field(default_factory = lambda: Filter())
+    sort_order: QtCore.Qt.SortOrder = None  # sort order
+    sort_col: str = None  # column to sort
+    group_col: str = None  # column to group
+    filter: Filter = dataclasses.field(default_factory = lambda: Filter())  # filters the exiting data
 
     def __bool__(self):
         return not (self.global_count == 0)
 
     def reset(self):
+        """
+        Resets window to default_values
+        """
         self.global_count: int = 0
         self.global_pointer: int = 0
         self.offset: int = 0
@@ -47,8 +55,8 @@ class PageWindow:
 
 
 class PagedTableModel(QtGui.QStandardItemModel):
-    FETCH_SCROLL_DOWN = 0
-    FETCH_SCROLL_UP = 1
+    FETCH_DATA_DOWN = 0
+    FETCH_DATA_UP = 1
 
     def __init__(self, table_name: str):
         super().__init__()
@@ -61,14 +69,12 @@ class PagedTableModel(QtGui.QStandardItemModel):
         return not (self.rowCount() == 0)
 
     def __str__(self):
-        return str(
-            RecordSet(
-                self.Columns,
-                [[self.index(r, c).data() for c in range(self.columnCount())] for r in range(self.rowCount())]
-            )
-        )
+        return str(RecordSet(self.Columns, [[self.index(r, c).data() for c in range(self.columnCount())] for r in range(self.rowCount())]))
 
     def set_global_row_count(self):
+        """
+        Sets the global row count for the database table
+        """
         window = self._window
         with self._db.connector as connection:
             if window.filter.query == '':
@@ -91,14 +97,29 @@ class PagedTableModel(QtGui.QStandardItemModel):
         self._window.sort_order = order
         super().sort(column, order)
         self.clear()
-        self.fetch_data(self.FETCH_SCROLL_DOWN)
+        self.fetch_data(self.FETCH_DATA_DOWN)
 
     def group(self, column: int):
+        """
+        Groups the displayed model data
+
+        Args:
+            column: Column to use for grouping
+        """
         self._window.group_col = self.Columns[column]
         self.clear()
-        self.fetch_data(self.FETCH_SCROLL_DOWN)
+        self.fetch_data(self.FETCH_DATA_DOWN)
 
     def fetch_data(self, direction: int) -> bool:
+        """
+        Fetches data on scroll event
+
+        Args:
+            direction (int): Scroll Direction
+
+        Returns:
+            bool: if fetch was successful returns True, otherwise Flase
+        """
         if self._window.sort_order is None and self._window.sort_col is None:
             self._window.sort_order = QtCore.Qt.AscendingOrder
             self._window.sort_col = self.Columns[0]
@@ -126,7 +147,7 @@ class PagedTableModel(QtGui.QStandardItemModel):
             else:
                 return False
 
-        if direction == self.FETCH_SCROLL_DOWN:  # ON SCROLL DOWN
+        if direction == self.FETCH_DATA_DOWN:  # ON SCROLL DOWN
             SELECT = self.SelectQuery
             GROUP = f'GROUP BY {self._window.group_col}' if self._window.group_col is not None else ''
             ORDER = f'ORDER BY {sort_col} {sort} LIMIT {limit}'
@@ -148,7 +169,7 @@ class PagedTableModel(QtGui.QStandardItemModel):
             else:
                 return False
 
-        if direction == self.FETCH_SCROLL_UP:  # ON SCROLL UP
+        if direction == self.FETCH_DATA_UP:  # ON SCROLL UP
             SELECT = self.SelectQuery
             GROUP = f'GROUP BY {self._window.group_col}' if self._window.group_col is not None else ''
             ORDER = f'ORDER BY {sort_col} {sort} LIMIT {self.Offset}, {limit}'
@@ -171,42 +192,71 @@ class PagedTableModel(QtGui.QStandardItemModel):
                 return False
 
     def populate(self, data: RecordSet, direction: int):
+        """
+        Populates te model using the fetched data
 
+        Args:
+            data (RecordSet): Data to populate model with
+            direction (int): Scroll Direction
+        """
         def get_row(_row: list):
             return [QtGui.QStandardItem(str(x)) for x in _row]
 
-        row_index = 0
-        if direction == self.FETCH_SCROLL_UP:  # ON SCROLL UP
+        # ON SCROLL DOWN
+        if direction == self.FETCH_DATA_DOWN and self._window.global_pointer <= self._window.global_count:
+            self._window.global_pointer += len(data.records)
             self.beginResetModel()
-            for row_index, row in enumerate(data.records[::-1]):
-                self.insertRow(0, get_row(row))
-                if len(data.records) == 1:
-                    LOGGER.critical(data)
-                if self.rowCount() > self._window.window_size:
-                    self.removeRow(self.rowCount() - 1)
-
-            self._window.global_pointer -= row_index
-            self.update_offset(direction)
-            self._window.window_min = data.records[0][self.Columns.index(self._window.sort_col)]
-            self._window.window_max = data.records[-1][self.Columns.index(self._window.sort_col)]
-            self.endResetModel()
-
-        if direction == self.FETCH_SCROLL_DOWN:  # ON SCROLL UP
-            self.beginResetModel()
-            for row_index, row in enumerate(data.records):
+            for row in data.records:
                 self.appendRow(get_row(row))
                 if self.rowCount() > self._window.window_size:
                     self.removeRow(0)
-
-            self._window.global_pointer += row_index
-            self.update_offset(direction)
-            self._window.window_min = data.records[0][self.Columns.index(self._window.sort_col)]
-            self._window.window_max = data.records[-1][self.Columns.index(self._window.sort_col)]
             self.endResetModel()
+
+            self.update_offset(direction)
+            self.update_min_max(data)
+            return None
+
+        # ON SCROLL UP
+        if direction == self.FETCH_DATA_UP and self._window.global_pointer >= 0:
+            self._window.global_pointer -= len(data.records)
+            self.beginResetModel()
+            for row in data.records[::-1]:
+                self.insertRow(0, get_row(row))
+                if self.rowCount() > self._window.window_size:
+                    self.removeRow(self.rowCount() - 1)
+            self.endResetModel()
+
+            self.update_offset(direction)
+            self.update_min_max(data)
+            return None
+
+    def update_min_max(self, data: RecordSet):
+        """
+        Update the Min and max of the Data table
+
+        Args:
+            data (RecordSet): Data recently fetched
+        """
+        data = data.records[0][self.Columns.index(self._window.sort_col)]
+        if isinstance(data, str):
+            self._window.window_min = str(self.index(0, self.Columns.index(self._window.sort_col)).data())
+            self._window.window_max = str(self.index(self.rowCount() - 1, self.Columns.index(self._window.sort_col)).data())
+        if isinstance(data, float):
+            self._window.window_min = float(self.index(0, self.Columns.index(self._window.sort_col)).data())
+            self._window.window_max = float(self.index(self.rowCount() - 1, self.Columns.index(self._window.sort_col)).data())
+        if isinstance(data, int):
+            self._window.window_min = int(self.index(0, self.Columns.index(self._window.sort_col)).data())
+            self._window.window_max = int(self.index(self.rowCount() - 1, self.Columns.index(self._window.sort_col)).data())
 
     # noinspection PyAttributeOutsideInit
     @property
     def Offset(self) -> int:
+        """
+        returns the offset of the limit function to fetch rows from
+
+        Returns:
+            int: offset of the limit function to fetch rows from
+        """
         offset = self._window.offset * self._window.fetch_limit
         if (offset - self._window.window_size) > 0:
             return offset - self._window.window_size
@@ -215,33 +265,44 @@ class PagedTableModel(QtGui.QStandardItemModel):
 
     # noinspection PyAttributeOutsideInit
     def update_offset(self, direction: int):
+        """
+        updates the offset of the limit function to fetch rows from
+        """
         if self.rowCount() == self._window.window_size:
-            if direction == self.FETCH_SCROLL_DOWN:
+            if direction == self.FETCH_DATA_DOWN:
                 if 0 <= self._window.offset:
                     self._window.offset += 1
-            if direction == self.FETCH_SCROLL_UP:
+            if direction == self.FETCH_DATA_UP:
                 if 0 < self._window.offset:
                     self._window.offset -= 1
 
     def clear_filter(self):
+        """
+        Clears the applied filter to the currently displayed model
+        """
         self._window.filter.query = f''
         self._window.filter.value = None
         self.clear()
-        self.fetch_data(self.FETCH_SCROLL_DOWN)
+        self.fetch_data(self.FETCH_DATA_DOWN)
 
     def clear_grouping(self):
+        """
+        Clears the applied grouping to the currently displayed model
+        """
         self._window.group_col = None
         self.clear()
-        self.fetch_data(self.FETCH_SCROLL_DOWN)
+        self.fetch_data(self.FETCH_DATA_DOWN)
 
     def set_filter(self, col_index: int, search_query: str):
+        """
+        Sets the filter to the model
+
+        Args:
+            col_index (int): Column to filter
+            search_query (str): term to search for
+        """
         if col_index == -1:
-            cols = list(
-                filter(
-                    lambda item: re.match(r'.*\.(TITLE|FILENAME|ARTIST|ALBUM)$', str(item)),
-                    self.Columns
-                )
-            )
+            cols = list(filter(lambda item: re.match(r'.*\.(TITLE|FILENAME|ARTIST|ALBUM)$', str(item)), self.Columns))
             self._window.filter.query = ' OR '.join([f"{col_index} LIKE ?" for col_index in cols])
             self._window.filter.value = [f"%{search_query}%" for _ in cols]
         else:
@@ -249,12 +310,24 @@ class PagedTableModel(QtGui.QStandardItemModel):
             self._window.filter.value = [f"%{search_query}%"]
 
         self.clear()
-        self.fetch_data(self.FETCH_SCROLL_DOWN)
+        self.fetch_data(self.FETCH_DATA_DOWN)
 
     @property
     def SelectQuery(self) -> str:
+        """
+        Rows Select query to use
+
+        Returns:
+            str: select query the model uses
+        """
         raise NotImplementedError
 
     @property
-    def Columns(self) -> list:
+    def Columns(self) -> list[str]:
+        """
+        Columns the model displays
+
+        Returns:
+            list[str]: Columns the model displays
+        """
         raise NotImplementedError

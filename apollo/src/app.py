@@ -68,6 +68,7 @@ class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
         """
         self.save_states()
         self.playback_bar.shutdown()
+        self.lirary_tab.shutdown()
         write_config()
 
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:

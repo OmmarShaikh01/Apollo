@@ -12,6 +12,7 @@ from apollo.assets import AppIcons
 from apollo.db.models import LibraryModel, ModelProvider, QueueModel
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo
 from apollo.media import Mediafile
+from apollo.src.views.delegates import ViewDelegates, set_delegate
 from apollo.utils import get_logger
 from configs import settings
 
@@ -197,13 +198,6 @@ class Playback_Bar_Interactions(abc.ABC):
         CONFIG['APOLLO.PLAYBACK_BAR.LOADED_TRACK'] = self._LOADED_TRACK
         CONFIG['APOLLO.PLAYBACK_BAR.BYPASS_PROCESSOR'] = self._BYPASS_PROCESSOR
         CONFIG['APOLLO.PLAYBACK_BAR.ELAPSED_TIME'] = self.ui.playback_footer_track_seek_slider.value()
-
-    def shutdown(self):
-        """
-        Shutdown callback
-        """
-        self.call_on_shutdown()
-        self.save_states()
 
     def state_change_processor_bypass(self, state: bool):
         """
@@ -411,8 +405,8 @@ class Playback_Bar_Interactions(abc.ABC):
 
             widget = self.ui.track_info_cover_pixmap
             if tags.get('PICTURE')[0]:
-                image = QtGui.QImage().fromData(metadata.Artwork[0].data)
-                pixmap = QtGui.QPixmap.fromImage(image)
+                pixmap = QtGui.QPixmap()
+                pixmap.loadFromData(bytes(metadata.Artwork[0].data))
                 widget.setPixmap(pixmap)
 
     def load_rating(self, rating: Optional[float] = 0):
@@ -472,32 +466,66 @@ class Playback_Bar_Interactions(abc.ABC):
 
 
 class Playback_Bar_Controller:
-
+    """
+    Playback_Bar_Controller
+    """
     def __init__(self) -> None:
+        """
+        Constructor
+        """
         self.library_model = ModelProvider.get_model(LibraryModel)
         self.queue_model = ModelProvider.get_model(QueueModel)
 
     def bind_models(self, view: QtWidgets.QAbstractItemView):
+        """
+        Binds models with Views
+
+        Args:
+            view (QtWidgets.QAbstractItemView): view to bind models to
+        """
         view.setModel(self.queue_model)
-        # set_delegate(view, ViewDelegates.TrackDelegate_Small)
+        set_delegate(view, ViewDelegates.TrackDelegate_Small_Queue)
         view.verticalScrollbarValueChanged = lambda x: (self.scroll_paging(view, x))
-        self.queue_model.fetch_data(self.queue_model.FETCH_SCROLL_DOWN)
+        self.queue_model.fetch_data(self.queue_model.FETCH_DATA_DOWN)
 
     def scroll_paging(self, view: QtWidgets.QAbstractItemView, value: int):
+        """
+        On scroll Loader for paged models
+
+        Args:
+            view (QtWidgets.QAbstractItemView): View to get scroll event from
+            value (int): Scroll value
+        """
         if value == view.verticalScrollBar().minimum():
-            if self.queue_model.fetch_data(self.queue_model.FETCH_SCROLL_UP):
+            if self.queue_model.fetch_data(self.queue_model.FETCH_DATA_UP):
                 view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
         if value == view.verticalScrollBar().maximum():
-            if self.queue_model.fetch_data(self.queue_model.FETCH_SCROLL_DOWN):
+            if self.queue_model.fetch_data(self.queue_model.FETCH_DATA_DOWN):
                 view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
+
+    def save_states(self):
+        """
+        saves session states of Apollo
+        """
+        pass
 
 
 class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO: Documentation
-
+    """
+    Playback_Bar
+    """
     def __init__(self, ui: Apollo) -> None:
         Playback_Bar_Interactions.__init__(self, ui)
         Playback_Bar_Controller.__init__(self)
         self.bind_models(self.ui.queue_main_listview)
+
+    def shutdown(self):
+        """
+        Shutdown callback
+        """
+        self.call_on_shutdown()
+        Playback_Bar_Interactions.save_states(self)
+        Playback_Bar_Controller.save_states(self)
 
     def call_state_change_play(self, state: Optional[Union[STATE_PLAY, str]]):
         LOGGER.debug(state)

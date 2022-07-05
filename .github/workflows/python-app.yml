@@ -49,24 +49,3 @@ jobs:
       - name: Test with pytest
         run: |
           .\.venv\Scripts\nox.exe --session production_testing_apollo
-
-  build-apollo:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.9"
-          cache: 'pip'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install --user poetry
-          poetry shell
-          poetry self update
-          poetry install
-      - name: Test Production
-        run: |
-          .\.venv\Scripts\nox.exe --session production_build production_launch
-          exit

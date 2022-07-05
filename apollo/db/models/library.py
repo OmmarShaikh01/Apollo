@@ -21,21 +21,45 @@ class LibraryModel(PagedTableModel):
         return cols
 
     def search_album(self, query: str):
+        """
+        Searches Query in album Column
+
+        Args:
+            query (str): term to search for
+        """
         self.clear_filter()
         col_index = self.Columns.index('library.ALBUM')
         self.set_filter(col_index, query)
 
     def search_artist(self, query: str):
+        """
+        Searches Query in artist Column
+
+        Args:
+            query (str): term to search for
+        """
         self.clear_filter()
         col_index = self.Columns.index('library.ARTIST')
         self.set_filter(col_index, query)
 
     def search_title(self, query: str):
+        """
+        Searches Query in title Column
+
+        Args:
+            query (str): term to search for
+        """
         self.clear_filter()
         col_index = self.Columns.index('library.TITLE')
         self.set_filter(col_index, query)
 
     def search_filename(self, query: str):
+        """
+        Searches Query in filename Column
+
+        Args:
+            query (str): term to search for
+        """
         self.clear_filter()
         col_index = self.Columns.index('library.FILENAME')
         self.set_filter(col_index, query)

@@ -4,6 +4,37 @@ import dynaconf
 from dynaconf import Validator
 
 
+def _ui_states_validators() -> Validator:
+    """
+    Validators for the UI states
+
+    Returns:
+        Validator: Validators for the UI states
+    """
+    MAIN = (
+        'CURRENT_TAB'
+    )
+
+    PLAYBACK_BAR = (
+        'STATE_PLAY',
+        'STATE_SHUFFLE',
+        'STATE_REPEAT',
+        'VOLUME_LEVEL',
+        'LOADED_TRACK',
+        'BYPASS_PROCESSOR',
+        'ELAPSED_TIME'
+    )
+
+    LIBRARY_TAB = (
+        'DELEGATE_TYPE'
+    )
+
+    MAIN = [f"APOLLO.MAIN.{x}" for x in MAIN]
+    PLAYBACK_BAR = [f"APOLLO.PLAYBACK_BAR.{x}" for x in PLAYBACK_BAR]
+    LIBRARY_TAB = [f"APOLLO.LIBRARY_TAB.{x}" for x in LIBRARY_TAB]
+    return Validator(*MAIN, *PLAYBACK_BAR, *LIBRARY_TAB)
+
+
 def validate(settings: dynaconf.Dynaconf):
     """
     Validates loaded config
@@ -21,16 +52,7 @@ def validate(settings: dynaconf.Dynaconf):
     env = 'PRODUCTION'
     settings.validators.register(
         Validator('db_path', default = os.path.join(settings.project_root, 'apollo', 'db', 'apollo.db'), must_exist = True, env = env),
-        Validator(
-            'APOLLO.MAIN.CURRENT_TAB',
-            'APOLLO.PLAYBACK_BAR.STATE_PLAY',
-            'APOLLO.PLAYBACK_BAR.STATE_SHUFFLE',
-            'APOLLO.PLAYBACK_BAR.STATE_REPEAT',
-            'APOLLO.PLAYBACK_BAR.VOLUME_LEVEL',
-            'APOLLO.PLAYBACK_BAR.LOADED_TRACK',
-            'APOLLO.PLAYBACK_BAR.BYPASS_PROCESSOR',
-            'APOLLO.PLAYBACK_BAR.ELAPSED_TIME'
-        ),
+        _ui_states_validators(),
     )
 
     # REGISTER VALIDATORS FOR [QT_TESTING]
@@ -44,16 +66,7 @@ def validate(settings: dynaconf.Dynaconf):
         Validator('benchmark_formats', must_exist = True, env = env),  # NO DEFAULTS
         Validator('sox_path', must_exist = True, env = env, messages = {"must_exist_true": "Download and Set SOX_PATH sox from http://sox.sourceforge.net/"}),  # NO DEFAULTS
 
-        Validator(
-            'APOLLO.MAIN.CURRENT_TAB',
-            'APOLLO.PLAYBACK_BAR.STATE_PLAY',
-            'APOLLO.PLAYBACK_BAR.STATE_SHUFFLE',
-            'APOLLO.PLAYBACK_BAR.STATE_REPEAT',
-            'APOLLO.PLAYBACK_BAR.VOLUME_LEVEL',
-            'APOLLO.PLAYBACK_BAR.LOADED_TRACK',
-            'APOLLO.PLAYBACK_BAR.BYPASS_PROCESSOR',
-            'APOLLO.PLAYBACK_BAR.ELAPSED_TIME'
-        ),
+        _ui_states_validators(),
     )
 
     # REGISTER VALIDATORS FOR [TESTING]
