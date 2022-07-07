@@ -209,6 +209,7 @@ desktop.ini
 /docs/build/
 /exclude/
 /tests/coverage/
+/tests/tempdir/
 /tests/pytest_qt_apollo/output/
 /dist
 /apollo/assets/stylesheets/generated/

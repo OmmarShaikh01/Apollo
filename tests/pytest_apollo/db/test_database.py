@@ -14,6 +14,7 @@ from apollo.db.database import Connection, Database, LibraryManager, QueryBuildF
 from apollo.media.decoders import Stream
 from apollo.utils import get_logger
 from configs import settings
+from tests.pytest_apollo.conftest import clean_temp_dir, copy_mock_data
 from tests.testing_utils import IDGen
 
 cases = "tests.pytest_apollo.db.case_database"
@@ -55,43 +56,31 @@ def library_table_records_row():
 @pytest.fixture
 def get_database():
     db = Database()
-    return db
+    yield db
+    clean_temp_dir()
 
 
 @pytest.fixture
 def get_filled_database(get_database: Database, records: RecordSet):
     db = get_database
-    with db.connector as connection:
-        col = records.fields
-        db.execute(f'CREATE TABLE IF NOT EXISTS test_table ("{col[0]}" TEXT, "{col[1]}" TEXT, "{col[2]}" TEXT)',
-                   connection)
-        connection.transaction()
-        for row in records.records:
-            db.execute(f'INSERT INTO test_table VALUES ("{row[0]}", "{row[1]}", "{row[2]}") ', connection)
-        connection.commit()
-    return db
+    copy_mock_data()
+    yield db
+    clean_temp_dir()
 
 
 @pytest.fixture
 def get_library_manager():
     db = LibraryManager()
     yield db
-    with db.connector as connection:
-        db.execute("DROP TABLE IF EXISTS library", connection)
-        db.execute("DROP TABLE IF EXISTS queue", connection)
+    clean_temp_dir()
 
 
 @pytest.fixture
 def get_filled_library_manager(get_library_manager: Database, records_library_manager: RecordSet):
     db = get_library_manager
-    lib, queue = records_library_manager
-    with db.connector as connection:
-        db.batch_insert(lib, 'library', connection)
-        db.batch_insert(queue, 'queue', connection)
+    copy_mock_data()
     yield db
-    with db.connector as connection:
-        db.execute("DROP TABLE IF EXISTS library", connection)
-        db.execute("DROP TABLE IF EXISTS queue", connection)
+    clean_temp_dir()
 
 
 # TESTS ----------------------------------------------------------------------------------------------------------------
@@ -145,8 +134,7 @@ class Test_Database:
         """teardown any state that was previously setup with a call to
         setup_class.
         """
-        if os.path.isfile(CONFIG.db_path):
-            os.remove(CONFIG.db_path)
+        clean_temp_dir()
 
     def test_database_init(self):
         db = Database()
@@ -160,12 +148,12 @@ class Test_Database:
         if connection.isValid() and connection.isOpen():
             assert False
 
-    def test_query_exe_valid(self, get_filled_database: Database, records: RecordSet):
+    def test_query_exe_valid(self, get_filled_database: Database):
         db = get_filled_database
         with db.connector as connection:
-            query = QSqlQuery("SELECT * FROM test_table", connection)
-            assert db.execute(query, connection) == records
-            assert db.execute("SELECT * FROM test_table", connection) == records
+            query = QSqlQuery("SELECT * FROM library", connection)
+            assert db.execute(query, connection)
+            assert db.execute("SELECT * FROM library", connection)
 
     def test_query_exe_invalid(self, get_database: Database):
         db = get_database
@@ -247,7 +235,7 @@ class Test_LibraryManager:
             db.execute("DELETE FROM library", connection)
 
     @pytest.mark.skipif(not BENCHMARK, reason = f"Benchmarking: {BENCHMARK}")
-    def test_benchmark_scanning(self, get_library_manager: LibraryManager, library_table_records_row: list, mocker: pytest_mock.MockerFixture):
+    def test_benchmark_scanning(self, get_library_manager: LibraryManager, mocker: pytest_mock.MockerFixture):
         db = get_library_manager
         benchmark_runs, iterations = CONFIG.benchmark_runs + 100, 5
         file_path = [MEDIA_FOLDER / 'mp3' / "example_48000H_2C_TAGGED.mp3" for _ in range(benchmark_runs)]
@@ -259,7 +247,7 @@ class Test_LibraryManager:
             db.execute("DELETE FROM library", connection)
 
     @pytest.mark.skipif(not BENCHMARK, reason = f"Benchmarking: {BENCHMARK}")
-    def test_benchmark_scanning_dirs(self, get_library_manager: LibraryManager, library_table_records_row: list, mocker: pytest_mock.MockerFixture):
+    def test_benchmark_scanning_dirs(self, get_library_manager: LibraryManager, mocker: pytest_mock.MockerFixture):
         db = get_library_manager
         benchmark_runs, iterations = 100, 5
         file_path = [MEDIA_FOLDER / 'mp3' for _ in range(benchmark_runs)]

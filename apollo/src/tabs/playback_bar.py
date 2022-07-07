@@ -172,6 +172,7 @@ class Playback_Bar_Interactions(abc.ABC):
         self.ui.playback_button_volume_control.pressed.connect(lambda: (self.state_change_volume_level()))
         self.ui.playback_button_play_settings.pressed.connect(lambda: (self.ui.audiofx_tab_switch_button.click()))
         self.ui.playback_footer_track_rating.RatingChangedSignal.connect(lambda x: self.call_track_rating(x))
+        self.ui.queue_main_listview.doubleClicked.connect(lambda x: self.call_queue_list_item_Dclick(x))
 
     def setup_defaults(self):
         """
@@ -464,6 +465,9 @@ class Playback_Bar_Interactions(abc.ABC):
     @abc.abstractmethod
     def call_on_shutdown(self): ...
 
+    @abc.abstractmethod
+    def call_queue_list_item_Dclick(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):...
+
 
 class Playback_Bar_Controller:
     """
@@ -514,6 +518,7 @@ class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO:
     """
     Playback_Bar
     """
+
     def __init__(self, ui: Apollo) -> None:
         Playback_Bar_Interactions.__init__(self, ui)
         Playback_Bar_Controller.__init__(self)
@@ -526,6 +531,17 @@ class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO:
         self.call_on_shutdown()
         Playback_Bar_Interactions.save_states(self)
         Playback_Bar_Controller.save_states(self)
+
+    def call_queue_list_item_Dclick(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        LOGGER.debug(index)
+
+    def call_on_search(self):
+        if self.ui.main_tabs_stack_widget.currentIndex() == 1:
+            self.queue_model.set_filter(self.ui.search_lineEdit.text())
+
+    def call_on_clear_search(self):
+        if self.ui.main_tabs_stack_widget.currentIndex() == 1:
+            self.queue_model.clear_filter()
 
     def call_state_change_play(self, state: Optional[Union[STATE_PLAY, str]]):
         LOGGER.debug(state)

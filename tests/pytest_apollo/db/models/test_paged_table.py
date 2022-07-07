@@ -2,11 +2,10 @@ from typing import Any
 
 import pytest
 
-from apollo.db.database import LibraryManager, RecordSet
 from apollo.db.models import PagedTableModel
 from apollo.media import Stream
 from apollo.utils import get_logger
-from tests.testing_utils import LIBRARY_TABLE
+from tests.pytest_apollo.conftest import clean_temp_dir, copy_mock_data
 
 LOGGER = get_logger(__name__)
 
@@ -29,16 +28,10 @@ class MockPagedTableModel(PagedTableModel):
 
 @pytest.fixture
 def model_provider() -> MockPagedTableModel:
-    db = LibraryManager()
-    with db.connector as connection:
-        db.batch_insert(RecordSet(Stream.TAG_FRAMES, LIBRARY_TABLE), 'library', connection)
-        db.batch_insert(db.execute("SELECT FILEID FROM library", connection), 'queue', connection)
-
+    copy_mock_data()
     model = MockPagedTableModel('library')
     yield model
-    with db.connector as connection:
-        db.execute("DELETE FROM library", connection)
-        db.execute("DELETE FROM queue", connection)
+    clean_temp_dir()
 
 
 # noinspection PyProtectedMember
@@ -79,7 +72,7 @@ class Test_PagedTable:
         col_index = model.Columns.index('library.FILEPATH')
         model.sort(col_index)
         assert check_for_model_start_end(col_index, model, 'TESTING_FILEPATH_0', 'TESTING_FILEPATH_999')
-        model.set_filter(-1, 'TESTING_FILENAME_0')
+        model.set_filter('TESTING_FILENAME_0', -1)
         assert check_for_model_start_end(col_index, model, 'TESTING_FILEPATH_0', 'TESTING_FILEPATH_0')
 
         model.clear()
@@ -91,7 +84,7 @@ class Test_PagedTable:
         model.sort(col_index)
         model.group(col_index)
         assert check_for_model_start_end(col_index, model, 'TESTING_FILEPATH_0', 'TESTING_FILEPATH_999')
-        model.set_filter(-1, 'TESTING_FILENAME_0')
+        model.set_filter('TESTING_FILENAME_0', -1)
         assert check_for_model_start_end(col_index, model, 'TESTING_FILEPATH_0', 'TESTING_FILEPATH_0')
 
         model.clear()

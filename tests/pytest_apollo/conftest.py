@@ -21,35 +21,7 @@ from tests.testing_utils import get_qt_application
 
 # SESSION STARTUP
 LOGGER = get_logger(__name__)
-PROFILE = False # disable profiling when debugging
-
-
-def create_temp_dir():
-    path = settings.temp_dir
-    if os.path.isdir(path):
-        shutil.rmtree(path)
-    os.mkdir(path)
-    LOGGER.info(f"Created {path}")
-
-
-def remove_profile_stats():
-    path = PurePath(settings.project_root, 'tests', '.profiles')
-    if os.path.isdir(path):
-        shutil.rmtree(path)
-    os.mkdir(path)
-
-
-def remove_temp_dir():
-    path = settings.temp_dir
-    if os.path.isdir(path):
-        shutil.rmtree(path)
-        LOGGER.info(f"Deleted {path}")
-
-
-def remove_local_config():
-    path = PurePath(settings.project_root, 'configs', 'qt_testing_settings.local.toml')
-    if os.path.isdir(path):
-        os.remove(path)
+PROFILE = settings['PROFILE_RUNS']  # disable profiling when debugging
 
 
 def pytest_pyfunc_call(pyfuncitem: pytest.Function):
@@ -92,20 +64,57 @@ def pytest_pyfunc_call(pyfuncitem: pytest.Function):
     return True
 
 
+def create_temp_dir():
+    path = settings.temp_dir
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
+
+
+def remove_temp_dir():
+    path = settings.temp_dir
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+
+
+def clean_temp_dir():
+    remove_temp_dir()
+    create_temp_dir()
+
+
+def remove_profile_stats():
+    path = PurePath(settings.project_root, 'tests', '.profiles')
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
+
+
+def remove_local_config():
+    path = PurePath(settings.project_root, 'configs', 'testing_settings.local.toml')
+    if os.path.isdir(path):
+        os.remove(path)
+
+
+def copy_mock_data():
+    src = PurePath((settings['mock_data'])) / 'testing.db'
+    dest = PurePath(settings['db_path'])
+    shutil.copy(src, dest)
+
+
 @pytest.fixture(scope = 'package', autouse = True)
 def create_session():
-    t1 = time.time()
     settings.setenv("TESTING")
     settings.validators.validate()
     LOGGER.info(f"CONFIG {settings.current_env}: {settings.to_dict()}")
 
     remove_profile_stats()
     create_temp_dir()
+
     yield None
+
     remove_temp_dir()
     remove_local_config()
 
     LOGGER.info(f"CONFIG {settings.current_env}: {settings.to_dict()}")
     LOGGER.info(f"Application Exited with Error code: {get_qt_application().exit()}")
-    LOGGER.info(f"Completed {os.path.dirname(__file__)} in {round(time.time() - t1, 4)}sec")
 # END REGION

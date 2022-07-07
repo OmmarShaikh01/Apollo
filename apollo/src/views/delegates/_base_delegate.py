@@ -34,3 +34,7 @@ class CustomItemDelegate(QtWidgets.QStyledItemDelegate):
     def draw_widget(self, painter: QtGui.QPainter, option: QtWidgets.QStyleOptionViewItem,
                     index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]) -> None:
         raise NotImplementedError
+
+    def editorEvent(self, event: QtCore.QEvent, model: QtCore.QAbstractItemModel, option: QtWidgets.QStyleOptionViewItem,
+                    index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]) -> bool:
+        return False

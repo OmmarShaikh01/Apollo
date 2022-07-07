@@ -60,8 +60,10 @@ def validate(settings: dynaconf.Dynaconf):
     settings.validators.register(
         Validator('temp_dir', default = os.path.join(settings.project_root, 'tests', 'tempdir'), must_exist = True, env = env),
         Validator('assets_dir', default = os.path.join(settings.project_root, 'tests', 'assets'), must_exist = True, env = env),
+        Validator('mock_data', default = os.path.join(settings.project_root, 'tests', 'assets', 'mock_data'), must_exist = True, env = env),
         Validator('db_path', default = os.path.join(settings.project_root, 'tests', 'tempdir', 'testing.db'), must_exist = True, env = env),
 
+        Validator('profile_runs', default = False, must_exist = True, env = env),
         Validator('benchmark_runs', default = 1000, must_exist = True, env = env),
         Validator('benchmark_formats', must_exist = True, env = env),  # NO DEFAULTS
         Validator('sox_path', must_exist = True, env = env, messages = {"must_exist_true": "Download and Set SOX_PATH sox from http://sox.sourceforge.net/"}),  # NO DEFAULTS
@@ -74,8 +76,10 @@ def validate(settings: dynaconf.Dynaconf):
     settings.validators.register(
         Validator('temp_dir', default = os.path.join(settings.project_root, 'tests', 'tempdir'), must_exist = True, env = env),
         Validator('assets_dir', default = os.path.join(settings.project_root, 'tests', 'assets'), must_exist = True, env = env),
+        Validator('mock_data', default = os.path.join(settings.project_root, 'tests', 'assets', 'mock_data'), must_exist = True, env = env),
         Validator('db_path', default = os.path.join(settings.project_root, 'tests', 'tempdir', 'testing.db'), must_exist = True, env = env),
 
+        Validator('profile_runs', default = False, must_exist = True, env = env),
         Validator('benchmark_runs', default = 1000, must_exist = True, env = env),
         Validator('benchmark_formats', must_exist = True, env = env),  # NO DEFAULTS
         Validator('sox_path', must_exist = True, env = env, messages = {"must_exist_true": "Download and Set SOX_PATH sox from http://sox.sourceforge.net/"}),  # NO DEFAULTS

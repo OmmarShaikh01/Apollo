@@ -4,11 +4,11 @@ from typing import Any
 
 import pytest
 
-from apollo.db.database import LibraryManager, RecordSet
 from apollo.db.models.library import LibraryModel
 from apollo.media import Stream
 from apollo.utils import get_logger
 from configs import settings
+from tests.pytest_apollo.conftest import clean_temp_dir, copy_mock_data
 from tests.testing_utils import LIBRARY_TABLE, get_qt_application
 
 cases = "tests.pytest_apollo.models.case_models"
@@ -21,15 +21,10 @@ MODEL_ROWS, MODEL_COLUMNS = len(LIBRARY_TABLE), len(Stream.TAG_FRAMES)
 
 @pytest.fixture
 def model_provider() -> LibraryModel:
-    db = LibraryManager()
-    with db.connector as connection:
-        db.batch_insert(RecordSet(Stream.TAG_FRAMES, LIBRARY_TABLE), 'library', connection)
-        db.batch_insert(db.execute("SELECT FILEID FROM library", connection), 'queue', connection)
-
+    copy_mock_data()
     model = LibraryModel()
     yield model
-    with db.connector as connection:
-        db.execute("DELETE FROM library", connection)
+    clean_temp_dir()
 
 
 # noinspection PyProtectedMember

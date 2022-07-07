@@ -6,6 +6,7 @@ LOADED_THEME = "material_dark"
 BENCHMARK_FORMATS = false
 SUPPORTED_FORMATS = [ "aac", "aiff", "flac", "m4a", "mp3", "ogg", "opus", "wav",]
 ENABLED_FORMATS = [ "mp3",]
+PROFILE_RUNS = false
 SOX_PATH="@none "
 
 [QT_TESTING.SERVER]

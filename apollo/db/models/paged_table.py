@@ -293,7 +293,7 @@ class PagedTableModel(QtGui.QStandardItemModel):
         self.clear()
         self.fetch_data(self.FETCH_DATA_DOWN)
 
-    def set_filter(self, col_index: int, search_query: str):
+    def set_filter(self, search_query: str, col_index: int = -1):
         """
         Sets the filter to the model
 

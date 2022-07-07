@@ -28,7 +28,7 @@ class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
         """
         Sets up sub tabs and interactions
         """
-        self.lirary_tab = Library_Tab(self)
+        self.library_tab = Library_Tab(self)
         self.playback_bar = Playback_Bar(self)
 
     def setup_interactions(self):
@@ -39,6 +39,14 @@ class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
         self.now_playing_tab_switch_button.pressed.connect(lambda: (self.main_tabs_stack_widget.setCurrentIndex(1)))
         self.playlist_tab_switch_button.pressed.connect(lambda: (self.main_tabs_stack_widget.setCurrentIndex(2)))
         self.audiofx_tab_switch_button.pressed.connect(lambda: (self.main_tabs_stack_widget.setCurrentIndex(3)))
+        self.search_button.pressed.connect(lambda: (
+                self.call_on_clear_search() if self.search_lineEdit.text() == '' else self.call_on_search()
+            )
+        )
+        self.search_lineEdit.textChanged.connect(lambda x: (
+                self.call_on_clear_search() if x == '' else self.call_on_search()
+            )
+        )
 
     def setup_defaults(self):
         """
@@ -68,8 +76,16 @@ class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
         """
         self.save_states()
         self.playback_bar.shutdown()
-        self.lirary_tab.shutdown()
+        self.library_tab.shutdown()
         write_config()
 
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         self.shutdown()
+
+    def call_on_search(self):
+        self.playback_bar.call_on_search()
+        self.library_tab.call_on_search()
+
+    def call_on_clear_search(self):
+        self.playback_bar.call_on_clear_search()
+        self.library_tab.call_on_clear_search()

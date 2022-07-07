@@ -33,7 +33,6 @@ class Library_Tab_Interactions(abc.ABC):
         """
         Sets up interactions
         """
-        pass
 
     def setup_defaults(self):
         """
@@ -139,3 +138,11 @@ class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):  # TODO: Do
         Shutdown callback
         """
         LOGGER.debug('SHUTDOWN')
+
+    def call_on_search(self):
+        if self.ui.main_tabs_stack_widget.currentIndex() == 0:
+            self.library_model.set_filter(self.ui.search_lineEdit.text())
+
+    def call_on_clear_search(self):
+        if self.ui.main_tabs_stack_widget.currentIndex() == 0:
+            self.library_model.clear_filter()

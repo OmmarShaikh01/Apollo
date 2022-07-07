@@ -29,7 +29,7 @@ class LibraryModel(PagedTableModel):
         """
         self.clear_filter()
         col_index = self.Columns.index('library.ALBUM')
-        self.set_filter(col_index, query)
+        self.set_filter(query, col_index)
 
     def search_artist(self, query: str):
         """
@@ -40,7 +40,7 @@ class LibraryModel(PagedTableModel):
         """
         self.clear_filter()
         col_index = self.Columns.index('library.ARTIST')
-        self.set_filter(col_index, query)
+        self.set_filter(query, col_index)
 
     def search_title(self, query: str):
         """
@@ -51,7 +51,7 @@ class LibraryModel(PagedTableModel):
         """
         self.clear_filter()
         col_index = self.Columns.index('library.TITLE')
-        self.set_filter(col_index, query)
+        self.set_filter(query, col_index)
 
     def search_filename(self, query: str):
         """
@@ -62,4 +62,4 @@ class LibraryModel(PagedTableModel):
         """
         self.clear_filter()
         col_index = self.Columns.index('library.FILENAME')
-        self.set_filter(col_index, query)
+        self.set_filter(query, col_index)

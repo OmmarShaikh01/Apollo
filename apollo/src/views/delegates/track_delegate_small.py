@@ -33,6 +33,7 @@ class TrackDelegate_Small(CustomItemDelegate):
     def draw_widget(self, painter: QtGui.QPainter, option: QtWidgets.QStyleOptionViewItem,
                     index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]) -> None:
         pixmap = QtGui.QPixmap(option.rect.width(), option.rect.height())
+        painter.save()
 
         # Draws widget into delegate
         s_painter = QtGui.QPainter(pixmap)
@@ -66,10 +67,7 @@ class TrackDelegate_Small(CustomItemDelegate):
         painter.drawPixmap(option.rect.topLeft(), pixmap)
         s_painter.end()
 
-        painter.end()
-
-        # restarts the painter
-        painter.begin(painter.device())
+        painter.restore()
 
     def get_widget(self, option: QtWidgets.QStyleOptionViewItem,
                    index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
