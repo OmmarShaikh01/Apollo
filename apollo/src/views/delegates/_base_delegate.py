@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from assets import AppIcons, AppTheme
+from apollo.assets import AppIcons, AppTheme
 
 
 class CustomItemDelegate(QtWidgets.QStyledItemDelegate):
