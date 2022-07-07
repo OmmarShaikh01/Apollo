@@ -5,7 +5,7 @@ from pytestqt.qtbot import QtBot
 from apollo.src.app import Apollo
 from apollo.utils import get_logger
 from configs import settings
-from testing_utils import screenshot_widget
+from tests.testing_utils import screenshot_widget
 from tests.pytest_qt_apollo.conftest import clean_temp_dir, copy_mock_data, remove_local_config
 
 CONFIG = settings
