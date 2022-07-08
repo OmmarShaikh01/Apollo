@@ -13,89 +13,117 @@ nox.options.reuse_existing_virtualenvs = True
 
 
 def _upgrade_basic(session: nox.Session, install_dev: bool = True):
-    session.install("--upgrade", "pip", silent = SILENT)
-    session.install("--upgrade", "setuptools", silent = SILENT)
-    session.install("poetry", silent = SILENT)
-    session.run_always("poetry", "shell", silent = SILENT)
+    session.install("--upgrade", "pip", silent=SILENT)
+    session.install("--upgrade", "setuptools", silent=SILENT)
+    session.install("poetry", silent=SILENT)
+    session.run_always("poetry", "shell", silent=SILENT)
     cmd = ["poetry", "install"]
     if not install_dev:
         cmd.append("--no-dev")
-    session.run_always(*cmd, silent = SILENT)
+    session.run_always(*cmd, silent=SILENT)
 
 
-@nox.session(python = SUPPORTED_PYTHON)
+@nox.session(python=SUPPORTED_PYTHON)
 def testing_pytest_unit(session: nox.Session, skip_setup: bool = False):
     os.chdir(os.path.dirname(__file__))
     if not skip_setup:
         _upgrade_basic(session)
 
-    envvars = dict(DYNACONF_BENCHMARK_FORMATS = "false", DYNACONF_PROFILE_RUNS = "true")
+    envvars = dict(DYNACONF_BENCHMARK_FORMATS="false", DYNACONF_PROFILE_RUNS="true")
     for test_directory in ["pytest_apollo"]:
         test_directory = os.path.join(os.path.dirname(__file__), "tests", test_directory)
-        session.run("pytest", "--show-capture=no", "-c", "./pytest.ini", test_directory, env = envvars)
+        session.run(
+            "pytest", "--show-capture=no", "-c", "./pytest.ini", test_directory, env=envvars
+        )
 
 
-@nox.session(python = SUPPORTED_PYTHON)
+@nox.session(python=SUPPORTED_PYTHON)
 def testing_pytest_qt(session: nox.Session, skip_setup: bool = False):
     os.chdir(os.path.dirname(__file__))
     if not skip_setup:
         _upgrade_basic(session)
 
-    envvars = dict(DYNACONF_BENCHMARK_FORMATS = "false", DYNACONF_PROFILE_RUNS = "true")
+    envvars = dict(DYNACONF_BENCHMARK_FORMATS="false", DYNACONF_PROFILE_RUNS="true")
     for test_directory in ["pytest_qt_apollo"]:
         test_directory = os.path.join(os.path.dirname(__file__), "tests", test_directory)
-        session.run("pytest", "--show-capture=no", "-c", "./pytest.ini", test_directory, env = envvars)
+        session.run(
+            "pytest", "--show-capture=no", "-c", "./pytest.ini", test_directory, env=envvars
+        )
 
 
-@nox.session(python = SUPPORTED_PYTHON)
+@nox.session(python=SUPPORTED_PYTHON)
 def testing_pytest_global(session: nox.Session):
     _upgrade_basic(session)
     testing_pytest_unit(session, True)
     testing_pytest_qt(session, True)
 
 
-@nox.session(python = SUPPORTED_PYTHON)
+@nox.session(python=SUPPORTED_PYTHON)
 def testing_coverage(session: nox.Session):
     _upgrade_basic(session)
     testing_pytest_unit(session, True)
     testing_pytest_qt(session, True)
 
 
-@nox.session(python = SUPPORTED_PYTHON)
+@nox.session(python=SUPPORTED_PYTHON)
 def testing_benchmarked(session: nox.Session):
     os.chdir(os.path.dirname(__file__))
     _upgrade_basic(session)
 
-    envvars = dict(DYNACONF_BENCHMARK_FORMATS = "true", DYNACONF_PROFILE_RUNS = "true")
+    envvars = dict(DYNACONF_BENCHMARK_FORMATS="true", DYNACONF_PROFILE_RUNS="true")
     for test_directory in ["pytest_apollo", "pytest_qt_apollo"]:
         test_directory = os.path.join(os.path.dirname(__file__), "tests", test_directory)
-        CMD = ["pytest", "--show-capture", "no", "--cov", "./apollo", "--cov-config", ".coveragerc", "-c", "pytest.ini",
-            "--cov-report", "html", ]
-        session.run(*CMD, test_directory, env = envvars)
+        CMD = [
+            "pytest",
+            "--show-capture",
+            "no",
+            "--cov",
+            "./apollo",
+            "--cov-config",
+            ".coveragerc",
+            "-c",
+            "pytest.ini",
+            "--cov-report",
+            "html",
+        ]
+        session.run(*CMD, test_directory, env=envvars)
 
 
-@nox.session(python = SUPPORTED_PYTHON)
+@nox.session(python=SUPPORTED_PYTHON)
 def build_documentation_sphinx(session: nox.Session):
     os.chdir(os.path.dirname(__file__))
     _upgrade_basic(session)
     # session.run('sphinx-autogen.exe', '-o', './docs/source/_autosummary', './docs/source/index.rst', silent = SILENT)
-    session.run("sphinx-apidoc.exe", "-f", "-e", "-M", "-o", "./docs/source/_modules", "./apollo", silent = SILENT, )
-    session.run("sphinx-build.exe", "-b", "html", "./docs/source", "./docs/build", silent = SILENT)
+    session.run(
+        "sphinx-apidoc.exe",
+        "-f",
+        "-e",
+        "-M",
+        "-o",
+        "./docs/source/_modules",
+        "./apollo",
+        silent=SILENT,
+    )
+    session.run("sphinx-build.exe", "-b", "html", "./docs/source", "./docs/build", silent=SILENT)
 
 
-@nox.session(python = SUPPORTED_PYTHON)
+@nox.session(python=SUPPORTED_PYTHON)
 def production_build(session: nox.Session):
     os.chdir(os.path.dirname(__file__))
     _upgrade_basic(session)
     # Builds Apollo
     sys.path.insert(0, os.path.dirname(__file__))
-    session.run("python.exe", "-c", "from apollo.utils import compile_all; compile_all()",
-            env = dict(ENV_FOR_DYNACONF = "TESTING"), )
+    session.run(
+        "python.exe",
+        "-c",
+        "from apollo.utils import compile_all; compile_all()",
+        env=dict(ENV_FOR_DYNACONF="TESTING"),
+    )
     sys.path.pop(0)
-    session.run("poetry", "build", "-f", "sdist", silent = SILENT)
+    session.run("poetry", "build", "-f", "sdist", silent=SILENT)
 
 
-@nox.session(python = SUPPORTED_PYTHON)
+@nox.session(python=SUPPORTED_PYTHON)
 def production_launch(session: nox.Session):
     os.chdir(os.path.dirname(__file__))
     toml = PurePath(os.path.dirname(__file__), "pyproject.toml")
@@ -104,7 +132,7 @@ def production_launch(session: nox.Session):
     os.chdir(os.path.join(os.path.dirname(__file__), "dist"))
     file = os.listdir(os.getcwd())[0]
     pycmd = f"import tarfile; file = tarfile.open('{file}'); file.extractall('.'); file.close()"
-    session.run(*["python", "-c", pycmd], silent = SILENT)
+    session.run(*["python", "-c", pycmd], silent=SILENT)
     os.chdir(file.replace(".tar.gz", ""))
 
     # Executes Apollo
@@ -113,9 +141,9 @@ def production_launch(session: nox.Session):
             parsed = tomli.load(file).get("tool").get("poetry").get("dependencies")
             del parsed["python"]
             packages = list(f"{k}{v}".replace("^", "==") for k, v in parsed.items())
-        session.run("pip", "install", *packages, silent = SILENT)
+        session.run("pip", "install", *packages, silent=SILENT)
 
-        session.run(*["python", "-m", "apollo"], silent = SILENT)
+        session.run(*["python", "-m", "apollo"], silent=SILENT)
     finally:
         # Cleanup
         os.chdir(os.path.dirname(__file__))

@@ -48,7 +48,6 @@ black = "^22.6.0"
 pylint = "^2.14.4"
 
 [tool.black]
-verbose = 1
 --check = "no"
 diff = "no"
 color = true

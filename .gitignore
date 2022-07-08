@@ -217,5 +217,6 @@ desktop.ini
 /apollo/assets/app_themes/__loaded_theme__/
 /logs
 /tests/.profiles/
+/tests/linter_output.txt
 *.pymon
 *.profile
