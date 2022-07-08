@@ -44,17 +44,15 @@ def pytest_pyfunc_call(pyfuncitem: pytest.Function):
         val = prof(testfunction)(**testargs)
         cprof.disable()
 
-        path = PurePath(
-            settings.project_root, "tests", ".profiles", f"{settings.current_env}.memprofile"
-        )
-        with open(path, "a") as stream:
+        profile_root = PurePath(settings.project_root, "tests", ".profiles")
+        if not os.path.exists(profile_root):
+            os.mkdir(profile_root)
+
+        with open((profile_root / f"{settings.current_env}.memprofile"), "a") as stream:
             stream.write(f"[{time.asctime(time.localtime())}] {mname}::{name}\n")
             memory_profiler.show_results(prof, stream=stream, precision=2)
 
-        path = PurePath(
-            settings.project_root, "tests", ".profiles", f"{settings.current_env}.profile"
-        )
-        with open(path, "a") as stream:
+        with open((profile_root / f"{settings.current_env}.profile"), "a") as stream:
             stream.write(f"[{time.asctime(time.localtime())}] {mname}::{name}\n")
             stats = pstats.Stats(cprof, stream=stream)
             stats.strip_dirs().sort_stats("tottime").print_stats()
@@ -86,13 +84,6 @@ def clean_temp_dir():
     create_temp_dir()
 
 
-def remove_profile_stats():
-    path = PurePath(settings.project_root, "tests", ".profiles")
-    if os.path.isdir(path):
-        shutil.rmtree(path)
-    os.mkdir(path)
-
-
 def remove_local_config():
     path = PurePath(settings.project_root, "configs", "testing_settings.local.toml")
     if os.path.isdir(path):
@@ -105,13 +96,21 @@ def copy_mock_data():
     shutil.copy(src, dest)
 
 
+def clean_profile():
+    profile_root = PurePath(settings.project_root, "tests", ".profiles")
+    if os.path.exists(profile_root / f"{settings.current_env}.memprofile"):
+        os.remove(profile_root / f"{settings.current_env}.memprofile")
+    if os.path.exists(profile_root / f"{settings.current_env}.profile"):
+        os.remove(profile_root / f"{settings.current_env}.profile")
+
+
 @pytest.fixture(scope="package", autouse=True)
 def create_session():
     settings.setenv("TESTING")
     settings.validators.validate()
     LOGGER.info(f"CONFIG {settings.current_env}: {settings.to_dict()}")
 
-    remove_profile_stats()
+    clean_profile()
     create_temp_dir()
 
     yield None

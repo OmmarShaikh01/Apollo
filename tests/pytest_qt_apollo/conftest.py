@@ -94,17 +94,15 @@ def pytest_pyfunc_call(pyfuncitem: pytest.Function):
         val = prof(testfunction)(**testargs)
         cprof.disable()
 
-        path = PurePath(
-            settings.project_root, "tests", ".profiles", f"{settings.current_env}.memprofile"
-        )
-        with open(path, "a") as stream:
+        profile_root = PurePath(settings.project_root, "tests", ".profiles")
+        if not os.path.exists(profile_root):
+            os.mkdir(profile_root)
+
+        with open((profile_root / f"{settings.current_env}.memprofile"), "a") as stream:
             stream.write(f"[{time.asctime(time.localtime())}] {mname}::{name}\n")
             memory_profiler.show_results(prof, stream=stream, precision=2)
 
-        path = PurePath(
-            settings.project_root, "tests", ".profiles", f"{settings.current_env}.profile"
-        )
-        with open(path, "a") as stream:
+        with open((profile_root / f"{settings.current_env}.profile"), "a") as stream:
             stream.write(f"[{time.asctime(time.localtime())}] {mname}::{name}\n")
             stats = pstats.Stats(cprof, stream=stream)
             stats.strip_dirs().sort_stats("tottime").print_stats()
@@ -124,12 +122,21 @@ def clean_output():
         shutil.rmtree(path)
 
 
+def clean_profile():
+    profile_root = PurePath(settings.project_root, "tests", ".profiles")
+    if os.path.exists(profile_root / f"{settings.current_env}.memprofile"):
+        os.remove(profile_root / f"{settings.current_env}.memprofile")
+    if os.path.exists(profile_root / f"{settings.current_env}.profile"):
+        os.remove(profile_root / f"{settings.current_env}.profile")
+
+
 @pytest.fixture(scope="package", autouse=True)
 def create_session():
     settings.setenv("QT_TESTING")
     settings.validators.validate()
     LOGGER.info(f"CONFIG {settings.current_env}: {settings.to_dict()}")
 
+    clean_profile()
     clean_output()
     create_temp_dir()
     load_theme(get_qt_application(), settings.loaded_theme, recompile=settings.recompile_theme)
