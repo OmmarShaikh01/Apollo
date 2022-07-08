@@ -25,10 +25,18 @@ jobs:
         pip install --user poetry
         poetry shell
         poetry self update
-        poetry install 
+        poetry install
     - name: Test with pytest
       run: |
-        .\.venv\Scripts\nox.exe --session unit_testing_apollo
+        .\.venv\Scripts\nox.exe --session testing_pytest_unit
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: pytest-qt-artifacts
+        path: |
+          .\logs\apollo_testing.log
+          .\tests\.profiles\TESTING.profile
+          .\tests\.profiles\TESTING.memprofile
 
   pytest-apollo-qt:
     runs-on: windows-latest
@@ -48,4 +56,65 @@ jobs:
           poetry install
       - name: Test with pytest
         run: |
-          .\.venv\Scripts\nox.exe --session production_testing_apollo
+          .\.venv\Scripts\nox.exe --session testing_pytest_qt    
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pytest-qt-artifacts
+          path: |
+            .\logs\apollo_qt_testing.log
+            .\tests\.profiles\QT_TESTING.profile
+            .\tests\.profiles\QT_TESTING.memprofile
+
+  apollo-coverage:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --user poetry
+          poetry shell
+          poetry self update
+          poetry install
+      - name: Test with pytest
+        run: |
+          .\.venv\Scripts\nox.exe --session testing_pytest_qt    
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pytest-qt-artifacts
+          path: |            
+            .\tests\coverage            
+
+  apollo-lint:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --user poetry
+          poetry shell
+          poetry self update
+          poetry install
+      - name: Test with pylint
+        run: |
+          .\.venv\Scripts\black.exe .
+          .\.venv\Scripts\pylint.exe . 
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pylint-artifacts
+          path: |
+            .\tests\linter_output.txt

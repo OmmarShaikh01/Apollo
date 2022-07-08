@@ -364,10 +364,3 @@ def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool]
             return True
 
     loader(loaded_theme)
-
-
-if __name__ == "__main__":
-    for name in os.listdir(ResourceGenerator.THEMES):
-        name, ext = os.path.splitext(name)
-        _, name = os.path.split(name)
-        generate_resource(str(name), True)

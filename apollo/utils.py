@@ -138,6 +138,19 @@ def threadit(method: Callable) -> Callable:
     return exe
 
 
+def compile_all():
+    """
+    Compiles all stored themes into zip file
+    """
+    from apollo.assets import generate_resource
+    from apollo.assets.stylesheets import ResourceGenerator
+
+    for name in os.listdir(ResourceGenerator.THEMES):
+        name, ext = os.path.splitext(name)
+        _, name = os.path.split(name)
+        generate_resource(str(name), True)
+
+
 class ApolloSignal:
     """Signals for attaching slots"""
 
