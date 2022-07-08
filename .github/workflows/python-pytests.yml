@@ -34,7 +34,7 @@ jobs:
 
     - uses: actions/upload-artifact@v3
       with:
-        name: pytest-qt-artifacts
+        name: pytest-artifacts
         path: |
           .\logs\apollo_testing.log
           .\tests\.profiles\TESTING.profile
