@@ -21,6 +21,7 @@ def _upgrade_basic(session: nox.Session, install_dev: bool = True):
     if not install_dev:
         cmd.append("--no-dev")
     session.run_always(*cmd, silent=SILENT)
+    session.run_always("black", ".", silent=SILENT)
 
 
 @nox.session(python=SUPPORTED_PYTHON)
@@ -30,11 +31,8 @@ def testing_pytest_unit(session: nox.Session, skip_setup: bool = False):
         _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS="false", DYNACONF_PROFILE_RUNS="true")
-    for test_directory in ["pytest_apollo"]:
-        test_directory = os.path.join(os.path.dirname(__file__), "tests", test_directory)
-        session.run(
-            "pytest", "--show-capture=no", "-c", "./pytest.ini", test_directory, env=envvars
-        )
+    test_directory = os.path.join(os.path.dirname(__file__), "tests", "pytest_apollo")
+    session.run("pytest", "--show-capture=no", "-c", "./pytest.ini", test_directory, env=envvars)
 
 
 @nox.session(python=SUPPORTED_PYTHON)
@@ -44,11 +42,8 @@ def testing_pytest_qt(session: nox.Session, skip_setup: bool = False):
         _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS="false", DYNACONF_PROFILE_RUNS="true")
-    for test_directory in ["pytest_qt_apollo"]:
-        test_directory = os.path.join(os.path.dirname(__file__), "tests", test_directory)
-        session.run(
-            "pytest", "--show-capture=no", "-c", "./pytest.ini", test_directory, env=envvars
-        )
+    test_directory = os.path.join(os.path.dirname(__file__), "tests", "pytest_qt_apollo")
+    session.run("pytest", "--show-capture=no", "-c", "./pytest.ini", test_directory, env=envvars)
 
 
 @nox.session(python=SUPPORTED_PYTHON)
@@ -60,9 +55,26 @@ def testing_pytest_global(session: nox.Session):
 
 @nox.session(python=SUPPORTED_PYTHON)
 def testing_coverage(session: nox.Session):
+    os.chdir(os.path.dirname(__file__))
     _upgrade_basic(session)
-    testing_pytest_unit(session, True)
-    testing_pytest_qt(session, True)
+
+    envvars = dict(DYNACONF_BENCHMARK_FORMATS="false", DYNACONF_PROFILE_RUNS="false")
+    CMD = [
+        "pytest",
+        "--show-capture",
+        "no",
+        "--cov",
+        "./apollo",
+        "--cov-config",
+        ".coveragerc",
+        "-c",
+        "pytest.ini",
+        "--cov-report",
+        "html",
+        "./tests/pytest_apollo",
+        "./tests/pytest_qt_apollo",
+    ]
+    session.run(*CMD, env=envvars)
 
 
 @nox.session(python=SUPPORTED_PYTHON)
@@ -71,29 +83,23 @@ def testing_benchmarked(session: nox.Session):
     _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS="true", DYNACONF_PROFILE_RUNS="true")
-    for test_directory in ["pytest_apollo", "pytest_qt_apollo"]:
-        test_directory = os.path.join(os.path.dirname(__file__), "tests", test_directory)
-        CMD = [
-            "pytest",
-            "--show-capture",
-            "no",
-            "--cov",
-            "./apollo",
-            "--cov-config",
-            ".coveragerc",
-            "-c",
-            "pytest.ini",
-            "--cov-report",
-            "html",
-        ]
-        session.run(*CMD, test_directory, env=envvars)
+    CMD = [
+        "pytest",
+        "--show-capture",
+        "no",
+        "-c",
+        "pytest.ini",
+        "./tests/pytest_apollo",
+        "./tests/pytest_qt_apollo",
+    ]
+    session.run(*CMD, env=envvars)
 
 
 @nox.session(python=SUPPORTED_PYTHON)
 def build_documentation_sphinx(session: nox.Session):
     os.chdir(os.path.dirname(__file__))
     _upgrade_basic(session)
-    # session.run('sphinx-autogen.exe', '-o', './docs/source/_autosummary', './docs/source/index.rst', silent = SILENT)
+
     session.run(
         "sphinx-apidoc.exe",
         "-f",
