@@ -19,18 +19,27 @@ cases = "tests.pytest_apollo.media.decoders.case_decoder"
 
 
 class Test_Mediafile_MP3:
-
-    @pytest.mark.skipif(not BENCHMARK, reason = f"Benchmarking: {BENCHMARK}")
-    @pytest_cases.parametrize_with_cases('file_path', cases = cases, prefix = 'files_mp3', ids = IDGen)
+    @pytest.mark.skipif(not BENCHMARK, reason=f"Benchmarking: {BENCHMARK}")
+    @pytest_cases.parametrize_with_cases("file_path", cases=cases, prefix="files_mp3", ids=IDGen)
     def test_benchmark_load_times(self, file_path: PurePath):
-        LOGGER.info("RUNTIME: {run}".format(run = timeit.timeit(lambda: Mediafile(file_path), number = CONFIG.benchmark_runs)))
+        LOGGER.info(
+            "RUNTIME: {run}".format(
+                run=timeit.timeit(lambda: Mediafile(file_path), number=CONFIG.benchmark_runs)
+            )
+        )
 
-    @pytest.mark.skipif(not BENCHMARK, reason = f"Benchmarking: {BENCHMARK}")
-    @pytest_cases.parametrize_with_cases('file_path', cases = cases, prefix = 'files_mp3', ids = IDGen)
+    @pytest.mark.skipif(not BENCHMARK, reason=f"Benchmarking: {BENCHMARK}")
+    @pytest_cases.parametrize_with_cases("file_path", cases=cases, prefix="files_mp3", ids=IDGen)
     def test_benchmark_full_load_times(self, file_path: PurePath):
-        LOGGER.info("RUNTIME: {run}".format(run = timeit.timeit(lambda: Mediafile(file_path).SynthTags, number = CONFIG.benchmark_runs)))
+        LOGGER.info(
+            "RUNTIME: {run}".format(
+                run=timeit.timeit(
+                    lambda: Mediafile(file_path).SynthTags, number=CONFIG.benchmark_runs
+                )
+            )
+        )
 
-    @pytest_cases.parametrize_with_cases('file_path', cases = cases, prefix = 'files_mp3', ids = IDGen)
+    @pytest_cases.parametrize_with_cases("file_path", cases=cases, prefix="files_mp3", ids=IDGen)
     def test_loading_files(self, file_path: PurePath):
         media = Mediafile(file_path)
         if file_path.match("example_48000H_2C_TAGGED.mp3"):
@@ -38,7 +47,7 @@ class Test_Mediafile_MP3:
         else:
             assert len(media.Tags) == 0
 
-    @pytest_cases.parametrize_with_cases('file_path', cases = cases, prefix = 'files_mp3', ids = IDGen)
+    @pytest_cases.parametrize_with_cases("file_path", cases=cases, prefix="files_mp3", ids=IDGen)
     def test_loading_decoders(self, file_path: PurePath):
         def validate_frame(_frame: av.AudioFrame):
             LOGGER.debug(_frame)
@@ -68,10 +77,10 @@ class Test_Mediafile_MP3:
                 frame = media.get_frame()
                 count += frame.samples
                 continue
-        assert (4 == int(count / CONFIG.server.rate))
+        assert 4 == int(count / CONFIG.server.rate)
         LOGGER.debug(f"END FRAME: {(frame, int(count / CONFIG.server.rate))}")
 
-    @pytest_cases.parametrize_with_cases('file_path', cases = cases, prefix = 'files_mp3', ids = IDGen)
+    @pytest_cases.parametrize_with_cases("file_path", cases=cases, prefix="files_mp3", ids=IDGen)
     def test_loading_tags(self, file_path):
         media = Mediafile(file_path)
         if not file_path.match("example_48000H_2C_TAGGED.mp3"):

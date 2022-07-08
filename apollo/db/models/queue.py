@@ -5,10 +5,10 @@ from apollo.media import Stream
 
 class QueueModel(PagedTableModel):
     CURRENT_FILE_ID = None
-    PRIVATE_FIELDS = ['PLAYORDER', 'FILEID', 'FILEPATH', 'FILENAME', 'FILESIZE', 'FILEEXT']
+    PRIVATE_FIELDS = ["PLAYORDER", "FILEID", "FILEPATH", "FILENAME", "FILESIZE", "FILEEXT"]
 
     def __init__(self) -> None:
-        super().__init__('queue')
+        super().__init__("queue")
         self._db = Database()
 
     @property
@@ -18,7 +18,7 @@ class QueueModel(PagedTableModel):
 
     @property
     def Columns(self) -> list:
-        cols = ['queue.PLAYORDER', *[f'library.{i}' for i in Stream.TAG_FRAMES]]
+        cols = ["queue.PLAYORDER", *[f"library.{i}" for i in Stream.TAG_FRAMES]]
         return cols
 
     def search_album(self, query: str):
@@ -29,7 +29,7 @@ class QueueModel(PagedTableModel):
             query (str): term to search for
         """
         self.clear_filter()
-        col_index = self.Columns.index('library.ALBUM')
+        col_index = self.Columns.index("library.ALBUM")
         self.set_filter(query, col_index)
 
     def search_artist(self, query: str):
@@ -40,7 +40,7 @@ class QueueModel(PagedTableModel):
             query (str): term to search for
         """
         self.clear_filter()
-        col_index = self.Columns.index('library.ARTIST')
+        col_index = self.Columns.index("library.ARTIST")
         self.set_filter(query, col_index)
 
     def search_title(self, query: str):
@@ -51,7 +51,7 @@ class QueueModel(PagedTableModel):
             query (str): term to search for
         """
         self.clear_filter()
-        col_index = self.Columns.index('library.TITLE')
+        col_index = self.Columns.index("library.TITLE")
         self.set_filter(query, col_index)
 
     def search_filename(self, query: str):
@@ -62,5 +62,5 @@ class QueueModel(PagedTableModel):
             query (str): term to search for
         """
         self.clear_filter()
-        col_index = self.Columns.index('library.FILENAME')
+        col_index = self.Columns.index("library.FILENAME")
         self.set_filter(query, col_index)

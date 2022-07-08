@@ -10,7 +10,6 @@ LOGGER = get_logger(__name__)
 
 
 class Setup_Apollo:
-
     def setup_class(self):
         copy_mock_data()
         APOLLO = Apollo()
@@ -27,6 +26,5 @@ class Setup_Apollo:
 
 
 class Test_Playback_Bar(Setup_Apollo):
-
     def test_1(self):
         pass

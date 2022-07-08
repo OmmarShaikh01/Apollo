@@ -7,7 +7,6 @@ from apollo.db.models.queue import QueueModel
 
 
 class _Provider:
-
     def __init__(self) -> None:
         super().__init__()
 

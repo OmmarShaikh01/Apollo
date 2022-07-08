@@ -3,7 +3,7 @@ import math
 import os
 import sys
 import traceback
-from typing import (Optional, Union)
+from typing import Optional, Union
 
 import av
 import numpy as np
@@ -18,12 +18,19 @@ class BufferTable:
     """
     Circular Audio Buffer to put and read audio samples.
     """
+
     EOF_SIGNAL = ApolloSignal()
     SOF_SIGNAL = ApolloSignal()
     STOP_SIGNAL = ApolloSignal()
     PLAY_SIGNAL = ApolloSignal()
 
-    def __init__(self, time: float, path: Optional[str] = None, chnls: Optional[int] = 2, sr: Optional[int] = 44100):
+    def __init__(
+        self,
+        time: float,
+        path: Optional[str] = None,
+        chnls: Optional[int] = 2,
+        sr: Optional[int] = 44100,
+    ):
         """
         Constructor
 
@@ -39,10 +46,12 @@ class BufferTable:
         self.path = path
 
         self.buffer_sample_length = int(self.sample_rate) * self.buffer_time
-        self.table = pyo.DataTable(self.buffer_sample_length, chnls = self.chnls)
+        self.table = pyo.DataTable(self.buffer_sample_length, chnls=self.chnls)
         self.shared_buffer = self.getBuffer()
-        self.indexes = pyo.Linseg([(0, 0), (self.buffer_time * 1, self.buffer_sample_length)], loop = True)
-        self.reader = pyo.TableIndex(table = self.table, index = self.indexes)
+        self.indexes = pyo.Linseg(
+            [(0, 0), (self.buffer_time * 1, self.buffer_sample_length)], loop=True
+        )
+        self.reader = pyo.TableIndex(table=self.table, index=self.indexes)
 
         if path is not None:
             self.read(path)
@@ -67,8 +76,10 @@ class BufferTable:
         """
         self.media = Mediafile(path)
         self.audio_decoder = self.media.Decoder
-        self.time_length = round(math.ceil(float(self.media.Tags['length'])))
-        self.buffer_virtual_length = round(int(self.media.Tags['samplerate']) * float(self.media.Tags['length']))
+        self.time_length = round(math.ceil(float(self.media.Tags["length"])))
+        self.buffer_virtual_length = round(
+            int(self.media.Tags["samplerate"]) * float(self.media.Tags["length"])
+        )
 
         # Resets all flags
         self.frame_pos = 0
@@ -80,9 +91,11 @@ class BufferTable:
         self.SOF_SIGNAL.emit(self.media)
 
     def getBuffer(self) -> list[np.array]:
-        """ Initializes the shared buffer to write to"""
+        """Initializes the shared buffer to write to"""
         # noinspection PyProtectedMember
-        return [np.asarray(self.table._base_objs[chnl].getTableStream()) for chnl in range(self.chnls)]
+        return [
+            np.asarray(self.table._base_objs[chnl].getTableStream()) for chnl in range(self.chnls)
+        ]
 
     def getSamples(self) -> Union[np.array, None]:
         """
@@ -121,10 +134,10 @@ class BufferTable:
             for chan in range(self.table.chnls):
                 # converts mono audio into stereo channel
                 if self.table.chnls == 1:
-                    self.shared_buffer[chan].put(rng, samples[0], 'wrap')
+                    self.shared_buffer[chan].put(rng, samples[0], "wrap")
                 # stereo audio
                 elif self.table.chnls == 2:
-                    self.shared_buffer[chan].put(rng, samples[chan], 'wrap')
+                    self.shared_buffer[chan].put(rng, samples[chan], "wrap")
 
             # updates the head position
             if (self.write_pos + sample_len) < self.buffer_sample_length:
@@ -144,7 +157,7 @@ class BufferTable:
         if self.isPlaying:
             space = self.sample_rate / 10
             # initialize and move ahead the initial samples
-            if not hasattr(self, 'write_pos'):
+            if not hasattr(self, "write_pos"):
                 self.write_pos = 0
                 self.writeSamples(self.getSamples())
                 if not self.writeSamples(self.getSamples()):
@@ -157,7 +170,8 @@ class BufferTable:
                 if not self.writeSamples(self.getSamples()):
                     self.stop()
             elif (self.write_pos <= self.read_pos) and (
-                    self.buffer_sample_length - (self.read_pos - self.write_pos) < space):
+                self.buffer_sample_length - (self.read_pos - self.write_pos) < space
+            ):
                 if not self.writeSamples(self.getSamples()):
                     self.stop()
             else:
@@ -214,7 +228,7 @@ class BufferTable:
         Returns:
             float: Time till EOF
         """
-        if not hasattr(self, 'time_length'):
+        if not hasattr(self, "time_length"):
             return 0
         else:
             return self.time_length - self.map_index_totime(self.actual_pos, 44100)
@@ -226,7 +240,7 @@ class BufferTable:
         Returns:
             float: current time of the writer head
         """
-        if not hasattr(self, 'write_pos'):
+        if not hasattr(self, "write_pos"):
             return 0
         else:
             return self.map_index_totime(self.actual_pos)
@@ -278,6 +292,7 @@ class DynamicProcessingChain:
     """
     Dynamic Processing chain that handles all the DSP based functions.
     """
+
     FADED = ApolloSignal()
     STREAM_ABOUT_TOEND = ApolloSignal()
     STREAM_ELAPSEDTIME = ApolloSignal()
@@ -294,12 +309,16 @@ class DynamicProcessingChain:
 
         # corresponding fader to notify end of a fading env
         self.fader = pyo.Linseg([(0, 0), (self.env_time + 0.5, 1)])
-        self.fader_callback = pyo.TrigFunc(pyo.Thresh(self.fader, 0.99), (lambda: self.FADED.emit()))
+        self.fader_callback = pyo.TrigFunc(
+            pyo.Thresh(self.fader, 0.99), (lambda: self.FADED.emit())
+        )
 
         # top level processing chain
         self.input_stream_0, self.input_stream_1 = BufferTable(10), BufferTable(10)
-        self.main_input = pyo.Selector([self.input_stream_0.reader, self.input_stream_1.reader], self.voice_switch)
-        self.main_bypass = pyo.Selector([pyo.Sine(freq = 0), self.main_input], 1)
+        self.main_input = pyo.Selector(
+            [self.input_stream_0.reader, self.input_stream_1.reader], self.voice_switch
+        )
+        self.main_bypass = pyo.Selector([pyo.Sine(freq=0), self.main_input], 1)
         self.main_output = pyo.Clip(self.main_bypass).out()
 
     def set_fade_env(self, time: float):
@@ -423,10 +442,10 @@ class DynamicProcessingChain:
             return self.input_stream_1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     player = pyo.Server().boot().start()
     chain = DynamicProcessingChain()
     chain.main_output.out()
     player.setCallback(chain.recurring_server_callback)
-    chain.load_track(r'D:\Music\03. Crown.mp3')
+    chain.load_track(r"D:\Music\03. Crown.mp3")
     player.gui(locals())

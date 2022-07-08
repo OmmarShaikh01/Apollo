@@ -13,7 +13,6 @@ LOGGER = get_logger(__name__)
 
 
 class Setup_Apollo:
-
     def setup_class(self):
         copy_mock_data()
         APOLLO = Apollo()
@@ -30,10 +29,9 @@ class Setup_Apollo:
 
 
 class Test_App(Setup_Apollo):
-
     def test_startup(self, qtbot: QtBot):
-        with qtbot.waitActive(self._application_apollo, timeout = 5000):
-            screenshot_widget(self._application_apollo, 'Test_App.test_startup')
+        with qtbot.waitActive(self._application_apollo, timeout=5000):
+            screenshot_widget(self._application_apollo, "Test_App.test_startup")
             assert self._application_apollo.isVisible()
 
     def test_startup_defaults(self, qtbot: QtBot):
@@ -41,7 +39,7 @@ class Test_App(Setup_Apollo):
         assert self._application_apollo.main_tabs_stack_widget.currentIndex() == 0
 
     def test_startup_interactions(self, qtbot: QtBot, mocker: MockerFixture):
-        spy = mocker.spy(self._application_apollo.main_tabs_stack_widget, 'setCurrentIndex')
+        spy = mocker.spy(self._application_apollo.main_tabs_stack_widget, "setCurrentIndex")
         self._application_apollo.library_tab_switch_button.click()
         spy.assert_called_with(0)
         self._application_apollo.now_playing_tab_switch_button.click()
@@ -51,15 +49,15 @@ class Test_App(Setup_Apollo):
         self._application_apollo.audiofx_tab_switch_button.click()
         spy.assert_called_with(3)
 
-        mocker.patch.object(self._application_apollo, 'call_on_search', lambda: None)
-        mocker.patch.object(self._application_apollo, 'call_on_clear_search', lambda: None)
+        mocker.patch.object(self._application_apollo, "call_on_search", lambda: None)
+        mocker.patch.object(self._application_apollo, "call_on_clear_search", lambda: None)
 
-        spy = mocker.spy(self._application_apollo, 'call_on_search')
+        spy = mocker.spy(self._application_apollo, "call_on_search")
         self._application_apollo.search_lineEdit.setText("TEST")
         self._application_apollo.search_button.click()
         spy.assert_called()
 
-        spy = mocker.spy(self._application_apollo, 'call_on_clear_search')
+        spy = mocker.spy(self._application_apollo, "call_on_clear_search")
         self._application_apollo.search_lineEdit.setText("")
         self._application_apollo.search_button.click()
         spy.assert_called()
@@ -69,4 +67,4 @@ class Test_App(Setup_Apollo):
         self._application_apollo.audiofx_tab_switch_button.click()
         self._application_apollo.close()
 
-        assert CONFIG['APOLLO.MAIN.CURRENT_TAB'] == 3
+        assert CONFIG["APOLLO.MAIN.CURRENT_TAB"] == 3

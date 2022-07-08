@@ -31,7 +31,7 @@ class Mediafile:
             raise NotImplementedError(str(os.path.splitext(path)[1]).lower())
 
     def __str__(self):
-        return json.dumps(self._stream.SynthTags, indent = 2)
+        return json.dumps(self._stream.SynthTags, indent=2)
 
     def __bool__(self):
         if self._stream is not None:
@@ -41,7 +41,7 @@ class Mediafile:
 
     def _get_stream(self):
         ext = str(self.path.suffix).lower().replace(".", "")
-        if ext == 'mp3':
+        if ext == "mp3":
             return MP3_File(self.path)
         else:
             return None

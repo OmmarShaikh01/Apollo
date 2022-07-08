@@ -25,21 +25,24 @@ LOGGER = get_logger(__name__)
 
 class DBStructureError(Exception):
     """Raised when DB Tables or relations are not present"""
+
     __module__ = "Database"
 
 
 class QueryBuildFailed(Exception):
     """Raised when Query build fails"""
+
     __module__ = "Database"
 
 
 class QueryExecutionFailed(Exception):
     """Raised when execution fails"""
+
     __module__ = "Database"
 
 
 class Connection(QSqlDatabase):
-    """ Connector used execute queries """
+    """Connector used execute queries"""
 
     def __init__(self, db_path: str):
         """
@@ -107,8 +110,9 @@ class RecordSet:
     """
     Dataclass for the Record ser return when a query is executed
     """
+
     fields: list
-    records: list[list] = dataclasses.field(default_factory = list)
+    records: list[list] = dataclasses.field(default_factory=list)
 
     @staticmethod
     def from_json(json: dict) -> RecordSet:
@@ -121,7 +125,9 @@ class RecordSet:
         Returns:
             RecordSet: populated record set
         """
-        records = RecordSet(list(json[list(json.keys())[0]].keys()), [list(row.values()) for row in json.values()])
+        records = RecordSet(
+            list(json[list(json.keys())[0]].keys()), [list(row.values()) for row in json.values()]
+        )
         return records
 
     def __bool__(self):
@@ -137,7 +143,7 @@ class RecordSet:
         if self:
             HEADER = " | ".join(str(item) for item in self.fields)
             SEP = "-" * len(HEADER)
-            DATA = '\n'.join(" | ".join(map(str_converter, row)) for row in self.records)
+            DATA = "\n".join(" | ".join(map(str_converter, row)) for row in self.records)
             return f"\n{SEP}\n{HEADER}\n{SEP}\n{DATA}\n{SEP}\n"
         else:
             return f"\n----\nEMPTY\n----\nEMPTY\n----\n"
@@ -166,7 +172,7 @@ class Database:
         for K, V in Mediafile.TAG_FRAMES_FIELDS:
             if K == "FILEID":
                 cols.append(f"{K} {V} PRIMARY KEY ON CONFLICT IGNORE")
-            elif K in ["FILEPATH", 'FILENAME', 'FILESIZE', 'FILEEXT']:
+            elif K in ["FILEPATH", "FILENAME", "FILESIZE", "FILEEXT"]:
                 cols.append(f"{K} {V} NOT NULL")
             else:
                 cols.append(f"{K} {V}")
@@ -208,18 +214,24 @@ class Database:
         if records:
             columns = ", ".join(records.fields)
             placeholders = ", ".join(["?" for _ in records.fields])
-            query = QSqlQuery(f"INSERT OR REPLACE INTO {table} ({columns}) VALUES ({placeholders})", db = conn)
+            query = QSqlQuery(
+                f"INSERT OR REPLACE INTO {table} ({columns}) VALUES ({placeholders})", db=conn
+            )
             for col in range(len(records.fields)):
-                query.bindValue(col, [records.records[row][col] for row in range(len(records.records))])
+                query.bindValue(
+                    col, [records.records[row][col] for row in range(len(records.records))]
+                )
 
             LOGGER.debug(f"Batch Insert into: {table}")
             LOGGER.critical(records)
             conn.transaction()
             if not query.execBatch():  # pragma: no cover
-                connection_info = (str(conn))
-                msg = f"\nError: {(query.lastError().text())}" \
-                      f"\nQuery: {_dedent_query(query.lastQuery())}" \
-                      f"\nConnection: {connection_info}"
+                connection_info = str(conn)
+                msg = (
+                    f"\nError: {(query.lastError().text())}"
+                    f"\nQuery: {_dedent_query(query.lastQuery())}"
+                    f"\nConnection: {connection_info}"
+                )
                 conn.rollback()
                 raise QueryExecutionFailed(msg)
             conn.commit()
@@ -245,10 +257,10 @@ class Database:
             lines = query_str.splitlines()
             return "\n".join(line.lstrip() for line in lines)
 
-        connection_info = (str(conn))
+        connection_info = str(conn)
         if isinstance(query, str):
             query_str = query
-            query = QSqlQuery(db = conn)
+            query = QSqlQuery(db=conn)
             if not query.prepare(query_str):
                 raise QueryBuildFailed(f"{connection_info}\n{query_str}")
 
@@ -256,11 +268,13 @@ class Database:
         if query_executed:
             LOGGER.debug(f"Executed: {_dedent_query(query.executedQuery())}")
         else:
-            msg = f"\nExe: {query_executed}" \
-                  f"\nError: {(query.lastError().text())}" \
-                  f"\nQuery: {_dedent_query(query.lastQuery())}" \
-                  f"\nQueryValues: {_dedent_query(str(query.boundValues()))}" \
-                  f"\nConnection: {connection_info}"
+            msg = (
+                f"\nExe: {query_executed}"
+                f"\nError: {(query.lastError().text())}"
+                f"\nQuery: {_dedent_query(query.lastQuery())}"
+                f"\nQueryValues: {_dedent_query(str(query.boundValues()))}"
+                f"\nConnection: {connection_info}"
+            )
             raise QueryExecutionFailed(msg)
 
         record = query.record()
@@ -294,13 +308,17 @@ class Database:
         """
         export = {}
         with self.connector as connection:
-            result = self.execute("SELECT tbl_name, sql FROM sqlite_schema WHERE sql IS NOT NULL", connection).records
-            export['sql_table_schema'] = {item[0]: item[1] for item in result}
+            result = self.execute(
+                "SELECT tbl_name, sql FROM sqlite_schema WHERE sql IS NOT NULL", connection
+            ).records
+            export["sql_table_schema"] = {item[0]: item[1] for item in result}
             for item in result:
                 table_name = item[0]
                 table_result = self.execute(f"SELECT * FROM {table_name}", connection)
-                table_result = {index: {k: v for k, v in zip(table_result.fields, row)} for index, row in
-                                enumerate(table_result.records)}
+                table_result = {
+                    index: {k: v for k, v in zip(table_result.fields, row)}
+                    for index, row in enumerate(table_result.records)
+                }
                 export[table_name] = table_result
         return export
 
@@ -321,6 +339,7 @@ class LibraryManager(Database):
     """
     Library Manager, Manages all media files indexed by Apollo
     """
+
     library_table_columns = Mediafile.TAG_FRAMES
     queue_table_columns = ["FILEID", "PLAYORDER"]
 
@@ -405,7 +424,7 @@ class LibraryManager(Database):
                 if len(files_scanned) > 0:  # pragma: no cover
                     records = RecordSet(Mediafile.TAG_FRAMES, files_scanned)
                     with self.connector as connection:
-                        self.batch_insert(records, 'library', connection)
+                        self.batch_insert(records, "library", connection)
                 else:
                     ApolloWarning(f"Skipped {len(_path)} Files")
             except Exception as e:
@@ -425,7 +444,7 @@ class LibraryManager(Database):
             exe(path)
         else:
             cuts = int(round(len(path) / part, 0))
-            with ThreadPoolExecutor(max_workers = 8) as executor:
+            with ThreadPoolExecutor(max_workers=8) as executor:
                 thread = 0
                 start, end = 0, part
                 for cut in range(cuts):
@@ -447,7 +466,8 @@ class LibraryManager(Database):
             RecordSet: Library Table Stats
         """
         with self.connector as connection:
-            records = self.execute("""
+            records = self.execute(
+                """
             SELECT 
                 count(FILEID) as TRACKS,
                 SUM(FILESIZE) as BYTESIZE,
@@ -455,7 +475,9 @@ class LibraryManager(Database):
                 (SELECT count(ARTIST) FROM library GROUP BY ARTIST) as ARTIST,
                 (SELECT count(ALBUM) FROM library GROUP BY ALBUM) as ALBUM
             FROM library 
-            """, connection)
+            """,
+                connection,
+            )
         return records
 
     def rescan_files(self):

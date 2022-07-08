@@ -16,7 +16,7 @@ LOGGER = get_logger(__name__)
 CONFIG = settings
 MEDIA_FOLDER = PurePath(CONFIG.assets_dir, "music_samples")
 BENCHMARK = CONFIG.benchmark_formats  # TODO: remove not
-MODEL_ROWS, MODEL_COLUMNS = len(LIBRARY_TABLE), len(['PLAYORDER', *Stream.TAG_FRAMES])
+MODEL_ROWS, MODEL_COLUMNS = len(LIBRARY_TABLE), len(["PLAYORDER", *Stream.TAG_FRAMES])
 
 
 @pytest.fixture
@@ -55,6 +55,7 @@ class Test_QueueModel:
 
     def test_provider(self, model_provider: QueueModel):
         from apollo.db.models import ModelProvider
+
         assert isinstance(ModelProvider.get_model(QueueModel), QueueModel)
 
     def test_init_model_with_data(self, model_provider: QueueModel):

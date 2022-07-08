@@ -38,18 +38,40 @@ class Test_ResourceGenerator:
     def test_init_resource_generator(self):
         res = ResourceGenerator(CONFIG.loaded_theme)
         assert res.app_theme
-        res = ResourceGenerator(CONFIG.loaded_theme, dict.fromkeys(
-                ["primaryColor", "primaryLightColor", "primaryDarkColor", "secondaryColor", "secondaryLightColor",
-                 "secondaryDarkColor", 'primaryTextColor', 'secondaryTextColor']))
+        res = ResourceGenerator(
+            CONFIG.loaded_theme,
+            dict.fromkeys(
+                [
+                    "primaryColor",
+                    "primaryLightColor",
+                    "primaryDarkColor",
+                    "secondaryColor",
+                    "secondaryLightColor",
+                    "secondaryDarkColor",
+                    "primaryTextColor",
+                    "secondaryTextColor",
+                ]
+            ),
+        )
         assert res.app_theme
 
         with pytest.raises(FileNotFoundError) as exception:
             res = ResourceGenerator("null_theme")
 
         with pytest.raises(KeyError) as exception:
-            res = ResourceGenerator(CONFIG.loaded_theme, dict.fromkeys(
-                    ["primaryColor", "primaryLightColor", "primaryDarkColor", "secondaryLightColor",
-                     "secondaryDarkColor", 'primaryTextColor', ]))
+            res = ResourceGenerator(
+                CONFIG.loaded_theme,
+                dict.fromkeys(
+                    [
+                        "primaryColor",
+                        "primaryLightColor",
+                        "primaryDarkColor",
+                        "secondaryLightColor",
+                        "secondaryDarkColor",
+                        "primaryTextColor",
+                    ]
+                ),
+            )
 
     def test_replace_svg_colour(self, get_generator: ResourceGenerator):
         res = get_generator
@@ -59,7 +81,7 @@ class Test_ResourceGenerator:
               <path fill="#000000" fill-rule="evenodd" d=""/>
             </svg>
         """
-        replaced_content = res.replace_svg_colour(content, replace = "#000044", placeholder = "#0000ff")
+        replaced_content = res.replace_svg_colour(content, replace="#000044", placeholder="#0000ff")
         expected = """
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
               <path fill="#000044" fill-rule="evenodd" d=""/>
@@ -71,12 +93,12 @@ class Test_ResourceGenerator:
     def test_generate_theme_icons(self, get_generator: ResourceGenerator):
         res = get_generator
         res.generate_theme_icons()
-        assert os.path.exists(res.GENERATED / 'icons' / 'primary')
-        assert os.path.exists(res.GENERATED / 'icons' / 'secondary')
-        assert os.path.exists(res.GENERATED / 'icons' / 'disabled')
-        assert os.path.exists(res.GENERATED / 'icons' / 'success')
-        assert os.path.exists(res.GENERATED / 'icons' / 'warning')
-        assert os.path.exists(res.GENERATED / 'icons' / 'danger')
+        assert os.path.exists(res.GENERATED / "icons" / "primary")
+        assert os.path.exists(res.GENERATED / "icons" / "secondary")
+        assert os.path.exists(res.GENERATED / "icons" / "disabled")
+        assert os.path.exists(res.GENERATED / "icons" / "success")
+        assert os.path.exists(res.GENERATED / "icons" / "warning")
+        assert os.path.exists(res.GENERATED / "icons" / "danger")
 
     def test_generate_theme_stylesheet(self, get_generator: ResourceGenerator):
         res = get_generator
@@ -90,62 +112,77 @@ class Test_ResourceGenerator:
         assert not os.path.exists(res.GENERATED)
         assert os.listdir(res.BUILD) != 0
 
-    def test_load_theme_1(self, get_generator: ResourceGenerator, mocker: pytest_mock.MockerFixture):
+    def test_load_theme_1(
+        self, get_generator: ResourceGenerator, mocker: pytest_mock.MockerFixture
+    ):
         with tempfile.TemporaryDirectory() as directory:
             mocker.patch("apollo.assets.stylesheets.ASSETS", PurePath(directory))
             mocker.patch("apollo.assets.stylesheets._JINJA", True)
             res = get_generator
-            theme = PurePath(directory, 'app_themes')
+            theme = PurePath(directory, "app_themes")
             os.mkdir(theme)
-            load_theme(self._qt_application, 'material_dark')
-            load_theme(self._qt_application, 'material_light')
+            load_theme(self._qt_application, "material_dark")
+            load_theme(self._qt_application, "material_light")
 
-            assert bool(os.path.exists(theme / '__loaded_theme__'))
-            assert bool(sorted(os.listdir(theme / '__loaded_theme__')) == sorted(['icons', 'stylesheet.css', 'apptheme.json']))
-            assert bool(os.path.exists(theme / 'material_dark.zip'))
-            assert bool(os.path.exists(theme / 'material_light.zip'))
+            assert bool(os.path.exists(theme / "__loaded_theme__"))
+            assert bool(
+                sorted(os.listdir(theme / "__loaded_theme__"))
+                == sorted(["icons", "stylesheet.css", "apptheme.json"])
+            )
+            assert bool(os.path.exists(theme / "material_dark.zip"))
+            assert bool(os.path.exists(theme / "material_light.zip"))
             assert not bool(os.path.exists(res.BUILD))
             assert not bool(os.path.exists(res.GENERATED))
 
-            with open(theme / '__loaded_theme__' / 'stylesheet.css') as file_output:
+            with open(theme / "__loaded_theme__" / "stylesheet.css") as file_output:
                 assert self._qt_application.styleSheet() == (file_output.read())
 
-    def test_load_theme_2(self, get_generator: ResourceGenerator, mocker: pytest_mock.MockerFixture):
+    def test_load_theme_2(
+        self, get_generator: ResourceGenerator, mocker: pytest_mock.MockerFixture
+    ):
         with tempfile.TemporaryDirectory() as directory:
             res = get_generator
-            name = 'material_dark'
+            name = "material_dark"
             mocker.patch("apollo.assets.stylesheets.ASSETS", PurePath(directory))
             mocker.patch("apollo.assets.stylesheets._JINJA", False)
             mocker.patch("apollo.assets.stylesheets.ResourceGenerator.THEMES", PurePath(directory))
-            pattern = 'Failed to build theme pack, Jinja is Missing|Theme JSON missing'
-            theme = PurePath(directory, 'app_themes')
+            pattern = "Failed to build theme pack, Jinja is Missing|Theme JSON missing"
+            theme = PurePath(directory, "app_themes")
             os.mkdir(theme)
-            with pytest.warns(UserWarning, match = pattern):
+            with pytest.warns(UserWarning, match=pattern):
                 load_theme(self._qt_application, name)
 
-                theme = PurePath(directory, 'app_themes')
-                assert bool(os.path.exists(theme / '__loaded_theme__'))
-                assert not bool(os.listdir(theme / '__loaded_theme__'))
-                assert not bool(os.path.exists(theme / (name + '.zip')))
+                theme = PurePath(directory, "app_themes")
+                assert bool(os.path.exists(theme / "__loaded_theme__"))
+                assert not bool(os.listdir(theme / "__loaded_theme__"))
+                assert not bool(os.path.exists(theme / (name + ".zip")))
 
     def test_opacity(self):
         from apollo.assets.stylesheets import opacity
 
-        assert opacity("#FFFFFF", 0) == 'rgba({0}, {1}, {2}, {3})'.format(*(255, 255, 255, float(0)))
-        assert opacity("#FFFFFF", 0.25) == 'rgba({0}, {1}, {2}, {3})'.format(*(255, 255, 255, 0.25))
-        assert opacity("#FFFFFF", 0.5) == 'rgba({0}, {1}, {2}, {3})'.format(*(255, 255, 255, 0.5))
-        assert opacity("#FFFFFF", 1) == 'rgba({0}, {1}, {2}, {3})'.format(*(255, 255, 255, float(1)))
+        assert opacity("#FFFFFF", 0) == "rgba({0}, {1}, {2}, {3})".format(
+            *(255, 255, 255, float(0))
+        )
+        assert opacity("#FFFFFF", 0.25) == "rgba({0}, {1}, {2}, {3})".format(*(255, 255, 255, 0.25))
+        assert opacity("#FFFFFF", 0.5) == "rgba({0}, {1}, {2}, {3})".format(*(255, 255, 255, 0.5))
+        assert opacity("#FFFFFF", 1) == "rgba({0}, {1}, {2}, {3})".format(
+            *(255, 255, 255, float(1))
+        )
 
     def test_luminosity(self):
         from apollo.assets.stylesheets import luminosity
 
-        assert luminosity("#FFFFFF", 0) == 'rgba({0}, {1}, {2}, {3})'.format(*(255, 255, 255, 1.0))
-        assert luminosity("#FFFFFF", 1) == 'rgba({0}, {1}, {2}, {3})'.format(*(255, 255, 255, 1.0))
+        assert luminosity("#FFFFFF", 0) == "rgba({0}, {1}, {2}, {3})".format(*(255, 255, 255, 1.0))
+        assert luminosity("#FFFFFF", 1) == "rgba({0}, {1}, {2}, {3})".format(*(255, 255, 255, 1.0))
 
-        assert luminosity("#000000", 0) == 'rgba({0}, {1}, {2}, {3})'.format(*(0, 0, 0, 1.0))
-        assert luminosity("#000000", 0.5) == 'rgba({0}, {1}, {2}, {3})'.format(*(127, 127, 127, 1.0))
-        assert luminosity("#000000", 1) == 'rgba({0}, {1}, {2}, {3})'.format(*(255, 255, 255, 1.0))
+        assert luminosity("#000000", 0) == "rgba({0}, {1}, {2}, {3})".format(*(0, 0, 0, 1.0))
+        assert luminosity("#000000", 0.5) == "rgba({0}, {1}, {2}, {3})".format(
+            *(127, 127, 127, 1.0)
+        )
+        assert luminosity("#000000", 1) == "rgba({0}, {1}, {2}, {3})".format(*(255, 255, 255, 1.0))
 
-        assert luminosity("#0000FF", 0) == 'rgba({0}, {1}, {2}, {3})'.format(*(0, 0, 255, 1.0))
-        assert luminosity("#0000FF", 0.5) == 'rgba({0}, {1}, {2}, {3})'.format(*(127, 127, 255, 1.0))
-        assert luminosity("#0000FF", 1) == 'rgba({0}, {1}, {2}, {3})'.format(*(255, 255, 255, 1.0))
+        assert luminosity("#0000FF", 0) == "rgba({0}, {1}, {2}, {3})".format(*(0, 0, 255, 1.0))
+        assert luminosity("#0000FF", 0.5) == "rgba({0}, {1}, {2}, {3})".format(
+            *(127, 127, 255, 1.0)
+        )
+        assert luminosity("#0000FF", 1) == "rgba({0}, {1}, {2}, {3})".format(*(255, 255, 255, 1.0))

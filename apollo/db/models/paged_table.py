@@ -17,7 +17,8 @@ class Filter:
     """
     Page Window filter the model uses to filter model data
     """
-    query: str = ''  # query to use to filter
+
+    query: str = ""  # query to use to filter
     value: list = None  # value to use to filter
 
 
@@ -26,6 +27,7 @@ class PageWindow:
     """
     Page Window the model uses to fetch and display data
     """
+
     global_count: int = 0  # Total number of rows in the database
     global_pointer: int = 0  # index of the last row relative to global count
 
@@ -38,7 +40,7 @@ class PageWindow:
     sort_order: QtCore.Qt.SortOrder = None  # sort order
     sort_col: str = None  # column to sort
     group_col: str = None  # column to group
-    filter: Filter = dataclasses.field(default_factory = lambda: Filter())  # filters the exiting data
+    filter: Filter = dataclasses.field(default_factory=lambda: Filter())  # filters the exiting data
 
     def __bool__(self):
         return not (self.global_count == 0)
@@ -69,7 +71,15 @@ class PagedTableModel(QtGui.QStandardItemModel):
         return not (self.rowCount() == 0)
 
     def __str__(self):
-        return str(RecordSet(self.Columns, [[self.index(r, c).data() for c in range(self.columnCount())] for r in range(self.rowCount())]))
+        return str(
+            RecordSet(
+                self.Columns,
+                [
+                    [self.index(r, c).data() for c in range(self.columnCount())]
+                    for r in range(self.rowCount())
+                ],
+            )
+        )
 
     def set_global_row_count(self):
         """
@@ -77,8 +87,10 @@ class PagedTableModel(QtGui.QStandardItemModel):
         """
         window = self._window
         with self._db.connector as connection:
-            if window.filter.query == '':
-                result = self._db.execute(f'SELECT COUNT("__rowid__") FROM ({self.SelectQuery})', connection)
+            if window.filter.query == "":
+                result = self._db.execute(
+                    f'SELECT COUNT("__rowid__") FROM ({self.SelectQuery})', connection
+                )
             else:
                 query = f'SELECT COUNT("__rowid__") FROM ({self.SelectQuery} WHERE {window.filter.query})'
                 query = QtSql.QSqlQuery(query, connection)
@@ -125,21 +137,25 @@ class PagedTableModel(QtGui.QStandardItemModel):
             self._window.sort_col = self.Columns[0]
 
         limit = self._window.fetch_limit
-        sort = 'ASC' if self._window.sort_order is QtCore.Qt.AscendingOrder else 'DESC'
+        sort = "ASC" if self._window.sort_order is QtCore.Qt.AscendingOrder else "DESC"
         sort_col = self._window.sort_col
 
         if self._window.window_max is None and self._window.window_min is None:
             SELECT = self.SelectQuery
-            GROUP = f'GROUP BY {self._window.group_col}' if self._window.group_col is not None else ''
-            WHERE = f'WHERE ({self._window.filter.query})' if self._window.filter.query else ''
-            ORDER = f'ORDER BY {sort_col} {sort} LIMIT {limit}'
+            GROUP = (
+                f"GROUP BY {self._window.group_col}" if self._window.group_col is not None else ""
+            )
+            WHERE = f"WHERE ({self._window.filter.query})" if self._window.filter.query else ""
+            ORDER = f"ORDER BY {sort_col} {sort} LIMIT {limit}"
             with self._db.connector as connection:
-                if self._window.filter.value is not None and self._window.filter.query:  # ENABLES FILTERING
-                    query = QtSql.QSqlQuery(' '.join([SELECT, WHERE, GROUP, ORDER]), connection)
+                if (
+                    self._window.filter.value is not None and self._window.filter.query
+                ):  # ENABLES FILTERING
+                    query = QtSql.QSqlQuery(" ".join([SELECT, WHERE, GROUP, ORDER]), connection)
                     for index, item in enumerate(self._window.filter.value):
                         query.bindValue(index, item)
                 else:
-                    query = QtSql.QSqlQuery(' '.join([SELECT, WHERE, GROUP, ORDER]), connection)
+                    query = QtSql.QSqlQuery(" ".join([SELECT, WHERE, GROUP, ORDER]), connection)
                 result = self._db.execute(query, connection)
             if result:
                 self.populate(result, direction)
@@ -149,18 +165,22 @@ class PagedTableModel(QtGui.QStandardItemModel):
 
         if direction == self.FETCH_DATA_DOWN:  # ON SCROLL DOWN
             SELECT = self.SelectQuery
-            GROUP = f'GROUP BY {self._window.group_col}' if self._window.group_col is not None else ''
-            ORDER = f'ORDER BY {sort_col} {sort} LIMIT {limit}'
+            GROUP = (
+                f"GROUP BY {self._window.group_col}" if self._window.group_col is not None else ""
+            )
+            ORDER = f"ORDER BY {sort_col} {sort} LIMIT {limit}"
             with self._db.connector as connection:
-                if self._window.filter.value is not None and self._window.filter.query:  # ENABLES FILTERING
-                    WHERE = f'WHERE {sort_col} > ? AND ({self._window.filter.query})'
-                    query = QtSql.QSqlQuery(' '.join([SELECT, WHERE, GROUP, ORDER]), connection)
+                if (
+                    self._window.filter.value is not None and self._window.filter.query
+                ):  # ENABLES FILTERING
+                    WHERE = f"WHERE {sort_col} > ? AND ({self._window.filter.query})"
+                    query = QtSql.QSqlQuery(" ".join([SELECT, WHERE, GROUP, ORDER]), connection)
                     query.bindValue(0, self._window.window_max)
                     for index, item in enumerate(self._window.filter.value):
                         query.bindValue(index + 1, item)
                 else:
-                    WHERE = f'WHERE {sort_col} > ?'
-                    query = QtSql.QSqlQuery(' '.join([SELECT, WHERE, GROUP, ORDER]), connection)
+                    WHERE = f"WHERE {sort_col} > ?"
+                    query = QtSql.QSqlQuery(" ".join([SELECT, WHERE, GROUP, ORDER]), connection)
                     query.bindValue(0, self._window.window_max)
                 result = self._db.execute(query, connection)
             if result:
@@ -171,18 +191,22 @@ class PagedTableModel(QtGui.QStandardItemModel):
 
         if direction == self.FETCH_DATA_UP:  # ON SCROLL UP
             SELECT = self.SelectQuery
-            GROUP = f'GROUP BY {self._window.group_col}' if self._window.group_col is not None else ''
-            ORDER = f'ORDER BY {sort_col} {sort} LIMIT {self.Offset}, {limit}'
+            GROUP = (
+                f"GROUP BY {self._window.group_col}" if self._window.group_col is not None else ""
+            )
+            ORDER = f"ORDER BY {sort_col} {sort} LIMIT {self.Offset}, {limit}"
             with self._db.connector as connection:
-                if self._window.filter.value is not None and self._window.filter.query:  # ENABLES FILTERING
-                    WHERE = f'WHERE {sort_col} < ? AND ({self._window.filter.query})'
-                    query = QtSql.QSqlQuery(' '.join([SELECT, WHERE, GROUP, ORDER]), connection)
+                if (
+                    self._window.filter.value is not None and self._window.filter.query
+                ):  # ENABLES FILTERING
+                    WHERE = f"WHERE {sort_col} < ? AND ({self._window.filter.query})"
+                    query = QtSql.QSqlQuery(" ".join([SELECT, WHERE, GROUP, ORDER]), connection)
                     query.bindValue(0, self._window.window_min)
                     for index, item in enumerate(self._window.filter.value):
                         query.bindValue(index + 1, item)
                 else:
-                    WHERE = f'WHERE {sort_col} < ?'
-                    query = QtSql.QSqlQuery(' '.join([SELECT, WHERE, GROUP, ORDER]), connection)
+                    WHERE = f"WHERE {sort_col} < ?"
+                    query = QtSql.QSqlQuery(" ".join([SELECT, WHERE, GROUP, ORDER]), connection)
                     query.bindValue(0, self._window.window_min)
                 result = self._db.execute(query, connection)
             if result:
@@ -199,11 +223,15 @@ class PagedTableModel(QtGui.QStandardItemModel):
             data (RecordSet): Data to populate model with
             direction (int): Scroll Direction
         """
+
         def get_row(_row: list):
             return [QtGui.QStandardItem(str(x)) for x in _row]
 
         # ON SCROLL DOWN
-        if direction == self.FETCH_DATA_DOWN and self._window.global_pointer <= self._window.global_count:
+        if (
+            direction == self.FETCH_DATA_DOWN
+            and self._window.global_pointer <= self._window.global_count
+        ):
             self._window.global_pointer += len(data.records)
             self.beginResetModel()
             for row in data.records:
@@ -239,14 +267,26 @@ class PagedTableModel(QtGui.QStandardItemModel):
         """
         data = data.records[0][self.Columns.index(self._window.sort_col)]
         if isinstance(data, str):
-            self._window.window_min = str(self.index(0, self.Columns.index(self._window.sort_col)).data())
-            self._window.window_max = str(self.index(self.rowCount() - 1, self.Columns.index(self._window.sort_col)).data())
+            self._window.window_min = str(
+                self.index(0, self.Columns.index(self._window.sort_col)).data()
+            )
+            self._window.window_max = str(
+                self.index(self.rowCount() - 1, self.Columns.index(self._window.sort_col)).data()
+            )
         if isinstance(data, float):
-            self._window.window_min = float(self.index(0, self.Columns.index(self._window.sort_col)).data())
-            self._window.window_max = float(self.index(self.rowCount() - 1, self.Columns.index(self._window.sort_col)).data())
+            self._window.window_min = float(
+                self.index(0, self.Columns.index(self._window.sort_col)).data()
+            )
+            self._window.window_max = float(
+                self.index(self.rowCount() - 1, self.Columns.index(self._window.sort_col)).data()
+            )
         if isinstance(data, int):
-            self._window.window_min = int(self.index(0, self.Columns.index(self._window.sort_col)).data())
-            self._window.window_max = int(self.index(self.rowCount() - 1, self.Columns.index(self._window.sort_col)).data())
+            self._window.window_min = int(
+                self.index(0, self.Columns.index(self._window.sort_col)).data()
+            )
+            self._window.window_max = int(
+                self.index(self.rowCount() - 1, self.Columns.index(self._window.sort_col)).data()
+            )
 
     # noinspection PyAttributeOutsideInit
     @property
@@ -280,7 +320,7 @@ class PagedTableModel(QtGui.QStandardItemModel):
         """
         Clears the applied filter to the currently displayed model
         """
-        self._window.filter.query = f''
+        self._window.filter.query = f""
         self._window.filter.value = None
         self.clear()
         self.fetch_data(self.FETCH_DATA_DOWN)
@@ -302,8 +342,13 @@ class PagedTableModel(QtGui.QStandardItemModel):
             search_query (str): term to search for
         """
         if col_index == -1:
-            cols = list(filter(lambda item: re.match(r'.*\.(TITLE|FILENAME|ARTIST|ALBUM)$', str(item)), self.Columns))
-            self._window.filter.query = ' OR '.join([f"{col_index} LIKE ?" for col_index in cols])
+            cols = list(
+                filter(
+                    lambda item: re.match(r".*\.(TITLE|FILENAME|ARTIST|ALBUM)$", str(item)),
+                    self.Columns,
+                )
+            )
+            self._window.filter.query = " OR ".join([f"{col_index} LIKE ?" for col_index in cols])
             self._window.filter.value = [f"%{search_query}%" for _ in cols]
         else:
             self._window.filter.query = f"{self.Columns[col_index]} LIKE ?"

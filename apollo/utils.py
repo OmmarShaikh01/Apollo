@@ -5,7 +5,7 @@ import threading
 import time
 import traceback
 import warnings
-from typing import (Callable)
+from typing import Callable
 
 from configs import settings as _settings
 
@@ -27,15 +27,15 @@ def get_logger(name: str) -> logging.Logger:
     if _LOGGER is not None:
         return _LOGGER
 
-    if _settings.LOGGER_LEVEL == 'debug':
+    if _settings.LOGGER_LEVEL == "debug":
         log_level = logging.DEBUG
-    elif _settings.LOGGER_LEVEL == 'info':
+    elif _settings.LOGGER_LEVEL == "info":
         log_level = logging.INFO
-    elif _settings.LOGGER_LEVEL == 'warning':
+    elif _settings.LOGGER_LEVEL == "warning":
         log_level = logging.WARNING
-    elif _settings.LOGGER_LEVEL == 'error':
+    elif _settings.LOGGER_LEVEL == "error":
         log_level = logging.ERROR
-    elif _settings.LOGGER_LEVEL == 'critical':
+    elif _settings.LOGGER_LEVEL == "critical":
         log_level = logging.CRITICAL
     else:
         log_level = logging.INFO
@@ -43,22 +43,22 @@ def get_logger(name: str) -> logging.Logger:
     logger = logging.getLogger(name)
     env = str(_settings.current_env).upper()
 
-    if env in ['TESTING', 'PRODUCTION', 'QT_TESTING']:
+    if env in ["TESTING", "PRODUCTION", "QT_TESTING"]:
         formatter = logging.Formatter(
-            f'[{env}] [%(asctime)s: %(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s'
+            f"[{env}] [%(asctime)s: %(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s"
         )
-        if not os.path.isdir(os.path.join(ROOT, 'logs')):
-            os.mkdir(os.path.join(ROOT, 'logs'))
-        log_path = os.path.join(ROOT, 'logs', f'apollo_{env.lower()}.log')
+        if not os.path.isdir(os.path.join(ROOT, "logs")):
+            os.mkdir(os.path.join(ROOT, "logs"))
+        log_path = os.path.join(ROOT, "logs", f"apollo_{env.lower()}.log")
         log_mode = "w"
-        formatter.default_time_format = '%H:%M:%S'
-        file_handler = logging.FileHandler(log_path, mode = log_mode)
+        formatter.default_time_format = "%H:%M:%S"
+        file_handler = logging.FileHandler(log_path, mode=log_mode)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
 
-    if env in ['PRODUCTION']:
+    if env in ["PRODUCTION"]:
         formatter = logging.Formatter(
-            f'[{env}] [%(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s'
+            f"[{env}] [%(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s"
         )
         stream_handler = logging.StreamHandler(sys.stdout)
         stream_handler.setFormatter(formatter)
@@ -90,7 +90,7 @@ def timeit(method: Callable) -> Callable:
             _LOGGER.debug(f"{method} Executed in {round(time.time() - t1, 8)}s")
             return result
         except Exception as e:
-            print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
+            print(e, "\n", traceback.print_tb(sys.exc_info()[-1]))
             _LOGGER.error(e)
             raise e
 
@@ -110,7 +110,7 @@ def exec_line(msg: str, method: Callable):
         method()
         _LOGGER.debug(f"Message: {msg}> Time: {round(time.time() - t1, 8)}")
     except Exception as e:
-        print(e, '\n', traceback.print_tb(sys.exc_info()[-1]))
+        print(e, "\n", traceback.print_tb(sys.exc_info()[-1]))
         _LOGGER.error(e)
         raise e
 
@@ -128,14 +128,18 @@ def threadit(method: Callable) -> Callable:
 
     def exe(*args, **kwargs) -> None:
         thread = threading.Thread(
-                target = lambda: (_LOGGER.info(f"Thread {thread.native_id}: {method}"), method(*args, **kwargs)))
+            target=lambda: (
+                _LOGGER.info(f"Thread {thread.native_id}: {method}"),
+                method(*args, **kwargs),
+            )
+        )
         thread.start()
 
     return exe
 
 
 class ApolloSignal:
-    """ Signals for attaching slots"""
+    """Signals for attaching slots"""
 
     def __init__(self):
         """constructor"""
@@ -169,7 +173,6 @@ class ApolloSignal:
 
 
 class ApolloWarning:
-
     def __init__(self, msg: str) -> None:
         warnings.warn(UserWarning(msg))
         _LOGGER.warning(msg)

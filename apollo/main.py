@@ -17,9 +17,9 @@ def main() -> None:
     """
 
     app = QtWidgets.QApplication(sys.argv)
-    load_theme(app, CONFIG.loaded_theme, recompile = CONFIG.recompile_theme)
+    load_theme(app, CONFIG.loaded_theme, recompile=CONFIG.recompile_theme)
     window = Apollo()
-    LOGGER.info(msg = "Application Started")
+    LOGGER.info(msg="Application Started")
 
     # TODO: Disable
     # window.playback_button_play_pause.pressed.connect(
@@ -28,9 +28,9 @@ def main() -> None:
 
     window.show()
     app.exec()
-    LOGGER.info(msg = "Application Exit")
-    LOGGER.info(msg = settings.to_dict())
+    LOGGER.info(msg="Application Exit")
+    LOGGER.info(msg=settings.to_dict())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

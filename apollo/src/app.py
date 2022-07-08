@@ -14,6 +14,7 @@ class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
     """
     Apollo main Widget
     """
+
     def __init__(self) -> None:
         super().__init__()
         self.playback_bar = None
@@ -35,24 +36,34 @@ class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
         """
         Sets interactions
         """
-        self.library_tab_switch_button.pressed.connect(lambda: (self.main_tabs_stack_widget.setCurrentIndex(0)))
-        self.now_playing_tab_switch_button.pressed.connect(lambda: (self.main_tabs_stack_widget.setCurrentIndex(1)))
-        self.playlist_tab_switch_button.pressed.connect(lambda: (self.main_tabs_stack_widget.setCurrentIndex(2)))
-        self.audiofx_tab_switch_button.pressed.connect(lambda: (self.main_tabs_stack_widget.setCurrentIndex(3)))
-        self.search_button.pressed.connect(lambda: (
-                self.call_on_clear_search() if self.search_lineEdit.text() == '' else self.call_on_search()
+        self.library_tab_switch_button.pressed.connect(
+            lambda: (self.main_tabs_stack_widget.setCurrentIndex(0))
+        )
+        self.now_playing_tab_switch_button.pressed.connect(
+            lambda: (self.main_tabs_stack_widget.setCurrentIndex(1))
+        )
+        self.playlist_tab_switch_button.pressed.connect(
+            lambda: (self.main_tabs_stack_widget.setCurrentIndex(2))
+        )
+        self.audiofx_tab_switch_button.pressed.connect(
+            lambda: (self.main_tabs_stack_widget.setCurrentIndex(3))
+        )
+        self.search_button.pressed.connect(
+            lambda: (
+                self.call_on_clear_search()
+                if self.search_lineEdit.text() == ""
+                else self.call_on_search()
             )
         )
-        self.search_lineEdit.textChanged.connect(lambda x: (
-                self.call_on_clear_search() if x == '' else self.call_on_search()
-            )
+        self.search_lineEdit.textChanged.connect(
+            lambda x: (self.call_on_clear_search() if x == "" else self.call_on_search())
         )
 
     def setup_defaults(self):
         """
         sets up defaults states
         """
-        current = CONFIG.get('APOLLO.MAIN.CURRENT_TAB', 0)
+        current = CONFIG.get("APOLLO.MAIN.CURRENT_TAB", 0)
         if current == 0:
             self.library_tab_switch_button.click()
         elif current == 1:
@@ -68,7 +79,7 @@ class Apollo(QtWidgets.QMainWindow, Apollo_MainWindow):
         """
         saves session states of Apollo
         """
-        CONFIG['APOLLO.MAIN.CURRENT_TAB'] = self.main_tabs_stack_widget.currentIndex()
+        CONFIG["APOLLO.MAIN.CURRENT_TAB"] = self.main_tabs_stack_widget.currentIndex()
 
     def shutdown(self):
         """

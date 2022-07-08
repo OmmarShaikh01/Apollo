@@ -37,16 +37,17 @@ class STATE_REPEAT(enum.Enum):
 
 
 class STATE_VOLUME_LEVEL(enum.Enum):
-    MUTE = 'MUTE'
-    QUARTER = 'QUARTER'
-    HALF = 'HALF'
-    FULL = 'FULL'
+    MUTE = "MUTE"
+    QUARTER = "QUARTER"
+    HALF = "HALF"
+    FULL = "FULL"
 
 
 class TrackRatingWidget(QtWidgets.QWidget):
     """
     Rating Widget, modifies and displays track rating
     """
+
     RatingChangedSignal = QtCore.Signal(float)
 
     def __init__(self, parent: Optional[QtWidgets.QWidget] = None) -> None:
@@ -127,21 +128,24 @@ class TrackRatingWidget(QtWidgets.QWidget):
             pos (int): Position to draw star at
             size (int): Size of the pixmap
         """
-        painter.drawPixmap(QtCore.QPoint(pos, 6), QtGui.QPixmap.fromImage(QtGui.QImage(star)).scaled(size, size))
+        painter.drawPixmap(
+            QtCore.QPoint(pos, 6), QtGui.QPixmap.fromImage(QtGui.QImage(star)).scaled(size, size)
+        )
 
 
 class Playback_Bar_Interactions(abc.ABC):
     """
     Playback Bar Interactions
     """
-    _STATE_PLAY = CONFIG.get('APOLLO.PLAYBACK_BAR.STATE_PLAY', STATE_PLAY.PAUSE.name)
-    _STATE_SHUFFLE = CONFIG.get('APOLLO.PLAYBACK_BAR.STATE_SHUFFLE', STATE_SHUFFLE.NONE.name)
-    _STATE_REPEAT = CONFIG.get('APOLLO.PLAYBACK_BAR.STATE_REPEAT', STATE_REPEAT.NONE.name)
+
+    _STATE_PLAY = CONFIG.get("APOLLO.PLAYBACK_BAR.STATE_PLAY", STATE_PLAY.PAUSE.name)
+    _STATE_SHUFFLE = CONFIG.get("APOLLO.PLAYBACK_BAR.STATE_SHUFFLE", STATE_SHUFFLE.NONE.name)
+    _STATE_REPEAT = CONFIG.get("APOLLO.PLAYBACK_BAR.STATE_REPEAT", STATE_REPEAT.NONE.name)
     _STATE_VOLUME_LEVEL = STATE_VOLUME_LEVEL.HALF.name
-    _VOLUME_LEVEL = CONFIG.get('APOLLO.PLAYBACK_BAR.VOLUME_LEVEL', 50)
-    _LOADED_TRACK = CONFIG.get('APOLLO.PLAYBACK_BAR.LOADED_TRACK', None)
-    _BYPASS_PROCESSOR = CONFIG.get('APOLLO.PLAYBACK_BAR.BYPASS_PROCESSOR', True)
-    _ELAPSED_TIME = CONFIG.get('APOLLO.PLAYBACK_BAR.ELAPSED_TIME', 0)
+    _VOLUME_LEVEL = CONFIG.get("APOLLO.PLAYBACK_BAR.VOLUME_LEVEL", 50)
+    _LOADED_TRACK = CONFIG.get("APOLLO.PLAYBACK_BAR.LOADED_TRACK", None)
+    _BYPASS_PROCESSOR = CONFIG.get("APOLLO.PLAYBACK_BAR.BYPASS_PROCESSOR", True)
+    _ELAPSED_TIME = CONFIG.get("APOLLO.PLAYBACK_BAR.ELAPSED_TIME", 0)
 
     def __init__(self, ui: Apollo) -> None:
         """
@@ -164,15 +168,30 @@ class Playback_Bar_Interactions(abc.ABC):
         self.ui.playback_button_prev.pressed.connect(lambda: self.call_track_prev())
         self.ui.playback_button_next.pressed.connect(lambda: self.call_track_next())
         self.ui.playback_button_audio_bypass.clicked.connect(
-                lambda: self.state_change_processor_bypass(self.ui.playback_button_audio_bypass.isChecked()))
-        self.ui.playback_footer_track_seek_slider.valueChanged.connect(lambda x: (self.state_change_seek_slider(x)))
+            lambda: self.state_change_processor_bypass(
+                self.ui.playback_button_audio_bypass.isChecked()
+            )
+        )
+        self.ui.playback_footer_track_seek_slider.valueChanged.connect(
+            lambda x: (self.state_change_seek_slider(x))
+        )
         self.ui.playback_button_play_shuffle.pressed.connect(lambda: (self.state_change_shuffle()))
         self.ui.playback_button_play_repeat.pressed.connect(lambda: (self.state_change_repeat()))
-        self.ui.playback_slider_volume_control.valueChanged.connect(lambda x: (self.state_change_volume_level(x)))
-        self.ui.playback_button_volume_control.pressed.connect(lambda: (self.state_change_volume_level()))
-        self.ui.playback_button_play_settings.pressed.connect(lambda: (self.ui.audiofx_tab_switch_button.click()))
-        self.ui.playback_footer_track_rating.RatingChangedSignal.connect(lambda x: self.call_track_rating(x))
-        self.ui.queue_main_listview.doubleClicked.connect(lambda x: self.call_queue_list_item_Dclick(x))
+        self.ui.playback_slider_volume_control.valueChanged.connect(
+            lambda x: (self.state_change_volume_level(x))
+        )
+        self.ui.playback_button_volume_control.pressed.connect(
+            lambda: (self.state_change_volume_level())
+        )
+        self.ui.playback_button_play_settings.pressed.connect(
+            lambda: (self.ui.audiofx_tab_switch_button.click())
+        )
+        self.ui.playback_footer_track_rating.RatingChangedSignal.connect(
+            lambda x: self.call_track_rating(x)
+        )
+        self.ui.queue_main_listview.doubleClicked.connect(
+            lambda x: self.call_queue_list_item_Dclick(x)
+        )
 
     def setup_defaults(self):
         """
@@ -192,13 +211,15 @@ class Playback_Bar_Interactions(abc.ABC):
         """
         saves session states of Apollo
         """
-        CONFIG['APOLLO.PLAYBACK_BAR.STATE_PLAY'] = self._STATE_PLAY
-        CONFIG['APOLLO.PLAYBACK_BAR.STATE_SHUFFLE'] = self._STATE_SHUFFLE
-        CONFIG['APOLLO.PLAYBACK_BAR.STATE_REPEAT'] = self._STATE_REPEAT
-        CONFIG['APOLLO.PLAYBACK_BAR.VOLUME_LEVEL'] = self._VOLUME_LEVEL
-        CONFIG['APOLLO.PLAYBACK_BAR.LOADED_TRACK'] = self._LOADED_TRACK
-        CONFIG['APOLLO.PLAYBACK_BAR.BYPASS_PROCESSOR'] = self._BYPASS_PROCESSOR
-        CONFIG['APOLLO.PLAYBACK_BAR.ELAPSED_TIME'] = self.ui.playback_footer_track_seek_slider.value()
+        CONFIG["APOLLO.PLAYBACK_BAR.STATE_PLAY"] = self._STATE_PLAY
+        CONFIG["APOLLO.PLAYBACK_BAR.STATE_SHUFFLE"] = self._STATE_SHUFFLE
+        CONFIG["APOLLO.PLAYBACK_BAR.STATE_REPEAT"] = self._STATE_REPEAT
+        CONFIG["APOLLO.PLAYBACK_BAR.VOLUME_LEVEL"] = self._VOLUME_LEVEL
+        CONFIG["APOLLO.PLAYBACK_BAR.LOADED_TRACK"] = self._LOADED_TRACK
+        CONFIG["APOLLO.PLAYBACK_BAR.BYPASS_PROCESSOR"] = self._BYPASS_PROCESSOR
+        CONFIG[
+            "APOLLO.PLAYBACK_BAR.ELAPSED_TIME"
+        ] = self.ui.playback_footer_track_seek_slider.value()
 
     def state_change_processor_bypass(self, state: bool):
         """
@@ -221,20 +242,20 @@ class Playback_Bar_Interactions(abc.ABC):
         button = self.ui.playback_button_play_pause
         if state is not None:
             if isinstance(state, STATE_PLAY):
-                button.setProperty('STATE_PLAY', state.name)
+                button.setProperty("STATE_PLAY", state.name)
                 self._STATE_PLAY = state.name
             else:
-                button.setProperty('STATE_PLAY', state)
+                button.setProperty("STATE_PLAY", state)
                 self._STATE_PLAY = state
         else:
-            current = button.property('STATE_PLAY')
+            current = button.property("STATE_PLAY")
             if (current is not None) and (current == STATE_PLAY.PLAY.name):
                 self._STATE_PLAY = STATE_PLAY.PAUSE.name
             elif (current is not None) and (current == STATE_PLAY.PAUSE.name):
                 self._STATE_PLAY = STATE_PLAY.PLAY.name
             else:
                 pass
-            button.setProperty('STATE_PLAY', self._STATE_PLAY)
+            button.setProperty("STATE_PLAY", self._STATE_PLAY)
 
         button.style().unpolish(button)
         button.style().polish(button)
@@ -253,20 +274,20 @@ class Playback_Bar_Interactions(abc.ABC):
         button = self.ui.playback_button_play_shuffle
         if state is not None:
             if isinstance(state, STATE_SHUFFLE):
-                button.setProperty('STATE_SHUFFLE', state.name)
+                button.setProperty("STATE_SHUFFLE", state.name)
                 self._STATE_SHUFFLE = state.name
             else:
-                button.setProperty('STATE_SHUFFLE', state)
+                button.setProperty("STATE_SHUFFLE", state)
                 self._STATE_SHUFFLE = state
         else:
-            current = button.property('STATE_SHUFFLE')
+            current = button.property("STATE_SHUFFLE")
             if (current is not None) and (current == STATE_SHUFFLE.NONE.name):
                 self._STATE_SHUFFLE = STATE_SHUFFLE.SHUFFLE.name
             elif (current is not None) and (current == STATE_SHUFFLE.SHUFFLE.name):
                 self._STATE_SHUFFLE = STATE_SHUFFLE.NONE.name
             else:
                 pass
-            button.setProperty('STATE_SHUFFLE', self._STATE_SHUFFLE)
+            button.setProperty("STATE_SHUFFLE", self._STATE_SHUFFLE)
 
         button.style().unpolish(button)
         button.style().polish(button)
@@ -285,13 +306,13 @@ class Playback_Bar_Interactions(abc.ABC):
         button = self.ui.playback_button_play_repeat
         if state is not None:
             if isinstance(state, STATE_REPEAT):
-                button.setProperty('STATE_REPEAT', state.name)
+                button.setProperty("STATE_REPEAT", state.name)
                 self._STATE_REPEAT = state.name
             else:
-                button.setProperty('STATE_REPEAT', state)
+                button.setProperty("STATE_REPEAT", state)
                 self._STATE_REPEAT = state
         else:
-            current = button.property('STATE_REPEAT')
+            current = button.property("STATE_REPEAT")
             if (current is not None) and (current == STATE_REPEAT.NONE.name):
                 self._STATE_REPEAT = STATE_REPEAT.REPEAT.name
             elif (current is not None) and (current == STATE_REPEAT.REPEAT.name):
@@ -300,7 +321,7 @@ class Playback_Bar_Interactions(abc.ABC):
                 self._STATE_REPEAT = STATE_REPEAT.NONE.name
             else:
                 pass
-            button.setProperty('STATE_REPEAT', self._STATE_REPEAT)
+            button.setProperty("STATE_REPEAT", self._STATE_REPEAT)
 
         button.style().unpolish(button)
         button.style().polish(button)
@@ -320,16 +341,16 @@ class Playback_Bar_Interactions(abc.ABC):
         if level is not None and isinstance(level, int):
             if level == 0:
                 self._STATE_VOLUME_LEVEL = STATE_VOLUME_LEVEL.MUTE.name
-                button.setProperty('STATE_VOLUME_LEVEL', self._STATE_VOLUME_LEVEL)
+                button.setProperty("STATE_VOLUME_LEVEL", self._STATE_VOLUME_LEVEL)
             elif 0 < level <= 25:
                 self._STATE_VOLUME_LEVEL = STATE_VOLUME_LEVEL.QUARTER.name
-                button.setProperty('STATE_VOLUME_LEVEL', self._STATE_VOLUME_LEVEL)
+                button.setProperty("STATE_VOLUME_LEVEL", self._STATE_VOLUME_LEVEL)
             elif 25 < level <= 50:
                 self._STATE_VOLUME_LEVEL = STATE_VOLUME_LEVEL.HALF.name
-                button.setProperty('STATE_VOLUME_LEVEL', self._STATE_VOLUME_LEVEL)
+                button.setProperty("STATE_VOLUME_LEVEL", self._STATE_VOLUME_LEVEL)
             elif 50 < level <= 99:
                 self._STATE_VOLUME_LEVEL = STATE_VOLUME_LEVEL.FULL.name
-                button.setProperty('STATE_VOLUME_LEVEL', self._STATE_VOLUME_LEVEL)
+                button.setProperty("STATE_VOLUME_LEVEL", self._STATE_VOLUME_LEVEL)
             else:
                 pass
 
@@ -341,7 +362,7 @@ class Playback_Bar_Interactions(abc.ABC):
             self.call_state_change_volume_level(level)
 
         else:
-            current = button.property('STATE_VOLUME_LEVEL')
+            current = button.property("STATE_VOLUME_LEVEL")
             if current == STATE_VOLUME_LEVEL.MUTE.name:
                 self.ui.playback_slider_volume_control.setValue(25)
             elif current == STATE_VOLUME_LEVEL.QUARTER.name:
@@ -361,51 +382,55 @@ class Playback_Bar_Interactions(abc.ABC):
             metadata (Optional[Mediafile]): Audio Metadata
         """
         if metadata is None:
-            self.ui.playback_footer_track_title.setText('Apollo - Media Player')
+            self.ui.playback_footer_track_title.setText("Apollo - Media Player")
             self.ui.playback_footer_track_seek_slider.setRange(0, 100)
             self.ui.playback_footer_track_seek_slider.setSingleStep(5)
-            elapsed_time = time.strftime('%H:%M:%S', time.gmtime(self.ui.playback_footer_track_seek_slider.maximum()))
+            elapsed_time = time.strftime(
+                "%H:%M:%S", time.gmtime(self.ui.playback_footer_track_seek_slider.maximum())
+            )
             self.ui.playback_footer_track_elapsed.setText(f"-{elapsed_time}")
-            self.ui.track_info_title.setText(f'Title: NA')
-            self.ui.track_info_misc_1.setText(f'Artist: NA')
-            self.ui.track_info_misc_2.setText(f'Album: NA')
-            self.ui.track_info_misc_3.setText(f'Mood: NA')
+            self.ui.track_info_title.setText(f"Title: NA")
+            self.ui.track_info_misc_1.setText(f"Artist: NA")
+            self.ui.track_info_misc_2.setText(f"Album: NA")
+            self.ui.track_info_misc_3.setText(f"Mood: NA")
             self.ui.track_info_stream.setText("NA, NA, NA")
         else:
             tags = metadata.SynthTags
-            self._LOADED_TRACK = PurePath(tags['FILEPATH'][0]).as_posix()
+            self._LOADED_TRACK = PurePath(tags["FILEPATH"][0]).as_posix()
 
             # POPULATE FOOTER ITEMS
-            self.ui.playback_footer_track_title.setText(tags.get('TITLE', ['Apollo - Media Player'])[0])
-            self.ui.playback_footer_track_rating.setText('')
+            self.ui.playback_footer_track_title.setText(
+                tags.get("TITLE", ["Apollo - Media Player"])[0]
+            )
+            self.ui.playback_footer_track_rating.setText("")
 
-            time_sec = song_len = datetime.timedelta(seconds = float(tags.get('SONGLEN', 0)[0]))
+            time_sec = song_len = datetime.timedelta(seconds=float(tags.get("SONGLEN", 0)[0]))
             self.ui.playback_footer_track_elapsed.setText(f"{time_sec}")
             self.ui.playback_footer_track_seek_slider.setRange(0, time_sec)
             self.ui.playback_footer_track_seek_slider.setSingleStep(5)
 
             # POPULATE TRACK INFORMATION WIDGET
-            TITLE = tags.get('TITLE')[0] if len(tags.get('TITLE')) != 0 else 'NA'
-            self.ui.track_info_title.setText(f'Title: {TITLE}')
-            ARTIST = tags.get('ARTIST')[0] if len(tags.get('ARTIST')) != 0 else 'NA'
-            self.ui.track_info_misc_1.setText(f'Artist: {ARTIST}')
-            ALBUM = tags.get('ALBUM')[0] if len(tags.get('ALBUM')) != 0 else 'NA'
-            self.ui.track_info_misc_2.setText(f'Album: {ALBUM}')
-            MOOD = tags.get('MOOD')[0] if len(tags.get('MOOD')) != 0 else 'NA'
-            self.ui.track_info_misc_3.setText(f'Mood: {MOOD}')
+            TITLE = tags.get("TITLE")[0] if len(tags.get("TITLE")) != 0 else "NA"
+            self.ui.track_info_title.setText(f"Title: {TITLE}")
+            ARTIST = tags.get("ARTIST")[0] if len(tags.get("ARTIST")) != 0 else "NA"
+            self.ui.track_info_misc_1.setText(f"Artist: {ARTIST}")
+            ALBUM = tags.get("ALBUM")[0] if len(tags.get("ALBUM")) != 0 else "NA"
+            self.ui.track_info_misc_2.setText(f"Album: {ALBUM}")
+            MOOD = tags.get("MOOD")[0] if len(tags.get("MOOD")) != 0 else "NA"
+            self.ui.track_info_misc_3.setText(f"Mood: {MOOD}")
 
-            BITRATE = tags.get('BITRATE')[0] if len(tags.get('BITRATE')) != 0 else 0
-            BITRATE = 'NA' if BITRATE is None else f'{int(BITRATE / 1000)}Kbps'
-            CHANNELS = tags.get('CHANNELS')[0] if len(tags.get('CHANNELS')) != 0 else 0
-            CHANNELS = 'NA' if CHANNELS is None else f'{CHANNELS} Channels'
-            SAMPLERATE = tags.get('SAMPLERATE')[0] if len(tags.get('SAMPLERATE')) != 0 else 0
-            SAMPLERATE = 'NA' if SAMPLERATE is None else f'{SAMPLERATE}Hz'
+            BITRATE = tags.get("BITRATE")[0] if len(tags.get("BITRATE")) != 0 else 0
+            BITRATE = "NA" if BITRATE is None else f"{int(BITRATE / 1000)}Kbps"
+            CHANNELS = tags.get("CHANNELS")[0] if len(tags.get("CHANNELS")) != 0 else 0
+            CHANNELS = "NA" if CHANNELS is None else f"{CHANNELS} Channels"
+            SAMPLERATE = tags.get("SAMPLERATE")[0] if len(tags.get("SAMPLERATE")) != 0 else 0
+            SAMPLERATE = "NA" if SAMPLERATE is None else f"{SAMPLERATE}Hz"
 
             self.ui.track_info_stream.setText("{0}, {1}, {2}".format(BITRATE, CHANNELS, SAMPLERATE))
-            self.load_rating(tags.get('POPULARIMETER', 0))
+            self.load_rating(tags.get("POPULARIMETER", 0))
 
             widget = self.ui.track_info_cover_pixmap
-            if tags.get('PICTURE')[0]:
+            if tags.get("PICTURE")[0]:
                 pixmap = QtGui.QPixmap()
                 pixmap.loadFromData(bytes(metadata.Artwork[0].data))
                 widget.setPixmap(pixmap)
@@ -429,50 +454,68 @@ class Playback_Bar_Interactions(abc.ABC):
         """
         if value != 0:
             value = self.ui.playback_footer_track_seek_slider.maximum() - value
-            self.ui.playback_footer_track_elapsed.setText(f"-{time.strftime('%H:%M:%S', time.gmtime(value))}")
+            self.ui.playback_footer_track_elapsed.setText(
+                f"-{time.strftime('%H:%M:%S', time.gmtime(value))}"
+            )
         else:
             value = self.ui.playback_footer_track_seek_slider.maximum()
-            self.ui.playback_footer_track_elapsed.setText(f"-{time.strftime('%H:%M:%S', time.gmtime(value))}")
+            self.ui.playback_footer_track_elapsed.setText(
+                f"-{time.strftime('%H:%M:%S', time.gmtime(value))}"
+            )
         self.call_state_change_seek_slider(value)
 
     @abc.abstractmethod
-    def call_state_change_seek_slider(self, time_s: int): ...
+    def call_state_change_seek_slider(self, time_s: int):
+        ...
 
     @abc.abstractmethod
-    def call_state_change_play(self, state: Optional[Union[STATE_PLAY, str]]): ...
+    def call_state_change_play(self, state: Optional[Union[STATE_PLAY, str]]):
+        ...
 
     @abc.abstractmethod
-    def call_state_change_shuffle(self, state: Optional[Union[STATE_SHUFFLE, str]]): ...
+    def call_state_change_shuffle(self, state: Optional[Union[STATE_SHUFFLE, str]]):
+        ...
 
     @abc.abstractmethod
-    def call_state_change_repeat(self, state: Optional[Union[STATE_REPEAT, str]]): ...
+    def call_state_change_repeat(self, state: Optional[Union[STATE_REPEAT, str]]):
+        ...
 
     @abc.abstractmethod
-    def call_state_change_volume_level(self, volume: int): ...
+    def call_state_change_volume_level(self, volume: int):
+        ...
 
     @abc.abstractmethod
-    def call_track_prev(self): ...
+    def call_track_prev(self):
+        ...
 
     @abc.abstractmethod
-    def call_track_next(self): ...
+    def call_track_next(self):
+        ...
 
     @abc.abstractmethod
-    def call_track_rating(self, rating: float): ...
+    def call_track_rating(self, rating: float):
+        ...
 
     @abc.abstractmethod
-    def call_bypass_processor(self, state: bool): ...
+    def call_bypass_processor(self, state: bool):
+        ...
 
     @abc.abstractmethod
-    def call_on_shutdown(self): ...
+    def call_on_shutdown(self):
+        ...
 
     @abc.abstractmethod
-    def call_queue_list_item_Dclick(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):...
+    def call_queue_list_item_Dclick(
+        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ):
+        ...
 
 
 class Playback_Bar_Controller:
     """
     Playback_Bar_Controller
     """
+
     def __init__(self) -> None:
         """
         Constructor
@@ -532,7 +575,9 @@ class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO:
         Playback_Bar_Interactions.save_states(self)
         Playback_Bar_Controller.save_states(self)
 
-    def call_queue_list_item_Dclick(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+    def call_queue_list_item_Dclick(
+        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ):
         LOGGER.debug(index)
 
     def call_on_search(self):
@@ -556,10 +601,10 @@ class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO:
         LOGGER.debug(volume)
 
     def call_track_prev(self):
-        LOGGER.debug('prev')
+        LOGGER.debug("prev")
 
     def call_track_next(self):
-        LOGGER.debug('next')
+        LOGGER.debug("next")
 
     def call_track_rating(self, rating: float):
         LOGGER.debug(rating)
@@ -571,4 +616,4 @@ class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO:
         LOGGER.debug(time_s)
 
     def call_on_shutdown(self):
-        LOGGER.debug('SHUTDOWN')
+        LOGGER.debug("SHUTDOWN")

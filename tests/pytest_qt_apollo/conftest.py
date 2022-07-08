@@ -15,7 +15,7 @@ from pytestqt.qtbot import QtBot
 from configs import settings
 
 settings.setenv("QT_TESTING")
-settings.validators.validate(only_current_env = True)
+settings.validators.validate(only_current_env=True)
 
 from apollo.src.app import Apollo
 from apollo.utils import get_logger
@@ -30,7 +30,7 @@ from tests.testing_utils import get_qt_application
 # 4. states are saved appropriately
 
 LOGGER = get_logger(__name__)
-PROFILE = settings['PROFILE_RUNS']  # disable profiling when debugging
+PROFILE = settings["PROFILE_RUNS"]  # disable profiling when debugging
 
 
 @pytest.fixture
@@ -43,8 +43,8 @@ def get_apollo_application(qtbot) -> tuple[Apollo, QtBot]:
 
 
 def copy_mock_data():
-    src = PurePath((settings['mock_data'])) / 'testing.db'
-    dest = PurePath(settings['db_path'])
+    src = PurePath((settings["mock_data"])) / "testing.db"
+    dest = PurePath(settings["db_path"])
     shutil.copy(src, dest)
 
 
@@ -69,7 +69,7 @@ def remove_temp_dir():
 
 
 def remove_local_config():
-    path = PurePath(settings.project_root, 'configs', 'qt_testing_settings.local.toml')
+    path = PurePath(settings.project_root, "configs", "qt_testing_settings.local.toml")
     if os.path.exists(path):
         os.remove(path)
 
@@ -87,23 +87,27 @@ def pytest_pyfunc_call(pyfuncitem: pytest.Function):
     mname = testfunction.__module__
 
     if PROFILE:
-        prof = memory_profiler.LineProfiler(backend = 'psutil')
-        cprof = cProfile.Profile(subcalls = True, builtins = False)
+        prof = memory_profiler.LineProfiler(backend="psutil")
+        cprof = cProfile.Profile(subcalls=True, builtins=False)
         cprof.enable()
         LOGGER.critical(f"TESTING> {mname}::{name}")
         val = prof(testfunction)(**testargs)
         cprof.disable()
 
-        path = PurePath(settings.project_root, 'tests', '.profiles', f'{settings.current_env}.memprofile')
-        with open(path, 'a') as stream:
-            stream.write(f'[{time.asctime(time.localtime())}] {mname}::{name}\n')
-            memory_profiler.show_results(prof, stream = stream, precision = 2)
+        path = PurePath(
+            settings.project_root, "tests", ".profiles", f"{settings.current_env}.memprofile"
+        )
+        with open(path, "a") as stream:
+            stream.write(f"[{time.asctime(time.localtime())}] {mname}::{name}\n")
+            memory_profiler.show_results(prof, stream=stream, precision=2)
 
-        path = PurePath(settings.project_root, 'tests', '.profiles', f'{settings.current_env}.profile')
-        with open(path, 'a') as stream:
-            stream.write(f'[{time.asctime(time.localtime())}] {mname}::{name}\n')
-            stats = pstats.Stats(cprof, stream = stream)
-            stats.strip_dirs().sort_stats('tottime').print_stats()
+        path = PurePath(
+            settings.project_root, "tests", ".profiles", f"{settings.current_env}.profile"
+        )
+        with open(path, "a") as stream:
+            stream.write(f"[{time.asctime(time.localtime())}] {mname}::{name}\n")
+            stats = pstats.Stats(cprof, stream=stream)
+            stats.strip_dirs().sort_stats("tottime").print_stats()
 
     else:
         LOGGER.critical(f"TESTING> {mname}::{name}")
@@ -115,12 +119,12 @@ def pytest_pyfunc_call(pyfuncitem: pytest.Function):
 
 
 def clean_output():
-    path = os.path.join(os.path.dirname(__file__), 'output')
+    path = os.path.join(os.path.dirname(__file__), "output")
     if os.path.exists(path):
         shutil.rmtree(path)
 
 
-@pytest.fixture(scope = 'package', autouse = True)
+@pytest.fixture(scope="package", autouse=True)
 def create_session():
     settings.setenv("QT_TESTING")
     settings.validators.validate()
@@ -128,7 +132,7 @@ def create_session():
 
     clean_output()
     create_temp_dir()
-    load_theme(get_qt_application(), settings.loaded_theme, recompile = settings.recompile_theme)
+    load_theme(get_qt_application(), settings.loaded_theme, recompile=settings.recompile_theme)
 
     yield None
 
@@ -138,4 +142,6 @@ def create_session():
     LOGGER.info(f"CONFIG {settings.current_env}: {settings.to_dict()}")
     LOGGER.info(f"Application Exited with Error code: {get_qt_application().exit()}")
     LOGGER.info(f"Completed {os.path.dirname(__file__)}")
+
+
 # END REGION

@@ -47,14 +47,18 @@ class Library_Tab_Interactions(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def call_on_shutdown(self): ...
+    def call_on_shutdown(self):
+        ...
 
 
 class Library_Tab_Controller:
     """
     Library_Tab_Controller
     """
-    _DELEGATE_TYPE = CONFIG.get('APOLLO.LIBRARY_TAB.DELEGATE_TYPE', ViewDelegates.TrackDelegate_Mid.name)
+
+    _DELEGATE_TYPE = CONFIG.get(
+        "APOLLO.LIBRARY_TAB.DELEGATE_TYPE", ViewDelegates.TrackDelegate_Mid.name
+    )
 
     def __init__(self) -> None:
         """
@@ -75,7 +79,9 @@ class Library_Tab_Controller:
         view.verticalScrollbarValueChanged = lambda x: (self.scroll_paging(view, x))
         self.library_model.fetch_data(self.library_model.FETCH_DATA_DOWN)
 
-    def set_model_delegate(self, view: QtWidgets.QAbstractItemView, _type: Optional[ViewDelegates] = None):
+    def set_model_delegate(
+        self, view: QtWidgets.QAbstractItemView, _type: Optional[ViewDelegates] = None
+    ):
         """
         Binds models with Views
 
@@ -87,9 +93,9 @@ class Library_Tab_Controller:
             set_delegate(view, _type)
             self._DELEGATE_TYPE = _type.name
         else:
-            if self._DELEGATE_TYPE == 'TrackDelegate_Small':
+            if self._DELEGATE_TYPE == "TrackDelegate_Small":
                 set_delegate(view, ViewDelegates.TrackDelegate_Small)
-            elif self._DELEGATE_TYPE == 'TrackDelegate_Mid':
+            elif self._DELEGATE_TYPE == "TrackDelegate_Mid":
                 set_delegate(view, ViewDelegates.TrackDelegate_Mid)
             else:
                 return None
@@ -113,13 +119,14 @@ class Library_Tab_Controller:
         """
         saves session states of Apollo
         """
-        CONFIG['APOLLO.LIBRARY_TAB.DELEGATE_TYPE'] = self._DELEGATE_TYPE
+        CONFIG["APOLLO.LIBRARY_TAB.DELEGATE_TYPE"] = self._DELEGATE_TYPE
 
 
 class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):  # TODO: Documentation
     """
     Library_Tab
     """
+
     def __init__(self, ui: Apollo) -> None:
         Library_Tab_Interactions.__init__(self, ui)
         Library_Tab_Controller.__init__(self)
@@ -137,7 +144,7 @@ class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):  # TODO: Do
         """
         Shutdown callback
         """
-        LOGGER.debug('SHUTDOWN')
+        LOGGER.debug("SHUTDOWN")
 
     def call_on_search(self):
         if self.ui.main_tabs_stack_widget.currentIndex() == 0:

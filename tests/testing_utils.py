@@ -27,9 +27,11 @@ def screenshot_widget(widget: QtWidgets.QWidget, name: str):
     painter.save()
     widget.setScreen(QtWidgets.QApplication.screens()[0])
     widget.render(painter, QtCore.QPoint(), widget.rect())
-    if not os.path.exists(os.path.join(os.path.dirname(__file__), 'pytest_qt_apollo', 'output')):
-        os.mkdir(os.path.join(os.path.dirname(__file__), 'pytest_qt_apollo', 'output'))
-    pixmap.save(os.path.join(os.path.dirname(__file__), 'pytest_qt_apollo', 'output', name + '.png'))
+    if not os.path.exists(os.path.join(os.path.dirname(__file__), "pytest_qt_apollo", "output")):
+        os.mkdir(os.path.join(os.path.dirname(__file__), "pytest_qt_apollo", "output"))
+    pixmap.save(
+        os.path.join(os.path.dirname(__file__), "pytest_qt_apollo", "output", name + ".png")
+    )
     painter.end()
 
 

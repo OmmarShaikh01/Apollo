@@ -55,6 +55,7 @@ class Test_LibraryModel:
 
     def test_provider(self):
         from apollo.db.models import ModelProvider
+
         assert isinstance(ModelProvider.get_model(LibraryModel), LibraryModel)
 
     def test_init_model_with_data(self, model_provider: LibraryModel):

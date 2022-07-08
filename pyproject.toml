@@ -45,6 +45,36 @@ nox = "^2022.1.7"
 Jinja2 = "^3.1.2"
 pytest-qt = "^4.0.2"
 memory-profiler = "^0.60.0"
+black = "^22.6.0"
+
+[tool.black]
+verbose = 1
+--check = "no"
+diff = "no"
+color = true
+line-length = 100
+target-version = ["py39"]
+exclude='''
+/(
+\.direnv|
+\.eggs|
+\.git|
+\.hg|
+\.mypy_cache|
+\.nox|
+\.tox|
+\.venv|
+venv|
+\.svn|
+_build|
+buck-out|
+build|
+dist|
+__pypackages__|
+\.pyi
+)/
+'''
+include='\.py?$'
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

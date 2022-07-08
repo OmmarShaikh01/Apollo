@@ -10,6 +10,7 @@ from apollo.utils import ApolloSignal
 
 class PlayerQueue:
     """Queue track stores the loaded track paths"""
+
     def __init__(self, data: list[str] = None):
         """
         Constructor
@@ -148,6 +149,7 @@ class Player:
     """
     Player interface that communicates with the DSP
     """
+
     STOP_PLAYER = ApolloSignal()
     START_PLAYER = ApolloSignal()
     END_QUEUE = ApolloSignal()
@@ -278,7 +280,7 @@ class Player:
         self.server.setAmp(value if value >= 0.0001 else 0.0001)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     player = Player()
-    player.set_queue([os.path.join(r'D:\music', file) for file in os.listdir(r'D:\music')])
+    player.set_queue([os.path.join(r"D:\music", file) for file in os.listdir(r"D:\music")])
     player.server.gui(locals())
