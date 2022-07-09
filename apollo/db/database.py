@@ -1,5 +1,5 @@
 """
-DEV NOTES
+Library and Database Managers of Apollo
 """
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 from apollo.media import Mediafile
 from apollo.utils import ApolloWarning, get_logger
-from configs import settings
+from configs import settings, write_config
 
 
 CONFIG = settings
@@ -66,18 +66,18 @@ class Connection(QSqlDatabase):
         if self.open() and self.isValid() and self.isOpen():
             self.exec("PRAGMA foreign_keys=ON")
             return self
-        else:
-            raise ConnectionError(self.database)
+        raise ConnectionError(self.database)
 
-    def __exit__(self, exc_type: BaseException, value: BaseException, traceback: TracebackType):
+    def __exit__(self, exc_type: BaseException, value: BaseException, _traceback: TracebackType):
         """
         Args:
             exc_type (BaseException): Exception type
             value (BaseException): Exception Value
-            traceback (TracebackType): Traceback stack
+            _traceback (TracebackType): Traceback stack
         """
-        if any([exc_type, value, traceback]):  # pragma: no cover
-            LOGGER.error(f"Type: {exc_type}\nValue: {value}\nTraceback:\n{traceback}")
+        if any([exc_type, value, _traceback]):  # pragma: no cover
+            # pylint: disable=W1203
+            LOGGER.error(f"Type: {exc_type}\nValue: {value}\nTraceback:\n{_traceback}")
         self.commit()
         self.close()
         QSqlDatabase.removeDatabase(self.name)
@@ -98,12 +98,13 @@ class Connection(QSqlDatabase):
         """
         if db_path == ":memory:":
             return db_path
-        elif os.path.splitext(db_path)[1] == ".db":
+
+        if os.path.splitext(db_path)[1] == ".db":
             if isinstance(db_path, str):
                 db_path = PurePath(db_path)
             return db_path
-        else:
-            raise ValueError(db_path)
+
+        raise ValueError(db_path)
 
 
 @dataclasses.dataclass
@@ -138,16 +139,16 @@ class RecordSet:
         def str_converter(item: Any):
             if item:
                 return str(item)
-            else:
-                return str(None)
+
+            return str(None)
 
         if self:
             HEADER = " | ".join(str(item) for item in self.fields)
             SEP = "-" * len(HEADER)
             DATA = "\n".join(" | ".join(map(str_converter, row)) for row in self.records)
             return f"\n{SEP}\n{HEADER}\n{SEP}\n{DATA}\n{SEP}\n"
-        else:
-            return f"\n----\nEMPTY\n----\nEMPTY\n----\n"
+
+        return "\n----\nEMPTY\n----\nEMPTY\n----\n"
 
 
 class Database:
@@ -294,7 +295,7 @@ class Database:
         """
         records = copy.deepcopy(records)
         with self.connector as connection:
-            for name, sql in records.pop("sql_table_schema").items():
+            for _, sql in records.pop("sql_table_schema").items():
                 self.execute(sql, connection)
             for table_name, table_data in records.items():
                 table_records = RecordSet.from_json(table_data)
@@ -317,7 +318,7 @@ class Database:
                 table_name = item[0]
                 table_result = self.execute(f"SELECT * FROM {table_name}", connection)
                 table_result = {
-                    index: {k: v for k, v in zip(table_result.fields, row)}
+                    index: dict(zip(table_result.fields, row))
                     for index, row in enumerate(table_result.records)
                 }
                 export[table_name] = table_result
@@ -336,6 +337,40 @@ class Database:
         return conn
 
 
+def load_purepath_paths(path_list: list[str]) -> list[PurePath]:
+    """
+    Load purepath paths
+
+    Args:
+        path_list (list[str]): list of FS paths
+
+    Returns:
+        list[PurePath]: List of FS paths
+    """
+    new_path_list = []
+    for path in path_list:
+        if os.path.exists(path):
+            new_path_list.append(PurePath(path))
+    return new_path_list
+
+
+def load_str_paths(path_list: list[PurePath]) -> list[str]:
+    """
+    Load str paths
+
+    Args:
+        path_list (list[PurePath]): list of FS paths
+
+    Returns:
+        list[str]: List of FS paths
+    """
+    new_path_list = []
+    for path in path_list:
+        if os.path.exists(path):
+            new_path_list.append(str(path.as_posix()))
+    return new_path_list
+
+
 class LibraryManager(Database):
     """
     Library Manager, Manages all media files indexed by Apollo
@@ -345,14 +380,17 @@ class LibraryManager(Database):
     queue_table_columns = ["FILEID", "PLAYORDER"]
 
     def __init__(self, path: str = None):
-        """
-        Constructor
-
-        Args:
-            path (str): Database Path
-        """
         super().__init__(path)
-        self._dirs_watched = []  # TODO: Save To config
+        self._dirs_watched = load_purepath_paths(
+            CONFIG.get("APOLLO.LIBRARY_MANAGER.WATCHED_DIRS", "")
+        )
+
+    def save_states(self):
+        """
+        saves loacal states to config
+        """
+        CONFIG["APOLLO.LIBRARY_MANAGER.WATCHED_DIRS"] = load_str_paths(self._dirs_watched)
+        write_config()
 
     def add_dir_to_watcher(self, path: PurePath):
         """
@@ -365,17 +403,15 @@ class LibraryManager(Database):
             self._dirs_watched.append(path)
         else:
             if path.parent in self._dirs_watched:
-
                 ApolloWarning(f"Skipped {path} parent directory exists")
             elif path in [_path.parent for _path in self._dirs_watched]:
-                if all([(path / str(item)) in self._dirs_watched for item in os.listdir(path)]):
+                if all(((path / str(item)) in self._dirs_watched for item in os.listdir(path))):
                     self._dirs_watched.append(path)
                     for file in os.listdir(path):
                         self._dirs_watched.pop(self._dirs_watched.index(path / str(file)))
             elif path not in self._dirs_watched:
                 self._dirs_watched.append(path)
             else:
-
                 ApolloWarning(f"Skipped {path}, is not monitored")
 
     def scan_directories(self, path: Union[list[PurePath, str], str, PurePath]):
@@ -398,7 +434,7 @@ class LibraryManager(Database):
         for item in path:
             LOGGER.info(f"Scanning directory: {item}")
             self.add_dir_to_watcher(item)
-            for dirct, subdirs, files in os.walk(item):
+            for dirct, _, files in os.walk(item):
                 paths.extend([PurePath(dirct, file) for file in files])
         self.scan_files(paths)
 
@@ -428,8 +464,14 @@ class LibraryManager(Database):
                         self.batch_insert(records, "library", connection)
                 else:
                     ApolloWarning(f"Skipped {len(_path)} Files")
+            # pylint: disable=W0703
             except Exception as e:
-                LOGGER.error(f"Type: {e}\nValue: {e.__cause__}\nTraceback:\n{traceback.print_tb()}")
+                LOGGER.error(
+                    f"Type: {e}"
+                    f"Value: {e.__cause__}"
+                    f"Traceback:"
+                    f"{traceback.print_tb(e.__traceback__)}"
+                )
 
         if isinstance(path, str):
             path = [PurePath(path)]
@@ -467,16 +509,17 @@ class LibraryManager(Database):
             RecordSet: Library Table Stats
         """
         with self.connector as connection:
+            # pylint: disable=C0303
             records = self.execute(
                 """
-            SELECT 
-                count(FILEID) as TRACKS,
-                SUM(FILESIZE) as BYTESIZE,
-                round(SUM(SONGLEN), 4) as PLAYLEN,
-                (SELECT count(ARTIST) FROM library GROUP BY ARTIST) as ARTIST,
-                (SELECT count(ALBUM) FROM library GROUP BY ALBUM) as ALBUM
-            FROM library 
-            """,
+                SELECT 
+                    count(FILEID) as TRACKS,
+                    SUM(FILESIZE) as BYTESIZE,
+                    round(SUM(SONGLEN), 4) as PLAYLEN,
+                    (SELECT count(ARTIST) FROM library GROUP BY ARTIST) as ARTIST,
+                    (SELECT count(ALBUM) FROM library GROUP BY ALBUM) as ALBUM
+                FROM library 
+                """,
                 connection,
             )
         return records

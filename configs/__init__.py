@@ -1,1 +1,1 @@
-from configs.config import settings
+from configs.config import settings, write_config

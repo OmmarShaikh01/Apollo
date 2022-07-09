@@ -137,7 +137,7 @@ __pypackages__|
 \.pyi
 )/
 '''
-ignore-patterns = ['mainwindow\\.py']
+ignore-patterns='(.*temp\.py$)|(.*mainwindow\.py$)'
 jobs = 0
 limit-inference-results = 100
 persistent = true
@@ -174,13 +174,13 @@ valid-metaclass-classmethod-first-arg = ["cls"]
 max-args = 5
 max-attributes = 7
 max-bool-expr = 5
-max-branches = 12
+max-branches = 15
 max-locals = 15
 max-parents = 7
 max-public-methods = 20
 max-returns = 6
 max-statements = 50
-min-public-methods = 2
+min-public-methods = 0
 
 [tool.pylint.exceptions]
 overgeneral-exceptions = ["BaseException", "Exception"]
@@ -201,7 +201,21 @@ logging-modules = ["logging"]
 
 [tool.pylint."messages control"]
 confidence = ["HIGH", "CONTROL_FLOW", "INFERENCE", "INFERENCE_FAILURE", "UNDEFINED"]
-disable = ["raw-checker-failed", "bad-inline-option", "locally-disabled", "file-ignored", "suppressed-message", "useless-suppression", "deprecated-pragma", "use-symbolic-message-instead", "bare-except", "invalid-name"]
+disable = [
+    "raw-checker-failed",
+    "bad-inline-option",
+    "locally-disabled",
+    "file-ignored",
+    "suppressed-message",
+    "useless-suppression",
+    "deprecated-pragma",
+    "use-symbolic-message-instead",
+    "bare-except",
+    "logging-fstring-interpolation",
+    "invalid-name",
+    "missing-module-docstring",
+    "unnecessary-lambda"
+]
 enable = ["c-extension-no-member"]
 
 [tool.pylint.miscellaneous]

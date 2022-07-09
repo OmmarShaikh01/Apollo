@@ -1,3 +1,6 @@
+"""
+Defines Nox testing session that runs in a private venv
+"""
 import os
 import shutil
 import sys
@@ -14,6 +17,13 @@ nox.options.reuse_existing_virtualenvs = True
 
 
 def _upgrade_basic(session: nox.Session, install_dev: bool = True):
+    """
+    upgrades the newly created venv with poetry lock dependencies
+
+    Args:
+        session (nox.Session): nox session
+        install_dev (bool): flag to install dev dependencies
+    """
     session.install("--upgrade", "pip", silent=SILENT)
     session.install("--upgrade", "setuptools", silent=SILENT)
     session.install("poetry", silent=SILENT)
@@ -28,6 +38,13 @@ def _upgrade_basic(session: nox.Session, install_dev: bool = True):
 
 @nox.session(python=SUPPORTED_PYTHON)
 def testing_pytest_unit(session: nox.Session, skip_setup: bool = False):
+    """
+    runs unit tests
+
+    Args:
+        session (nox.Session): nox session
+        skip_setup (bool): flag to skip install dependencies
+    """
     os.chdir(os.path.dirname(__file__))
     if not skip_setup:
         _upgrade_basic(session)
@@ -39,6 +56,13 @@ def testing_pytest_unit(session: nox.Session, skip_setup: bool = False):
 
 @nox.session(python=SUPPORTED_PYTHON)
 def testing_pytest_qt(session: nox.Session, skip_setup: bool = False):
+    """
+    runs integration tests
+
+    Args:
+        session (nox.Session): nox session
+        skip_setup (bool): flag to skip install dependencies
+    """
     os.chdir(os.path.dirname(__file__))
     if not skip_setup:
         _upgrade_basic(session)
@@ -50,6 +74,12 @@ def testing_pytest_qt(session: nox.Session, skip_setup: bool = False):
 
 @nox.session(python=SUPPORTED_PYTHON)
 def testing_pytest_global(session: nox.Session):
+    """
+    runs unit and integrating testing in combination
+
+    Args:
+        session (nox.Session): nox session
+    """
     os.chdir(os.path.dirname(__file__))
     _upgrade_basic(session)
 
@@ -88,6 +118,12 @@ def testing_pytest_global(session: nox.Session):
 
 @nox.session(python=SUPPORTED_PYTHON)
 def testing_coverage(session: nox.Session):
+    """
+    runs unit and integrating testing in combination win coverage on
+
+    Args:
+        session (nox.Session): nox session
+    """
     os.chdir(os.path.dirname(__file__))
     _upgrade_basic(session)
 
@@ -111,6 +147,12 @@ def testing_coverage(session: nox.Session):
 
 @nox.session(python=SUPPORTED_PYTHON)
 def testing_benchmarked(session: nox.Session):
+    """
+    runs unit and integrating testing in combination with coverage and profiler on
+
+    Args:
+        session (nox.Session): nox session
+    """
     os.chdir(os.path.dirname(__file__))
     _upgrade_basic(session)
 
@@ -128,6 +170,12 @@ def testing_benchmarked(session: nox.Session):
 
 @nox.session(python=SUPPORTED_PYTHON)
 def build_documentation_sphinx(session: nox.Session):
+    """
+    compiles and builds the sphinx documentation
+
+    Args:
+        session (nox.Session): nox session
+    """
     os.chdir(os.path.dirname(__file__))
     _upgrade_basic(session)
 
@@ -146,6 +194,12 @@ def build_documentation_sphinx(session: nox.Session):
 
 @nox.session(python=SUPPORTED_PYTHON)
 def lint_apollo(session: nox.Session):
+    """
+    runs isort, black, pylint on the apollo
+
+    Args:
+        session (nox.Session): nox session
+    """
     os.chdir(os.path.dirname(__file__))
     _upgrade_basic(session)
     for file in os.listdir(r".\apollo\layout"):
@@ -163,11 +217,20 @@ def lint_apollo(session: nox.Session):
 
     session.run("isort", "--quiet", ".")
     session.run("black", "--quiet", ".")
-    session.run("pylint", ".")
+    try:
+        session.run("pylint", ".")
+    finally:
+        pass
 
 
 @nox.session(python=SUPPORTED_PYTHON)
 def production_build(session: nox.Session):
+    """
+    compiles and builds the complete application dist
+
+    Args:
+        session (nox.Session): nox session
+    """
     os.chdir(os.path.dirname(__file__))
     _upgrade_basic(session)
     # Builds Apollo
@@ -184,12 +247,31 @@ def production_build(session: nox.Session):
 
 @nox.session(python=SUPPORTED_PYTHON)
 def production_launch(session: nox.Session):
+    """
+    launches apollo build dist
+
+    NOTE:
+        requires a build apollo dist
+
+    Args:
+        session (nox.Session): nox session
+    """
     os.chdir(os.path.dirname(__file__))
     toml = PurePath(os.path.dirname(__file__), "pyproject.toml")
 
     # Extracts Package
-    os.chdir(os.path.join(os.path.dirname(__file__), "dist"))
-    file = os.listdir(os.getcwd())[0]
+    path = os.path.join(os.path.dirname(__file__), "dist")
+
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Missing {path}")
+
+    os.chdir(path)
+    file = os.listdir(path)
+
+    if len(file) == 0:
+        raise FileNotFoundError("Missing Build archive")
+
+    file = file[0]
     pycmd = f"import tarfile; file = tarfile.open('{file}'); file.extractall('.'); file.close()"
     session.run(*["python", "-c", pycmd], silent=SILENT)
     os.chdir(file.replace(".tar.gz", ""))
@@ -201,8 +283,7 @@ def production_launch(session: nox.Session):
             del parsed["python"]
             packages = list(f"{k}{v}".replace("^", "==") for k, v in parsed.items())
         session.run("pip", "install", *packages, silent=SILENT)
-
-        session.run(*["python", "-m", "apollo"], silent=SILENT)
+        session.run("python", "-m", "apollo", silent=SILENT)
     finally:
         # Cleanup
         os.chdir(os.path.dirname(__file__))

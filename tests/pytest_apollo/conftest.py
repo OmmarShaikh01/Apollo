@@ -87,7 +87,7 @@ def clean_temp_dir():
 
 def remove_local_config():
     path = PurePath(settings.project_root, "configs", "testing_settings.local.toml")
-    if os.path.isdir(path):
+    if os.path.exists(path):
         os.remove(path)
 
 

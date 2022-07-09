@@ -1,15 +1,11 @@
 import itertools
 import math
-import os
-import sys
-import traceback
 from typing import Optional, Union
 
 import av
 import numpy as np
 import pyo
 
-import apollo.utils
 from apollo.media import Mediafile
 from apollo.utils import ApolloSignal
 

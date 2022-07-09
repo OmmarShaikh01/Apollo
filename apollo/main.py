@@ -1,3 +1,6 @@
+"""
+Main entry point to execute Apollo
+"""
 import sys
 
 from PySide6 import QtWidgets
@@ -21,12 +24,6 @@ def main() -> None:
     load_theme(app, CONFIG.loaded_theme, recompile=CONFIG.recompile_theme)
     window = Apollo()
     LOGGER.info(msg="Application Started")
-
-    # TODO: Disable
-    # window.playback_button_play_pause.pressed.connect(
-    #     lambda: load_theme(app, name = CONFIG.loaded_theme, recompile = not CONFIG.recompile_theme)
-    # )
-
     window.show()
     app.exec()
     LOGGER.info(msg="Application Exit")

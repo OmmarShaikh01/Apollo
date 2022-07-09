@@ -1,4 +1,3 @@
-import copy
 import os
 import random
 
@@ -42,12 +41,12 @@ class PlayerQueue:
         """
         if not is_shuffled:
             self._shuffled = is_shuffled
-            return {k: v for k, v in zip(range(len(data)), data)}
-        else:
-            shuffled_queue = list(range(len(data)))
-            random.shuffle(shuffled_queue)
-            self._shuffled = is_shuffled
-            return {k: v for k, v in zip(shuffled_queue, data)}
+            return dict(zip(range(len(data)), data))
+
+        shuffled_queue = list(range(len(data)))
+        random.shuffle(shuffled_queue)
+        self._shuffled = is_shuffled
+        return dict(zip(shuffled_queue, data))
 
     def set_data(self, data: list):
         """
@@ -216,8 +215,6 @@ class Player:
         elif self.REPEAT_NONE == _type:
             self.queue.circular = False
             self.processor.repeat_current_buffer = False
-        else:
-            return None
 
     def set_shuffle_type(self, _type: int):
         """
@@ -230,8 +227,6 @@ class Player:
             self.queue.shuffled = False
         elif self.SHUFFLE_TRACK == _type:
             self.queue.shuffled = True
-        else:
-            return None
 
     def play_next(self):
         """

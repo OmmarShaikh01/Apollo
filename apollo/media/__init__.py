@@ -17,6 +17,10 @@ CONFIG = settings
 
 
 class Mediafile:
+    """
+    Mediafile class for all Media handling
+    """
+
     TAG_FRAMES = Stream.TAG_FRAMES
     TAG_FRAMES_FIELDS = Stream.TAG_FRAMES_FIELDS
 
@@ -37,57 +41,103 @@ class Mediafile:
     def __bool__(self):
         if self._stream is not None:
             return bool(self._stream)
-        else:
-            return False
+        return False
 
-    def _get_stream(self):
+    # pylint: disable=R1710
+    def _get_stream(self) -> Stream:
+        """
+        Gets stream
+
+        Returns:
+            (Stream): media stream
+        """
         ext = str(self.path.suffix).lower().replace(".", "")
         if ext == "mp3":
             return MP3_File(self.path)
-        else:
-            return None
 
     def get_frame(self) -> av.audio.frame.AudioFrame:
+        """
+        Gets a decoded audio frame
+
+        Returns:
+            av.audio.frame.AudioFrame: Audio frame
+        """
         return self.Decoder.get()
 
     @property
     def Decoder(self) -> Any:
-        if self._stream is not None:
-            return self._stream.Decoder
+        """
+        Decoder attribute
+
+        Returns:
+            (Any): Decoder object
+        """
+        return self._stream.Decoder
 
     @property
     def Tags(self) -> Any:
-        if self._stream is not None:
-            return self._stream.Tags
+        """
+        Returns media tags
+
+        Returns:
+            (Any): Media tags
+        """
+        return self._stream.Tags
 
     @property
     def SynthTags(self) -> dict:
-        if self._stream is not None:
-            return self._stream.SynthTags
+        """
+        Syntethic Tags generated during runtime
+
+        Returns:
+            (dict): Syntethic Tags
+        """
+        return self._stream.SynthTags
 
     @property
     def Artwork(self) -> list[APIC]:
-        if self._stream is not None:
-            return self._stream.Artwork
+        """
+        Album artwork for media
+
+        Returns:
+            (list): Artworks
+        """
+        return self._stream.Artwork
 
     @property
     def Records(self) -> dict:
-        if self._stream is not None:
-            return self._stream.Records
+        """
+        Returns tags with respective fields
+
+        Returns:
+            (dict): Flattened representation of all tags in a dict
+        """
+        return self._stream.Records
 
     # noinspection PyAttributeOutsideInit
     @property
     def Info(self) -> dict:
-        if self._stream is not None:
-            return self._stream.stream_info
+        """
+        Gets stream information
+
+        Returns:
+            (dict): stream information
+        """
+        return self._stream.stream_info
 
     @staticmethod
     def isSupported(path: Union[str, PurePath]) -> bool:
+        """
+        Validator for supported file types
+
+        Args:
+            path (Union[str, PurePath]): file path
+
+        Returns:
+            bool: if valid returns true, otherwise false
+        """
         if isinstance(path, str):
             path = PurePath(path)
         enabled = settings.enabled_formats
         path = str(path.suffix).lower().replace(".", "")
-        if path in enabled:
-            return True
-        else:
-            return False
+        return bool(path in enabled)

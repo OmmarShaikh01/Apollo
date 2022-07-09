@@ -1,31 +1,42 @@
+from typing import Union
+
 from apollo.db.models.library import LibraryModel
 from apollo.db.models.paged_table import PagedTableModel
 from apollo.db.models.queue import QueueModel
 
 
-# from apollo.db.models.playlists import PlaylistsModel
-
-
 class _Provider:
-    def __init__(self) -> None:
-        super().__init__()
+    """
+    Model Provider class, creates and returns singleton models
+    """
 
-    # noinspection PyAttributeOutsideInit
-    def get_model(self, _type):
+    def __init__(self) -> None:
+        self.LibraryModel = None
+        self.QueueModel = None
+
+    def get_model(
+        self, _type: Union[LibraryModel, QueueModel]
+    ) -> Union[LibraryModel, QueueModel, None]:
+        """
+        Returns Model Singleton
+
+        Args:
+            _type (Union[LibraryModel, QueueModel]):
+
+        Returns:
+            Union[LibraryModel, QueueModel, None]
+        """
         if _type is LibraryModel:
-            if not hasattr(self, "LibraryModel"):
+            if self.LibraryModel is None:
                 self.LibraryModel = LibraryModel()
             return self.LibraryModel
-        elif _type is QueueModel:
-            if not hasattr(self, "QueueModel"):
+
+        if _type is QueueModel:
+            if self.QueueModel is None:
                 self.QueueModel = QueueModel()
             return self.QueueModel
-        # elif (PlaylistsModel) == (_type):
-        #     if not hasattr(self, "PlaylistsModel"):
-        #         self.PlaylistsModel = PlaylistsModel()
-        #     return self.PlaylistsModel
-        else:
-            return None
+
+        return None
 
 
 ModelProvider = _Provider()

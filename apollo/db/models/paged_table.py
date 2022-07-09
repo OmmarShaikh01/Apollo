@@ -23,6 +23,7 @@ class Filter:
     value: list = None  # value to use to filter
 
 
+# pylint: disable=R0902
 @dataclasses.dataclass
 class PageWindow:
     """
@@ -38,13 +39,15 @@ class PageWindow:
     window_max: Any = None  # max value of the last fetch
     window_min: Any = None  # min value of the last fetch
 
-    sort_order: QtCore.Qt.SortOrder = None  # sort order
+    sort_order: QtCore.Qt.SortOrder = QtCore.Qt.AscendingOrder  # sort order
     sort_col: str = None  # column to sort
     group_col: str = None  # column to group
+
+    # pylint: disable=W0108
     filter: Filter = dataclasses.field(default_factory=lambda: Filter())  # filters the exiting data
 
     def __bool__(self):
-        return not (self.global_count == 0)
+        return not self.global_count == 0
 
     def reset(self):
         """
@@ -58,6 +61,10 @@ class PageWindow:
 
 
 class PagedTableModel(QtGui.QStandardItemModel):
+    """
+    Paginated table model that interfaces with SQLITE DB
+    """
+
     FETCH_DATA_DOWN = 0
     FETCH_DATA_UP = 1
 
@@ -65,11 +72,11 @@ class PagedTableModel(QtGui.QStandardItemModel):
         super().__init__()
         self._table_name = table_name
         self._db = Database()
-        self._window = PageWindow()
+        self._window = PageWindow(sort_col=self.Columns[0])
         self.set_global_row_count()
 
     def __bool__(self):
-        return not (self.rowCount() == 0)
+        return not self.rowCount() == 0
 
     def __str__(self):
         return str(
@@ -93,7 +100,11 @@ class PagedTableModel(QtGui.QStandardItemModel):
                     f'SELECT COUNT("__rowid__") FROM ({self.SelectQuery})', connection
                 )
             else:
-                query = f'SELECT COUNT("__rowid__") FROM ({self.SelectQuery} WHERE {window.filter.query})'
+                query = f"""
+                    SELECT COUNT("__rowid__")
+                    FROM ({self.SelectQuery} 
+                    WHERE {window.filter.query})
+                """
                 query = QtSql.QSqlQuery(query, connection)
                 for index, item in enumerate(window.filter.value):
                     query.bindValue(index, item)
@@ -133,88 +144,60 @@ class PagedTableModel(QtGui.QStandardItemModel):
         Returns:
             bool: if fetch was successful returns True, otherwise Flase
         """
-        if self._window.sort_order is None and self._window.sort_col is None:
-            self._window.sort_order = QtCore.Qt.AscendingOrder
-            self._window.sort_col = self.Columns[0]
-
-        limit = self._window.fetch_limit
-        sort = "ASC" if self._window.sort_order is QtCore.Qt.AscendingOrder else "DESC"
-        sort_col = self._window.sort_col
+        SELECT = self.SelectQuery
+        LIMIT = self._window.fetch_limit
+        SORT_COL = self._window.sort_col
+        SORT = "ASC" if self._window.sort_order is QtCore.Qt.AscendingOrder else "DESC"
+        GROUP = f"GROUP BY {self._window.group_col}" if self._window.group_col is not None else ""
+        FILTERING = bool(self._window.filter.value is not None and self._window.filter.query)
+        RESULT = None
 
         if self._window.window_max is None and self._window.window_min is None:
-            SELECT = self.SelectQuery
-            GROUP = (
-                f"GROUP BY {self._window.group_col}" if self._window.group_col is not None else ""
-            )
             WHERE = f"WHERE ({self._window.filter.query})" if self._window.filter.query else ""
-            ORDER = f"ORDER BY {sort_col} {sort} LIMIT {limit}"
+            ORDER = f"ORDER BY {SORT_COL} {SORT} LIMIT {LIMIT}"
             with self._db.connector as connection:
-                if (
-                    self._window.filter.value is not None and self._window.filter.query
-                ):  # ENABLES FILTERING
+                if FILTERING:  # ENABLES FILTERING
                     query = QtSql.QSqlQuery(" ".join([SELECT, WHERE, GROUP, ORDER]), connection)
                     for index, item in enumerate(self._window.filter.value):
                         query.bindValue(index, item)
                 else:
                     query = QtSql.QSqlQuery(" ".join([SELECT, WHERE, GROUP, ORDER]), connection)
-                result = self._db.execute(query, connection)
-            if result:
-                self.populate(result, direction)
-                return True
-            else:
-                return False
+                RESULT = self._db.execute(query, connection)
 
-        if direction == self.FETCH_DATA_DOWN:  # ON SCROLL DOWN
-            SELECT = self.SelectQuery
-            GROUP = (
-                f"GROUP BY {self._window.group_col}" if self._window.group_col is not None else ""
-            )
-            ORDER = f"ORDER BY {sort_col} {sort} LIMIT {limit}"
+        elif direction == self.FETCH_DATA_DOWN:  # ON SCROLL DOWN
+            ORDER = f"ORDER BY {SORT_COL} {SORT} LIMIT {LIMIT}"
             with self._db.connector as connection:
-                if (
-                    self._window.filter.value is not None and self._window.filter.query
-                ):  # ENABLES FILTERING
-                    WHERE = f"WHERE {sort_col} > ? AND ({self._window.filter.query})"
+                if FILTERING:  # ENABLES FILTERING
+                    WHERE = f"WHERE {SORT_COL} > ? AND ({self._window.filter.query})"
                     query = QtSql.QSqlQuery(" ".join([SELECT, WHERE, GROUP, ORDER]), connection)
                     query.bindValue(0, self._window.window_max)
                     for index, item in enumerate(self._window.filter.value):
                         query.bindValue(index + 1, item)
                 else:
-                    WHERE = f"WHERE {sort_col} > ?"
+                    WHERE = f"WHERE {SORT_COL} > ?"
                     query = QtSql.QSqlQuery(" ".join([SELECT, WHERE, GROUP, ORDER]), connection)
                     query.bindValue(0, self._window.window_max)
-                result = self._db.execute(query, connection)
-            if result:
-                self.populate(result, direction)
-                return True
-            else:
-                return False
+                RESULT = self._db.execute(query, connection)
 
-        if direction == self.FETCH_DATA_UP:  # ON SCROLL UP
-            SELECT = self.SelectQuery
-            GROUP = (
-                f"GROUP BY {self._window.group_col}" if self._window.group_col is not None else ""
-            )
-            ORDER = f"ORDER BY {sort_col} {sort} LIMIT {self.Offset}, {limit}"
+        elif direction == self.FETCH_DATA_UP:  # ON SCROLL UP
+            ORDER = f"ORDER BY {SORT_COL} {SORT} LIMIT {self.Offset}, {LIMIT}"
             with self._db.connector as connection:
-                if (
-                    self._window.filter.value is not None and self._window.filter.query
-                ):  # ENABLES FILTERING
-                    WHERE = f"WHERE {sort_col} < ? AND ({self._window.filter.query})"
+                if FILTERING:  # ENABLES FILTERING
+                    WHERE = f"WHERE {SORT_COL} < ? AND ({self._window.filter.query})"
                     query = QtSql.QSqlQuery(" ".join([SELECT, WHERE, GROUP, ORDER]), connection)
                     query.bindValue(0, self._window.window_min)
                     for index, item in enumerate(self._window.filter.value):
                         query.bindValue(index + 1, item)
                 else:
-                    WHERE = f"WHERE {sort_col} < ?"
+                    WHERE = f"WHERE {SORT_COL} < ?"
                     query = QtSql.QSqlQuery(" ".join([SELECT, WHERE, GROUP, ORDER]), connection)
                     query.bindValue(0, self._window.window_min)
-                result = self._db.execute(query, connection)
-            if result:
-                self.populate(result, direction)
-                return True
-            else:
-                return False
+                RESULT = self._db.execute(query, connection)
+
+        if RESULT:
+            self.populate(RESULT, direction)
+            return True
+        return False
 
     def populate(self, data: RecordSet, direction: int):
         """
@@ -301,8 +284,7 @@ class PagedTableModel(QtGui.QStandardItemModel):
         offset = self._window.offset * self._window.fetch_limit
         if (offset - self._window.window_size) > 0:
             return offset - self._window.window_size
-        else:
-            return 0
+        return 0
 
     # noinspection PyAttributeOutsideInit
     def update_offset(self, direction: int):
@@ -321,7 +303,7 @@ class PagedTableModel(QtGui.QStandardItemModel):
         """
         Clears the applied filter to the currently displayed model
         """
-        self._window.filter.query = f""
+        self._window.filter.query = ""
         self._window.filter.value = None
         self.clear()
         self.fetch_data(self.FETCH_DATA_DOWN)

@@ -1,3 +1,6 @@
+"""
+Misc utilities used by apollo
+"""
 import logging
 import os
 import sys
@@ -45,6 +48,7 @@ def get_logger(name: str) -> logging.Logger:
     env = str(_settings.current_env).upper()
 
     if env in ["TESTING", "PRODUCTION", "QT_TESTING"]:
+        # pylint: disable=C0301
         formatter = logging.Formatter(
             f"[{env}] [%(asctime)s: %(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s"
         )
@@ -88,6 +92,7 @@ def timeit(method: Callable) -> Callable:
         try:
             t1 = time.time()
             result = method(*args, **kwargs)
+            # pylint: disable=W1203
             _LOGGER.debug(f"{method} Executed in {round(time.time() - t1, 8)}s")
             return result
         except Exception as e:
@@ -109,6 +114,7 @@ def exec_line(msg: str, method: Callable):
     try:
         t1 = time.time()
         method()
+        # pylint: disable=W1203
         _LOGGER.debug(f"Message: {msg}> Time: {round(time.time() - t1, 8)}")
     except Exception as e:
         print(e, "\n", traceback.print_tb(sys.exc_info()[-1]))
@@ -130,6 +136,7 @@ def threadit(method: Callable) -> Callable:
     def exe(*args, **kwargs) -> None:
         thread = threading.Thread(
             target=lambda: (
+                # pylint: disable=W1203
                 _LOGGER.info(f"Thread {thread.native_id}: {method}"),
                 method(*args, **kwargs),
             )
@@ -139,6 +146,8 @@ def threadit(method: Callable) -> Callable:
     return exe
 
 
+# pylint: disable=C0415
+# pylint check ignored cause env need to be set locally inside function
 def compile_all():
     """
     Compiles all stored themes into zip file
@@ -147,7 +156,7 @@ def compile_all():
     from apollo.assets.stylesheets import ResourceGenerator
 
     for name in os.listdir(ResourceGenerator.THEMES):
-        name, ext = os.path.splitext(name)
+        name, _ = os.path.splitext(name)
         _, name = os.path.split(name)
         generate_resource(str(name), True)
 
@@ -187,6 +196,10 @@ class ApolloSignal:
 
 
 class ApolloWarning:
+    """
+    Warning classs used to raise warnings and log them at the same tinme
+    """
+
     def __init__(self, msg: str) -> None:
         warnings.warn(UserWarning(msg))
         _LOGGER.warning(msg)

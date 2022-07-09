@@ -17,6 +17,8 @@ from apollo.db.database import (
     QueryBuildFailed,
     QueryExecutionFailed,
     RecordSet,
+    load_purepath_paths,
+    load_str_paths,
 )
 from apollo.media.decoders import Stream
 from apollo.utils import get_logger
@@ -221,9 +223,7 @@ class Test_LibraryManager:
 
     @classmethod
     def teardown_class(cls):
-        if os.path.isfile(CONFIG.db_path):
-            os.remove(CONFIG.db_path)
-            return None
+        clean_temp_dir()
 
     def test_library_manager(self, get_library_manager: LibraryManager):
         db = get_library_manager
@@ -388,6 +388,12 @@ class Test_LibraryManager:
             db.add_dir_to_watcher(ROOT)
             assert db._dirs_watched == [ROOT]
             LOGGER.debug(db._dirs_watched)
+
+            db.save_states()
+            with CONFIG.fresh():
+                assert load_purepath_paths(
+                    CONFIG.get("APOLLO.LIBRARY_MANAGER.WATCHED_DIRS", "")
+                ) == [ROOT]
 
     def test_get_library_stats(
         self, get_library_manager: LibraryManager, mocker: pytest_mock.MockerFixture

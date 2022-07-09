@@ -9,6 +9,10 @@ from mutagen.id3 import APIC
 
 
 class Stream(ABC):
+    """
+    Abstract Base class for all media classes
+    """
+
     # noinspection SpellCheckingInspection
     TAG_FRAMES = (
         "FILEID",
@@ -193,11 +197,23 @@ class Stream(ABC):
             ]
         )
 
-    def _file_id(self):
+    def _file_id(self) -> str:
+        """
+        Generates file ids for files
+
+        Returns:
+            str: file ids
+        """
         with open(self.path, "rb") as fobj:
             return (hashlib.md5(fobj.read(1024 * 10))).hexdigest()
 
     def _get_stream_info(self) -> dict:
+        """
+        Gets stream information
+
+        Returns:
+            (dict): stream information
+        """
         return dict(
             file_id=self._file_id(),
             file_path=str(self.path.as_posix()),
@@ -209,24 +225,49 @@ class Stream(ABC):
     @property
     @abstractmethod  # pragma: no cover
     def Decoder(self) -> Any:
-        pass
+        """
+        Decoder attribute
+
+        Returns:
+            (Any): Decoder object
+        """
 
     @property
     @abstractmethod  # pragma: no cover
     def Tags(self) -> Any:
-        pass
+        """
+        Returns media tags
+
+        Returns:
+            (Any): Media tags
+        """
 
     @property
     @abstractmethod  # pragma: no cover
     def SynthTags(self) -> dict:
-        pass
+        """
+        Syntethic Tags generated during runtime
+
+        Returns:
+            (dict): Syntethic Tags
+        """
 
     @property
     @abstractmethod  # pragma: no cover
     def Artwork(self) -> list[APIC]:
-        pass
+        """
+        Album artwork for media
+
+        Returns:
+            (list): Artworks
+        """
 
     @property
     @abstractmethod  # pragma: no cover
     def Records(self) -> dict:
-        pass
+        """
+        Returns tags with respective fields
+
+        Returns:
+            (dict): Flattened representation of all tags in a dict
+        """

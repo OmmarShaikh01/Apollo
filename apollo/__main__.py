@@ -1,3 +1,8 @@
+"""
+Main entry point for apollo as a module
+
+executes apollo inside a production env config
+"""
 import os
 import sys
 

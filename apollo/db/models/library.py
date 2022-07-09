@@ -4,6 +4,10 @@ from apollo.media import Stream
 
 
 class LibraryModel(PagedTableModel):
+    """
+    Library Paged Table Model
+    """
+
     PRIVATE_FIELDS = ["FILEID", "FILEPATH", "FILENAME", "FILESIZE", "FILEEXT"]
 
     def __init__(self) -> None:

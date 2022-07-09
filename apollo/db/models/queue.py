@@ -4,6 +4,10 @@ from apollo.media import Stream
 
 
 class QueueModel(PagedTableModel):
+    """
+    Queue Paged Table Model
+    """
+
     CURRENT_FILE_ID = None
     PRIVATE_FIELDS = ["PLAYORDER", "FILEID", "FILEPATH", "FILENAME", "FILESIZE", "FILEEXT"]
 

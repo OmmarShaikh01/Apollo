@@ -34,21 +34,19 @@ class MP3_Decoder:
         )
         self._decoder = self.decode()
 
-    def decode(self) -> Iterator[av.AudioFrame]:
+    def decode(self) -> Iterator[Union[av.AudioFrame, None]]:
         """
         Generator object to get AudioFrames
 
         Returns:
-            Iterator[av.AudioFrame]: Iterator object to get AudioFrames
+            Iterator[Union[av.AudioFrame, None]]: Iterator object to get AudioFrames
         """
         # actual decoding and demuxing of file
         for packet in self.InputStream.demux(audio=0):
-            if not (packet.size <= 0):
+            if not packet.size <= 0:
                 for frame in packet.decode():
                     for resam_frame in self.resampler.resample(frame):
                         yield resam_frame
-            else:
-                return None
 
     def get(self) -> av.AudioFrame:
         """
@@ -357,12 +355,13 @@ class MP3_File(Stream):
                         0 if len(tags.getall(tag_key)) == 0 else tags.getall(tag_key)[0].rating
                     ]
                 elif frame_key == "PICTURE":
-                    tags_dict[frame_key] = [False if len(tags.getall(tag_key)) == 0 else True]
+                    tags_dict[frame_key] = [not bool(len(tags.getall(tag_key)) == 0)]
                 else:
                     data = list(map(str, tags.getall(tag_key)))
                     tags_dict[frame_key] = [] if len(data) == 0 else data
         return tags_dict
 
+    # pylint: disable=E1101,E0203,W0201
     # noinspection PyAttributeOutsideInit
     @property
     def Tags(self) -> ID3:
@@ -378,6 +377,7 @@ class MP3_File(Stream):
             self._tags = self._file_obj.tags
         return self._tags
 
+    # pylint: disable=E1101,E0203,W0201
     # noinspection PyAttributeOutsideInit
     @property
     def SynthTags(self) -> dict:

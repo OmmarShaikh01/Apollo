@@ -1,3 +1,6 @@
+"""
+Lazy Loads all the application assets
+"""
 import json
 import os
 from collections import namedtuple
@@ -80,7 +83,7 @@ class _AppIcons:
             )
             path = PurePath(os.path.dirname(__file__), "__loaded_theme__", "icons")
             for file in os.listdir(path / "primary"):
-                name, ext = os.path.splitext(file)
+                name, _ = os.path.splitext(file)
                 value = Icon(
                     danger=str((path / "danger" / str(file)).as_posix()),
                     disabled=str((path / "disabled" / str(file)).as_posix()),
@@ -107,12 +110,12 @@ def get_apptheme() -> dict:
     path = PurePath(os.path.dirname(__file__), "__loaded_theme__", "apptheme.json")
     if not os.path.exists(path):
         generate_resource(CONFIG.loaded_theme, recompile=True)
-    with open(path) as file:
+    with open(path, encoding="utf-8") as file:
         return json.load(file)
 
 
-path = PurePath(os.path.dirname(__file__), "__loaded_theme__")
-if not os.path.exists(path):
+_path = PurePath(os.path.dirname(__file__), "__loaded_theme__")
+if not os.path.exists(_path):
     generate_resource(CONFIG.loaded_theme, recompile=True)
 
 AppIcons = _AppIcons()
