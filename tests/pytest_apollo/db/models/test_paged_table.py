@@ -7,6 +7,7 @@ from apollo.media import Stream
 from apollo.utils import get_logger
 from tests.pytest_apollo.conftest import clean_temp_dir, copy_mock_data
 
+
 LOGGER = get_logger(__name__)
 
 

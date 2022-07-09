@@ -7,20 +7,22 @@ from pathlib import PurePath
 
 import memory_profiler
 import pytest
-from PySide6 import QtCore, QtWidgets
 from _pytest.compat import is_async_function
 from _pytest.python import async_warn_and_skip
+from PySide6 import QtCore, QtWidgets
 from pytestqt.qtbot import QtBot
 
 from configs import settings
 
+
 settings.setenv("QT_TESTING")
 settings.validators.validate(only_current_env=True)
 
+from apollo.assets.stylesheets import load_theme
 from apollo.src.app import Apollo
 from apollo.utils import get_logger
-from apollo.assets.stylesheets import load_theme
 from tests.testing_utils import get_qt_application
+
 
 # SESSION STARTUP
 # To test UI:

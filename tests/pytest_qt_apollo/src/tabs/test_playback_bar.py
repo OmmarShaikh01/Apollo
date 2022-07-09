@@ -3,11 +3,12 @@ from PySide6 import QtCore, QtWidgets
 from pytestqt.qtbot import QtBot
 
 from apollo.src.app import Apollo
-from apollo.utils import get_logger
 from apollo.src.tabs.playback_bar import TrackRatingWidget
+from apollo.utils import get_logger
 from configs import settings
-from tests.testing_utils import screenshot_widget
 from tests.pytest_qt_apollo.conftest import clean_temp_dir, copy_mock_data, remove_local_config
+from tests.testing_utils import screenshot_widget
+
 
 CONFIG = settings
 LOGGER = get_logger(__name__)

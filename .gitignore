@@ -203,20 +203,21 @@ settings.toml
 testing_settings.toml
 
 # Misc Development files
+*.pymon
+*.profile
 desktop.ini
+setup.py
 /apollo/db/default.db
 /apollo/apollo.ini
+/apollo/assets/stylesheets/generated/
+/apollo/assets/stylesheets/build/
+/apollo/assets/app_themes/__loaded_theme__/
 /docs/build/
 /exclude/
 /tests/coverage/
 /tests/tempdir/
 /tests/pytest_qt_apollo/output/
-/dist
-/apollo/assets/stylesheets/generated/
-/apollo/assets/stylesheets/build/
-/apollo/assets/app_themes/__loaded_theme__/
-/logs
 /tests/.profiles/
 /tests/linter_output.txt
-*.pymon
-*.profile
+/dist
+/logs

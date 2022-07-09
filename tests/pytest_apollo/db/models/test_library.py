@@ -11,6 +11,7 @@ from configs import settings
 from tests.pytest_apollo.conftest import clean_temp_dir, copy_mock_data
 from tests.testing_utils import LIBRARY_TABLE, get_qt_application
 
+
 cases = "tests.pytest_apollo.models.case_models"
 LOGGER = get_logger(__name__)
 CONFIG = settings

@@ -1,7 +1,9 @@
 from pathlib import PurePath
+
 from pytest_cases import parametrize
 
 from configs import settings
+
 
 CONFIG = settings
 MEDIA_FOLDER = PurePath(CONFIG.assets_dir, "music_samples")

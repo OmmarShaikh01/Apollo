@@ -11,6 +11,7 @@ from configs import settings
 from tests.assets.music_samples.generate import create_mp3
 from tests.testing_utils import IDGen
 
+
 CONFIG = settings
 BENCHMARK = CONFIG.benchmark_formats  # TODO: remove not
 LOGGER = get_logger(__name__)

@@ -6,6 +6,7 @@ from pathlib import PurePath
 from apollo.assets.stylesheets import generate_resource
 from configs import settings
 
+
 CONFIG = settings
 
 

@@ -11,6 +11,7 @@ from apollo.media.decoders.mp3 import MP3_File
 from apollo.utils import get_logger
 from configs import settings
 
+
 LOGGER = get_logger(__name__)
 CONFIG = settings
 

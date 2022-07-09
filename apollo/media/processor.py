@@ -10,8 +10,8 @@ import numpy as np
 import pyo
 
 import apollo.utils
-from apollo.utils import ApolloSignal
 from apollo.media import Mediafile
+from apollo.utils import ApolloSignal
 
 
 class BufferTable:

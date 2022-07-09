@@ -11,6 +11,7 @@ from apollo.utils import get_logger
 from configs import settings
 from tests.testing_utils import get_qt_application
 
+
 CONFIG = settings
 LOGGER = get_logger(__name__)
 

@@ -5,6 +5,7 @@ from dynaconf.loaders.toml_loader import write
 
 from configs.validate import validate
 
+
 DEFAULT_SETTINGS = os.path.join(os.path.dirname(__file__), "default_settings.toml")
 DEFAULT_TESTING_SETTINGS = os.path.join(os.path.dirname(__file__), "default_testing_settings.toml")
 DEFAULT_QT_TESTING_SETTINGS = os.path.join(

@@ -9,6 +9,7 @@ from typing import Callable
 
 from configs import settings as _settings
 
+
 ROOT = _settings.project_root
 _LOGGER = None
 

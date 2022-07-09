@@ -7,6 +7,7 @@ from apollo.src.app import Apollo
 from apollo.utils import get_logger
 from configs import settings
 
+
 CONFIG = settings
 LOGGER = get_logger(__name__)
 

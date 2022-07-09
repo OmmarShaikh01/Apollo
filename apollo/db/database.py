@@ -19,6 +19,7 @@ from apollo.media import Mediafile
 from apollo.utils import ApolloWarning, get_logger
 from configs import settings
 
+
 CONFIG = settings
 LOGGER = get_logger(__name__)
 

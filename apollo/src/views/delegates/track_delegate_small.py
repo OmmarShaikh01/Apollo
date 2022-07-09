@@ -11,6 +11,7 @@ from apollo.media import Mediafile
 from apollo.src.views.delegates._base_delegate import CustomItemDelegate
 from apollo.utils import get_logger
 
+
 LOGGER = get_logger(__name__)
 
 

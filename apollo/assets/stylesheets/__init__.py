@@ -11,6 +11,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from apollo.utils import ApolloWarning, get_logger
 from configs import settings
 
+
 CONFIG = settings
 LOGGER = get_logger(__name__)
 ASSETS = PurePath(os.path.dirname(os.path.dirname(__file__)))

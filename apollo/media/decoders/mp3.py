@@ -1,5 +1,4 @@
 from pathlib import PurePath
-from pathlib import PurePath
 from typing import Any, Iterator, Union
 
 import av
@@ -9,6 +8,7 @@ from mutagen.mp3 import MP3
 from apollo.media.decoders.decode import Stream
 from apollo.utils import ApolloWarning, get_logger
 from configs import settings
+
 
 CONFIG = settings
 LOGGER = get_logger(__name__)

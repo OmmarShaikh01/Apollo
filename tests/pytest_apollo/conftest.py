@@ -12,6 +12,7 @@ from _pytest.python import async_warn_and_skip
 
 from configs import settings
 
+
 settings.setenv("TESTING")
 settings.validators.validate(only_current_env=True)
 

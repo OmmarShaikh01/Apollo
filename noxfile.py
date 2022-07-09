@@ -6,6 +6,7 @@ from pathlib import PurePath
 import nox
 import tomli
 
+
 SUPPORTED_PYTHON = ["3.9"]
 SILENT = True
 nox.options.pythons = SUPPORTED_PYTHON
@@ -21,6 +22,7 @@ def _upgrade_basic(session: nox.Session, install_dev: bool = True):
     if not install_dev:
         cmd.append("--no-dev")
     session.run_always(*cmd, silent=SILENT)
+    session.run_always("isort", ".", silent=SILENT)
     session.run_always("black", ".", silent=SILENT)
 
 
@@ -32,7 +34,7 @@ def testing_pytest_unit(session: nox.Session, skip_setup: bool = False):
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS="false", DYNACONF_PROFILE_RUNS="true")
     test_directory = os.path.join(os.path.dirname(__file__), "tests", "pytest_apollo")
-    session.run("pytest", "--show-capture=no", "-c", "./pytest.ini", test_directory, env=envvars)
+    session.run("pytest", "--no-header", "--show-capture=no", test_directory, env=envvars)
 
 
 @nox.session(python=SUPPORTED_PYTHON)
@@ -43,14 +45,45 @@ def testing_pytest_qt(session: nox.Session, skip_setup: bool = False):
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS="false", DYNACONF_PROFILE_RUNS="true")
     test_directory = os.path.join(os.path.dirname(__file__), "tests", "pytest_qt_apollo")
-    session.run("pytest", "--show-capture=no", "-c", "./pytest.ini", test_directory, env=envvars)
+    session.run("pytest", "--no-header", "--show-capture=no", test_directory, env=envvars)
 
 
 @nox.session(python=SUPPORTED_PYTHON)
 def testing_pytest_global(session: nox.Session):
+    os.chdir(os.path.dirname(__file__))
     _upgrade_basic(session)
-    testing_pytest_unit(session, True)
-    testing_pytest_qt(session, True)
+
+    test_root = PurePath(os.path.dirname(__file__))
+    paths = [
+        (test_root / "coverage"),
+        (test_root / ".profile"),
+        (test_root / "linter_output.txt"),
+        (test_root / "tempdir"),
+        (test_root / "pytest_apollo" / ".pytest_cache"),
+        (test_root / "pytest_qt_apollo" / ".pytest_cache"),
+        "../.pytest_cache",
+        "../.pymon",
+        "../logs",
+    ]
+    for path in paths:
+        if os.path.exists(path):
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+            elif os.path.isfile(path):
+                os.remove(path)
+            else:
+                continue
+
+    envvars = dict(DYNACONF_BENCHMARK_FORMATS="false", DYNACONF_PROFILE_RUNS="false")
+    CMD = [
+        "pytest",
+        "--show-capture",
+        "no",
+        "--no-header",
+        "./tests/pytest_apollo",
+        "./tests/pytest_qt_apollo",
+    ]
+    session.run(*CMD, env=envvars)
 
 
 @nox.session(python=SUPPORTED_PYTHON)
@@ -61,14 +94,13 @@ def testing_coverage(session: nox.Session):
     envvars = dict(DYNACONF_BENCHMARK_FORMATS="false", DYNACONF_PROFILE_RUNS="false")
     CMD = [
         "pytest",
+        "--no-header",
         "--show-capture",
         "no",
         "--cov",
         "./apollo",
         "--cov-config",
         ".coveragerc",
-        "-c",
-        "pytest.ini",
         "--cov-report",
         "html",
         "./tests/pytest_apollo",
@@ -87,8 +119,7 @@ def testing_benchmarked(session: nox.Session):
         "pytest",
         "--show-capture",
         "no",
-        "-c",
-        "pytest.ini",
+        "--no-header",
         "./tests/pytest_apollo",
         "./tests/pytest_qt_apollo",
     ]
@@ -111,6 +142,28 @@ def build_documentation_sphinx(session: nox.Session):
         silent=SILENT,
     )
     session.run("sphinx-build.exe", "-b", "html", "./docs/source", "./docs/build", silent=SILENT)
+
+
+@nox.session(python=SUPPORTED_PYTHON)
+def lint_apollo(session: nox.Session):
+    os.chdir(os.path.dirname(__file__))
+    _upgrade_basic(session)
+    for file in os.listdir(r".\apollo\layout"):
+        file, ext = os.path.splitext(file)
+        if ext == ".ui":
+            CMD = [
+                "pyside6-uic.exe",
+                "-g",
+                "python",
+                "-o",
+                f".\\apollo\\layout\\{file}.py",
+                f".\\apollo\\layout\\{file}.ui",
+            ]
+            session.run(*CMD)
+
+    session.run("isort", "--quiet", ".")
+    session.run("black", "--quiet", ".")
+    session.run("pylint", ".")
 
 
 @nox.session(python=SUPPORTED_PYTHON)

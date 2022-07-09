@@ -16,6 +16,7 @@ from apollo.src.views.delegates import ViewDelegates, set_delegate
 from apollo.utils import get_logger
 from configs import settings
 
+
 CONFIG = settings
 LOGGER = get_logger(__name__)
 

@@ -9,6 +9,7 @@ from PySide6 import QtCore, QtGui, QtSql
 from apollo.db.database import Database, RecordSet
 from apollo.utils import get_logger
 
+
 LOGGER = get_logger(__name__)
 
 

@@ -24,6 +24,7 @@ from configs import settings
 from tests.pytest_apollo.conftest import clean_temp_dir, copy_mock_data
 from tests.testing_utils import IDGen
 
+
 cases = "tests.pytest_apollo.db.case_database"
 LOGGER = get_logger(__name__)
 CONFIG = settings

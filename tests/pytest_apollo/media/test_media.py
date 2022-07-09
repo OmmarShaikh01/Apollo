@@ -6,6 +6,7 @@ from apollo.media import Mediafile
 from apollo.utils import get_logger
 from configs import settings
 
+
 LOGGER = get_logger(__name__)
 CONFIG = settings
 

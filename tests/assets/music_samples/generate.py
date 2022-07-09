@@ -2,11 +2,12 @@ import os
 from pathlib import PurePath
 
 import mutagen
-from mutagen.id3 import APIC, ASPI, Frames, ID3, SYLT
+from mutagen.id3 import APIC, ASPI, ID3, SYLT, Frames
 from mutagen.id3._specs import SpecError
 
 from apollo.utils import get_logger
 from configs import settings
+
 
 CONFIG = settings
 LOGGER = get_logger(__name__)

@@ -6,6 +6,7 @@ from apollo.utils import get_logger
 from configs import settings
 from configs.config import write_config
 
+
 CONFIG = settings
 LOGGER = get_logger(__name__)
 
