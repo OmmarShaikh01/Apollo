@@ -1,16 +1,29 @@
+[project]
+name = "Apollo"
+version = "0.1.0"
+description = "Apollo is a Open-Source music player for playback and organization of audio files on windows"
+license = {file = "LICENSE"}
+
 [tool.poetry]
 name = "Apollo"
 version = "0.1.0"
-description = ""
+description = "Apollo is a Open-Source music player for playback and organization of audio files on windows"
 authors = ["Ommar Shaikh"]
 license = "GPL-3.0-only"
 readme = "readme.md"
-build = 'build.py'
 packages = [
-    { include = "apollo" },
-    { include = "configs" },
+    {include = "apollo"},
+    {include = "configs"},
+    {include = "vendor"},
+    {include = "pyproject.toml"},
+    {include = "poetry.lock"},
+    {include = "poetry.toml"}
 ]
-include = ["apollo/assets/app_themes"]
+include = [
+    "apollo/assets/*",
+    "vendor/*",
+    "build.py"
+]
 exclude = [
     'configs\default_testing_settings.toml',
     'configs\default_qt_testing_settings.toml',
@@ -20,10 +33,14 @@ exclude = [
     'configs\settings.local.toml',
     'configs\testing_settings.local.toml',
     'configs\qt_testing_settings.local.toml',
+
     'apollo\assets\app_themes\__loaded_theme__',
     'apollo\layout\*.ui',
     'apollo\db\*.db'
 ]
+
+[tool.poetry.build]
+generate-setup-file=false
 
 [tool.poetry.dependencies]
 python = ">=3.9, <3.11"
@@ -51,6 +68,12 @@ black = "^22.6.0"
 pylint = "^2.14.4"
 pytest-sugar = "^0.9.4"
 isort = "^5.10.1"
+coverage = {extras = ["toml"], version = "^6.4.1"}
+pyinstaller = "^5.2"
+auto-py-to-exe = "^2.20.1"
+
+[tool.poetry.scripts]
+poetry = 'poetry.console:run'
 
 [tool.pytest.ini_options]
 testpaths = [
@@ -71,6 +94,41 @@ filterwarnings = ["ignore::DeprecationWarning"]
 console_output_style = "progress"
 cache_dir=".pytest_cache"
 qt_api="pyside6"
+
+[tool.coverage.run]
+source = ['apollo']
+branch = true
+data_file = 'tests\coverage\.coverage'
+omit =[
+    'tests\*',
+    'apollo\__main__.py'
+]
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_lines =[
+    # Have to re-enable the standard pragma
+    'pragma: no cover',
+
+    # Don't complain about missing debug-only code:
+    'def __repr__',
+    'if self\.debug',
+
+    # Don't complain if tests don't hit defensive assertion code:
+    'raise AssertionError',
+    'raise NotImplementedError',
+
+    # Don't complain if non-runnable code isn't run:
+    'if 0:',
+    'if __name__ == .__main__.:'
+]
+
+ignore_errors = false
+skip_empty = true
+
+[tool.coverage.html]
+directory = 'tests\coverage\html'
+skip_empty = true
 
 [tool.isort]
 py_version=39
@@ -116,7 +174,7 @@ include='\.py?$'
 [tool.pylint.main]
 extension-pkg-allow-list = ['PySide6', 'av']
 fail-under = 1000
-ignore = ["CVS", ".github", ".scripts", "docs", "examples", ".nox", ".venv", ".pytest_cache"]
+ignore = ["CVS", ".github", "tools", "docs", "examples", ".nox", ".venv", ".pytest_cache", "dist"]
 ignore-paths = '''
 /(
 \.direnv|

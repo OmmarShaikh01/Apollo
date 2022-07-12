@@ -11,7 +11,7 @@ def _ui_states_validators() -> Validator:
     Returns:
         Validator: Validators for the UI states
     """
-    MAIN = "CURRENT_TAB"
+    MAIN = ("CURRENT_TAB",)
 
     PLAYBACK_BAR = (
         "STATE_PLAY",
@@ -23,7 +23,7 @@ def _ui_states_validators() -> Validator:
         "ELAPSED_TIME",
     )
 
-    LIBRARY_TAB = "DELEGATE_TYPE"
+    LIBRARY_TAB = ("DELEGATE_TYPE",)
 
     MAIN = [f"APOLLO.MAIN.{x}" for x in MAIN]
     PLAYBACK_BAR = [f"APOLLO.PLAYBACK_BAR.{x}" for x in PLAYBACK_BAR]
@@ -46,16 +46,18 @@ def validate(settings: dynaconf.Dynaconf):
         "supported_formats",
         "enabled_formats",
     )
-    settings.validators.register(
-        Validator(
-            *FIELDS,
-            "server.rate",
-            "server.chnl",
-            "server.format",
-            env=["TESTING", "QT_TESTING", "PRODUCTION"],
-            must_exist=True,
+    envs = ["TESTING", "QT_TESTING", "PRODUCTION"]
+    for env in envs:
+        settings.validators.register(
+            Validator(
+                *FIELDS,
+                "server.rate",
+                "server.chnl",
+                "server.format",
+                env=env,
+                must_exist=True,
+            ),
         )
-    )
 
     # REGISTER VALIDATORS FOR [PRODUCTION]
     env = "PRODUCTION"
@@ -101,10 +103,13 @@ def validate(settings: dynaconf.Dynaconf):
         Validator("benchmark_formats", must_exist=True, env=env),  # NO DEFAULTS
         Validator(
             "sox_path",
-            must_exist=True,
+            condition=lambda *x: bool(
+                os.path.exists(os.path.join(settings.project_root, "vendor", "sox.exe"))
+            ),
+            default=os.path.join(settings.project_root, "vendor", "sox.exe"),
             env=env,
             messages={
-                "must_exist_true": "Download and Set SOX_PATH sox from http://sox.sourceforge.net/"
+                "condition": "Download sox from http://sox.sourceforge.net/ and add in vendor/bin"
             },
         ),  # NO DEFAULTS
         _ui_states_validators(),
@@ -142,10 +147,13 @@ def validate(settings: dynaconf.Dynaconf):
         Validator("benchmark_formats", must_exist=True, env=env),  # NO DEFAULTS
         Validator(
             "sox_path",
-            must_exist=True,
+            condition=lambda *x: bool(
+                os.path.exists(os.path.join(settings.project_root, "vendor", "sox.exe"))
+            ),
+            default=os.path.join(settings.project_root, "vendor", "sox.exe"),
             env=env,
             messages={
-                "must_exist_true": "Download and Set SOX_PATH sox from http://sox.sourceforge.net/"
+                "condition": "Download sox from http://sox.sourceforge.net/ and add in vendor/bin"
             },
         ),  # NO DEFAULTS
     )

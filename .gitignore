@@ -206,7 +206,6 @@ testing_settings.toml
 *.pymon
 *.profile
 desktop.ini
-setup.py
 /apollo/db/default.db
 /apollo/apollo.ini
 /apollo/assets/stylesheets/generated/
@@ -219,5 +218,8 @@ setup.py
 /tests/pytest_qt_apollo/output/
 /tests/.profiles/
 /tests/linter_output.txt
+/vendor/*
+!/vendor/readme.md
+!/vendor/__init__.py
 /dist
 /logs

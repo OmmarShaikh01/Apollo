@@ -1,8 +1,4 @@
-"""
-Defines Nox testing session that runs in a private venv
-"""
 import os
-import shutil
 import sys
 from pathlib import PurePath
 
@@ -82,27 +78,6 @@ def testing_pytest_global(session: nox.Session):
     """
     os.chdir(os.path.dirname(__file__))
     _upgrade_basic(session)
-
-    test_root = PurePath(os.path.dirname(__file__))
-    paths = [
-        (test_root / "coverage"),
-        (test_root / ".profile"),
-        (test_root / "linter_output.txt"),
-        (test_root / "tempdir"),
-        (test_root / "pytest_apollo" / ".pytest_cache"),
-        (test_root / "pytest_qt_apollo" / ".pytest_cache"),
-        "../.pytest_cache",
-        "../.pymon",
-        "../logs",
-    ]
-    for path in paths:
-        if os.path.exists(path):
-            if os.path.isdir(path):
-                shutil.rmtree(path)
-            elif os.path.isfile(path):
-                os.remove(path)
-            else:
-                continue
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS="false", DYNACONF_PROFILE_RUNS="false")
     CMD = [

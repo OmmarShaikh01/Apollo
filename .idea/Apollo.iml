@@ -13,6 +13,8 @@
       <excludeFolder url="file://$MODULE_DIR$/apollo/assets/app_themes/__loaded_theme__" />
       <excludeFolder url="file://$MODULE_DIR$/tests/pytest_apollo/.pytest_cache" />
       <excludeFolder url="file://$MODULE_DIR$/tests/.profiles" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/tests/coverage" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
