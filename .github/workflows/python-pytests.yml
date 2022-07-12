@@ -23,12 +23,11 @@ jobs:
       shell: cmd
       run: |
         python -m pip install --upgrade pip
-        pip install --user poetry
-        poetry update nox
+        pip install --user nox
     - name: Test with pytest
       shell: cmd
       run: |
-        .\.venv\Scripts\nox.exe --session testing_pytest_unit
+        nox.exe --session testing_pytest_unit
 
     - uses: actions/upload-artifact@v3
       with:
@@ -51,12 +50,11 @@ jobs:
         shell: cmd
         run: |
           python -m pip install --upgrade pip
-          pip install --user poetry
-          poetry update nox
+          pip install --user nox
       - name: Test with pytest
         shell: cmd
         run: |
-          .\.venv\Scripts\nox.exe --session testing_pytest_qt    
+          nox.exe --session testing_pytest_qt    
 
       - uses: actions/upload-artifact@v3
         with:
