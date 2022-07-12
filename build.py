@@ -36,29 +36,35 @@ dependencies = parsed.get("poetry").get("dependencies")
 del dependencies["python"]
 
 
-exe_options = [    
+exe_options = [
     str(Path(os.path.dirname(__file__), "apollo", "__main__.py")),
     *("--clean", "-y", "--onedir", "--windowed", "--no-embed-manifest", "--win-private-assemblies"),
     *("--log-level", "WARN"),
     *("--name", "Apollo"),
     *("--specpath", str(ROOT)),
     *("--distpath", str(ROOT / "dist")),
-    *("--workpath", str(ROOT / "dist" / "build")),        
+    *("--workpath", str(ROOT / "dist" / "build")),
     *kwargs_flat(
         "--add-data",
         [
             os.pathsep.join((str(ROOT / "LICENSE"), ".")),
             os.pathsep.join((str(ROOT / "readme.md"), ".")),
             os.pathsep.join((str(ROOT / "configs"), "configs")),
-            *[os.pathsep.join((str(ROOT / "configs" / file), "configs")) for file in os.listdir(str(ROOT / "configs"))],
+            *[
+                os.pathsep.join((str(ROOT / "configs" / file), "configs"))
+                for file in os.listdir(str(ROOT / "configs"))
+            ],
             os.pathsep.join((str(ROOT / "vendor"), "vendor")),
-            *[os.pathsep.join((str(ROOT / "vendor" / file), "vendor")) for file in os.listdir(str(ROOT / "vendor"))],
+            *[
+                os.pathsep.join((str(ROOT / "vendor" / file), "vendor"))
+                for file in os.listdir(str(ROOT / "vendor"))
+            ],
         ],
     ),
-    *kwargs_flat("--collect-all", ["apollo"]),    
-    *kwargs_flat("--paths", [str(ROOT)]),    
+    *kwargs_flat("--collect-all", ["apollo"]),
+    *kwargs_flat("--paths", [str(ROOT)]),
     *kwargs_flat("--exclude-module", list(dev_dependencies.keys())),
-    *("--debug", "all"),    
+    *("--debug", "all"),
 ]
 
 # noinspection PyUnresolvedReferences

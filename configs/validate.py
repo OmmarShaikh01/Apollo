@@ -103,13 +103,10 @@ def validate(settings: dynaconf.Dynaconf):
         Validator("benchmark_formats", must_exist=True, env=env),  # NO DEFAULTS
         Validator(
             "sox_path",
-            condition=lambda *x: bool(
-                os.path.exists(os.path.join(settings.project_root, "vendor", "sox.exe"))
-            ),
-            default=os.path.join(settings.project_root, "vendor", "sox.exe"),
+            must_exist=True,
             env=env,
             messages={
-                "condition": "Download sox from http://sox.sourceforge.net/ and add in vendor/bin"
+                "must_exist_true": "Download and Set SOX_PATH sox from http://sox.sourceforge.net/"
             },
         ),  # NO DEFAULTS
         _ui_states_validators(),
