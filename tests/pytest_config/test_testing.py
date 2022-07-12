@@ -1,6 +1,5 @@
-from pytest_config.conftest import write_config
-
 from configs import settings
+from tests.pytest_config.conftest import write_config
 
 
 def test_settings():

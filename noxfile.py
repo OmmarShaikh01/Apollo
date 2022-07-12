@@ -65,7 +65,9 @@ def testing_pytest_qt(session: nox.Session, skip_setup: bool = False):
         _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS="false", DYNACONF_PROFILE_RUNS="true")
-    session.run("pytest", "--no-header", "--show-capture=no", "./tests/pytest_qt_apollo", env=envvars)
+    session.run(
+        "pytest", "--no-header", "--show-capture=no", "./tests/pytest_qt_apollo", env=envvars
+    )
 
 
 @nox.session(python=SUPPORTED_PYTHON)
@@ -114,7 +116,8 @@ def testing_coverage(session: nox.Session):
         "--cov-report",
         "html",
         "./tests/pytest_apollo",
-        "./tests/pytest_qt_apollo",        "./tests/pytest_config",
+        "./tests/pytest_qt_apollo",
+        "./tests/pytest_config",
     ]
     session.run(*CMD, env=envvars)
 
@@ -137,7 +140,8 @@ def testing_benchmarked(session: nox.Session):
         "no",
         "--no-header",
         "./tests/pytest_apollo",
-        "./tests/pytest_qt_apollo",        "./tests/pytest_config",
+        "./tests/pytest_qt_apollo",
+        "./tests/pytest_config",
     ]
     session.run(*CMD, env=envvars)
 
