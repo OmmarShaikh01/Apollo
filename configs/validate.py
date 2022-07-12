@@ -101,14 +101,9 @@ def validate(settings: dynaconf.Dynaconf):
         Validator("profile_runs", default=False, must_exist=True, env=env),
         Validator("benchmark_runs", default=1000, must_exist=True, env=env),
         Validator("benchmark_formats", must_exist=True, env=env),  # NO DEFAULTS
-        Validator(
-            "sox_path",
-            must_exist=True,
-            env=env,
-            messages={
-                "must_exist_true": "Download and Set SOX_PATH sox from http://sox.sourceforge.net/"
-            },
-        ),  # NO DEFAULTS
+
+        # Download and Set SOX_PATH sox from http://sox.sourceforge.net/
+        Validator("sox_path", env = env),
         _ui_states_validators(),
     )
 
@@ -142,15 +137,10 @@ def validate(settings: dynaconf.Dynaconf):
         Validator("profile_runs", default=False, must_exist=True, env=env),
         Validator("benchmark_runs", default=1000, must_exist=True, env=env),
         Validator("benchmark_formats", must_exist=True, env=env),  # NO DEFAULTS
+
+        # Download and Set SOX_PATH sox from http://sox.sourceforge.net/
         Validator(
             "sox_path",
-            condition=lambda *x: bool(
-                os.path.exists(os.path.join(settings.project_root, "vendor", "sox.exe"))
-            ),
-            default=os.path.join(settings.project_root, "vendor", "sox.exe"),
             env=env,
-            messages={
-                "condition": "Download sox from http://sox.sourceforge.net/ and add in vendor/bin"
-            },
-        ),  # NO DEFAULTS
+        ),
     )

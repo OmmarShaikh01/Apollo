@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 from pathlib import PurePath
 
@@ -46,8 +47,8 @@ def testing_pytest_unit(session: nox.Session, skip_setup: bool = False):
         _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS="false", DYNACONF_PROFILE_RUNS="true")
-    test_directory = os.path.join(os.path.dirname(__file__), "tests", "pytest_apollo")
-    session.run("pytest", "--no-header", "--show-capture=no", test_directory, env=envvars)
+    session.run("pytest", "--no-header", "--show-capture=no", "./tests/pytest_apollo", env=envvars)
+    session.run("pytest", "--no-header", "--show-capture=no", "./tests/pytest_config")
 
 
 @nox.session(python=SUPPORTED_PYTHON)
@@ -64,8 +65,7 @@ def testing_pytest_qt(session: nox.Session, skip_setup: bool = False):
         _upgrade_basic(session)
 
     envvars = dict(DYNACONF_BENCHMARK_FORMATS="false", DYNACONF_PROFILE_RUNS="true")
-    test_directory = os.path.join(os.path.dirname(__file__), "tests", "pytest_qt_apollo")
-    session.run("pytest", "--no-header", "--show-capture=no", test_directory, env=envvars)
+    session.run("pytest", "--no-header", "--show-capture=no", "./tests/pytest_qt_apollo", env=envvars)
 
 
 @nox.session(python=SUPPORTED_PYTHON)
@@ -85,6 +85,7 @@ def testing_pytest_global(session: nox.Session):
         "--show-capture",
         "no",
         "--no-header",
+        "./tests/pytest_config",
         "./tests/pytest_apollo",
         "./tests/pytest_qt_apollo",
     ]
@@ -110,12 +111,10 @@ def testing_coverage(session: nox.Session):
         "no",
         "--cov",
         "./apollo",
-        "--cov-config",
-        ".coveragerc",
         "--cov-report",
         "html",
         "./tests/pytest_apollo",
-        "./tests/pytest_qt_apollo",
+        "./tests/pytest_qt_apollo",        "./tests/pytest_config",
     ]
     session.run(*CMD, env=envvars)
 
@@ -138,7 +137,7 @@ def testing_benchmarked(session: nox.Session):
         "no",
         "--no-header",
         "./tests/pytest_apollo",
-        "./tests/pytest_qt_apollo",
+        "./tests/pytest_qt_apollo",        "./tests/pytest_config",
     ]
     session.run(*CMD, env=envvars)
 
