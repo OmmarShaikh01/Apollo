@@ -183,6 +183,8 @@ function Main {
     Write-Host "Building Apollo ... " 
     Write-Host 
 
+    $Env:PYTHONPATH=$root_dir
+
     Startup-Tasks
     Lint-Apollo
     Build-Apollo

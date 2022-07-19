@@ -1,10 +1,10 @@
 import abc
-from typing import Optional
+from typing import Optional, Union
 
-from PySide6 import QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from apollo.db.models import LibraryModel, ModelProvider, QueueModel
-from apollo.layout.mainwindow import Ui_MainWindow as Apollo
+from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from apollo.src.views.delegates import ViewDelegates, set_delegate
 from apollo.utils import get_logger
 from configs import settings
@@ -19,36 +19,39 @@ class Library_Tab_Interactions(abc.ABC):
     Library_Tab_Interactions
     """
 
-    def __init__(self, ui: Apollo) -> None:
+    def __init__(self, ui: Union[Apollo_MainWindow, QtWidgets.QMainWindow]) -> None:
         """
         Constructor
 
         Args:
-            ui (Apollo): UI objects
+            ui (Union[Apollo_MainWindow, QtWidgets.QMainWindow]): UI objects
         """
-        self.ui = ui
+        self.UI = ui
         self.setup_interactions()
-        self.setup_defaults()
+        self.load_states()
 
-    def setup_interactions(self):
+    def setup_interactions(self):  # pragma: no cover
         """
         Sets up interactions
         """
+        self.UI.library_main_listview.doubleClicked.connect(
+            lambda index: self.call_on_list_item_clicked(index)
+        )
 
-    def setup_defaults(self):
+    def load_states(self):  # pragma: no cover
         """
-        Sets up default states
+        loads session states of Apollo
         """
-        pass
 
-    def save_states(self):
+    def save_states(self):  # pragma: no cover
         """
         saves session states of Apollo
         """
-        pass
 
     @abc.abstractmethod
-    def call_on_shutdown(self):
+    def call_on_list_item_clicked(
+        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ):
         ...
 
 
@@ -57,100 +60,105 @@ class Library_Tab_Controller:
     Library_Tab_Controller
     """
 
-    _DELEGATE_TYPE = CONFIG.get(
-        "APOLLO.LIBRARY_TAB.DELEGATE_TYPE", ViewDelegates.TrackDelegate_Mid.name
-    )
+    _DELEGATE_TYPE: str = str(ViewDelegates.TrackDelegate_Small.name)
 
     def __init__(self) -> None:
         """
         Constructor
         """
+        self.load_states()
         self.library_model = ModelProvider.get_model(LibraryModel)
         self.queue_model = ModelProvider.get_model(QueueModel)
 
-    def bind_models(self, view: QtWidgets.QAbstractItemView):
+    def bind_models(self, view: QtWidgets.QListView):
         """
         Binds models with Views
 
         Args:
-            view (QtWidgets.QAbstractItemView): view to bind models to
+            view (QtWidgets.QListView): view to bind models to
         """
         view.setModel(self.library_model)
         self.set_model_delegate(view)
-        view.verticalScrollbarValueChanged = lambda x: (self.scroll_paging(view, x))
+        view.verticalScrollbarValueChanged = lambda x: (self.call_on_scroll_paging(view, x))
         self.library_model.fetch_data(self.library_model.FETCH_DATA_DOWN)
 
-    def set_model_delegate(
-        self, view: QtWidgets.QAbstractItemView, _type: Optional[ViewDelegates] = None
-    ):
+    def set_model_delegate(self, view: QtWidgets.QListView, _type: Optional[ViewDelegates] = None):
         """
         Binds models with Views
 
         Args:
-            view (QtWidgets.QAbstractItemView): view to bind models to
+            view (QtWidgets.QListView): view to bind models to
             _type (Optional[ViewDelegates]): Delegate type to use
         """
-        if _type is not None:
-            set_delegate(view, _type)
-            self._DELEGATE_TYPE = _type.name
-        else:
-            if self._DELEGATE_TYPE == "TrackDelegate_Small":
-                set_delegate(view, ViewDelegates.TrackDelegate_Small)
-            elif self._DELEGATE_TYPE == "TrackDelegate_Mid":
-                set_delegate(view, ViewDelegates.TrackDelegate_Mid)
-            else:
-                return None
+        if _type is None:
+            _type = ViewDelegates.TrackDelegate_Small
+            if self._DELEGATE_TYPE == ViewDelegates.TrackDelegate_Mid.name:
+                _type = ViewDelegates.TrackDelegate_Mid
 
-    def scroll_paging(self, view: QtWidgets.QAbstractItemView, value: int):
+        set_delegate(view, _type)
+        self._DELEGATE_TYPE = _type.name
+
+    def call_on_scroll_paging(self, view: QtWidgets.QListView, value: int):
         """
         On scroll Loader for paged models
 
         Args:
-            view (QtWidgets.QAbstractItemView): View to get scroll event from
+            view (QtWidgets.QListView): View to get scroll event from
             value (int): Scroll value
         """
+
+        def reset_slider():
+            view.verticalScrollbarValueChanged = lambda x: None
+            view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
+            view.verticalScrollbarValueChanged = lambda x: (self.call_on_scroll_paging(view, x))
+
         if value == view.verticalScrollBar().minimum():
             if self.library_model.fetch_data(self.library_model.FETCH_DATA_UP):
-                view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
-        if value == view.verticalScrollBar().maximum():
+                reset_slider()
+        elif value == view.verticalScrollBar().maximum():
             if self.library_model.fetch_data(self.library_model.FETCH_DATA_DOWN):
-                view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
+                reset_slider()
 
-    def save_states(self):
+    def save_states(self):  # pragma: no cover
         """
         saves session states of Apollo
         """
         CONFIG["APOLLO.LIBRARY_TAB.DELEGATE_TYPE"] = self._DELEGATE_TYPE
 
+    def load_states(self):  # pragma: no cover
+        """
+        loads session states of Apollo
+        """
+        self._DELEGATE_TYPE = CONFIG.get(
+            "APOLLO.LIBRARY_TAB.DELEGATE_TYPE", str(ViewDelegates.TrackDelegate_Small.name)
+        )
 
-class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):  # TODO: Documentation
+
+class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):
     """
     Library_Tab
     """
 
-    def __init__(self, ui: Apollo) -> None:
-        Library_Tab_Interactions.__init__(self, ui)
+    def __init__(self, ui: Union[Apollo_MainWindow, QtWidgets.QMainWindow]) -> None:
+        self.UI = ui
+        Library_Tab_Interactions.__init__(self, self.UI)
         Library_Tab_Controller.__init__(self)
-        self.bind_models(self.ui.library_main_listview)
+        self.bind_models(self.UI.library_main_listview)
 
-    def shutdown(self):
+    def save_states(self):  # pragma: no cover
         """
-        Shutdown callback
+        saves session states of Apollo
         """
-        self.call_on_shutdown()
         Library_Tab_Interactions.save_states(self)
         Library_Tab_Controller.save_states(self)
 
-    def call_on_shutdown(self):
+    def call_on_shutdown(self):  # pragma: no cover
         """
         Shutdown callback
         """
-        LOGGER.debug("SHUTDOWN")
+        self.save_states()
 
-    def call_on_search(self):
-        if self.ui.main_tabs_stack_widget.currentIndex() == 0:
-            self.library_model.set_filter(self.ui.search_lineEdit.text())
-
-    def call_on_clear_search(self):
-        if self.ui.main_tabs_stack_widget.currentIndex() == 0:
-            self.library_model.clear_filter()
+    def call_on_list_item_clicked(
+        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ):
+        data = self.library_model.get_row_atIndex(index)

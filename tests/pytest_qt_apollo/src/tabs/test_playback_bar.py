@@ -1,3 +1,4 @@
+import pyautogui
 import pytest
 from PySide6 import QtCore, QtWidgets
 from pytestqt.qtbot import QtBot
@@ -14,38 +15,29 @@ CONFIG = settings
 LOGGER = get_logger(__name__)
 
 
-class Setup_Apollo:
-    def setup_class(self):
-        copy_mock_data()
-        APOLLO = Apollo()
-        APOLLO.setScreen(QtWidgets.QApplication.screens()[0])
-        APOLLO.move(QtCore.QPoint(0, 0))
-        APOLLO.showFullScreen()
-        # noinspection PyAttributeOutsideInit
-        self._application_apollo = APOLLO
-
-    def teardown_class(self):
-        del self._application_apollo
-        clean_temp_dir()
-        remove_local_config()
-
-
 @pytest.fixture
 def get_TrackRatingWidget(qtbot) -> tuple[TrackRatingWidget, QtBot]:
     bot = qtbot
     app = TrackRatingWidget()
+    bot.addWidget(app)
+    app.setScreen(QtWidgets.QApplication.screens()[0])
     app.setMaximumSize(QtCore.QSize(100, 28))
-    return app, bot
+    app.setMinimumSize(QtCore.QSize(100, 28))
+    app.move(QtCore.QPoint(0, 0))
+    app.showFullScreen()
+    yield app, bot
+    app.close()
+    QtWidgets.QApplication.closeAllWindows()
 
 
 class Test_TrackRatingWidget:
     def test_init(self, get_TrackRatingWidget: (TrackRatingWidget, QtBot)):
-        app, bot = get_TrackRatingWidget
+        app, qtbot = get_TrackRatingWidget
+
         screenshot_widget(app, "Test_TrackRatingWidget.test_init")
-        app.close()
 
     def test_change_rating(self, get_TrackRatingWidget: (TrackRatingWidget, QtBot)):
-        app, bot = get_TrackRatingWidget
+        app, qtbot = get_TrackRatingWidget
 
         app.setRating(0)
         screenshot_widget(app, "Test_TrackRatingWidget.test_change_rating.0")
@@ -56,21 +48,34 @@ class Test_TrackRatingWidget:
         app.setRating(5)
         screenshot_widget(app, "Test_TrackRatingWidget.test_change_rating.5")
 
-        with bot.wait_signal(app.RatingChangedSignal):
+        with qtbot.wait_signal(app.RatingChangedSignal):
             app.setRating(5)
-        app.close()
 
     def test_change_rating_mouse(self, get_TrackRatingWidget: (TrackRatingWidget, QtBot)):
-        app, bot = get_TrackRatingWidget
-
-        with bot.wait_signal(app.RatingChangedSignal):
-            bot.mouseMove(app, QtCore.QPoint(int(app.width() / 2), 14))
-            bot.mousePress(app, QtCore.Qt.LeftButton, pos=QtCore.QPoint(int(app.width() / 2), 14))
+        app, qtbot = get_TrackRatingWidget
+        pos = app.mapToGlobal(app.rect().center())
+        with qtbot.wait_signal(app.RatingChangedSignal):
+            pyautogui.click(pos.x(), pos.y())
+            qtbot.wait(100)
             assert app._rating == 2.5
             screenshot_widget(app, "Test_TrackRatingWidget.test_change_rating_mouse")
-        app.close()
 
 
-class Test_Playback_Bar(Setup_Apollo):
+@pytest.mark.skip
+class Test_Apollo_Playback_Bar:
+    def setup_class(self):
+        copy_mock_data()
+        self.APOLLO = Apollo()
+        self.APOLLO.UI.setScreen(QtWidgets.QApplication.screens()[0])
+        self.APOLLO.UI.move(QtCore.QPoint(0, 0))
+        self.APOLLO.UI.showFullScreen()
+
+    def teardown_class(self):
+        self.APOLLO.UI.close()
+        del self.APOLLO
+        clean_temp_dir()
+        remove_local_config()
+        QtWidgets.QApplication.closeAllWindows()
+
     def test_1(self):
         pass

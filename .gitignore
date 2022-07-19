@@ -218,6 +218,7 @@ desktop.ini
 /tests/pytest_qt_apollo/output/
 /tests/.profiles/
 /tests/linter_output.txt
+/tests/pytest_config/*.toml
 /vendor/*
 !/vendor/readme.md
 !/vendor/__init__.py

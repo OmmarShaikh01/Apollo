@@ -10,7 +10,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from apollo.assets import AppIcons
 from apollo.db.models import LibraryModel, ModelProvider, QueueModel
-from apollo.layout.mainwindow import Ui_MainWindow as Apollo
+from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from apollo.media import Mediafile
 from apollo.src.views.delegates import ViewDelegates, set_delegate
 from apollo.utils import get_logger
@@ -77,16 +77,18 @@ class TrackRatingWidget(QtWidgets.QWidget):
         self.update()
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent) -> None:
-        width = (round(self.mapFromGlobal(QtGui.QCursor.pos()).x() / self.width(), 1) / 2) * 10
-        self._rating = width
-        self.update()
+        if self.underMouse():
+            width = (round(self.mapFromGlobal(QtGui.QCursor.pos()).x() / self.width(), 1) / 2) * 10
+            self._rating = width
+            self.update()
 
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
-        width = (round(self.mapFromGlobal(QtGui.QCursor.pos()).x() / self.width(), 1) / 2) * 10
-        self._rating = width
-        self.rating = width
-        self.update()
-        self.RatingChangedSignal.emit(width)
+        if self.underMouse():
+            width = (round(self.mapFromGlobal(QtGui.QCursor.pos()).x() / self.width(), 1) / 2) * 10
+            self._rating = width
+            self.rating = width
+            self.update()
+            self.RatingChangedSignal.emit(width)
 
     def leaveEvent(self, event: QtCore.QEvent) -> None:
         self._rating = self.rating
@@ -98,6 +100,7 @@ class TrackRatingWidget(QtWidgets.QWidget):
         image.fill(QtGui.QColor.fromRgb(0, 0, 0, 0))
         painter.drawImage(0, 0, image)
         self.drawStars(self._rating, painter)
+        painter.end()
 
     def drawStars(self, stars: float, painter: QtGui.QPainter):
         painter.save()
@@ -116,7 +119,7 @@ class TrackRatingWidget(QtWidgets.QWidget):
                     self.paint_star(AppIcons.STAR.secondary, painter, pos, size)
                 else:
                     self.paint_star(AppIcons.STAR_OUTLINE.secondary, painter, pos, size)
-        painter.end()
+        painter.restore()
 
     @staticmethod
     def paint_star(star: str, painter: QtGui.QPainter, pos: int, size: int):
@@ -148,7 +151,7 @@ class Playback_Bar_Interactions(abc.ABC):
     _BYPASS_PROCESSOR = CONFIG.get("APOLLO.PLAYBACK_BAR.BYPASS_PROCESSOR", True)
     _ELAPSED_TIME = CONFIG.get("APOLLO.PLAYBACK_BAR.ELAPSED_TIME", 0)
 
-    def __init__(self, ui: Apollo) -> None:
+    def __init__(self, ui: Union[Apollo_MainWindow, QtWidgets.QMainWindow]) -> None:
         """
         Constructor
 
@@ -563,7 +566,7 @@ class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO:
     Playback_Bar
     """
 
-    def __init__(self, ui: Apollo) -> None:
+    def __init__(self, ui: Union[Apollo_MainWindow, QtWidgets.QMainWindow]) -> None:
         Playback_Bar_Interactions.__init__(self, ui)
         Playback_Bar_Controller.__init__(self)
         self.bind_models(self.ui.queue_main_listview)

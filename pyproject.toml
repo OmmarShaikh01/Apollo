@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Apollo is a Open-Source music player for playback and organization of audio files on windows"
 license = {file = "LICENSE"}
 
+
 [tool.poetry]
 name = "Apollo"
 version = "0.1.0"
@@ -15,32 +16,34 @@ packages = [
     {include = "apollo"},
     {include = "configs"},
     {include = "vendor"},
-    {include = "pyproject.toml"},
-    {include = "poetry.lock"},
-    {include = "poetry.toml"}
 ]
 include = [
     "apollo/assets/*",
     "vendor/*",
+    "pyproject.toml",
+    "poetry.lock",
+    "poetry.toml",
     "build.py"
 ]
 exclude = [
-    'configs\default_testing_settings.toml',
-    'configs\default_qt_testing_settings.toml',
-    'configs\settings.toml',
-    'configs\testing_settings.toml',
-    'configs\qt_testing_settings.toml',
-    'configs\settings.local.toml',
-    'configs\testing_settings.local.toml',
-    'configs\qt_testing_settings.local.toml',
+    'configs/default_testing_settings.toml',
+    'configs/default_qt_testing_settings.toml',
+    'configs/settings.toml',
+    'configs/testing_settings.toml',
+    'configs/qt_testing_settings.toml',
+    'configs/settings.local.toml',
+    'configs/testing_settings.local.toml',
+    'configs/qt_testing_settings.local.toml',
 
-    'apollo\assets\app_themes\__loaded_theme__',
-    'apollo\layout\*.ui',
-    'apollo\db\*.db'
+    'apollo/assets/app_themes/__loaded_theme__',
+    'apollo/layout/*.ui',
+    'apollo/db/*.db'
 ]
+
 
 [tool.poetry.build]
 generate-setup-file=false
+
 
 [tool.poetry.dependencies]
 python = ">=3.9, <3.11"
@@ -51,6 +54,8 @@ dynaconf = "^3.1.8"
 pyo = "^1.0.4"
 numpy = "^1.22.4"
 requests = "^2.27.1"
+tomli = "^2.0.1"
+
 
 [tool.poetry.dev-dependencies]
 Sphinx = "^4.5.0"
@@ -71,13 +76,23 @@ isort = "^5.10.1"
 coverage = {extras = ["toml"], version = "^6.4.1"}
 pyinstaller = "^5.2"
 auto-py-to-exe = "^2.20.1"
+Nuitka = "^0.9.4"
+PyAutoGUI = "^0.9.53"
+
 
 [tool.poetry.scripts]
 poetry = 'poetry.console:run'
 
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
 [tool.pytest.ini_options]
 testpaths = [
     "tests/pytest_apollo",
+    "tests/pytest_config",
     "tests/pytest_qt_apollo"
 ]
 addopts = [
@@ -92,17 +107,19 @@ addopts = [
 ]
 filterwarnings = ["ignore::DeprecationWarning"]
 console_output_style = "progress"
-cache_dir=".pytest_cache"
+cache_dir="tests/.pytest_cache"
 qt_api="pyside6"
 
+
 [tool.coverage.run]
-source = ['apollo']
+source = ['apollo', 'configs']
 branch = true
-data_file = 'tests\coverage\.coverage'
+data_file = 'tests/coverage/.coverage'
 omit =[
-    'tests\*',
-    'apollo\__main__.py'
+    'tests/*',
+    'apollo/__main__.py'
 ]
+
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
@@ -122,79 +139,46 @@ exclude_lines =[
     'if 0:',
     'if __name__ == .__main__.:'
 ]
-
 ignore_errors = false
 skip_empty = true
 
+
 [tool.coverage.html]
-directory = 'tests\coverage\html'
+directory = 'tests/coverage/html'
 skip_empty = true
+
 
 [tool.isort]
 py_version=39
 profile="black"
 line_length="100"
 known_first_party = ["apollo", "configs", "tests"]
+skip = [".github", "tools", "docs", "examples", ".nox", ".venv", ".pytest_cache", "dist"]
+skip_gitignore=true
 atomic=true
 lines_after_imports=2
 ignore_comments=true
-virtual_env='.\venv'
+virtual_env='./venv'
 remove_redundant_aliases=true
 color_output=true
 supported_extensions=["py"]
+
 
 [tool.black]
 --check = "no"
 diff = "no"
 color = true
 line-length = 100
-target-version = ["py39"]
-exclude='''
-/(
-\.direnv|
-\.eggs|
-\.git|
-\.hg|
-\.mypy_cache|
-\.nox|
-\.tox|
-\.venv|
-venv|
-\.svn|
-_build|
-buck-out|
-build|
-dist|
-__pypackages__|
-\.pyi
-)/
-'''
+exclude='/(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|venv|\.svn|_build|buck-out|build|dist|__pypackages__|\.pyi)/'
 include='\.py?$'
+target-version = ["py39"]
+
 
 [tool.pylint.main]
 extension-pkg-allow-list = ['PySide6', 'av']
 fail-under = 1000
-ignore = ["CVS", ".github", "tools", "docs", "examples", ".nox", ".venv", ".pytest_cache", "dist"]
-ignore-paths = '''
-/(
-\.direnv|
-\.eggs|
-\.git|
-\.hg|
-\.mypy_cache|
-\.nox|
-\.tox|
-\.venv|
-venv|
-\.svn|
-_build|
-buck-out|
-build|
-dist|
-__pypackages__|
-\.pyi
-)/
-'''
+ignore = [".github", "tools", "docs", "examples", ".nox", ".venv", ".pytest_cache", "dist"]
+ignore-paths ='/(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|venv|\.svn|_build|buck-out|build|dist|__pypackages__|\.pyi)/'
 ignore-patterns='(.*temp\.py$)|(.*mainwindow\.py$)'
 jobs = 0
 limit-inference-results = 100
@@ -202,6 +186,7 @@ persistent = true
 py-version = "3.9"
 recursive = true
 suggestion-mode = true
+
 
 [tool.pylint.basic]
 argument-naming-style = "snake_case"
@@ -222,11 +207,13 @@ no-docstring-rgx = "^_"
 property-classes = ["abc.abstractproperty"]
 variable-naming-style = "snake_case"
 
+
 [tool.pylint.classes]
 defining-attr-methods = ["__init__", "__new__", "setUp", "__post_init__"]
 exclude-protected = ["_asdict", "_fields", "_replace", "_source", "_make"]
 valid-classmethod-first-arg = ["cls"]
 valid-metaclass-classmethod-first-arg = ["cls"]
+
 
 [tool.pylint.design]
 max-args = 5
@@ -240,8 +227,10 @@ max-returns = 6
 max-statements = 50
 min-public-methods = 0
 
+
 [tool.pylint.exceptions]
 overgeneral-exceptions = ["BaseException", "Exception"]
+
 
 [tool.pylint.format]
 ignore-long-lines = "^\\s*(# )?<?https?://\\S+>?$"
@@ -249,13 +238,16 @@ indent-after-paren = 4
 indent-string = "    "
 max-line-length = 100
 
+
 [tool.pylint.imports]
 allow-wildcard-with-all = false
 known-third-party = ["enchant"]
 
+
 [tool.pylint.logging]
 logging-format-style = "new"
 logging-modules = ["logging"]
+
 
 [tool.pylint."messages control"]
 confidence = ["HIGH", "CONTROL_FLOW", "INFERENCE", "INFERENCE_FAILURE", "UNDEFINED"]
@@ -276,18 +268,22 @@ disable = [
 ]
 enable = ["c-extension-no-member"]
 
+
 [tool.pylint.miscellaneous]
 notes = ["FIXME", "XXX", "TODO"]
+
 
 [tool.pylint.refactoring]
 max-nested-blocks = 5
 never-returning-functions = ["sys.exit", "argparse.parse_error"]
 
+
 [tool.pylint.reports]
-evaluation = "max(0, 0 if fatal else 10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10))"
+evaluation = "max(0, 0 if fatal else 100.0 - ((float(5 * error + warning + refactor + convention) / statement) * 100))"
 output-format = "text:./tests/linter_output.txt,colorized"
-reports = true
+reports = false
 score = true
+
 
 [tool.pylint.similarities]
 ignore-comments = true
@@ -296,9 +292,11 @@ ignore-imports = true
 ignore-signatures = true
 min-similarity-lines = 4
 
+
 [tool.pylint.spelling]
 max-spelling-suggestions = 4
 spelling-ignore-comment-directives = "fmt: on,fmt: off,noqa:,noqa,nosec,isort:skip,mypy:"
+
 
 [tool.pylint.typecheck]
 contextmanager-decorators = ["contextlib.contextmanager"]
@@ -311,13 +309,10 @@ missing-member-hint-distance = 1
 missing-member-max-choices = 1
 mixin-class-rgx = ".*[Mm]ixin"
 
+
 [tool.pylint.variables]
 allow-global-unused-variables = true
 callbacks = ["cb_", "_cb", "call"]
 dummy-variables-rgx = "_+$|(_[a-zA-Z0-9_]*[a-zA-Z0-9]+?$)|dummy|^ignored_|^unused_"
 ignored-argument-names = "_.*|^ignored_|^unused_"
 redefining-builtins-modules = ["six.moves", "past.builtins", "future.builtins", "builtins", "io"]
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"

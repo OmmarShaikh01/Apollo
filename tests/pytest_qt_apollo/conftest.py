@@ -9,7 +9,7 @@ import memory_profiler
 import pytest
 from _pytest.compat import is_async_function
 from _pytest.python import async_warn_and_skip
-from PySide6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 from pytestqt.qtbot import QtBot
 
 from configs import settings
@@ -33,15 +33,6 @@ from tests.testing_utils import get_qt_application
 
 LOGGER = get_logger(__name__)
 PROFILE = settings["PROFILE_RUNS"]  # disable profiling when debugging
-
-
-@pytest.fixture
-def get_apollo_application(qtbot) -> tuple[Apollo, QtBot]:
-    APOLLO = Apollo()
-    APOLLO.setScreen(QtWidgets.QApplication.screens()[0])
-    APOLLO.move(QtCore.QPoint(0, 0))
-    APOLLO.showFullScreen()
-    return APOLLO, qtbot
 
 
 def copy_mock_data():
@@ -77,6 +68,7 @@ def remove_local_config():
 
 
 def pytest_pyfunc_call(pyfuncitem: pytest.Function):
+    QtGui.QCursor.setPos(QtCore.QPoint(1, 1))
     pyfuncitem.__name__ = pyfuncitem.name
     testfunction = pyfuncitem.obj
 
@@ -84,6 +76,7 @@ def pytest_pyfunc_call(pyfuncitem: pytest.Function):
         async_warn_and_skip(pyfuncitem.nodeid)
 
     funcargs = pyfuncitem.funcargs
+    # noinspection PyProtectedMember
     testargs = {arg: funcargs[arg] for arg in pyfuncitem._fixtureinfo.argnames}
     name = testfunction.__qualname__
     mname = testfunction.__module__

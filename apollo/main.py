@@ -24,7 +24,7 @@ def main() -> None:
     load_theme(app, CONFIG.loaded_theme, recompile=CONFIG.recompile_theme)
     window = Apollo()
     LOGGER.info(msg="Application Started")
-    window.show()
+    window.UI.show()
     app.exec()
     LOGGER.info(msg="Application Exit")
     LOGGER.info(msg=settings.to_dict())

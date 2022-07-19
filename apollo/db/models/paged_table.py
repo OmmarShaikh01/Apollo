@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import re
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from PySide6 import QtCore, QtGui, QtSql
 
@@ -339,6 +339,21 @@ class PagedTableModel(QtGui.QStandardItemModel):
 
         self.clear()
         self.fetch_data(self.FETCH_DATA_DOWN)
+
+    def get_row_atIndex(
+        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ) -> list:
+        """
+        Fetches Row Data at index
+
+        Args:
+            index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): Row index to get data
+
+        Returns:
+            list: row data at given index
+        """
+        row_index = index.row()
+        return [self.index(row_index, col_index).data() for col_index in range(self.columnCount())]
 
     @property
     def SelectQuery(self) -> str:

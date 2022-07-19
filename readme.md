@@ -1,6 +1,8 @@
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
 [![Pytests](https://github.com/OmmarShaikh01/Apollo/actions/workflows/python-pytests.yml/badge.svg)](https://github.com/OmmarShaikh01/Apollo/actions/workflows/python-pytests.yml)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![PyPI status](https://img.shields.io/pypi/status/ansicolortags.svg)](https://pypi.python.org/pypi/ansicolortags/)
 [![GPL license](https://img.shields.io/badge/License-GPL-blue.svg)](http://perso.crans.org/besson/LICENSE.html)
@@ -70,6 +72,10 @@ Execute Module
 $ python.exe -m apollo
 ```
 
+### Building Apollo's Installer
+```shell
+$ .\tools\build.ps1
+```
 
 License
 ----

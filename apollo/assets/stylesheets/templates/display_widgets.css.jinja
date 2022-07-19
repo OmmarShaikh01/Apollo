@@ -8,6 +8,18 @@
 {% endmacro %}
 
 
+{% macro style_bold_label(name = '', luminosity = 0.1) %}
+    QLabel{% if name != '' %}#{{name}}{% endif %}{
+        color: {{FILTER_OPACITY(QTCOLOR_PRIMARYTEXTCOLOR, 0.8)}};
+        border: none;
+        background: transparent;
+        padding-left: 2px;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+{% endmacro %}
+
+
 {% macro style_slider(name = '', orientation = 'horizontal') %}
     QSlider {
         background-color: transparent;
@@ -57,6 +69,9 @@
 /* END REGION -------------------------------------------------------------- */
 
 {{ style_label() }}
+{{ style_bold_label(name = 'label_18') }}
+{{ style_bold_label(name = 'label_19') }}
+
 {{ style_inputs() }}
 {{ style_slider() }}
 {{ style_slider(orientation = 'vertical') }}

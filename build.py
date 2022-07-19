@@ -8,7 +8,7 @@ import PyInstaller.__main__
 import tomli
 
 
-def kwargs_flat(kwarg: str, _list: Union[list, filter, map], delimiter: str = " "):
+def kwargs_flat(kwarg: str, _list: Union[list, filter, map]):
     counter = 0
     for i in range(len(_list) * 2):
         if (i % 2) != 0:
@@ -39,6 +39,7 @@ del dependencies["python"]
 exe_options = [
     str(Path(os.path.dirname(__file__), "apollo", "__main__.py")),
     *("--clean", "-y", "--onedir", "--windowed", "--no-embed-manifest", "--win-private-assemblies"),
+    *("--debug", "noarchive"),
     *("--log-level", "WARN"),
     *("--name", "Apollo"),
     *("--specpath", str(ROOT)),
@@ -62,9 +63,9 @@ exe_options = [
         ],
     ),
     *kwargs_flat("--collect-all", ["apollo"]),
+    *kwargs_flat("--hidden-imports", ["apollo", "av", "PySide6"]),
     *kwargs_flat("--paths", [str(ROOT)]),
     *kwargs_flat("--exclude-module", list(dev_dependencies.keys())),
-    *("--debug", "all"),
 ]
 
 # noinspection PyUnresolvedReferences
