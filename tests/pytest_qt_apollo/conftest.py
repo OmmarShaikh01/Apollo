@@ -16,7 +16,7 @@ from configs import settings
 
 
 settings.setenv("QT_TESTING")
-settings.validators.validate(only_current_env=True)
+settings.validators.validate_all(only_current_env=True)
 
 from apollo.assets.stylesheets import load_theme
 from apollo.src.app import Apollo
@@ -128,7 +128,7 @@ def clean_profile():
 @pytest.fixture(scope="package", autouse=True)
 def create_session():
     settings.setenv("QT_TESTING")
-    settings.validators.validate()
+    settings.validators.validate_all()
     LOGGER.info(f"CONFIG {settings.current_env}: {settings.to_dict()}")
 
     clean_profile()

@@ -14,7 +14,7 @@ from configs import settings
 
 
 settings.setenv("TESTING")
-settings.validators.validate(only_current_env=True)
+settings.validators.validate_all(only_current_env=True)
 
 from apollo.utils import get_logger
 from tests.testing_utils import get_qt_application
@@ -108,7 +108,7 @@ def clean_profile():
 @pytest.fixture(scope="package", autouse=True)
 def create_session():
     settings.setenv("TESTING")
-    settings.validators.validate()
+    settings.validators.validate_all()
     LOGGER.info(f"CONFIG {settings.current_env}: {settings.to_dict()}")
 
     clean_profile()

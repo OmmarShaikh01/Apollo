@@ -7,7 +7,7 @@ from configs.validate import validate
 
 ROOT = os.path.dirname(__file__)
 settings = Dynaconf(
-    load_dotenv=True,
+    load_dotenv=False,
     project_root=os.path.dirname(ROOT),
     settings_files=[
         os.path.join(ROOT, "default_settings.toml"),
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     env = ("TESTING", "QT_TESTING", "PRODUCTION")
     for _env in env:
         settings.setenv(_env)
-        settings.validators.validate()
+        settings.validators.validate_all()
         print()
         print(_env)
         print(json.dumps(settings.to_dict(), indent=2))
