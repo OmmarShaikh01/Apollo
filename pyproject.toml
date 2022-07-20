@@ -23,7 +23,9 @@ include = [
     "pyproject.toml",
     "poetry.lock",
     "poetry.toml",
-    "build.py"
+    "build.py",
+    "icon.ico",
+    "icon.bmp"
 ]
 exclude = [
     'configs/default_testing_settings.toml',
@@ -312,7 +314,7 @@ mixin-class-rgx = ".*[Mm]ixin"
 
 [tool.pylint.variables]
 allow-global-unused-variables = true
-callbacks = ["cb_", "_cb", "call"]
+callbacks = ["cb_", "_cb", "call_on"]
 dummy-variables-rgx = "_+$|(_[a-zA-Z0-9_]*[a-zA-Z0-9]+?$)|dummy|^ignored_|^unused_"
 ignored-argument-names = "_.*|^ignored_|^unused_"
 redefining-builtins-modules = ["six.moves", "past.builtins", "future.builtins", "builtins", "io"]

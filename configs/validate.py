@@ -3,6 +3,8 @@ import os
 import dynaconf
 from dynaconf import Validator
 
+PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
+
 
 def _ui_states_validators() -> Validator:
     """
@@ -31,70 +33,67 @@ def _ui_states_validators() -> Validator:
     return Validator(*MAIN, *PLAYBACK_BAR, *LIBRARY_TAB)
 
 
-def validate(settings: dynaconf.Dynaconf):
+def validate() -> list[Validator]:
     """
-    Validates loaded config
+    Returns Validators to validate loaded config
 
-    Args:
-        settings (dynaconf.Dynaconf): Settings
+    Returns:
+        list[Validator]: List of setting validator
     """
+
+    VALIDATORS = []
     # REGISTER VALIDATORS FOR [SHARED SESSION]
     FIELDS = (
-        "logger_level",
         "loaded_theme",
         "recompile_theme",
         "supported_formats",
-        "enabled_formats",
+        "enabled_formats", "server.rate", "server.chnl", "server.format"
     )
     envs = ["TESTING", "QT_TESTING", "PRODUCTION"]
     for env in envs:
-        settings.validators.register(
-            Validator(
-                *FIELDS,
-                "server.rate",
-                "server.chnl",
-                "server.format",
-                env=env,
-                must_exist=True,
-            ),
+        validator = (
+            Validator(*FIELDS, env=env, must_exist=True),
+            Validator("logger_level", env = env, default = "ERROR")
         )
+        VALIDATORS.extend(validator)
 
     # REGISTER VALIDATORS FOR [PRODUCTION]
     env = "PRODUCTION"
-    settings.validators.register(
+    validator = (
         Validator(
             "db_path",
-            default=os.path.join(settings.project_root, "apollo", "db", "apollo.db"),
+            default=os.path.join(PROJECT_ROOT, "apollo", "db", "apollo.db"),
             must_exist=True,
             env=env,
         ),
         _ui_states_validators(),
     )
+    VALIDATORS.extend(validator)
 
     # REGISTER VALIDATORS FOR [QT_TESTING]
     env = "QT_TESTING"
-    settings.validators.register(
+    validator = (
         Validator(
             "temp_dir",
-            default=os.path.join(settings.project_root, "tests", "tempdir"),
+            default=os.path.join(PROJECT_ROOT, "tests", "tempdir"),
             must_exist=True,
             env=env,
         ),
         Validator(
             "assets_dir",
-            default=os.path.join(settings.project_root, "tests", "assets"),
+            default=os.path.join(PROJECT_ROOT, "tests", "assets"),
             must_exist=True,
             env=env,
         ),
         Validator(
             "mock_data",
-            default=os.path.join(settings.project_root, "tests", "assets", "mock_data"),
+            default=os.path.join(PROJECT_ROOT, "tests", "assets", "mock_data"),
             must_exist=True,
             env=env,
         ),
         Validator(
             "db_path",
-            default=os.path.join(settings.project_root, "tests", "tempdir", "testing.db"),
+            default=os.path.join(PROJECT_ROOT, "tests", "tempdir", "testing.db"),
             must_exist=True,
             env=env,
         ),
@@ -105,31 +104,32 @@ def validate(settings: dynaconf.Dynaconf):
         Validator("sox_path", env=env),
         _ui_states_validators(),
     )
+    VALIDATORS.extend(validator)
 
     # REGISTER VALIDATORS FOR [TESTING]
     env = "TESTING"
-    settings.validators.register(
+    validator = (
         Validator(
             "temp_dir",
-            default=os.path.join(settings.project_root, "tests", "tempdir"),
+            default=os.path.join(PROJECT_ROOT, "tests", "tempdir"),
             must_exist=True,
             env=env,
         ),
         Validator(
             "assets_dir",
-            default=os.path.join(settings.project_root, "tests", "assets"),
+            default=os.path.join(PROJECT_ROOT, "tests", "assets"),
             must_exist=True,
             env=env,
         ),
         Validator(
             "mock_data",
-            default=os.path.join(settings.project_root, "tests", "assets", "mock_data"),
+            default=os.path.join(PROJECT_ROOT, "tests", "assets", "mock_data"),
             must_exist=True,
             env=env,
         ),
         Validator(
             "db_path",
-            default=os.path.join(settings.project_root, "tests", "tempdir", "testing.db"),
+            default=os.path.join(PROJECT_ROOT, "tests", "tempdir", "testing.db"),
             must_exist=True,
             env=env,
         ),
@@ -142,3 +142,6 @@ def validate(settings: dynaconf.Dynaconf):
             env=env,
         ),
     )
+    VALIDATORS.extend(validator)
+
+    return VALIDATORS

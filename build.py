@@ -39,9 +39,9 @@ del dependencies["python"]
 exe_options = [
     str(Path(os.path.dirname(__file__), "apollo", "__main__.py")),
     *("--clean", "-y", "--onedir", "--windowed", "--no-embed-manifest", "--win-private-assemblies"),
-    *("--debug", "noarchive"),
-    *("--log-level", "WARN"),
+    *("--debug", "all"),
     *("--name", "Apollo"),
+    *("--i", str(ROOT / "icon.ico")),
     *("--specpath", str(ROOT)),
     *("--distpath", str(ROOT / "dist")),
     *("--workpath", str(ROOT / "dist" / "build")),
@@ -50,6 +50,8 @@ exe_options = [
         [
             os.pathsep.join((str(ROOT / "LICENSE"), ".")),
             os.pathsep.join((str(ROOT / "readme.md"), ".")),
+            os.pathsep.join((str(ROOT / "icon.ico"), ".")),
+            os.pathsep.join((str(ROOT / "icon.bmp"), ".")),
             os.pathsep.join((str(ROOT / "configs"), "configs")),
             *[
                 os.pathsep.join((str(ROOT / "configs" / file), "configs"))
@@ -63,7 +65,7 @@ exe_options = [
         ],
     ),
     *kwargs_flat("--collect-all", ["apollo"]),
-    *kwargs_flat("--hidden-imports", ["apollo", "av", "PySide6"]),
+    *kwargs_flat("--hidden-import", ["apollo", "av", "PySide6"]),
     *kwargs_flat("--paths", [str(ROOT)]),
     *kwargs_flat("--exclude-module", list(dev_dependencies.keys())),
 ]

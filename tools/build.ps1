@@ -7,7 +7,14 @@
     then detect dependencies in project folder to optimize for different Python.
 .EXAMPLE
     PS> .\build.ps1
+    PS> .\build.ps1 -format installer
+    PS> .\build.ps1 -format frozen-zip
+    PS> .\build.ps1 -format package
 #>
+
+param(
+    [string]$format = 'installer'
+)
 
 clear
 
@@ -101,7 +108,7 @@ function Freeze-Apollo {
 
         Write-Host ">>> " -NoNewline -ForegroundColor Green
         Write-Host "Pyinstaller Freeze Dist ..."
-        poetry install --no-root > "$($root_dir)\dist\build_dep.log"
+        poetry install > "$($root_dir)\dist\build_dep.log"
         New-Item -ItemType Directory -Force -Path "$($root_dir)\dist\build" | Out-Null
         poetry run python build.py > "$($root_dir)\dist\build.log"        
         Write-Host
@@ -132,18 +139,7 @@ function Freeze-Apollo {
             Exit-WithCode 1
         }      
     }   
-    Write-Host   
-    
-    $apollo = "$($root_dir)\dist\build\Apollo"
-    Write-Host ">>> " -NoNewline -ForegroundColor Green
-    Write-Host "Compressing Apollo"
-    if (Test-Path -Path $apollo -PathType Container) {
-        Compress-Archive -LiteralPath $apollo -DestinationPath "$($apollo).zip" -Force -CompressionLevel "Optimal"       
-    } else {
-        Write-Host "!!! " -NoNewline -ForegroundColor Red
-        Write-Host "Failed to Compress Apollo"
-    }  
-    Write-Host   
+    Write-Host
 }
 
 
@@ -152,7 +148,7 @@ function NSIS-Apollo {
 
     Write-Host ">>> " -NoNewline -ForegroundColor Green
     Write-Host "NSIS Compile Apollo.exe ... " 
-    Write-Host 
+    Write-Host
 
     Write-Host ">>> " -NoNewline -ForegroundColor Green
     Write-Host "Checking makensis ... " -NoNewline
@@ -165,6 +161,17 @@ function NSIS-Apollo {
         Write-Host "OK" -ForegroundColor Green        
     }
     Write-Host 
+
+    $apollo = "$($root_dir)\dist\build\Apollo"
+    Write-Host ">>> " -NoNewline -ForegroundColor Green
+    Write-Host "Compressing Apollo"
+    if (Test-Path -Path $apollo -PathType Container) {
+        Compress-Archive -LiteralPath $apollo -DestinationPath "$($apollo).zip" -Force -CompressionLevel "Optimal"
+    } else {
+        Write-Host "!!! " -NoNewline -ForegroundColor Red
+        Write-Host "Failed to Compress Apollo"
+    }
+    Write-Host
 
     Write-Host ">>> " -NoNewline -ForegroundColor Green
     Write-Host "Compiling Apollo.exe ... " 
@@ -184,12 +191,30 @@ function Main {
     Write-Host 
 
     $Env:PYTHONPATH=$root_dir
+    $env:ENV_FOR_DYNACONF = 'PRODUCTION'
 
     Startup-Tasks
     Lint-Apollo
+
+    $skip=0
     Build-Apollo
-    Freeze-Apollo
-    NSIS-Apollo   
+    if ($format -eq "package") {
+        $skip=1
+    }
+
+    if ($skip -eq 0) {
+        Freeze-Apollo
+        if ($format -eq "frozen-zip") {
+            $skip=1
+        }
+    }
+
+    if ($skip -eq 0) {
+        NSIS-Apollo
+        if ($format -eq "installer") {
+            $skip=1
+        }
+    }
 
     Set-Location $pre_exe_dir
 }

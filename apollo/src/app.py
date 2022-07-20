@@ -14,9 +14,12 @@ Main Class for Apollo Includes all sub tabs and components
 from __future__ import annotations
 
 import abc
+import os.path
+from pathlib import PurePath
 from typing import Union
 
 from PySide6 import QtGui, QtWidgets
+from PySide6.QtWidgets import QSystemTrayIcon
 
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from apollo.src.tabs import Library_Tab, Playback_Bar
@@ -87,6 +90,16 @@ class Apollo_UI(QtWidgets.QMainWindow, Apollo_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.set_app_icon()
+
+    def set_app_icon(self):
+        icon_path = (
+            PurePath(os.path.dirname(os.path.dirname(__file__)))
+            / "assets"
+            / "Apollo_App_Icon_Small.svg"
+        ).as_posix()
+        pixmap = QtGui.QPixmap.fromImage(QtGui.QImage(icon_path)).scaled(48, 48)
+        self.setWindowIcon(QtGui.QIcon(pixmap))
 
 
 class Apollo(Apollo_Interactions, Apollo_Controller):
@@ -96,6 +109,7 @@ class Apollo(Apollo_Interactions, Apollo_Controller):
 
     def __init__(self):
         self.UI = Apollo_UI()
+
         Apollo_Interactions.__init__(self)
         Apollo_Controller.__init__(self)
         self.load_states()

@@ -18,6 +18,9 @@ Unicode true
 
 # Pages ------------------------------------
 !define MUI_ABORTWARNING
+
+!define MUI_ICON ${__FILEDIR__}\${APPNAME}\icon.ico
+
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
 
