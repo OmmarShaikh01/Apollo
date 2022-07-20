@@ -39,7 +39,7 @@ del dependencies["python"]
 exe_options = [
     str(Path(os.path.dirname(__file__), "apollo", "__main__.py")),
     *("--clean", "-y", "--onedir", "--windowed", "--no-embed-manifest", "--win-private-assemblies"),
-    *("--debug", "all"),
+    *("--debug", "noarchive"),
     *("--name", "Apollo"),
     *("--i", str(ROOT / "icon.ico")),
     *("--specpath", str(ROOT)),

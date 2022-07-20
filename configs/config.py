@@ -5,6 +5,7 @@ from dynaconf.loaders.toml_loader import write
 
 from configs.validate import validate
 
+
 ROOT = os.path.dirname(__file__)
 settings = Dynaconf(
     load_dotenv=False,

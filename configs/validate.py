@@ -3,6 +3,7 @@ import os
 import dynaconf
 from dynaconf import Validator
 
+
 PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -47,13 +48,16 @@ def validate() -> list[Validator]:
         "loaded_theme",
         "recompile_theme",
         "supported_formats",
-        "enabled_formats", "server.rate", "server.chnl", "server.format"
+        "enabled_formats",
+        "server.rate",
+        "server.chnl",
+        "server.format",
     )
     envs = ["TESTING", "QT_TESTING", "PRODUCTION"]
     for env in envs:
         validator = (
             Validator(*FIELDS, env=env, must_exist=True),
-            Validator("logger_level", env = env, default = "ERROR")
+            Validator("logger_level", env=env, default="ERROR"),
         )
         VALIDATORS.extend(validator)
 

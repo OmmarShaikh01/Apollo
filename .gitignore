@@ -206,7 +206,7 @@ testing_settings.toml
 *.pymon
 *.profile
 desktop.ini
-/apollo/db/default.db
+/apollo/db/*.db
 /apollo/apollo.ini
 /apollo/assets/stylesheets/generated/
 /apollo/assets/stylesheets/build/

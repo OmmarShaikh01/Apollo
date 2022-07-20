@@ -285,7 +285,7 @@ def generate_resource(name: str, recompile: Optional[bool] = False) -> bool:
     if not os.path.exists(loaded_theme):
         os.mkdir(loaded_theme)
 
-    if not os.path.exists(theme_zip) or recompile:
+    if not os.path.exists(theme_zip) and recompile:
         if (name + ".json") in os.listdir(ResourceGenerator.THEMES) and _JINJA:
             res = ResourceGenerator(name)
             res.build_theme()
@@ -305,6 +305,8 @@ def generate_resource(name: str, recompile: Optional[bool] = False) -> bool:
         os.mkdir(loaded_theme)
         shutil.unpack_archive(theme_zip, loaded_theme)
         return True
+
+    return False
 
 
 def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool] = False):
