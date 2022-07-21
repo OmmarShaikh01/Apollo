@@ -73,7 +73,7 @@ class Test_Apollo_Library:
         )
 
     def test_view_item_doubleclick(self, qtbot: QtBot, mocker: MockerFixture):
-        spy_1 = mocker.spy(self.APOLLO._LIBRARY, "call_on_list_item_clicked")
+        spy_1 = mocker.spy(self.APOLLO._LIBRARY, "cb_list_item_clicked")
         view = self.APOLLO.UI.library_main_listview
         self.APOLLO._LIBRARY.set_model_delegate(view, ViewDelegates.TrackDelegate_Mid)
         pos = view.viewport().mapToGlobal(QtCore.QPoint(10, 10))

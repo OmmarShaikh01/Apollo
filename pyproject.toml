@@ -25,7 +25,8 @@ include = [
     "poetry.toml",
     "build.py",
     "icon.ico",
-    "icon.bmp"
+    "icon.bmp",
+    "splash.bmp",
 ]
 exclude = [
     'configs/default_testing_settings.toml',

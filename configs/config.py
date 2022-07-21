@@ -22,7 +22,6 @@ settings = Dynaconf(
     environments=True,
     env_switcher="ENV_FOR_DYNACONF",
     validate_only_current_env=True,
-    dynaconf_skip_loaders=False,
     validators=validate(),
 )
 # END REGION

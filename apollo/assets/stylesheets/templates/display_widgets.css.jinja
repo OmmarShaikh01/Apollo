@@ -33,7 +33,7 @@
     }
 
     QSlider::handle:{{orientation}} {
-        background: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.4)}};
+        background: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.1)}};
         border-radius: 2px;
         margin: 0 -4px;
     }
@@ -45,7 +45,7 @@
     }
 
     QSlider::sub-page:{{orientation}} {
-        background: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.4)}};
+        background: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.1)}};
         margin: 2px -4px;
         border-radius: 2px;
     }
@@ -73,5 +73,5 @@
 {{ style_bold_label(name = 'label_19') }}
 
 {{ style_inputs() }}
-{{ style_slider() }}
+{{ style_slider(orientation = 'horizontal') }}
 {{ style_slider(orientation = 'vertical') }}

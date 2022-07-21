@@ -3,7 +3,7 @@ Main Class for Apollo Includes all sub tabs and components
 
 ## Design guidelines for all Sub tabs defined under Apollo
 1. Needs an interaction class. Interaction class must be an ABC and must bind
-   interaction to call_on methods ABM. All ABM must be implemented in main
+   interaction to cb methods ABM. All ABM must be implemented in main
    component class
 2. Needs to have a controller class which handles all communication to
    all resources. Controller class must be an ABC
@@ -45,13 +45,13 @@ class Apollo_Interactions(abc.ABC):
         self.UI.now_playing_tab_switch_button.pressed.connect(lambda: (self.call_tab_switch(1)))
         self.UI.playlist_tab_switch_button.pressed.connect(lambda: (self.call_tab_switch(2)))
         self.UI.audiofx_tab_switch_button.pressed.connect(lambda: (self.call_tab_switch(3)))
-        self.UI.closeEvent = lambda e: self.call_on_shutdown()
+        self.UI.closeEvent = lambda e: self.cb_shutdown()
 
     def call_tab_switch(self, tab_index: int):
         self.UI.main_tabs_stack_widget.setCurrentIndex(tab_index)
 
     @abc.abstractmethod
-    def call_on_shutdown(self):
+    def cb_shutdown(self):
         ...
 
     def load_states(self):  # pragma: no cover
@@ -136,7 +136,7 @@ class Apollo(Apollo_Interactions, Apollo_Controller):
         Apollo_Controller.save_states(self)
         CONFIG["APOLLO.MAIN.CURRENT_TAB"] = self.UI.main_tabs_stack_widget.currentIndex()
 
-    def call_on_shutdown(self):  # pragma: no cover
+    def cb_shutdown(self):  # pragma: no cover
         self.save_states()
         self._LIBRARY.save_states()
         write_config()

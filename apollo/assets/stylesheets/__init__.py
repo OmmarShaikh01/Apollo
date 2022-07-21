@@ -160,8 +160,8 @@ class ResourceGenerator:
         """
         rgba = lambda r, g, b, a: QtGui.QColor.fromRgb(r, g, b, a).name()
         primary = str(eval(luminosity(self.app_theme["QTCOLOR_PRIMARYTEXTCOLOR"], 0.4)))
-        secondary = str(eval(luminosity(self.app_theme["QTCOLOR_SECONDARYLIGHTCOLOR"], 0.4)))
-        disabled = str(eval(luminosity(self.app_theme["QTCOLOR_PRIMARYLIGHTCOLOR"], 0.5)))
+        secondary = str(eval(luminosity(self.app_theme["QTCOLOR_SECONDARYCOLOR"], 0.1)))
+        disabled = str(eval(luminosity(self.app_theme["QTCOLOR_PRIMARYCOLOR"], 0.5)))
         success = str(eval(luminosity(self.app_theme["QTCOLOR_SUCCESS"], 0.1)))
         warning = str(eval(luminosity(self.app_theme["QTCOLOR_WARNING"], 0)))
         danger = str(eval(luminosity(self.app_theme["QTCOLOR_DANGER"], 0)))
@@ -356,7 +356,10 @@ def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool]
     loaded_theme = app_theme / "__loaded_theme__"
     theme_zip = app_theme / (name + ".zip")
 
-    if not os.path.exists(theme_zip) or recompile:
+    if recompile and os.path.exists(theme_zip):
+        os.remove(theme_zip)
+
+    if not os.path.exists(theme_zip):
         generate_resource(name, recompile)
     else:
         if os.path.exists(theme_zip) and (len(os.listdir(loaded_theme)) == 0 or recompile):

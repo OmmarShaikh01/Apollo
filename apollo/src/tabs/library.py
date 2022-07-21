@@ -1,7 +1,7 @@
 import abc
 from typing import Optional, Union
 
-from PySide6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from apollo.db.models import LibraryModel, ModelProvider, QueueModel
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
@@ -35,7 +35,11 @@ class Library_Tab_Interactions(abc.ABC):
         Sets up interactions
         """
         self.UI.library_main_listview.doubleClicked.connect(
-            lambda index: self.call_on_list_item_clicked(index)
+            lambda index: self.cb_list_item_clicked(index)
+        )
+        self.UI.library_main_listview.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.UI.library_main_listview.customContextMenuRequested.connect(
+            lambda pos: self.cb_context_menu_library_listview(pos)
         )
 
     def load_states(self):  # pragma: no cover
@@ -49,10 +53,26 @@ class Library_Tab_Interactions(abc.ABC):
         """
 
     @abc.abstractmethod
-    def call_on_list_item_clicked(
-        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
-    ):
+    def cb_list_item_clicked(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         ...
+
+    def cb_context_menu_library_listview(self, pos: QtCore.QPoint):
+        menu = QtWidgets.QMenu()
+
+        menu.addAction("Play Now")
+        menu.addAction("Queue Next")
+        menu.addAction("Queue Last")
+        menu_1 = menu.addMenu("Play More")
+        menu_1.addAction("Play All Tracks Shuffled")
+        menu_1.addSeparator()
+        menu_1.addAction("Play Artist")
+        menu_1.addAction("Play Similar")
+        menu_1.addSeparator()
+        menu_1.addAction("Play Genre")
+        menu.addSeparator()
+
+        # Execution
+        menu.exec(self.UI.library_main_listview.mapToGlobal(pos))
 
 
 class Library_Tab_Controller:
@@ -78,8 +98,9 @@ class Library_Tab_Controller:
             view (QtWidgets.QListView): view to bind models to
         """
         view.setModel(self.library_model)
+
         self.set_model_delegate(view)
-        view.verticalScrollbarValueChanged = lambda x: (self.call_on_scroll_paging(view, x))
+        view.verticalScrollbarValueChanged = lambda x: (self.cb_scroll_paging(view, x))
         self.library_model.fetch_data(self.library_model.FETCH_DATA_DOWN)
 
     def set_model_delegate(self, view: QtWidgets.QListView, _type: Optional[ViewDelegates] = None):
@@ -98,7 +119,7 @@ class Library_Tab_Controller:
         set_delegate(view, _type)
         self._DELEGATE_TYPE = _type.name
 
-    def call_on_scroll_paging(self, view: QtWidgets.QListView, value: int):
+    def cb_scroll_paging(self, view: QtWidgets.QListView, value: int):
         """
         On scroll Loader for paged models
 
@@ -110,7 +131,9 @@ class Library_Tab_Controller:
         def reset_slider():
             view.verticalScrollbarValueChanged = lambda x: None
             view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
-            view.verticalScrollbarValueChanged = lambda x: (self.call_on_scroll_paging(view, x))
+            view.verticalScrollbarValueChanged = lambda x: (self.cb_scroll_paging(view, x))
+
+        # remeber selection
 
         if value == view.verticalScrollBar().minimum():
             if self.library_model.fetch_data(self.library_model.FETCH_DATA_UP):
@@ -152,13 +175,11 @@ class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):
         Library_Tab_Interactions.save_states(self)
         Library_Tab_Controller.save_states(self)
 
-    def call_on_shutdown(self):  # pragma: no cover
+    def cb_shutdown(self):  # pragma: no cover
         """
         Shutdown callback
         """
         self.save_states()
 
-    def call_on_list_item_clicked(
-        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
-    ):
+    def cb_list_item_clicked(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = self.library_model.get_row_atIndex(index)

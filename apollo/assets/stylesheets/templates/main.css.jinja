@@ -54,14 +54,14 @@ QSplitter::handle:vertical {
 
 QMainWindow::separator:vertical:hover,
 QSplitter::handle:horizontal:hover {
-    border: 1px solid {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};
+    border: 1px solid {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.1)}};
     border-radius: 1px;
     margin: 2px 0px 2px 0px;
 }
 
 QMainWindow::separator:horizontal:hover,
 QSplitter::handle:vertical:hover {
-    border: 1px solid {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYLIGHTCOLOR, 0.1)}};
+    border: 1px solid {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.1)}};
     border-radius: 1px;
     margin: 0px 2px 0px 2px;
 }
@@ -96,6 +96,87 @@ QScrollBar::sub-line:horizontal {
     background: transparent;
     width: 0px;
     height: 0px;
+}
+
+
+QMenu {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.1)}};
+    border: 1px solid {{QTCOLOR_PRIMARYDARKCOLOR}};
+    border-radius: 4px;
+}
+
+QMenu::separator {
+    height: 2px;
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.1)}};
+}
+
+QMenu::right-arrow{
+    image: url('icons_primary:/RIGHTARROW.svg');
+    width: 16px;
+    height: 16px;
+}
+
+QMenu::right-arrow:selected{
+    image: url('icons_disabled:/RIGHTARROW.svg');
+}
+
+QMenu::indicator:non-exclusive:unchecked {
+    image: url('icons_primary:/CHECKBOX_UNCHECKED.svg');
+}
+
+QMenu::indicator:non-exclusive:unchecked:selected {
+    image: url('icons_primary:/CHECKBOX_UNCHECKED_INVERT.svg');
+}
+
+QMenu::indicator:non-exclusive:checked {
+    image: url('icons_primary:/CHECKBOX_CHECKED.svg');
+}
+
+QMenu::indicator:non-exclusive:checked:selected {
+    image: url('icons_primary:/CHECKBOX_CHECKED_INVERT.svg');
+}
+
+QMenu::indicator:exclusive:unchecked {
+    image: url('icons_primary:/RADIOBUTTON_UNCHECKED.svg');
+}
+
+QMenu::indicator:exclusive:unchecked:selected {
+    image: url('icons_primary:/RADIOBUTTON_UNCHECKED_INVERT.svg');
+}
+
+QMenu::indicator:exclusive:checked {
+    image: url('icons_primary:/RADIOBUTTON_CHECKED.svg');
+}
+
+QMenu::indicator:exclusive:checked:selected {
+    image: url('icons_primary:/RADIOBUTTON_CHECKED_INVERT.svg');
+}
+
+QComboBox::item,
+QCalendarWidget QMenu::item,
+QMenu::item {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+    height: 28px;
+    border: 0px solid transparent;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    padding: 4px 16px 4px 16px;
+}
+
+QComboBox::item:selected,
+QCalendarWidget QMenu::item:selected,
+QMenu::item:selected,
+QComboBox::item:hover,
+QCalendarWidget QMenu::item:hover,
+QMenu::item:hover {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+    color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border-radius: 0px;
+}
+
+QComboBox::item:disabled,
+QCalendarWidget QMenu::item:disabled,
+QMenu::item:disabled {
+    color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
 }
 
 

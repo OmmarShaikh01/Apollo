@@ -43,9 +43,9 @@ class Test_Apollo:
         self.APOLLO.UI.audiofx_tab_switch_button.click()
         assert self.APOLLO.UI.main_tabs_stack_widget.currentIndex() == 3
 
-    def test_call_on_shutdown(self, mocker: MockerFixture):
+    def test_cb_shutdown(self, mocker: MockerFixture):
         spy_1 = mocker.spy(self.APOLLO.UI, "closeEvent")
-        spy_2 = mocker.spy(self.APOLLO, "call_on_shutdown")
+        spy_2 = mocker.spy(self.APOLLO, "cb_shutdown")
         self.APOLLO.UI.library_tab_switch_button.click()
         self.APOLLO.UI.closeEvent(QtGui.QCloseEvent())
         assert CONFIG["APOLLO.MAIN.CURRENT_TAB"] == 0

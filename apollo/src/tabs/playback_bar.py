@@ -505,7 +505,7 @@ class Playback_Bar_Interactions(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def call_on_shutdown(self):
+    def cb_shutdown(self):
         ...
 
     @abc.abstractmethod
@@ -575,7 +575,7 @@ class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO:
         """
         Shutdown callback
         """
-        self.call_on_shutdown()
+        self.cb_shutdown()
         Playback_Bar_Interactions.save_states(self)
         Playback_Bar_Controller.save_states(self)
 
@@ -584,11 +584,11 @@ class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO:
     ):
         LOGGER.debug(index)
 
-    def call_on_search(self):
+    def cb_search(self):
         if self.ui.main_tabs_stack_widget.currentIndex() == 1:
             self.queue_model.set_filter(self.ui.search_lineEdit.text())
 
-    def call_on_clear_search(self):
+    def cb_clear_search(self):
         if self.ui.main_tabs_stack_widget.currentIndex() == 1:
             self.queue_model.clear_filter()
 
@@ -619,5 +619,5 @@ class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO:
     def call_state_change_seek_slider(self, time_s: int):
         LOGGER.debug(time_s)
 
-    def call_on_shutdown(self):
+    def cb_shutdown(self):
         LOGGER.debug("SHUTDOWN")

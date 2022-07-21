@@ -38,11 +38,19 @@ del dependencies["python"]
 
 exe_options = [
     str(Path(os.path.dirname(__file__), "apollo", "__main__.py")),
-    *("--clean", "-y", "--onedir", "--windowed", "--no-embed-manifest", "--win-private-assemblies"),
+    *(
+        "--clean",
+        "-y",
+        "--noupx",
+        "--onedir",
+        "--nowindowed",
+        "--no-embed-manifest",
+        "--win-private-assemblies",
+    ),
     *("--debug", "noarchive"),
     *("--name", "Apollo"),
-    *("--i", str(ROOT / "icon.ico")),
-    *("--specpath", str(ROOT)),
+    *("--icon", str(ROOT / "icon.ico")),
+    *("--specpath", str(ROOT / "dist")),
     *("--distpath", str(ROOT / "dist")),
     *("--workpath", str(ROOT / "dist" / "build")),
     *kwargs_flat(
@@ -52,6 +60,7 @@ exe_options = [
             os.pathsep.join((str(ROOT / "readme.md"), ".")),
             os.pathsep.join((str(ROOT / "icon.ico"), ".")),
             os.pathsep.join((str(ROOT / "icon.bmp"), ".")),
+            os.pathsep.join((str(ROOT / "splash.bmp"), ".")),
             os.pathsep.join((str(ROOT / "configs"), "configs")),
             *[
                 os.pathsep.join((str(ROOT / "configs" / file), "configs"))
