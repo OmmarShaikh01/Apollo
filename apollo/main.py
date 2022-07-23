@@ -6,8 +6,8 @@ import sys
 from PySide6 import QtWidgets
 
 from apollo.assets.stylesheets import load_theme
-from apollo.utils import get_logger
 from apollo.src.app import Apollo
+from apollo.utils import get_logger
 from configs import settings
 
 
