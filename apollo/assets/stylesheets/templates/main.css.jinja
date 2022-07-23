@@ -103,6 +103,7 @@ QMenu {
     background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.1)}};
     border: 1px solid {{QTCOLOR_PRIMARYDARKCOLOR}};
     border-radius: 4px;
+    min-width: 128px;
 }
 
 QMenu::separator {
@@ -156,7 +157,8 @@ QComboBox::item,
 QCalendarWidget QMenu::item,
 QMenu::item {
     background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
-    height: 28px;
+    height: 20px;
+    min-width: 128px;
     border: 0px solid transparent;
     color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
     padding: 4px 16px 4px 16px;

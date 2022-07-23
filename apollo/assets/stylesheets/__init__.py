@@ -267,13 +267,12 @@ class ResourceGenerator:
                 file.close()
 
 
-def generate_resource(name: str, recompile: Optional[bool] = False) -> bool:
+def generate_resource(name: str) -> bool:
     """
     Generates the theme
 
     Args:
         name (str): theme pack name
-        recompile (Optional[Boolean]): Recompile resources
 
     Returns:
         bool: true when theme is generated, otherwise false
@@ -285,13 +284,15 @@ def generate_resource(name: str, recompile: Optional[bool] = False) -> bool:
     if not os.path.exists(loaded_theme):
         os.mkdir(loaded_theme)
 
-    if not os.path.exists(theme_zip) and recompile:
-        if (name + ".json") in os.listdir(ResourceGenerator.THEMES) and _JINJA:
-            res = ResourceGenerator(name)
-            res.build_theme()
-            res.package_theme()
-            shutil.move(res.BUILD / (name + ".zip"), theme_zip)
-            shutil.rmtree(res.BUILD)
+    if not os.path.exists(theme_zip):
+        if _JINJA:
+            for theme in os.listdir(ResourceGenerator.THEMES):
+                theme = str(os.path.splitext(theme)[0])
+                res = ResourceGenerator(theme)
+                res.build_theme()
+                res.package_theme()
+                shutil.move(res.BUILD / (theme + ".zip"), app_theme / (theme + ".zip"))
+                shutil.rmtree(res.BUILD)
         else:
             if not (name + ".json") in os.listdir(ResourceGenerator.THEMES):
                 ApolloWarning("Theme JSON missing")
@@ -299,7 +300,7 @@ def generate_resource(name: str, recompile: Optional[bool] = False) -> bool:
                 ApolloWarning("Failed to build theme pack, Jinja is Missing")
             return False
 
-    if os.path.exists(theme_zip) and (len(os.listdir(loaded_theme)) == 0 or recompile):
+    if os.path.exists(theme_zip):
         if os.path.exists(loaded_theme):
             shutil.rmtree(loaded_theme)
         os.mkdir(loaded_theme)
@@ -356,17 +357,21 @@ def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool]
     loaded_theme = app_theme / "__loaded_theme__"
     theme_zip = app_theme / (name + ".zip")
 
-    if recompile and os.path.exists(theme_zip):
-        os.remove(theme_zip)
+    if recompile:
+        for file in os.listdir(app_theme):
+            if os.path.splitext(file)[1] != ".py":
+                os.remove(str(app_theme / str(file)))
 
-    if not os.path.exists(theme_zip):
-        generate_resource(name, recompile)
-    else:
-        if os.path.exists(theme_zip) and (len(os.listdir(loaded_theme)) == 0 or recompile):
-            if os.path.exists(loaded_theme):
-                shutil.rmtree(loaded_theme)
+    if not os.path.exists(loaded_theme):
+        if not os.path.exists(theme_zip):
+            generate_resource(name)
+        else:
             os.mkdir(loaded_theme)
+
+    if len(os.listdir(loaded_theme)) == 0:
+        if os.path.exists(theme_zip):
             shutil.unpack_archive(theme_zip, loaded_theme)
-            return True
+        else:
+            raise RuntimeError("Failed To generate Resurces")
 
     loader(loaded_theme)

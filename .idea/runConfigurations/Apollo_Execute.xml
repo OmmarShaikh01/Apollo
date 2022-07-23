@@ -20,6 +20,7 @@
     <option name="INPUT_FILE" value="" />
     <method v="2">
       <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_Compile QT" />
+      <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_Black run" />
     </method>
   </configuration>
 </component>

@@ -342,7 +342,7 @@ class PagedTableModel(QtGui.QStandardItemModel):
 
     def get_row_atIndex(
         self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
-    ) -> list:
+    ) -> RecordSet:
         """
         Fetches Row Data at index
 
@@ -350,10 +350,20 @@ class PagedTableModel(QtGui.QStandardItemModel):
             index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): Row index to get data
 
         Returns:
-            list: row data at given index
+            RecordSet: row data at given index
         """
         row_index = index.row()
-        return [self.index(row_index, col_index).data() for col_index in range(self.columnCount())]
+        if row_index != -1:
+            return RecordSet(
+                self.Columns,
+                [
+                    [
+                        self.index(row_index, col_index).data()
+                        for col_index in range(self.columnCount())
+                    ]
+                ],
+            )
+        return RecordSet(self.Columns, [[]])
 
     @property
     def SelectQuery(self) -> str:

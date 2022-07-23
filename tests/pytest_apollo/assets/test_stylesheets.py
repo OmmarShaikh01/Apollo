@@ -150,7 +150,7 @@ class Test_ResourceGenerator:
             pattern = "Failed to build theme pack, Jinja is Missing|Theme JSON missing"
             theme = PurePath(directory, "app_themes")
             os.mkdir(theme)
-            with pytest.warns(UserWarning, match=pattern):
+            with pytest.warns(UserWarning, match=pattern), pytest.raises(RuntimeError):
                 load_theme(self._qt_application, name)
 
                 theme = PurePath(directory, "app_themes")

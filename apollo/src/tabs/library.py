@@ -57,19 +57,107 @@ class Library_Tab_Interactions(abc.ABC):
         ...
 
     def cb_context_menu_library_listview(self, pos: QtCore.QPoint):
-        menu = QtWidgets.QMenu()
+        view = self.UI.library_main_listview
+        model: LibraryModel = view.model()
+        current_record = model.get_row_atIndex(view.indexAt(pos))
+        menu = QtWidgets.QMenu(view)
 
-        menu.addAction("Play Now")
-        menu.addAction("Queue Next")
-        menu.addAction("Queue Last")
+        menu.addAction("Play Now")  # TODO: Implement Callback
+        menu.addAction("Queue Next")  # TODO: Implement Callback
+        menu.addAction("Queue Last")  # TODO: Implement Callback
         menu_1 = menu.addMenu("Play More")
-        menu_1.addAction("Play All Tracks Shuffled")
-        menu_1.addSeparator()
-        menu_1.addAction("Play Artist")
-        menu_1.addAction("Play Similar")
-        menu_1.addSeparator()
-        menu_1.addAction("Play Genre")
+        menu_1.addAction("Play All Shuffled")  # TODO: Implement Callback
+        artist_field = (
+            ""
+            if len(current_record.records[0]) == 0
+            else current_record.records[0][current_record.fields.index("library.ARTIST")]
+        )
+        menu_1.addAction(f'Play Artist "{artist_field}"')  # TODO: Implement Callback
+        album_field = (
+            ""
+            if len(current_record.records[0]) == 0
+            else current_record.records[0][current_record.fields.index("library.ARTIST")]
+        )
+        menu_1.addAction(f'Play Album "{album_field}"')  # TODO: Implement Callback
+        genre_field = (
+            ""
+            if len(current_record.records[0]) == 0
+            else current_record.records[0][current_record.fields.index("library.MOOD")]
+        )
+        menu_1.addAction(f'Play Genre "{genre_field}"')  # TODO: Implement Callback
+        menu_1_1 = menu_1.addMenu("Output To")
+        menu_1_1.addAction(f"Primary Sound Device")  # TODO: Implement Callback
         menu.addSeparator()
+
+        menu.addAction("Edit")  # TODO: Implement Callback
+        menu_2 = menu.addMenu("Add to Playlist")
+        menu_2.addAction("Add to Current Playlist")  # TODO: Implement Callback
+        menu_2.addAction("Add All Shuffled to Playlist")  # TODO: Implement Callback
+        artist_field = (
+            ""
+            if len(current_record.records[0]) == 0
+            else current_record.records[0][current_record.fields.index("library.ARTIST")]
+        )
+        menu_2.addAction(f'Add Artist "{artist_field}" to Playlist')  # TODO: Implement Callback
+        album_field = (
+            ""
+            if len(current_record.records[0]) == 0
+            else current_record.records[0][current_record.fields.index("library.ARTIST")]
+        )
+        menu_2.addAction(f'Add Album "{album_field}" to Playlist')  # TODO: Implement Callback
+        genre_field = (
+            ""
+            if len(current_record.records[0]) == 0
+            else current_record.records[0][current_record.fields.index("library.MOOD")]
+        )
+        menu_2.addAction(f'Add Genre "{genre_field}" to Playlist')  # TODO: Implement Callback
+
+        menu_3 = menu.addMenu("Rating Album")
+        menu_3.addAction(f"Set Rating 5.0")  # TODO: Implement Callback
+        menu_3.addAction(f"Set Rating 4.5")  # TODO: Implement Callback
+        menu_3.addAction(f"Set Rating 4.0")  # TODO: Implement Callback
+        menu_3.addAction(f"Set Rating 3.5")  # TODO: Implement Callback
+        menu_3.addAction(f"Set Rating 3.0")  # TODO: Implement Callback
+        menu_3.addAction(f"Set Rating 2.5")  # TODO: Implement Callback
+        menu_3.addAction(f"Set Rating 2.0")  # TODO: Implement Callback
+        menu_3.addAction(f"Set Rating 1.5")  # TODO: Implement Callback
+        menu_3.addAction(f"Set Rating 1.0")  # TODO: Implement Callback
+        menu_3.addAction(f"Set Rating 0.0")  # TODO: Implement Callback
+
+        menu_4 = menu.addMenu("Send To")
+        menu_4.addAction(f"Folder (Move)")  # TODO: Implement Callback
+        menu_4.addAction(f"Folder (Copy)")  # TODO: Implement Callback
+        menu_4.addSeparator()
+        menu_4.addAction(f"Format Converter")  # TODO: Implement Callback
+        menu_4.addAction(f"File Rescan")  # TODO: Implement Callback
+
+        menu.addAction("Delete")  # TODO: Implement Callback
+        menu.addSeparator()
+
+        menu_5 = menu.addMenu("Search")
+        artist_field = (
+            ""
+            if len(current_record.records[0]) == 0
+            else current_record.records[0][current_record.fields.index("library.ARTIST")]
+        )
+        menu_5.addAction(f'Find Artist "{artist_field}"')  # TODO: Implement Callback
+        artist_field = (
+            ""
+            if len(current_record.records[0]) == 0
+            else current_record.records[0][current_record.fields.index("library.ARTIST")]
+        )
+        menu_5.addAction(f'Find Similar "{artist_field}"')  # TODO: Implement Callback
+        title_field = (
+            ""
+            if len(current_record.records[0]) == 0
+            else current_record.records[0][current_record.fields.index("library.TITLE")]
+        )
+        menu_5.addAction(f'Find Title "{title_field}"')  # TODO: Implement Callback
+        menu_5.addSeparator()
+        menu_5.addAction(f"Locate in Library")  # TODO: Implement Callback
+        menu_5.addAction(f"Locate in Playlist")  # TODO: Implement Callback
+        menu_5.addAction(f"Locate in Explorer")  # TODO: Implement Callback
+        menu_5.addAction(f"Locate in Web Browser")  # TODO: Implement Callback
 
         # Execution
         menu.exec(self.UI.library_main_listview.mapToGlobal(pos))

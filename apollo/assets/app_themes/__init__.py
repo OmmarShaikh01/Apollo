@@ -6,7 +6,9 @@ import os
 from collections import namedtuple
 from pathlib import PurePath
 
-from apollo.assets.stylesheets import generate_resource
+from PySide6 import QtWidgets
+
+from apollo.assets.stylesheets import generate_resource, load_theme
 from configs import settings
 
 
@@ -124,7 +126,7 @@ class _AppIcons:
 
         path = PurePath(os.path.dirname(__file__), "__loaded_theme__", "icons")
         if not os.path.exists(path):
-            if not generate_resource(CONFIG.loaded_theme, recompile=True):
+            if not generate_resource(CONFIG.loaded_theme):
                 raise RuntimeError("Failed To generate Resurces")
         loader()
 
@@ -138,7 +140,7 @@ def get_apptheme() -> dict:
     """
     path = PurePath(os.path.dirname(__file__), "__loaded_theme__", "apptheme.json")
     if not os.path.exists(path):
-        if not generate_resource(CONFIG.loaded_theme, recompile=True):
+        if not generate_resource(CONFIG.loaded_theme):
             raise RuntimeError("Failed To generate Resurces")
         with open(path, encoding="utf-8") as file:
             return json.load(file)
@@ -147,8 +149,9 @@ def get_apptheme() -> dict:
 
 _path = PurePath(os.path.dirname(__file__), "__loaded_theme__")
 if not os.path.exists(_path):
-    if not generate_resource(CONFIG.loaded_theme, recompile=True):
-        raise RuntimeError("Failed To generate Resurces")
+    load_theme(
+        QtWidgets.QApplication.instance(), CONFIG.loaded_theme, recompile=CONFIG.recompile_theme
+    )
 
 AppIcons = _AppIcons()
 AppTheme = get_apptheme()
