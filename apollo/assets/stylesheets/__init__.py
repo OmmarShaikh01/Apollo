@@ -361,7 +361,8 @@ def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool]
         for file in os.listdir(app_theme):
             if os.path.splitext(file)[1] == ".zip":
                 os.remove(str(app_theme / str(file)))
-        shutil.rmtree(loaded_theme)
+        if os.path.exists(loaded_theme):
+            shutil.rmtree(loaded_theme)
 
     if not os.path.exists(loaded_theme):
         if not os.path.exists(theme_zip):
