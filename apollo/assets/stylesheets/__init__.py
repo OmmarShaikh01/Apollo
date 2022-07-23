@@ -267,11 +267,12 @@ class ResourceGenerator:
                 file.close()
 
 
-def generate_resource(name: str) -> bool:
+def generate_resource(name: str, recompile: Optional[bool] = False) -> bool:
     """
     Generates the theme
 
     Args:
+        recompile (Optional[bool]): recompile te theme for Apollo
         name (str): theme pack name
 
     Returns:
@@ -280,6 +281,17 @@ def generate_resource(name: str) -> bool:
     app_theme = ASSETS / "app_themes"
     loaded_theme = app_theme / "__loaded_theme__"
     theme_zip = app_theme / (name + ".zip")
+
+    if recompile and _JINJA:
+        if not _JINJA:
+            ApolloWarning("Failed to build theme pack, Jinja is Missing")
+            return False
+        else:
+            for file in os.listdir(app_theme):
+                if os.path.splitext(file)[1] == ".zip":
+                    os.remove(str(app_theme / str(file)))
+            if os.path.exists(loaded_theme):
+                shutil.rmtree(loaded_theme)
 
     if not os.path.exists(loaded_theme):
         os.mkdir(loaded_theme)
@@ -357,12 +369,16 @@ def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool]
     loaded_theme = app_theme / "__loaded_theme__"
     theme_zip = app_theme / (name + ".zip")
 
-    if recompile:
-        for file in os.listdir(app_theme):
-            if os.path.splitext(file)[1] == ".zip":
-                os.remove(str(app_theme / str(file)))
-        if os.path.exists(loaded_theme):
-            shutil.rmtree(loaded_theme)
+    if recompile and _JINJA:
+        if not _JINJA:
+            ApolloWarning("Failed to build theme pack, Jinja is Missing")
+            return None
+        else:
+            for file in os.listdir(app_theme):
+                if os.path.splitext(file)[1] == ".zip":
+                    os.remove(str(app_theme / str(file)))
+            if os.path.exists(loaded_theme):
+                shutil.rmtree(loaded_theme)
 
     if not os.path.exists(loaded_theme):
         if not os.path.exists(theme_zip):

@@ -126,8 +126,7 @@ class _AppIcons:
 
         path = PurePath(os.path.dirname(__file__), "__loaded_theme__", "icons")
         if not os.path.exists(path):
-            if not generate_resource(CONFIG.loaded_theme):
-                raise RuntimeError("Failed To generate Resurces")
+            raise RuntimeError("Failed To Fetch Resurces")
         loader()
 
 
@@ -140,18 +139,15 @@ def get_apptheme() -> dict:
     """
     path = PurePath(os.path.dirname(__file__), "__loaded_theme__", "apptheme.json")
     if not os.path.exists(path):
-        if not generate_resource(CONFIG.loaded_theme):
-            raise RuntimeError("Failed To generate Resurces")
+        raise RuntimeError("Failed To Fetch Resurces")
+    else:
         with open(path, encoding="utf-8") as file:
             return json.load(file)
-    return dict()
 
 
 _path = PurePath(os.path.dirname(__file__), "__loaded_theme__")
 if not os.path.exists(_path):
-    load_theme(
-        QtWidgets.QApplication.instance(), CONFIG.loaded_theme, recompile=CONFIG.recompile_theme
-    )
+    generate_resource(CONFIG.loaded_theme, True)
 
 AppIcons = _AppIcons()
 AppTheme = get_apptheme()

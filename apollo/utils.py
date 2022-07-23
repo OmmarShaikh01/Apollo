@@ -158,7 +158,7 @@ def compile_all():
     for name in os.listdir(ResourceGenerator.THEMES):
         name, _ = os.path.splitext(name)
         _, name = os.path.split(name)
-        generate_resource(str(name), True)
+        generate_resource(str(name))
 
 
 class ApolloSignal:
