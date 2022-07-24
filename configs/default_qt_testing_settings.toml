@@ -13,3 +13,6 @@ SOX_PATH="@none "
 format = "s16"
 chnl = 2
 rate = 44100
+
+[QT_TESTING.APOLLO.MAIN]
+IS_TITLEBAR_DARK=true

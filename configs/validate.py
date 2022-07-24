@@ -14,7 +14,7 @@ def _ui_states_validators() -> Validator:
     Returns:
         Validator: Validators for the UI states
     """
-    MAIN = ("CURRENT_TAB",)
+    MAIN = ("CURRENT_TAB", "IS_TITLEBAR_DARK")
 
     PLAYBACK_BAR = (
         "STATE_PLAY",

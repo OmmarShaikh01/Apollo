@@ -10,3 +10,6 @@ ENABLED_FORMATS = [ "mp3",]
 format = "s16"
 chnl = 2
 rate = 44100
+
+[PRODUCTION.APOLLO.MAIN]
+IS_TITLEBAR_DARK=true

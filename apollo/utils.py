@@ -10,6 +10,8 @@ import traceback
 import warnings
 from typing import Callable
 
+from PySide6 import QtWidgets
+
 from configs import settings as _settings
 
 
@@ -159,6 +161,22 @@ def compile_all():
         name, _ = os.path.splitext(name)
         _, name = os.path.split(name)
         generate_resource(str(name))
+
+
+def set_dark_title_bar(window: QtWidgets.QWidget):
+    """
+    Sets the qindows title bar to be black
+
+    Args:
+        window:
+    """
+    if _settings["APOLLO.MAIN.IS_TITLEBAR_DARK"]:
+        import ctypes
+
+        HWND = window.winId()
+        ctypes.windll.dwmapi.DwmSetWindowAttribute(
+            HWND, 20, ctypes.byref(ctypes.c_int(2)), ctypes.sizeof(ctypes.c_int(2))
+        )
 
 
 class ApolloSignal:
