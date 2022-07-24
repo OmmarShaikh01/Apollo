@@ -35,7 +35,6 @@ dev_dependencies = parsed.get("poetry").get("dev-dependencies")
 dependencies = parsed.get("poetry").get("dependencies")
 del dependencies["python"]
 
-
 exe_options = [
     str(Path(os.path.dirname(__file__), "apollo", "__main__.py")),
     *(
@@ -47,7 +46,8 @@ exe_options = [
         "--no-embed-manifest",
         "--win-private-assemblies",
     ),
-    *("--debug", "noarchive"),
+    # *("--debug", "imports"),
+    *("--log-level", "WARN"),
     *("--name", "Apollo"),
     *("--icon", str(ROOT / "icon.ico")),
     *("--specpath", str(ROOT / "dist")),
@@ -73,10 +73,9 @@ exe_options = [
             ],
         ],
     ),
-    *kwargs_flat("--collect-all", ["apollo"]),
-    *kwargs_flat("--hidden-import", ["apollo", "av", "PySide6"]),
+    *kwargs_flat("--collect-all", ["apollo", "dynaconf"]),
+    *kwargs_flat("--hidden-import", ["dynaconf", "python-dotenv"]),
     *kwargs_flat("--paths", [str(ROOT)]),
-    *kwargs_flat("--exclude-module", list(dev_dependencies.keys())),
 ]
 
 # noinspection PyUnresolvedReferences

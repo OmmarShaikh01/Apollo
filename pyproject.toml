@@ -81,6 +81,7 @@ pyinstaller = "^5.2"
 auto-py-to-exe = "^2.20.1"
 Nuitka = "^0.9.4"
 PyAutoGUI = "^0.9.53"
+python-dotenv = {extras = ["cli"], version = "^0.20.0"}
 
 
 [tool.poetry.scripts]
