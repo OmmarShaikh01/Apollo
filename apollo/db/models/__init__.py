@@ -3,6 +3,7 @@ from typing import Union
 from apollo.db.models.library import LibraryModel
 from apollo.db.models.paged_table import PagedTableModel
 from apollo.db.models.queue import QueueModel
+from apollo.db.models.selection_model import PagedSelectionModel
 
 
 class _Provider:

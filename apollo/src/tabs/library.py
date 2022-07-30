@@ -1,9 +1,10 @@
 import abc
+import time
 from typing import Optional, Union
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from apollo.db.models import LibraryModel, ModelProvider, QueueModel
+from apollo.db.models import LibraryModel, ModelProvider, QueueModel, PagedSelectionModel
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from apollo.src.views.delegates import ViewDelegates, set_delegate
 from apollo.utils import get_logger
@@ -39,7 +40,7 @@ class Library_Tab_Interactions(abc.ABC):
         )
         self.UI.library_main_listview.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.UI.library_main_listview.customContextMenuRequested.connect(
-            lambda pos: self.cb_context_menu_library_listview(pos)
+            lambda pos: self._cb_context_menu_library_listview(pos)
         )
 
     def load_states(self):  # pragma: no cover
@@ -52,86 +53,97 @@ class Library_Tab_Interactions(abc.ABC):
         saves session states of Apollo
         """
 
-    @abc.abstractmethod
-    def cb_list_item_clicked(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
-        ...
-
-    def cb_context_menu_library_listview(self, pos: QtCore.QPoint):
+    def _cb_context_menu_library_listview(self, pos: QtCore.QPoint):
         view = self.UI.library_main_listview
         model: LibraryModel = view.model()
         current_record = model.get_row_atIndex(view.indexAt(pos))
         menu = QtWidgets.QMenu(view)
 
-        menu.addAction("Play Now")  # TODO: Implement Callback
-        menu.addAction("Queue Next")  # TODO: Implement Callback
-        menu.addAction("Queue Last")  # TODO: Implement Callback
+        menu.addAction("Play Now", self.cb_play_now)
+        menu.addAction("Queue Next", self.cb_queue_next)
+        menu.addAction("Queue Last", self.cb_queue_last)
         menu_1 = menu.addMenu("Play More")
-        menu_1.addAction("Play All Shuffled")  # TODO: Implement Callback
+        menu_1.addAction("Play All Shuffled", self.cb_play_all_shuffled)
         artist_field = (
             ""
             if len(current_record.records[0]) == 0
             else current_record.records[0][current_record.fields.index("library.ARTIST")]
         )
-        menu_1.addAction(f'Play Artist "{artist_field}"')  # TODO: Implement Callback
+        menu_1.addAction(
+            f'Play Artist "{artist_field}"', lambda: self.cb_play_artist(view.indexAt(pos))
+        )
         album_field = (
             ""
             if len(current_record.records[0]) == 0
             else current_record.records[0][current_record.fields.index("library.ARTIST")]
         )
-        menu_1.addAction(f'Play Album "{album_field}"')  # TODO: Implement Callback
+        menu_1.addAction(
+            f'Play Album "{album_field}"', lambda: self.cb_play_album(view.indexAt(pos))
+        )
         genre_field = (
             ""
             if len(current_record.records[0]) == 0
             else current_record.records[0][current_record.fields.index("library.MOOD")]
         )
-        menu_1.addAction(f'Play Genre "{genre_field}"')  # TODO: Implement Callback
+        menu_1.addAction(
+            f'Play Genre "{genre_field}"', lambda: self.cb_play_genre(view.indexAt(pos))
+        )
         menu_1_1 = menu_1.addMenu("Output To")
-        menu_1_1.addAction(f"Primary Sound Device")  # TODO: Implement Callback
+        menu_1_1.addAction(f"Primary Sound Device", self.cb_primary_sound_device)
         menu.addSeparator()
 
-        menu.addAction("Edit")  # TODO: Implement Callback
+        menu.addAction("Edit", lambda: self.cb_edit(view.indexAt(pos)))
         menu_2 = menu.addMenu("Add to Playlist")
-        menu_2.addAction("Add to Current Playlist")  # TODO: Implement Callback
-        menu_2.addAction("Add All Shuffled to Playlist")  # TODO: Implement Callback
+        menu_2.addAction("Add to Current Playlist", self.cb_add_to_current_playlist)
+        menu_2.addAction("Add All Shuffled to Playlist", self.cb_add_all_shuffled_to_playlist)
         artist_field = (
             ""
             if len(current_record.records[0]) == 0
             else current_record.records[0][current_record.fields.index("library.ARTIST")]
         )
-        menu_2.addAction(f'Add Artist "{artist_field}" to Playlist')  # TODO: Implement Callback
+        menu_2.addAction(
+            f'Add Artist "{artist_field}" to Playlist',
+            lambda: self.cb_add_artist_to_playlist(view.indexAt(pos)),
+        )
         album_field = (
             ""
             if len(current_record.records[0]) == 0
             else current_record.records[0][current_record.fields.index("library.ARTIST")]
         )
-        menu_2.addAction(f'Add Album "{album_field}" to Playlist')  # TODO: Implement Callback
+        menu_2.addAction(
+            f'Add Album "{album_field}" to Playlist',
+            lambda: self.cb_add_album_to_playlist(view.indexAt(pos)),
+        )
         genre_field = (
             ""
             if len(current_record.records[0]) == 0
             else current_record.records[0][current_record.fields.index("library.MOOD")]
         )
-        menu_2.addAction(f'Add Genre "{genre_field}" to Playlist')  # TODO: Implement Callback
+        menu_2.addAction(
+            f'Add Genre "{genre_field}" to Playlist',
+            lambda: self.cb_add_genre_to_playlist(view.indexAt(pos)),
+        )
 
         menu_3 = menu.addMenu("Rating Album")
-        menu_3.addAction(f"Set Rating 5.0")  # TODO: Implement Callback
-        menu_3.addAction(f"Set Rating 4.5")  # TODO: Implement Callback
-        menu_3.addAction(f"Set Rating 4.0")  # TODO: Implement Callback
-        menu_3.addAction(f"Set Rating 3.5")  # TODO: Implement Callback
-        menu_3.addAction(f"Set Rating 3.0")  # TODO: Implement Callback
-        menu_3.addAction(f"Set Rating 2.5")  # TODO: Implement Callback
-        menu_3.addAction(f"Set Rating 2.0")  # TODO: Implement Callback
-        menu_3.addAction(f"Set Rating 1.5")  # TODO: Implement Callback
-        menu_3.addAction(f"Set Rating 1.0")  # TODO: Implement Callback
-        menu_3.addAction(f"Set Rating 0.0")  # TODO: Implement Callback
+        menu_3.addAction(f"Set Rating 5.0", lambda: self.cb_set_rating(5.0))
+        menu_3.addAction(f"Set Rating 4.5", lambda: self.cb_set_rating(4.5))
+        menu_3.addAction(f"Set Rating 4.0", lambda: self.cb_set_rating(4.0))
+        menu_3.addAction(f"Set Rating 3.5", lambda: self.cb_set_rating(3.5))
+        menu_3.addAction(f"Set Rating 3.0", lambda: self.cb_set_rating(3.0))
+        menu_3.addAction(f"Set Rating 2.5", lambda: self.cb_set_rating(2.5))
+        menu_3.addAction(f"Set Rating 2.0", lambda: self.cb_set_rating(2.0))
+        menu_3.addAction(f"Set Rating 1.5", lambda: self.cb_set_rating(1.5))
+        menu_3.addAction(f"Set Rating 1.0", lambda: self.cb_set_rating(1.0))
+        menu_3.addAction(f"Set Rating 0.0", lambda: self.cb_set_rating(0))
 
         menu_4 = menu.addMenu("Send To")
-        menu_4.addAction(f"Folder (Move)")  # TODO: Implement Callback
-        menu_4.addAction(f"Folder (Copy)")  # TODO: Implement Callback
+        menu_4.addAction(f"Folder (Move)", self.cb_folder_move)
+        menu_4.addAction(f"Folder (Copy)", self.cb_folder_copy)
         menu_4.addSeparator()
-        menu_4.addAction(f"Format Converter")  # TODO: Implement Callback
-        menu_4.addAction(f"File Rescan")  # TODO: Implement Callback
+        menu_4.addAction(f"Format Converter", lambda: self.cb_format_converter(view.indexAt(pos)))
+        menu_4.addAction(f"File Rescan", self.cb_file_rescan)
 
-        menu.addAction("Delete")  # TODO: Implement Callback
+        menu.addAction("Delete", self.cb_delete)
         menu.addSeparator()
 
         menu_5 = menu.addMenu("Search")
@@ -140,27 +152,159 @@ class Library_Tab_Interactions(abc.ABC):
             if len(current_record.records[0]) == 0
             else current_record.records[0][current_record.fields.index("library.ARTIST")]
         )
-        menu_5.addAction(f'Find Artist "{artist_field}"')  # TODO: Implement Callback
+        menu_5.addAction(
+            f'Find Artist "{artist_field}"', lambda: self.cb_find_artist(view.indexAt(pos))
+        )
         artist_field = (
             ""
             if len(current_record.records[0]) == 0
             else current_record.records[0][current_record.fields.index("library.ARTIST")]
         )
-        menu_5.addAction(f'Find Similar "{artist_field}"')  # TODO: Implement Callback
+        menu_5.addAction(
+            f'Find Similar "{artist_field}"', lambda: self.cb_find_similar(view.indexAt(pos))
+        )
         title_field = (
             ""
             if len(current_record.records[0]) == 0
             else current_record.records[0][current_record.fields.index("library.TITLE")]
         )
-        menu_5.addAction(f'Find Title "{title_field}"')  # TODO: Implement Callback
+        menu_5.addAction(
+            f'Find Title "{title_field}"', lambda: self.cb_find_title(view.indexAt(pos))
+        )
         menu_5.addSeparator()
-        menu_5.addAction(f"Locate in Library")  # TODO: Implement Callback
-        menu_5.addAction(f"Locate in Playlist")  # TODO: Implement Callback
-        menu_5.addAction(f"Locate in Explorer")  # TODO: Implement Callback
-        menu_5.addAction(f"Locate in Web Browser")  # TODO: Implement Callback
+        menu_5.addAction(f"Locate in Library", lambda: self.cb_locate_in_library(view.indexAt(pos)))
+        menu_5.addAction(
+            f"Locate in Playlist", lambda: self.cb_locate_in_playlist(view.indexAt(pos))
+        )
+        menu_5.addAction(
+            f"Locate in Explorer", lambda: self.cb_locate_in_explorer(view.indexAt(pos))
+        )
+        menu_5.addAction(
+            f"Locate in Web Browser", lambda: self.cb_locate_in_web_browser(view.indexAt(pos))
+        )
 
         # Execution
         menu.exec(self.UI.library_main_listview.mapToGlobal(pos))
+
+    @abc.abstractmethod
+    def cb_list_item_clicked(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        ...
+
+    @abc.abstractmethod
+    def cb_play_now(self):
+        ...
+
+    @abc.abstractmethod
+    def cb_queue_next(self):
+        ...
+
+    @abc.abstractmethod
+    def cb_queue_last(self):
+        ...
+
+    @abc.abstractmethod
+    def cb_play_all_shuffled(self):
+        ...
+
+    @abc.abstractmethod
+    def cb_play_artist(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        ...
+
+    @abc.abstractmethod
+    def cb_play_album(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        ...
+
+    @abc.abstractmethod
+    def cb_play_genre(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        ...
+
+    @abc.abstractmethod
+    def cb_primary_sound_device(self):
+        ...
+
+    @abc.abstractmethod
+    def cb_edit(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        ...
+
+    @abc.abstractmethod
+    def cb_add_to_current_playlist(self):
+        ...
+
+    @abc.abstractmethod
+    def cb_add_all_shuffled_to_playlist(self):
+        ...
+
+    @abc.abstractmethod
+    def cb_add_artist_to_playlist(
+        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ):
+        ...
+
+    @abc.abstractmethod
+    def cb_add_album_to_playlist(
+        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ):
+        ...
+
+    @abc.abstractmethod
+    def cb_add_genre_to_playlist(
+        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ):
+        ...
+
+    @abc.abstractmethod
+    def cb_set_rating(self, rating: float):
+        ...
+
+    @abc.abstractmethod
+    def cb_folder_move(self):
+        ...
+
+    @abc.abstractmethod
+    def cb_folder_copy(self):
+        ...
+
+    @abc.abstractmethod
+    def cb_format_converter(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        ...
+
+    @abc.abstractmethod
+    def cb_file_rescan(self):
+        ...
+
+    @abc.abstractmethod
+    def cb_delete(self):
+        ...
+
+    @abc.abstractmethod
+    def cb_find_artist(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        ...
+
+    @abc.abstractmethod
+    def cb_find_similar(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        ...
+
+    @abc.abstractmethod
+    def cb_find_title(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        ...
+
+    @abc.abstractmethod
+    def cb_locate_in_library(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        ...
+
+    @abc.abstractmethod
+    def cb_locate_in_playlist(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        ...
+
+    @abc.abstractmethod
+    def cb_locate_in_explorer(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        ...
+
+    @abc.abstractmethod
+    def cb_locate_in_web_browser(
+        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ):
+        ...
 
 
 class Library_Tab_Controller:
@@ -176,7 +320,10 @@ class Library_Tab_Controller:
         """
         self.load_states()
         self.library_model = ModelProvider.get_model(LibraryModel)
+        self.library_model_selection = PagedSelectionModel()
         self.queue_model = ModelProvider.get_model(QueueModel)
+
+        self._SELECTION = []
 
     def bind_models(self, view: QtWidgets.QListView):
         """
@@ -186,10 +333,11 @@ class Library_Tab_Controller:
             view (QtWidgets.QListView): view to bind models to
         """
         view.setModel(self.library_model)
-
+        view.setSelectionModel(self.library_model_selection)
         self.set_model_delegate(view)
-        view.verticalScrollbarValueChanged = lambda x: (self.cb_scroll_paging(view, x))
+        view.verticalScrollbarValueChanged = lambda x: (self._cb_scroll_paging(view, x))
         self.library_model.fetch_data(self.library_model.FETCH_DATA_DOWN)
+        view.focusOutEvent = lambda e: (self._cb_on_window_focus_lost(view))
 
     def set_model_delegate(self, view: QtWidgets.QListView, _type: Optional[ViewDelegates] = None):
         """
@@ -207,29 +355,6 @@ class Library_Tab_Controller:
         set_delegate(view, _type)
         self._DELEGATE_TYPE = _type.name
 
-    def cb_scroll_paging(self, view: QtWidgets.QListView, value: int):
-        """
-        On scroll Loader for paged models
-
-        Args:
-            view (QtWidgets.QListView): View to get scroll event from
-            value (int): Scroll value
-        """
-
-        def reset_slider():
-            view.verticalScrollbarValueChanged = lambda x: None
-            view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
-            view.verticalScrollbarValueChanged = lambda x: (self.cb_scroll_paging(view, x))
-
-        # remeber selection
-
-        if value == view.verticalScrollBar().minimum():
-            if self.library_model.fetch_data(self.library_model.FETCH_DATA_UP):
-                reset_slider()
-        elif value == view.verticalScrollBar().maximum():
-            if self.library_model.fetch_data(self.library_model.FETCH_DATA_DOWN):
-                reset_slider()
-
     def save_states(self):  # pragma: no cover
         """
         saves session states of Apollo
@@ -243,6 +368,68 @@ class Library_Tab_Controller:
         self._DELEGATE_TYPE = CONFIG.get(
             "APOLLO.LIBRARY_TAB.DELEGATE_TYPE", str(ViewDelegates.TrackDelegate_Small.name)
         )
+
+    def persist_selection(self, view: QtWidgets.QListView):
+        """
+        Persists the items that have been slected before loading new
+
+        Args:
+            view (QtWidgets.QListView): views from which items are selected
+        """
+        SELECTION = list(
+            filter(
+                lambda index: index not in self._SELECTION,
+                (
+                    self.library_model.index(index.row(), 0).data()
+                    for index in view.selectedIndexes()
+                ),
+            )
+        )
+        if len(SELECTION) != 0:
+            self._SELECTION.extend(SELECTION)
+
+    def reselect_items(self, view: QtWidgets.QListView):
+        """
+        Reselects items that have been saved on last refresh
+
+        Args:
+            view (QtWidgets.QListView): views from which items are selected
+        """
+        if self._SELECTION:
+            for index in range(self.library_model.rowCount()):
+                index = self.library_model.index(index, 0)
+                if index.data() in self._SELECTION:
+                    view.selectionModel().select(
+                        index, QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows
+                    )
+
+    def _cb_on_window_focus_lost(self, view: QtWidgets.QListView):
+        if not view.underMouse():
+            view.clearSelection(), self.persist_selection(view)
+
+    def _cb_scroll_paging(self, view: QtWidgets.QListView, value: int):
+        """
+        On scroll Loader for paged models
+
+        Args:
+            view (QtWidgets.QListView): View to get scroll event from
+            value (int): Scroll value
+        """
+
+        def reset_slider():
+            view.verticalScrollbarValueChanged = lambda x: None
+            view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
+            view.verticalScrollbarValueChanged = lambda x: (self._cb_scroll_paging(view, x))
+            self.reselect_items(view)
+
+        if value == view.verticalScrollBar().minimum():
+            self.persist_selection(view)
+            if self.library_model.fetch_data(self.library_model.FETCH_DATA_UP):
+                reset_slider()
+        elif value == view.verticalScrollBar().maximum():
+            self.persist_selection(view)
+            if self.library_model.fetch_data(self.library_model.FETCH_DATA_DOWN):
+                reset_slider()
 
 
 class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):
@@ -270,4 +457,109 @@ class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):
         self.save_states()
 
     def cb_list_item_clicked(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        data = index.data()
+        print("cb_list_item_clicked", data)
+
+    def cb_play_now(self):
+        print("cb_play_now")
+
+    def cb_queue_next(self):
+        print("cb_queue_next")
+
+    def cb_queue_last(self):
+        print("cb_queue_last")
+
+    def cb_play_all_shuffled(self):
+        print("cb_play_all_shuffled")
+
+    def cb_play_artist(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = self.library_model.get_row_atIndex(index)
+        print("cb_play_artist", data)
+
+    def cb_play_album(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_play_album", data)
+
+    def cb_play_genre(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_play_genre", data)
+
+    def cb_primary_sound_device(self):
+        print("cb_primary_sound_device")
+
+    def cb_edit(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_edit", data)
+
+    def cb_add_to_current_playlist(self):
+        print("cb_add_to_current_playlist")
+
+    def cb_add_all_shuffled_to_playlist(self):
+        print("cb_add_all_shuffled_to_playlist")
+
+    def cb_add_artist_to_playlist(
+        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_add_artist_to_playlist", data)
+
+    def cb_add_album_to_playlist(
+        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_add_album_to_playlist", data)
+
+    def cb_add_genre_to_playlist(
+        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_add_genre_to_playlist", data)
+
+    def cb_set_rating(self, rating: float):
+        print("cb_set_rating", rating)
+
+    def cb_folder_move(self):
+        print("cb_folder_move")
+
+    def cb_folder_copy(self):
+        print("cb_folder_copy")
+
+    def cb_format_converter(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_format_converter", data)
+
+    def cb_file_rescan(self):
+        print("cb_file_rescan")
+
+    def cb_delete(self):
+        print("cb_delete")
+
+    def cb_find_artist(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_find_artist", data)
+
+    def cb_find_similar(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_find_similar", data)
+
+    def cb_find_title(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_find_title", data)
+
+    def cb_locate_in_library(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_locate_in_library", data)
+
+    def cb_locate_in_playlist(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_locate_in_playlist", data)
+
+    def cb_locate_in_explorer(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_locate_in_explorer", data)
+
+    def cb_locate_in_web_browser(
+        self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ):
+        data = self.library_model.get_row_atIndex(index)
+        print("cb_locate_in_web_browser", data)

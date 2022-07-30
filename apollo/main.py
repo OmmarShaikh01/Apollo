@@ -8,6 +8,7 @@ from PySide6 import QtWidgets
 
 from configs import settings
 
+
 settings.setenv("PRODUCTION")
 settings.validators.validate_all(only_current_env=True)
 

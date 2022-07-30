@@ -150,6 +150,69 @@ class RecordSet:
 
         return "\n----\nEMPTY\n----\nEMPTY\n----\n"
 
+    def __delitem__(self, key: Union[int, tuple[int, Union[str, int]], slice]):
+        if isinstance(key, int):
+            del self.records[key]
+
+        elif isinstance(key, tuple) and len(key) == 2:
+            if isinstance(key[1], int):
+                del self.records[key[0]][key[1]]
+            elif isinstance(key[1], str) and key[1] in self.fields:
+                del self.records[key[0]][self.fields.index(key[1])]
+
+        elif isinstance(key, slice):
+            del self.records[key]
+
+        raise IndexError(f"Invalid Key Used: {key}")
+
+    def __getitem__(self, key: Union[int, tuple[int, Union[str, int]], slice]):
+        if isinstance(key, int):
+            return self.records[key]
+
+        elif isinstance(key, tuple) and len(key) == 2:
+            if isinstance(key[1], int):
+                return self.records[key[0]][key[1]]
+            elif isinstance(key[1], str) and key[1] in self.fields:
+                return self.records[key[0]][self.fields.index(key[1])]
+
+        elif isinstance(key, slice):
+            return self.records[key]
+
+        raise IndexError(f"Invalid Key Used: {key}")
+
+    def __setitem__(self, key: Union[int, tuple[int, Union[str, int]], slice], value: Any):
+        if isinstance(key, int) and len(value) == len(self.fields):
+            if len(self.records) > key:
+                self.records[key] = value
+                return None
+            else:
+                self.records.append(value)
+                return None
+
+        elif isinstance(key, tuple) and len(key) == 2 and len(value) == len(self.fields):
+            if len(self.records) > key[0]:
+                if key[1] in self.fields and isinstance(key[1], int):
+                    if len(self.records[key[0]][key[1]]) != 0:
+                        self.records[key[0]][key[1]] = value
+                        return None
+                    else:
+                        self.records[key[0]] = [None] * len(self.fields)
+                        self.records[key[0]][key[1]] = value
+                        return None
+                elif key[1] in self.fields and isinstance(key[1], str):
+                    if len(self.records[key[0]][self.fields.index(key[1])]) != 0:
+                        self.records[key[0]][self.fields.index(key[1])] = value
+                        return None
+                    else:
+                        self.records[key[0]] = [None] * len(self.fields)
+                        self.records[key[0]][self.fields.index(key[1])] = value
+                        return None
+            else:
+                self.records.append([value])
+                return None
+
+        raise IndexError(f"Invalid Key Used: {key}")
+
 
 class Database:
     """

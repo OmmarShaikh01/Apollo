@@ -9,7 +9,6 @@ Main Class for Apollo Includes all sub tabs and components
    all resources. Controller class must be an ABC
 3. Needs to have a main component class that has load and save state function
    to handle interaction with the congif files
-
 """
 from __future__ import annotations
 
@@ -18,6 +17,7 @@ import os.path
 from pathlib import PurePath
 from typing import Union
 
+import PySide6.QtGui
 from PySide6 import QtGui, QtWidgets
 from PySide6.QtWidgets import QSystemTrayIcon
 

@@ -42,7 +42,7 @@ exe_options = [
         "-y",
         "--noupx",
         "--onedir",
-        "--nowindowed",
+        "--windowed",
         "--no-embed-manifest",
         "--win-private-assemblies",
     ),

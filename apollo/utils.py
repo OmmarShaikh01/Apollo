@@ -165,10 +165,10 @@ def compile_all():
 
 def set_dark_title_bar(window: QtWidgets.QWidget):
     """
-    Sets the qindows title bar to be black
+    Sets the windows title bar to be black
 
     Args:
-        window:
+        window (QtWidgets.QWidge): Window to set title bar dark for
     """
     if _settings["APOLLO.MAIN.IS_TITLEBAR_DARK"]:
         import ctypes
