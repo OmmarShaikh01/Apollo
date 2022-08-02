@@ -105,6 +105,80 @@ def get_filled_library_manager(get_library_manager: Database, records_library_ma
 # TESTS ----------------------------------------------------------------------------------------------------------------
 
 
+class Test_Recordset:
+    def test_init(self):
+        row = list(range(3))
+        record_set_1 = RecordSet(["field_1", "field_2", "field_3"], [row, row, row])
+        LOGGER.info(record_set_1)
+        record_set_2 = RecordSet([1, 2, 3], [row, row, row])
+        LOGGER.info(record_set_2)
+        # noinspection PyTypeChecker
+        record_set_3 = RecordSet.from_json(
+            dict(enumerate([dict(zip(["field_1", "field_2", "field_3"], row)) for _ in range(3)]))
+        )
+        LOGGER.info(record_set_3)
+        assert record_set_1 == record_set_3
+
+    def test_get(self):
+        row = list(range(3))
+        original = RecordSet(["field_1", "field_2", "field_3"], [row, row, row])
+
+        assert original[0] == [0, 1, 2]
+        assert original[0:] == [[0, 1, 2], [0, 1, 2], [0, 1, 2]]
+        assert original[("field_3", 2)] == 2
+        assert original[(2, 2)] == 2
+
+    def test_set(self):
+        row = list(range(3))
+        original = RecordSet(["field_1", "field_2", "field_3"], [row, row, row])
+
+        original[0] = [0, 1, 4]
+        assert original[0] == [0, 1, 4]
+        original[("field_3", 2)] = 4
+        assert original[("field_3", 2)] == 4
+        original[(2, 2)] = 4
+        assert original[(2, 2)] == 4
+
+        with pytest.raises(IndexError):
+            original[0:] = [[0, 1, 4], [0, 1, 4], [0, 1, 4]]
+
+    def test_delete_1(self):
+        expected = RecordSet(["field_1", "field_2", "field_3"], [list(range(3)), list(range(3))])
+        original = RecordSet(
+            ["field_1", "field_2", "field_3"], [list(range(3)), list(range(3)), list(range(3))]
+        )
+
+        del original[-1]
+        assert expected == original
+
+    def test_delete_2(self):
+        expected = RecordSet(["field_1", "field_2", "field_3"], [])
+        original = RecordSet(
+            ["field_1", "field_2", "field_3"], [list(range(3)), list(range(3)), list(range(3))]
+        )
+
+        del original[0:]
+        assert expected == original
+
+    def test_delete_3(self):
+        expected = RecordSet(
+            ["field_1", "field_2", "field_3"], [list(range(3)), list(range(3)), list(range(2))]
+        )
+        original = RecordSet(
+            ["field_1", "field_2", "field_3"], [list(range(3)), list(range(3)), list(range(3))]
+        )
+
+        del original[("field_3", 2)]
+        assert expected == original
+
+        expected = RecordSet(
+            ["field_1", "field_2", "field_3"], [list(range(3)), list(range(3)), list(range(1))]
+        )
+
+        del original[(2, 1)]
+        assert expected == original
+
+
 class Test_Connection:
     def test_connection_is_valid(self):
         assert Connection.is_valid_db(PurePath(CONFIG.db_path))

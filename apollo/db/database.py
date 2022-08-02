@@ -113,7 +113,7 @@ class RecordSet:
     Dataclass for the Record ser return when a query is executed
     """
 
-    fields: list
+    fields: list[Union[str, int]]
     records: list[list] = dataclasses.field(default_factory=list)
 
     @staticmethod
@@ -132,14 +132,18 @@ class RecordSet:
         )
         return records
 
+    def __eq__(self, other: RecordSet) -> bool:
+        EQ_1 = bool(self.fields == other.fields)
+        EQ_2 = all((l == r for l, r in zip(self.records, other.records)))
+        return bool(EQ_1 and EQ_2)
+
     def __bool__(self):
         return len(self.records) != 0
 
     def __str__(self) -> str:  # pragma: no cover
         def str_converter(item: Any):
-            if item:
+            if item or item == 0:
                 return str(item)
-
             return str(None)
 
         if self:
@@ -150,37 +154,41 @@ class RecordSet:
 
         return "\n----\nEMPTY\n----\nEMPTY\n----\n"
 
-    def __delitem__(self, key: Union[int, tuple[int, Union[str, int]], slice]):
+    def __delitem__(self, key: Union[int, tuple[Union[str, int], int], slice]):
         if isinstance(key, int):
             del self.records[key]
+            return None
 
         elif isinstance(key, tuple) and len(key) == 2:
-            if isinstance(key[1], int):
+            if isinstance(key[0], int):
                 del self.records[key[0]][key[1]]
-            elif isinstance(key[1], str) and key[1] in self.fields:
-                del self.records[key[0]][self.fields.index(key[1])]
+                return None
+            elif isinstance(key[0], str) and key[0] in self.fields:
+                del self.records[self.fields.index(key[0])][key[1]]
+                return None
 
         elif isinstance(key, slice):
             del self.records[key]
+            return None
 
         raise IndexError(f"Invalid Key Used: {key}")
 
-    def __getitem__(self, key: Union[int, tuple[int, Union[str, int]], slice]):
+    def __getitem__(self, key: Union[int, tuple[Union[str, int], int], slice]):
         if isinstance(key, int):
             return self.records[key]
 
         elif isinstance(key, tuple) and len(key) == 2:
-            if isinstance(key[1], int):
+            if isinstance(key[0], int):
                 return self.records[key[0]][key[1]]
-            elif isinstance(key[1], str) and key[1] in self.fields:
-                return self.records[key[0]][self.fields.index(key[1])]
+            elif isinstance(key[0], str) and key[0] in self.fields:
+                return self.records[self.fields.index(key[0])][key[1]]
 
         elif isinstance(key, slice):
             return self.records[key]
 
         raise IndexError(f"Invalid Key Used: {key}")
 
-    def __setitem__(self, key: Union[int, tuple[int, Union[str, int]], slice], value: Any):
+    def __setitem__(self, key: Union[int, tuple[Union[str, int], int]], value: Any):
         if isinstance(key, int) and len(value) == len(self.fields):
             if len(self.records) > key:
                 self.records[key] = value
@@ -189,26 +197,12 @@ class RecordSet:
                 self.records.append(value)
                 return None
 
-        elif isinstance(key, tuple) and len(key) == 2 and len(value) == len(self.fields):
-            if len(self.records) > key[0]:
-                if key[1] in self.fields and isinstance(key[1], int):
-                    if len(self.records[key[0]][key[1]]) != 0:
-                        self.records[key[0]][key[1]] = value
-                        return None
-                    else:
-                        self.records[key[0]] = [None] * len(self.fields)
-                        self.records[key[0]][key[1]] = value
-                        return None
-                elif key[1] in self.fields and isinstance(key[1], str):
-                    if len(self.records[key[0]][self.fields.index(key[1])]) != 0:
-                        self.records[key[0]][self.fields.index(key[1])] = value
-                        return None
-                    else:
-                        self.records[key[0]] = [None] * len(self.fields)
-                        self.records[key[0]][self.fields.index(key[1])] = value
-                        return None
-            else:
-                self.records.append([value])
+        elif isinstance(key, tuple) and len(key) == 2:
+            if isinstance(key[0], int):
+                self.records[key[0]][key[1]] = value
+                return None
+            elif isinstance(key[0], str) and key[0] in self.fields:
+                self.records[self.fields.index(key[0])][key[1]] = value
                 return None
 
         raise IndexError(f"Invalid Key Used: {key}")
@@ -287,8 +281,6 @@ class Database:
                     col, [records.records[row][col] for row in range(len(records.records))]
                 )
 
-            LOGGER.debug(f"Batch Insert into: {table}")
-            LOGGER.critical(records)
             conn.transaction()
             if not query.execBatch():  # pragma: no cover
                 connection_info = str(conn)
