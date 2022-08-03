@@ -118,7 +118,7 @@ class Apollo(Apollo_Interactions, Apollo_Controller):
 
     def _load_sub_tabs(self):
         self._LIBRARY = Library_Tab(self.UI)
-        # self._NOW_PLAYING = Playback_Bar(self.UI)
+        self._NOW_PLAYING = Playback_Bar(self.UI)
 
     def load_states(self):
         current = CONFIG.get("APOLLO.MAIN.CURRENT_TAB", 0)

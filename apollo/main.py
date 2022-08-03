@@ -39,6 +39,9 @@ def main() -> None:
     set_dark_title_bar(window.UI)
 
     window.UI.show()
+    window.UI.raise_()
+    window.UI.setFocus()
+
     app.exec()
     LOGGER.info(msg="Application Exit")
     LOGGER.info(msg=settings.to_dict())

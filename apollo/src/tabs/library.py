@@ -4,6 +4,8 @@ from typing import Optional, Union
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
+from apollo.assets import AppTheme
+from apollo.assets.stylesheets import luminosity
 from apollo.db.models import LibraryModel, ModelProvider, PagedSelectionModel, QueueModel
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from apollo.src.views.delegates import ViewDelegates, set_delegate
@@ -331,12 +333,13 @@ class Library_Tab_Controller:
         Args:
             view (QtWidgets.QListView): view to bind models to
         """
+        view.viewport().setStyleSheet(
+            f"background-color: {luminosity(AppTheme['QTCOLOR_PRIMARYDARKCOLOR'], 0.125)}"
+        )
         view.setModel(self.library_model)
-        view.setSelectionModel(PagedSelectionModel())
         self.set_model_delegate(view)
         view.verticalScrollbarValueChanged = lambda x: (self._cb_scroll_paging(view, x))
         self.library_model.fetch_data(self.library_model.FETCH_DATA_DOWN)
-        view.focusOutEvent = lambda e: (self._cb_on_window_focus_lost(view))
 
     def set_model_delegate(self, view: QtWidgets.QListView, _type: Optional[ViewDelegates] = None):
         """
@@ -368,44 +371,6 @@ class Library_Tab_Controller:
             "APOLLO.LIBRARY_TAB.DELEGATE_TYPE", str(ViewDelegates.TrackDelegate_Small.name)
         )
 
-    def persist_selection(self, view: QtWidgets.QListView):
-        """
-        Persists the items that have been slected before loading new
-
-        Args:
-            view (QtWidgets.QListView): views from which items are selected
-        """
-        SELECTION = list(
-            filter(
-                lambda index: index not in self._SELECTION,
-                (
-                    self.library_model.index(index.row(), 0).data()
-                    for index in view.selectedIndexes()
-                ),
-            )
-        )
-        if len(SELECTION) != 0:
-            self._SELECTION.extend(SELECTION)
-
-    def reselect_items(self, view: QtWidgets.QListView):
-        """
-        Reselects items that have been saved on last refresh
-
-        Args:
-            view (QtWidgets.QListView): views from which items are selected
-        """
-        if self._SELECTION:
-            for index in range(self.library_model.rowCount()):
-                index = self.library_model.index(index, 0)
-                if index.data() in self._SELECTION:
-                    view.selectionModel().select(
-                        index, QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows
-                    )
-
-    def _cb_on_window_focus_lost(self, view: QtWidgets.QListView):
-        if not view.underMouse():
-            view.clearSelection(), self.persist_selection(view)
-
     def _cb_scroll_paging(self, view: QtWidgets.QListView, value: int):
         """
         On scroll Loader for paged models
@@ -419,14 +384,11 @@ class Library_Tab_Controller:
             view.verticalScrollbarValueChanged = lambda x: None
             view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
             view.verticalScrollbarValueChanged = lambda x: (self._cb_scroll_paging(view, x))
-            self.reselect_items(view)
 
         if value == view.verticalScrollBar().minimum():
-            self.persist_selection(view)
             if self.library_model.fetch_data(self.library_model.FETCH_DATA_UP):
                 reset_slider()
         elif value == view.verticalScrollBar().maximum():
-            self.persist_selection(view)
             if self.library_model.fetch_data(self.library_model.FETCH_DATA_DOWN):
                 reset_slider()
 
@@ -442,18 +404,12 @@ class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):
         Library_Tab_Controller.__init__(self)
         self.bind_models(self.UI.library_main_listview)
 
-    def save_states(self):  # pragma: no cover
-        """
-        saves session states of Apollo
-        """
-        Library_Tab_Interactions.save_states(self)
-        Library_Tab_Controller.save_states(self)
-
     def cb_shutdown(self):  # pragma: no cover
         """
         Shutdown callback
         """
-        self.save_states()
+        Library_Tab_Interactions.save_states(self)
+        Library_Tab_Controller.save_states(self)
 
     def cb_list_item_clicked(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
@@ -461,32 +417,32 @@ class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):
 
     def cb_play_now(self):
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
-        print("cb_play_now", data)
+        self.queue_model.play_now(data)
 
     def cb_queue_next(self):
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
-        print("cb_queue_next", data)
+        self.queue_model.queue_next(data)  # Add support for current selected index
 
     def cb_queue_last(self):
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
-        print("cb_queue_last", data)
+        self.queue_model.queue_last(data)
 
     def cb_play_all_shuffled(self):
         self.UI.library_main_listview.selectAll()
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
-        print("cb_play_all_shuffled", data)
+        self.queue_model.play_shuffled(data)
 
     def cb_play_artist(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        print("cb_play_artist", data)
+        self.queue_model.play_artist(data)
 
     def cb_play_album(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        print("cb_play_album", data)
+        self.queue_model.play_album(data)
 
     def cb_play_genre(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        print("cb_play_genre", data)
+        self.queue_model.play_genre(data)
 
     def cb_primary_sound_device(self):
         print("cb_primary_sound_device")

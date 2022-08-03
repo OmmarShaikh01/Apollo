@@ -8,7 +8,8 @@ from typing import Optional, Union
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from apollo.assets import AppIcons
+from apollo.assets import AppIcons, AppTheme
+from apollo.assets.stylesheets import luminosity
 from apollo.db.models import LibraryModel, ModelProvider, QueueModel
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from apollo.media import Mediafile
@@ -534,6 +535,9 @@ class Playback_Bar_Controller:
         Args:
             view (QtWidgets.QAbstractItemView): view to bind models to
         """
+        view.viewport().setStyleSheet(
+            f"background-color: {luminosity(AppTheme['QTCOLOR_PRIMARYDARKCOLOR'], 0.125)}"
+        )
         view.setModel(self.queue_model)
         set_delegate(view, ViewDelegates.TrackDelegate_Small_Queue)
         view.verticalScrollbarValueChanged = lambda x: (self.scroll_paging(view, x))
