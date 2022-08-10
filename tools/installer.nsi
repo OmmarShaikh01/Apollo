@@ -61,6 +61,7 @@ Section "Installing Apollo" install_sec
     WriteRegStr HKCU "Software\Apollo" "Installdir" $INSTDIR
     WriteUninstaller "$INSTDIR\Uninstall.exe"
     CreateShortcut $INSTDIR\${APPNAME}.lnk $INSTDIR\${APPNAME}\${APPNAME}.exe
+    CreateShortcut $DESKTOP\${APPNAME}.lnk $INSTDIR\${APPNAME}\${APPNAME}.exe
 
     !insertmacro MUI_STARTMENU_WRITE_BEGIN ${APPNAME}
 

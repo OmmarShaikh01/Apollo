@@ -24,6 +24,7 @@ def _ui_states_validators() -> Validator:
         "LOADED_TRACK",
         "BYPASS_PROCESSOR",
         "ELAPSED_TIME",
+        "CURRENT_PLAYING",
     )
 
     LIBRARY_TAB = ("DELEGATE_TYPE",)

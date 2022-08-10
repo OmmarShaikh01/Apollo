@@ -65,10 +65,11 @@ class TrackDelegate_Small_Queue(CustomItemDelegate):
             # Disabled
             widget.setProperty("STATE", "DEFAULT")
 
-        current_index_id = index.model().index(index.row(), 1).data()
+        parent_model: QueueModel = index.model()
+        current_index_id = parent_model.index(index.row(), 1).data()
         if (
-            QueueModel.CURRENT_FILE_ID is not None
-            and QueueModel.CURRENT_FILE_ID == current_index_id
+            parent_model.CURRENT_FILE_ID is not None
+            and parent_model.CURRENT_FILE_ID == current_index_id
         ):
             widget.setProperty("STATE", "IS_PLAYING")
 

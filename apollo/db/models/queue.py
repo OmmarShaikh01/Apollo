@@ -279,6 +279,15 @@ class QueueModel(PagedTableModel):
         indexes = list(map(lambda x: x.data(), indexes))
         with self._db.connector as conn:
             self._db.execute("DELETE FROM queue", conn)
+            indexes = list(
+                map(
+                    lambda x: x[0],
+                    self._db.execute(
+                        "SELECT library.FILEID from library",
+                        conn,
+                    ).records,
+                )
+            )
 
         random.shuffle(indexes)
         self.insert_into_queue(indexes)

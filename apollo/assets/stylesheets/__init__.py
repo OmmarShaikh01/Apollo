@@ -282,6 +282,12 @@ def generate_resource(name: str, recompile: Optional[bool] = False) -> bool:
     loaded_theme = app_theme / "__loaded_theme__"
     theme_zip = app_theme / (name + ".zip")
 
+    if os.path.exists(ResourceGenerator.BUILD):
+        shutil.rmtree(ResourceGenerator.BUILD)
+
+    if os.path.exists(ResourceGenerator.GENERATED):
+        shutil.rmtree(ResourceGenerator.GENERATED)
+
     if recompile and _JINJA:
         if not _JINJA:
             ApolloWarning("Failed to build theme pack, Jinja is Missing")
@@ -368,6 +374,12 @@ def load_theme(app: QtWidgets.QApplication, name: str, recompile: Optional[bool]
     app_theme = ASSETS / "app_themes"
     loaded_theme = app_theme / "__loaded_theme__"
     theme_zip = app_theme / (name + ".zip")
+
+    if os.path.exists(ResourceGenerator.BUILD):
+        shutil.rmtree(ResourceGenerator.BUILD)
+
+    if os.path.exists(ResourceGenerator.GENERATED):
+        shutil.rmtree(ResourceGenerator.GENERATED)
 
     if recompile and _JINJA:
         if not _JINJA:

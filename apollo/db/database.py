@@ -11,7 +11,7 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import PurePath
 from types import TracebackType
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
@@ -154,24 +154,11 @@ class RecordSet:
 
         return "\n----\nEMPTY\n----\nEMPTY\n----\n"
 
-    def __delitem__(self, key: Union[int, tuple[Union[str, int], int], slice]):
-        if isinstance(key, int):
-            del self.records[key]
-            return None
-
-        elif isinstance(key, tuple) and len(key) == 2:
-            if isinstance(key[0], int):
-                del self.records[key[0]][key[1]]
-                return None
-            elif isinstance(key[0], str) and key[0] in self.fields:
-                del self.records[self.fields.index(key[0])][key[1]]
-                return None
-
-        elif isinstance(key, slice):
-            del self.records[key]
-            return None
-
-        raise IndexError(f"Invalid Key Used: {key}")
+    def get(self, key: Union[int, tuple[Union[str, int], int]], default: Optional[Any] = None):
+        try:
+            return self[key]
+        except (KeyError, IndexError):
+            return default
 
     def __getitem__(self, key: Union[int, tuple[Union[str, int], int], slice]):
         if isinstance(key, int):
@@ -179,9 +166,9 @@ class RecordSet:
 
         elif isinstance(key, tuple) and len(key) == 2:
             if isinstance(key[0], int):
-                return self.records[key[0]][key[1]]
+                return self.records[key[1]][key[0]]
             elif isinstance(key[0], str) and key[0] in self.fields:
-                return self.records[self.fields.index(key[0])][key[1]]
+                return self.records[key[1]][self.fields.index(key[0])]
 
         elif isinstance(key, slice):
             return self.records[key]
@@ -199,11 +186,30 @@ class RecordSet:
 
         elif isinstance(key, tuple) and len(key) == 2:
             if isinstance(key[0], int):
-                self.records[key[0]][key[1]] = value
+                self.records[key[1]][key[0]] = value
                 return None
             elif isinstance(key[0], str) and key[0] in self.fields:
-                self.records[self.fields.index(key[0])][key[1]] = value
+                self.records[key[1]][self.fields.index(key[0])] = value
                 return None
+
+        raise IndexError(f"Invalid Key Used: {key}")
+
+    def __delitem__(self, key: Union[int, tuple[Union[str, int], int], slice]):
+        if isinstance(key, int):
+            del self.records[key]
+            return None
+
+        elif isinstance(key, tuple) and len(key) == 2:
+            if isinstance(key[0], int):
+                del self.records[key[1]][key[0]]
+                return None
+            elif isinstance(key[0], str) and key[0] in self.fields:
+                del self.records[key[1]][self.fields.index(key[0])]
+                return None
+
+        elif isinstance(key, slice):
+            del self.records[key]
+            return None
 
         raise IndexError(f"Invalid Key Used: {key}")
 

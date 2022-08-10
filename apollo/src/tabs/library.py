@@ -1,15 +1,14 @@
 import abc
-import time
 from typing import Optional, Union
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from apollo.assets import AppTheme
 from apollo.assets.stylesheets import luminosity
-from apollo.db.models import LibraryModel, ModelProvider, PagedSelectionModel, QueueModel
+from apollo.db.models import LibraryModel, ModelProvider, QueueModel
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from apollo.src.views.delegates import ViewDelegates, set_delegate
-from apollo.utils import get_logger
+from apollo.utils import Apollo_Main_UI_TypeAlias, get_logger
 from configs import settings
 
 
@@ -22,7 +21,7 @@ class Library_Tab_Interactions(abc.ABC):
     Library_Tab_Interactions
     """
 
-    def __init__(self, ui: Union[Apollo_MainWindow, QtWidgets.QMainWindow]) -> None:
+    def __init__(self, ui: Apollo_Main_UI_TypeAlias) -> None:
         """
         Constructor
 
@@ -338,7 +337,8 @@ class Library_Tab_Controller:
         )
         view.setModel(self.library_model)
         self.set_model_delegate(view)
-        view.verticalScrollbarValueChanged = lambda x: (self._cb_scroll_paging(view, x))
+        # noinspection PyUnresolvedReferences
+        view.verticalScrollBar().valueChanged.connect(lambda x: (self._cb_scroll_paging(view, x)))
         self.library_model.fetch_data(self.library_model.FETCH_DATA_DOWN)
 
     def set_model_delegate(self, view: QtWidgets.QListView, _type: Optional[ViewDelegates] = None):
@@ -398,13 +398,13 @@ class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):
     Library_Tab
     """
 
-    def __init__(self, ui: Union[Apollo_MainWindow, QtWidgets.QMainWindow]) -> None:
+    def __init__(self, ui: Apollo_Main_UI_TypeAlias) -> None:
         self.UI = ui
         Library_Tab_Interactions.__init__(self, self.UI)
         Library_Tab_Controller.__init__(self)
         self.bind_models(self.UI.library_main_listview)
 
-    def cb_shutdown(self):  # pragma: no cover
+    def save_states(self):  # pragma: no cover
         """
         Shutdown callback
         """
@@ -413,74 +413,91 @@ class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):
 
     def cb_list_item_clicked(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        print("cb_list_item_clicked", data)
+        if data.row() != -1:
+            self.queue_model.CURRENT_FILE_ID = data.data()
+            self.UI.queue_main_listview.repaint()
+            self.queue_model.play_now([data])
+            self.UI.SIGNALS.PlayTrackSignal.emit(self.queue_model.CURRENT_FILE_ID)
 
     def cb_play_now(self):
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
-        self.queue_model.play_now(data)
+        if data:
+            self.queue_model.play_now(data)
 
     def cb_queue_next(self):
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
-        self.queue_model.queue_next(data)  # Add support for current selected index
+        if data:
+            self.queue_model.queue_next(data)  # Add support for current selected index
 
     def cb_queue_last(self):
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
-        self.queue_model.queue_last(data)
+        if data:
+            self.queue_model.queue_last(data)
 
     def cb_play_all_shuffled(self):
-        self.UI.library_main_listview.selectAll()
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
-        self.queue_model.play_shuffled(data)
+        if data:
+            self.queue_model.play_shuffled(data)
 
     def cb_play_artist(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        self.queue_model.play_artist(data)
+        if data.row() != -1:
+            self.queue_model.play_artist(data)
 
     def cb_play_album(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        self.queue_model.play_album(data)
+        if data.row() != -1:
+            self.queue_model.play_album(data)
 
     def cb_play_genre(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        self.queue_model.play_genre(data)
+        if data.row() != -1:
+            self.queue_model.play_genre(data)
 
     def cb_primary_sound_device(self):
         print("cb_primary_sound_device")
 
     def cb_edit(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        print("cb_edit", data)
+        if data.row() != -1:
+            print("cb_edit", data)
 
     def cb_add_to_current_playlist(self):
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
-        print("cb_add_to_current_playlist", data)
+        if data:
+            print("cb_add_to_current_playlist", data)
 
     def cb_add_all_shuffled_to_playlist(self):
         self.UI.library_main_listview.selectAll()
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
-        print("cb_add_all_shuffled_to_playlist", data)
+        if data:
+            print("cb_add_all_shuffled_to_playlist", data)
 
     def cb_add_artist_to_playlist(
         self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
     ):
         data = index
-        print("cb_add_artist_to_playlist", data)
+        if data.row() != -1:
+            print("cb_add_artist_to_playlist", data)
 
     def cb_add_album_to_playlist(
         self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
     ):
         data = index
-        print("cb_add_album_to_playlist", data)
+        if data.row() != -1:
+            print("cb_add_album_to_playlist", data)
 
     def cb_add_genre_to_playlist(
         self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
     ):
         data = index
-        print("cb_add_genre_to_playlist", data)
+        if data.row() != -1:
+            print("cb_add_genre_to_playlist", data)
 
     def cb_set_rating(self, rating: float):
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
-        print("cb_set_rating", rating)
+        if data:
+            print("cb_set_rating", rating)
 
     def cb_folder_move(self):
         print("cb_folder_move")
@@ -490,7 +507,8 @@ class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):
 
     def cb_format_converter(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        print("cb_format_converter", data)
+        if data.row() != -1:
+            print("cb_format_converter", data)
 
     def cb_file_rescan(self):
         print("cb_file_rescan")
@@ -500,30 +518,37 @@ class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):
 
     def cb_find_artist(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        print("cb_find_artist", data)
+        if data.row() != -1:
+            print("cb_find_artist", data)
 
     def cb_find_similar(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        print("cb_find_similar", data)
+        if data.row() != -1:
+            print("cb_find_similar", data)
 
     def cb_find_title(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        print("cb_find_title", data)
+        if data.row() != -1:
+            print("cb_find_title", data)
 
     def cb_locate_in_library(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        print("cb_locate_in_library", data)
+        if data.row() != -1:
+            print("cb_locate_in_library", data)
 
     def cb_locate_in_playlist(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        print("cb_locate_in_playlist", data)
+        if data.row() != -1:
+            print("cb_locate_in_playlist", data)
 
     def cb_locate_in_explorer(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
         data = index
-        print("cb_locate_in_explorer", data)
+        if data.row() != -1:
+            print("cb_locate_in_explorer", data)
 
     def cb_locate_in_web_browser(
         self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
     ):
         data = index
-        print("cb_locate_in_web_browser", data)
+        if data.row() != -1:
+            print("cb_locate_in_web_browser", data)

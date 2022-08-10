@@ -8,10 +8,10 @@
     <option name="IS_MODULE_SDK" value="false" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
-    <option name="_new_keywords" value="&quot;&quot;" />
+    <option name="_new_keywords" value="&quot;test_get&quot;" />
     <option name="_new_parameters" value="&quot;&quot;" />
     <option name="_new_additionalArguments" value="&quot;&quot;" />
-    <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/pytest_apollo/db/models/test_queue.py&quot;" />
+    <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/pytest_apollo/db/test_database.py&quot;" />
     <option name="_new_targetType" value="&quot;PATH&quot;" />
     <method v="2" />
   </configuration>

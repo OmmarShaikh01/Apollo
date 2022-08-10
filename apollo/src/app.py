@@ -15,15 +15,14 @@ from __future__ import annotations
 import abc
 import os.path
 from pathlib import PurePath
-from typing import Union
+from typing import Optional, Union
 
-import PySide6.QtGui
-from PySide6 import QtGui, QtWidgets
-from PySide6.QtWidgets import QSystemTrayIcon
+import PySide6.QtCore
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from apollo.src.tabs import Library_Tab, Playback_Bar
-from apollo.utils import get_logger
+from apollo.utils import Apollo_Global_Signals, Apollo_Main_UI_TypeAlias, get_logger
 from configs import settings
 from configs.config import write_config
 
@@ -32,8 +31,25 @@ CONFIG = settings
 LOGGER = get_logger(__name__)
 
 
+class Apollo_UI(QtWidgets.QMainWindow, Apollo_MainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        self.set_app_icon()
+        self.SIGNALS = Apollo_Global_Signals()
+
+    def set_app_icon(self):
+        icon_path = (
+            PurePath(os.path.dirname(os.path.dirname(__file__)))
+            / "assets"
+            / "Apollo_App_Icon_Small.svg"
+        ).as_posix()
+        pixmap = QtGui.QPixmap.fromImage(QtGui.QImage(icon_path)).scaled(48, 48)
+        self.setWindowIcon(QtGui.QIcon(pixmap))
+
+
 class Apollo_Interactions(abc.ABC):
-    UI: Union[Apollo_MainWindow, QtWidgets.QMainWindow] = None
+    UI: Apollo_Main_UI_TypeAlias = None
 
     def __init__(self: Apollo):
         self.connect_interactions()
@@ -68,7 +84,7 @@ class Apollo_Interactions(abc.ABC):
 
 
 class Apollo_Controller(abc.ABC):
-    UI: Union[Apollo_MainWindow, QtWidgets.QMainWindow] = None
+    UI: Apollo_Main_UI_TypeAlias = None
 
     def __init__(self: Apollo):
         self.load_states()
@@ -86,29 +102,14 @@ class Apollo_Controller(abc.ABC):
         pass
 
 
-class Apollo_UI(QtWidgets.QMainWindow, Apollo_MainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setupUi(self)
-        self.set_app_icon()
-
-    def set_app_icon(self):
-        icon_path = (
-            PurePath(os.path.dirname(os.path.dirname(__file__)))
-            / "assets"
-            / "Apollo_App_Icon_Small.svg"
-        ).as_posix()
-        pixmap = QtGui.QPixmap.fromImage(QtGui.QImage(icon_path)).scaled(48, 48)
-        self.setWindowIcon(QtGui.QIcon(pixmap))
-
-
 class Apollo(Apollo_Interactions, Apollo_Controller):
-    UI: Union[Apollo_MainWindow, QtWidgets.QMainWindow] = None
+    UI: Apollo_Main_UI_TypeAlias = None
     _LIBRARY: Library_Tab = None
     _NOW_PLAYING: Playback_Bar = None
 
     def __init__(self):
-        self.UI = Apollo_UI()
+        # noinspection PyTypeChecker
+        self.UI: Apollo_Main_UI_TypeAlias = Apollo_UI()
 
         Apollo_Interactions.__init__(self)
         Apollo_Controller.__init__(self)
@@ -139,4 +140,5 @@ class Apollo(Apollo_Interactions, Apollo_Controller):
     def cb_shutdown(self):  # pragma: no cover
         self.save_states()
         self._LIBRARY.save_states()
+        self._NOW_PLAYING.save_states()
         write_config()

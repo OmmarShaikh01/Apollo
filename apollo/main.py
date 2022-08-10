@@ -2,6 +2,7 @@
 Main entry point to execute Apollo
 """
 import ctypes
+import json
 import sys
 
 from PySide6 import QtWidgets
@@ -41,10 +42,11 @@ def main() -> None:
     window.UI.show()
     window.UI.raise_()
     window.UI.setFocus()
+    window.UI.showMaximized()
 
     app.exec()
     LOGGER.info(msg="Application Exit")
-    LOGGER.info(msg=settings.to_dict())
+    LOGGER.info(msg=f"\n{json.dumps(settings.to_dict(), indent=2)}")
 
 
 if __name__ == "__main__":

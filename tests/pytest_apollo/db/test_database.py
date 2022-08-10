@@ -124,9 +124,15 @@ class Test_Recordset:
         original = RecordSet(["field_1", "field_2", "field_3"], [row, row, row])
 
         assert original[0] == [0, 1, 2]
+        assert original.get(0) == [0, 1, 2]
+
         assert original[0:] == [[0, 1, 2], [0, 1, 2], [0, 1, 2]]
+
         assert original[("field_3", 2)] == 2
+        assert original.get(("field_3", 2)) == 2
+
         assert original[(2, 2)] == 2
+        assert original.get((2, 2)) == 2
 
     def test_set(self):
         row = list(range(3))

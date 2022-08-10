@@ -8,10 +8,11 @@ import threading
 import time
 import traceback
 import warnings
-from typing import Callable
+from typing import Callable, Optional
 
-from PySide6 import QtWidgets
+from PySide6 import QtCore, QtWidgets
 
+from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from configs import settings as _settings
 
 
@@ -33,15 +34,15 @@ def get_logger(name: str) -> logging.Logger:
     if _LOGGER is not None:
         return _LOGGER
 
-    if _settings.LOGGER_LEVEL == "debug":
+    if str(_settings.LOGGER_LEVEL).upper() == "DEBUG":
         log_level = logging.DEBUG
-    elif _settings.LOGGER_LEVEL == "info":
+    elif str(_settings.LOGGER_LEVEL).upper() == "INFO":
         log_level = logging.INFO
-    elif _settings.LOGGER_LEVEL == "warning":
+    elif str(_settings.LOGGER_LEVEL).upper() == "WARNING":
         log_level = logging.WARNING
-    elif _settings.LOGGER_LEVEL == "error":
+    elif str(_settings.LOGGER_LEVEL).upper() == "ERROR":
         log_level = logging.ERROR
-    elif _settings.LOGGER_LEVEL == "critical":
+    elif str(_settings.LOGGER_LEVEL).upper() == "CRITICAL":
         log_level = logging.CRITICAL
     else:
         log_level = logging.INFO
@@ -137,8 +138,7 @@ def threadit(method: Callable) -> Callable:
 
     def exe(*args, **kwargs) -> None:
         thread = threading.Thread(
-            target=lambda: (
-                # pylint: disable=W1203
+            target=lambda: (  # pylint: disable=W1203
                 _LOGGER.info(f"Thread {thread.native_id}: {method}"),
                 method(*args, **kwargs),
             )
@@ -177,6 +177,17 @@ def set_dark_title_bar(window: QtWidgets.QWidget):
         ctypes.windll.dwmapi.DwmSetWindowAttribute(
             HWND, 20, ctypes.byref(ctypes.c_int(2)), ctypes.sizeof(ctypes.c_int(2))
         )
+
+
+class Apollo_Global_Signals(QtCore.QObject):
+    """
+    Global Signal Handler
+    """
+
+    PlayTrackSignal = QtCore.Signal(str)
+
+    def __init__(self, parent: Optional[QtCore.QObject] = None) -> None:
+        super().__init__(parent)
 
 
 class ApolloSignal:
@@ -221,3 +232,11 @@ class ApolloWarning:
     def __init__(self, msg: str) -> None:
         warnings.warn(UserWarning(msg))
         _LOGGER.warning(msg)
+
+
+class Apollo_Main_UI_TypeAlias(QtWidgets.QMainWindow, Apollo_MainWindow):
+    """
+    Empty Class For Type Checker
+    """
+
+    SIGNALS: Apollo_Global_Signals

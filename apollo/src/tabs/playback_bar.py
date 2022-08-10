@@ -2,6 +2,7 @@ import abc
 import datetime
 import enum
 import math
+import os.path
 import time
 from pathlib import PurePath
 from typing import Optional, Union
@@ -14,7 +15,7 @@ from apollo.db.models import LibraryModel, ModelProvider, QueueModel
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from apollo.media import Mediafile
 from apollo.src.views.delegates import ViewDelegates, set_delegate
-from apollo.utils import get_logger
+from apollo.utils import Apollo_Main_UI_TypeAlias, get_logger
 from configs import settings
 
 
@@ -151,16 +152,17 @@ class Playback_Bar_Interactions(abc.ABC):
     _LOADED_TRACK = CONFIG.get("APOLLO.PLAYBACK_BAR.LOADED_TRACK", None)
     _BYPASS_PROCESSOR = CONFIG.get("APOLLO.PLAYBACK_BAR.BYPASS_PROCESSOR", True)
     _ELAPSED_TIME = CONFIG.get("APOLLO.PLAYBACK_BAR.ELAPSED_TIME", 0)
+    _CURRENT_PLAYING = CONFIG.get("APOLLO.PLAYBACK_BAR.CURRENT_PLAYING", None)
 
-    def __init__(self, ui: Union[Apollo_MainWindow, QtWidgets.QMainWindow]) -> None:
+    def __init__(self, ui: Apollo_Main_UI_TypeAlias) -> None:
         """
         Constructor
 
         Args:
             ui (Apollo): UI objects
         """
-        self.ui = ui
-        self.ui.playback_footer_track_rating = TrackRatingWidget(self.ui.playback_footer_frame_M)
+        self.UI = ui
+        self.UI.playback_footer_track_rating = TrackRatingWidget(self.UI.playback_footer_frame_M)
 
         self.setup_interactions()
         self.setup_defaults()
@@ -169,34 +171,35 @@ class Playback_Bar_Interactions(abc.ABC):
         """
         Sets up interactions
         """
-        self.ui.playback_button_play_pause.pressed.connect(lambda: (self.state_change_play()))
-        self.ui.playback_button_prev.pressed.connect(lambda: self.call_track_prev())
-        self.ui.playback_button_next.pressed.connect(lambda: self.call_track_next())
-        self.ui.playback_button_audio_bypass.clicked.connect(
+        self.UI.playback_button_play_pause.pressed.connect(lambda: (self.state_change_play()))
+        self.UI.playback_button_prev.pressed.connect(lambda: self.cb_track_prev())
+        self.UI.playback_button_next.pressed.connect(lambda: self.cb_track_next())
+        self.UI.playback_button_audio_bypass.clicked.connect(
             lambda: self.state_change_processor_bypass(
-                self.ui.playback_button_audio_bypass.isChecked()
+                self.UI.playback_button_audio_bypass.isChecked()
             )
         )
-        self.ui.playback_footer_track_seek_slider.valueChanged.connect(
+        self.UI.playback_footer_track_seek_slider.valueChanged.connect(
             lambda x: (self.state_change_seek_slider(x))
         )
-        self.ui.playback_button_play_shuffle.pressed.connect(lambda: (self.state_change_shuffle()))
-        self.ui.playback_button_play_repeat.pressed.connect(lambda: (self.state_change_repeat()))
-        self.ui.playback_slider_volume_control.valueChanged.connect(
+        self.UI.playback_button_play_shuffle.pressed.connect(lambda: (self.state_change_shuffle()))
+        self.UI.playback_button_play_repeat.pressed.connect(lambda: (self.state_change_repeat()))
+        self.UI.playback_slider_volume_control.valueChanged.connect(
             lambda x: (self.state_change_volume_level(x))
         )
-        self.ui.playback_button_volume_control.pressed.connect(
+        self.UI.playback_button_volume_control.pressed.connect(
             lambda: (self.state_change_volume_level())
         )
-        self.ui.playback_button_play_settings.pressed.connect(
-            lambda: (self.ui.audiofx_tab_switch_button.click())
+        self.UI.playback_button_play_settings.pressed.connect(
+            lambda: (self.UI.audiofx_tab_switch_button.click())
         )
-        self.ui.playback_footer_track_rating.RatingChangedSignal.connect(
-            lambda x: self.call_track_rating(x)
+        self.UI.playback_footer_track_rating.RatingChangedSignal.connect(
+            lambda x: self.cb_track_rating(x)
         )
-        self.ui.queue_main_listview.doubleClicked.connect(
-            lambda x: self.call_queue_list_item_Dclick(x)
+        self.UI.queue_main_listview.doubleClicked.connect(
+            lambda x: self.cb_queue_list_item_Dclick(x)
         )
+        self.UI.SIGNALS.PlayTrackSignal.connect(lambda fid: self.cb_load_track_info(fid))
 
     def setup_defaults(self):
         """
@@ -206,11 +209,13 @@ class Playback_Bar_Interactions(abc.ABC):
         self.state_change_shuffle(self._STATE_SHUFFLE)
         self.state_change_repeat(self._STATE_REPEAT)
         self.state_change_volume_level(self._VOLUME_LEVEL)
-        self.ui.playback_slider_volume_control.setValue(self._VOLUME_LEVEL)
+        self.UI.playback_slider_volume_control.setValue(self._VOLUME_LEVEL)
         self.state_change_processor_bypass(self._BYPASS_PROCESSOR)
-        self.load_track_info()
-        self.ui.playback_footer_track_seek_slider.setValue(self._ELAPSED_TIME)
+        self.UI.playback_footer_track_seek_slider.setValue(self._ELAPSED_TIME)
         self.load_rating()
+
+        QueueModel.CURRENT_FILE_ID = self._CURRENT_PLAYING
+        self.UI.queue_main_listview.repaint()
 
     def save_states(self):
         """
@@ -222,9 +227,10 @@ class Playback_Bar_Interactions(abc.ABC):
         CONFIG["APOLLO.PLAYBACK_BAR.VOLUME_LEVEL"] = self._VOLUME_LEVEL
         CONFIG["APOLLO.PLAYBACK_BAR.LOADED_TRACK"] = self._LOADED_TRACK
         CONFIG["APOLLO.PLAYBACK_BAR.BYPASS_PROCESSOR"] = self._BYPASS_PROCESSOR
-        CONFIG[
-            "APOLLO.PLAYBACK_BAR.ELAPSED_TIME"
-        ] = self.ui.playback_footer_track_seek_slider.value()
+        value = self.UI.playback_footer_track_seek_slider.value()
+        CONFIG["APOLLO.PLAYBACK_BAR.ELAPSED_TIME"] = value
+        value: QueueModel = self.UI.queue_main_listview.model()
+        CONFIG["APOLLO.PLAYBACK_BAR.CURRENT_PLAYING"] = value.CURRENT_FILE_ID
 
     def state_change_processor_bypass(self, state: bool):
         """
@@ -234,7 +240,7 @@ class Playback_Bar_Interactions(abc.ABC):
             state (bool): bypass state
         """
         self._BYPASS_PROCESSOR = state
-        self.call_bypass_processor(state)
+        self.cb_bypass_processor(state)
 
     def state_change_play(self, state: Optional[Union[STATE_PLAY, str]] = None):
         """
@@ -244,7 +250,7 @@ class Playback_Bar_Interactions(abc.ABC):
             state (Optional[Union[STATE_PLAY, str]]): PLAY/PAUSE state
         """
         # APPLIES VISUAL CHANGES
-        button = self.ui.playback_button_play_pause
+        button = self.UI.playback_button_play_pause
         if state is not None:
             if isinstance(state, STATE_PLAY):
                 button.setProperty("STATE_PLAY", state.name)
@@ -266,7 +272,7 @@ class Playback_Bar_Interactions(abc.ABC):
         button.style().polish(button)
 
         # APPLIES CONTROL CHANGES TODO
-        self.call_state_change_play(self._STATE_PLAY)
+        self.cb_state_change_play(self._STATE_PLAY)
 
     def state_change_shuffle(self, state: Optional[Union[STATE_SHUFFLE, str]] = None):
         """
@@ -276,7 +282,7 @@ class Playback_Bar_Interactions(abc.ABC):
             state (Optional[Union[STATE_SHUFFLE, str]]): SHUFFLE/NONE states
         """
         # APPLIES VISUAL CHANGES
-        button = self.ui.playback_button_play_shuffle
+        button = self.UI.playback_button_play_shuffle
         if state is not None:
             if isinstance(state, STATE_SHUFFLE):
                 button.setProperty("STATE_SHUFFLE", state.name)
@@ -298,7 +304,7 @@ class Playback_Bar_Interactions(abc.ABC):
         button.style().polish(button)
 
         # APPLIES CONTROL CHANGES TODO
-        self.call_state_change_shuffle(self._STATE_SHUFFLE)
+        self.cb_state_change_shuffle(self._STATE_SHUFFLE)
 
     def state_change_repeat(self, state: Optional[Union[STATE_REPEAT, str]] = None):
         """
@@ -308,7 +314,7 @@ class Playback_Bar_Interactions(abc.ABC):
             state (Optional[Union[STATE_REPEAT, str]]): REPEAT/REPEAT_ONE/NONE states
         """
         # APPLIES VISUAL CHANGES
-        button = self.ui.playback_button_play_repeat
+        button = self.UI.playback_button_play_repeat
         if state is not None:
             if isinstance(state, STATE_REPEAT):
                 button.setProperty("STATE_REPEAT", state.name)
@@ -332,7 +338,7 @@ class Playback_Bar_Interactions(abc.ABC):
         button.style().polish(button)
 
         # APPLIES CONTROL CHANGES TODO
-        self.call_state_change_repeat(self._STATE_REPEAT)
+        self.cb_state_change_repeat(self._STATE_REPEAT)
 
     def state_change_volume_level(self, level: Optional[int] = None):
         """
@@ -341,7 +347,7 @@ class Playback_Bar_Interactions(abc.ABC):
         Args:
             level (Optional[int]): Audio Level (0 - 99)
         """
-        button = self.ui.playback_button_volume_control
+        button = self.UI.playback_button_volume_control
         # APPLIES VISUAL CHANGES
         if level is not None and isinstance(level, int):
             if level == 0:
@@ -364,81 +370,20 @@ class Playback_Bar_Interactions(abc.ABC):
 
             # APPLIES CONTROL CHANGES TODO
             self._VOLUME_LEVEL = level
-            self.call_state_change_volume_level(level)
+            self.cb_state_change_volume_level(level)
 
         else:
             current = button.property("STATE_VOLUME_LEVEL")
             if current == STATE_VOLUME_LEVEL.MUTE.name:
-                self.ui.playback_slider_volume_control.setValue(25)
+                self.UI.playback_slider_volume_control.setValue(25)
             elif current == STATE_VOLUME_LEVEL.QUARTER.name:
-                self.ui.playback_slider_volume_control.setValue(50)
+                self.UI.playback_slider_volume_control.setValue(50)
             elif current == STATE_VOLUME_LEVEL.HALF.name:
-                self.ui.playback_slider_volume_control.setValue(99)
+                self.UI.playback_slider_volume_control.setValue(99)
             elif current == STATE_VOLUME_LEVEL.FULL.name:
-                self.ui.playback_slider_volume_control.setValue(0)
+                self.UI.playback_slider_volume_control.setValue(0)
             else:
                 pass
-
-    def load_track_info(self, metadata: Optional[Mediafile] = None):
-        """
-        Loads the track metadata into the UI
-
-        Args:
-            metadata (Optional[Mediafile]): Audio Metadata
-        """
-        if metadata is None:
-            self.ui.playback_footer_track_title.setText("Apollo - Media Player")
-            self.ui.playback_footer_track_seek_slider.setRange(0, 100)
-            self.ui.playback_footer_track_seek_slider.setSingleStep(5)
-            elapsed_time = time.strftime(
-                "%H:%M:%S", time.gmtime(self.ui.playback_footer_track_seek_slider.maximum())
-            )
-            self.ui.playback_footer_track_elapsed.setText(f"-{elapsed_time}")
-            self.ui.track_info_title.setText(f"Title: NA")
-            self.ui.track_info_misc_1.setText(f"Artist: NA")
-            self.ui.track_info_misc_2.setText(f"Album: NA")
-            self.ui.track_info_misc_3.setText(f"Mood: NA")
-            self.ui.track_info_stream.setText("NA, NA, NA")
-        else:
-            tags = metadata.SynthTags
-            self._LOADED_TRACK = PurePath(tags["FILEPATH"][0]).as_posix()
-
-            # POPULATE FOOTER ITEMS
-            self.ui.playback_footer_track_title.setText(
-                tags.get("TITLE", ["Apollo - Media Player"])[0]
-            )
-            self.ui.playback_footer_track_rating.setText("")
-
-            time_sec = song_len = datetime.timedelta(seconds=float(tags.get("SONGLEN", 0)[0]))
-            self.ui.playback_footer_track_elapsed.setText(f"{time_sec}")
-            self.ui.playback_footer_track_seek_slider.setRange(0, time_sec)
-            self.ui.playback_footer_track_seek_slider.setSingleStep(5)
-
-            # POPULATE TRACK INFORMATION WIDGET
-            TITLE = tags.get("TITLE")[0] if len(tags.get("TITLE")) != 0 else "NA"
-            self.ui.track_info_title.setText(f"Title: {TITLE}")
-            ARTIST = tags.get("ARTIST")[0] if len(tags.get("ARTIST")) != 0 else "NA"
-            self.ui.track_info_misc_1.setText(f"Artist: {ARTIST}")
-            ALBUM = tags.get("ALBUM")[0] if len(tags.get("ALBUM")) != 0 else "NA"
-            self.ui.track_info_misc_2.setText(f"Album: {ALBUM}")
-            MOOD = tags.get("MOOD")[0] if len(tags.get("MOOD")) != 0 else "NA"
-            self.ui.track_info_misc_3.setText(f"Mood: {MOOD}")
-
-            BITRATE = tags.get("BITRATE")[0] if len(tags.get("BITRATE")) != 0 else 0
-            BITRATE = "NA" if BITRATE is None else f"{int(BITRATE / 1000)}Kbps"
-            CHANNELS = tags.get("CHANNELS")[0] if len(tags.get("CHANNELS")) != 0 else 0
-            CHANNELS = "NA" if CHANNELS is None else f"{CHANNELS} Channels"
-            SAMPLERATE = tags.get("SAMPLERATE")[0] if len(tags.get("SAMPLERATE")) != 0 else 0
-            SAMPLERATE = "NA" if SAMPLERATE is None else f"{SAMPLERATE}Hz"
-
-            self.ui.track_info_stream.setText("{0}, {1}, {2}".format(BITRATE, CHANNELS, SAMPLERATE))
-            self.load_rating(tags.get("POPULARIMETER", 0))
-
-            widget = self.ui.track_info_cover_pixmap
-            if tags.get("PICTURE")[0]:
-                pixmap = QtGui.QPixmap()
-                pixmap.loadFromData(bytes(metadata.Artwork[0].data))
-                widget.setPixmap(pixmap)
 
     def load_rating(self, rating: Optional[float] = 0):
         """
@@ -447,7 +392,7 @@ class Playback_Bar_Interactions(abc.ABC):
         Args:
             rating (Optional[float]): track rating
         """
-        widget: TrackRatingWidget = self.ui.playback_footer_track_rating
+        widget: TrackRatingWidget = self.UI.playback_footer_track_rating
         widget.setRating(rating)
 
     def state_change_seek_slider(self, value: int):
@@ -458,61 +403,61 @@ class Playback_Bar_Interactions(abc.ABC):
             value (int): Value in seconds
         """
         if value != 0:
-            value = self.ui.playback_footer_track_seek_slider.maximum() - value
-            self.ui.playback_footer_track_elapsed.setText(
+            value = self.UI.playback_footer_track_seek_slider.maximum() - value
+            self.UI.playback_footer_track_elapsed.setText(
                 f"-{time.strftime('%H:%M:%S', time.gmtime(value))}"
             )
         else:
-            value = self.ui.playback_footer_track_seek_slider.maximum()
-            self.ui.playback_footer_track_elapsed.setText(
+            value = self.UI.playback_footer_track_seek_slider.maximum()
+            self.UI.playback_footer_track_elapsed.setText(
                 f"-{time.strftime('%H:%M:%S', time.gmtime(value))}"
             )
-        self.call_state_change_seek_slider(value)
+        self.cb_state_change_seek_slider(value)
 
     @abc.abstractmethod
-    def call_state_change_seek_slider(self, time_s: int):
+    def cb_state_change_seek_slider(self, time_s: int):
         ...
 
     @abc.abstractmethod
-    def call_state_change_play(self, state: Optional[Union[STATE_PLAY, str]]):
+    def cb_state_change_play(self, state: Optional[Union[STATE_PLAY, str]]):
         ...
 
     @abc.abstractmethod
-    def call_state_change_shuffle(self, state: Optional[Union[STATE_SHUFFLE, str]]):
+    def cb_state_change_shuffle(self, state: Optional[Union[STATE_SHUFFLE, str]]):
         ...
 
     @abc.abstractmethod
-    def call_state_change_repeat(self, state: Optional[Union[STATE_REPEAT, str]]):
+    def cb_state_change_repeat(self, state: Optional[Union[STATE_REPEAT, str]]):
         ...
 
     @abc.abstractmethod
-    def call_state_change_volume_level(self, volume: int):
+    def cb_state_change_volume_level(self, volume: int):
         ...
 
     @abc.abstractmethod
-    def call_track_prev(self):
+    def cb_track_prev(self):
         ...
 
     @abc.abstractmethod
-    def call_track_next(self):
+    def cb_track_next(self):
         ...
 
     @abc.abstractmethod
-    def call_track_rating(self, rating: float):
+    def cb_track_rating(self, rating: float):
         ...
 
     @abc.abstractmethod
-    def call_bypass_processor(self, state: bool):
+    def cb_bypass_processor(self, state: bool):
         ...
 
     @abc.abstractmethod
-    def cb_shutdown(self):
-        ...
-
-    @abc.abstractmethod
-    def call_queue_list_item_Dclick(
+    def cb_queue_list_item_Dclick(
         self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
     ):
+        ...
+
+    @abc.abstractmethod
+    def cb_load_track_info(self, fid: Optional[str] = None):
         ...
 
 
@@ -540,10 +485,12 @@ class Playback_Bar_Controller:
         )
         view.setModel(self.queue_model)
         set_delegate(view, ViewDelegates.TrackDelegate_Small_Queue)
-        view.verticalScrollbarValueChanged = lambda x: (self.scroll_paging(view, x))
+        # noinspection PyUnresolvedReferences
+        view.verticalScrollBar().valueChanged.connect(lambda x: (self._cb_scroll_paging(view, x)))
         self.queue_model.fetch_data(self.queue_model.FETCH_DATA_DOWN)
+        view.ensurePolished()
 
-    def scroll_paging(self, view: QtWidgets.QAbstractItemView, value: int):
+    def _cb_scroll_paging(self, view: QtWidgets.QAbstractItemView, value: int):
         """
         On scroll Loader for paged models
 
@@ -551,12 +498,18 @@ class Playback_Bar_Controller:
             view (QtWidgets.QAbstractItemView): View to get scroll event from
             value (int): Scroll value
         """
+
+        def reset_slider():
+            view.verticalScrollbarValueChanged = lambda x: None
+            view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
+            view.verticalScrollbarValueChanged = lambda x: (self._cb_scroll_paging(view, x))
+
         if value == view.verticalScrollBar().minimum():
             if self.queue_model.fetch_data(self.queue_model.FETCH_DATA_UP):
-                view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
+                reset_slider()
         if value == view.verticalScrollBar().maximum():
             if self.queue_model.fetch_data(self.queue_model.FETCH_DATA_DOWN):
-                view.verticalScrollBar().setValue(int(view.verticalScrollBar().maximum() / 2))
+                reset_slider()
 
     def save_states(self):
         """
@@ -570,58 +523,122 @@ class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO:
     Playback_Bar
     """
 
-    def __init__(self, ui: Union[Apollo_MainWindow, QtWidgets.QMainWindow]) -> None:
-        Playback_Bar_Interactions.__init__(self, ui)
+    def __init__(self, ui: Apollo_Main_UI_TypeAlias) -> None:
+        self.UI = ui
+        Playback_Bar_Interactions.__init__(self, self.UI)
         Playback_Bar_Controller.__init__(self)
-        self.bind_models(self.ui.queue_main_listview)
+        self.bind_models(self.UI.queue_main_listview)
 
-    def shutdown(self):
+    def save_states(self):
         """
         Shutdown callback
         """
-        self.cb_shutdown()
         Playback_Bar_Interactions.save_states(self)
         Playback_Bar_Controller.save_states(self)
 
-    def call_queue_list_item_Dclick(
+    def cb_load_track_info(self, fid: Optional[str] = None):
+        """
+        Loads the track fid into the UI
+
+        Args:
+            fid (Optional[Mediafile]): Audio Metadata
+        """
+        if fid is None:
+            self.UI.playback_footer_track_title.setText("Apollo - Media Player")
+            self.UI.playback_footer_track_seek_slider.setRange(0, 100)
+            self.UI.playback_footer_track_seek_slider.setSingleStep(5)
+            self.load_rating(0)
+            elapsed_time = time.strftime(
+                "%H:%M:%S", time.gmtime(self.UI.playback_footer_track_seek_slider.maximum())
+            )
+            self.UI.playback_footer_track_elapsed.setText(f"-{elapsed_time}")
+            self.UI.track_info_title.setText(f"Title: NA")
+            self.UI.track_info_misc_1.setText(f"Artist: NA")
+            self.UI.track_info_misc_2.setText(f"Album: NA")
+            self.UI.track_info_misc_3.setText(f"Mood: NA")
+            self.UI.track_info_stream.setText("NA, NA, NA")
+
+        elif fid is not None:
+            tags = self.library_model.fetch_track_info(fid)
+            self._LOADED_TRACK = PurePath(tags.get(("FILEPATH", 0))).as_posix()
+
+            # POPULATE FOOTER ITEMS
+            self.UI.playback_footer_track_title.setText(
+                tags.get(("TITLE", 0), "Apollo - Media Player")
+            )
+
+            time_sec = datetime.timedelta(seconds=float(tags.get(("SONGLEN", 0), 0)))
+            self.UI.playback_footer_track_elapsed.setText(f"{time_sec}")
+            self.UI.playback_footer_track_seek_slider.setRange(0, int(time_sec.seconds))
+            self.UI.playback_footer_track_seek_slider.setSingleStep(5)
+
+            # POPULATE TRACK INFORMATION WIDGET
+            TITLE = tags.get(("TITLE", 0)) if (tags.get(("TITLE", 0))) else "NA"
+            self.UI.track_info_title.setText(f"Title: {TITLE}")
+            ARTIST = tags.get(("ARTIST", 0)) if (tags.get(("ARTIST", 0))) else "NA"
+            self.UI.track_info_misc_1.setText(f"Artist: {ARTIST}")
+            ALBUM = tags.get(("ALBUM", 0)) if (tags.get(("ALBUM", 0))) else "NA"
+            self.UI.track_info_misc_2.setText(f"Album: {ALBUM}")
+            MOOD = tags.get(("MOOD", 0)) if (tags.get(("MOOD", 0))) else "NA"
+            self.UI.track_info_misc_3.setText(f"Mood: {MOOD}")
+
+            BITRATE = tags.get(("BITRATE", 0)) if (tags.get(("BITRATE", 0))) else 0
+            BITRATE = "NA" if BITRATE is None else f"{int(BITRATE / 1000)}Kbps"
+            CHANNELS = tags.get(("CHANNELS", 0)) if (tags.get(("CHANNELS", 0))) else 0
+            CHANNELS = "NA" if CHANNELS is None else f"{CHANNELS} Channels"
+            SAMPLERATE = tags.get(("SAMPLERATE", 0)) if (tags.get(("SAMPLERATE", 0))) else 0
+            SAMPLERATE = "NA" if SAMPLERATE is None else f"{SAMPLERATE}Hz"
+
+            self.UI.track_info_stream.setText("{0}, {1}, {2}".format(BITRATE, CHANNELS, SAMPLERATE))
+            self.load_rating(tags.get(("POPULARIMETER", 0), 0))
+
+            if tags.get(("PICTURE", 0)) and os.path.exists(PurePath(tags.get(("FILEPATH", 0)))):
+                widget = self.UI.track_info_cover_pixmap
+                pixmap = QtGui.QPixmap()
+                # noinspection PyUnresolvedReferences
+                pixmap.loadFromData(bytes(metadata.Artwork[0].data))
+                widget.setPixmap(pixmap)
+
+    def cb_queue_list_item_Dclick(
         self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
     ):
-        LOGGER.debug(index)
+        data = self.queue_model.index(index.row(), 1)
+        if data.row() != -1:
+            self.queue_model.CURRENT_FILE_ID = data.data()
+            self.UI.queue_main_listview.repaint()
+            self.UI.SIGNALS.PlayTrackSignal.emit(self.queue_model.CURRENT_FILE_ID)
 
     def cb_search(self):
-        if self.ui.main_tabs_stack_widget.currentIndex() == 1:
-            self.queue_model.set_filter(self.ui.search_lineEdit.text())
+        if self.UI.main_tabs_stack_widget.currentIndex() == 1:
+            self.queue_model.set_filter(self.UI.search_lineEdit.text())
 
     def cb_clear_search(self):
-        if self.ui.main_tabs_stack_widget.currentIndex() == 1:
+        if self.UI.main_tabs_stack_widget.currentIndex() == 1:
             self.queue_model.clear_filter()
 
-    def call_state_change_play(self, state: Optional[Union[STATE_PLAY, str]]):
+    def cb_state_change_play(self, state: Optional[Union[STATE_PLAY, str]]):
         LOGGER.debug(state)
 
-    def call_state_change_shuffle(self, state: Optional[Union[STATE_SHUFFLE, str]]):
+    def cb_state_change_shuffle(self, state: Optional[Union[STATE_SHUFFLE, str]]):
         LOGGER.debug(state)
 
-    def call_state_change_repeat(self, state: Optional[Union[STATE_REPEAT, str]]):
+    def cb_state_change_repeat(self, state: Optional[Union[STATE_REPEAT, str]]):
         LOGGER.debug(state)
 
-    def call_state_change_volume_level(self, volume: int):
+    def cb_state_change_volume_level(self, volume: int):
         LOGGER.debug(volume)
 
-    def call_track_prev(self):
+    def cb_track_prev(self):
         LOGGER.debug("prev")
 
-    def call_track_next(self):
+    def cb_track_next(self):
         LOGGER.debug("next")
 
-    def call_track_rating(self, rating: float):
+    def cb_track_rating(self, rating: float):
         LOGGER.debug(rating)
 
-    def call_bypass_processor(self, state: bool):
+    def cb_bypass_processor(self, state: bool):
         LOGGER.debug(state)
 
-    def call_state_change_seek_slider(self, time_s: int):
+    def cb_state_change_seek_slider(self, time_s: int):
         LOGGER.debug(time_s)
-
-    def cb_shutdown(self):
-        LOGGER.debug("SHUTDOWN")
