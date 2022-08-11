@@ -1,4 +1,4 @@
-from apollo.db.database import LibraryManager
+from apollo.db import LibraryManager
 from apollo.db.models.paged_table import PagedTableModel
 from apollo.media import Stream
 

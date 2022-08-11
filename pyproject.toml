@@ -2,7 +2,7 @@
 name = "Apollo"
 version = "0.1.0"
 description = "Apollo is a Open-Source music player for playback and organization of audio files on windows"
-license = {file = "LICENSE"}
+license = { file = "LICENSE" }
 
 
 [tool.poetry]
@@ -13,9 +13,9 @@ authors = ["Ommar Shaikh"]
 license = "GPL-3.0-only"
 readme = "readme.md"
 packages = [
-    {include = "apollo"},
-    {include = "configs"},
-    {include = "vendor"},
+    { include = "apollo" },
+    { include = "configs" },
+    { include = "vendor" },
 ]
 include = [
     "apollo/assets/*",
@@ -37,7 +37,6 @@ exclude = [
     'configs/settings.local.toml',
     'configs/testing_settings.local.toml',
     'configs/qt_testing_settings.local.toml',
-
     'apollo/assets/app_themes/__loaded_theme__',
     'apollo/layout/*.ui',
     'apollo/db/*.db'
@@ -45,7 +44,7 @@ exclude = [
 
 
 [tool.poetry.build]
-generate-setup-file=false
+generate-setup-file = false
 
 
 [tool.poetry.dependencies]
@@ -77,12 +76,12 @@ black = "^22.6.0"
 pylint = "^2.14.4"
 pytest-sugar = "^0.9.4"
 isort = "^5.10.1"
-coverage = {extras = ["toml"], version = "^6.4.1"}
+coverage = { extras = ["toml"], version = "^6.4.1" }
 pyinstaller = "^5.2"
 auto-py-to-exe = "^2.20.1"
 Nuitka = "^0.9.4"
 PyAutoGUI = "^0.9.53"
-python-dotenv = {extras = ["cli"], version = "^0.20.0"}
+python-dotenv = { extras = ["cli"], version = "^0.20.0" }
 
 
 [tool.poetry.scripts]
@@ -112,15 +111,15 @@ addopts = [
 ]
 filterwarnings = ["ignore::DeprecationWarning"]
 console_output_style = "progress"
-cache_dir="tests/.pytest_cache"
-qt_api="pyside6"
+cache_dir = "tests/.pytest_cache"
+qt_api = "pyside6"
 
 
 [tool.coverage.run]
 source = ['apollo', 'configs']
 branch = true
 data_file = 'tests/coverage/.coverage'
-omit =[
+omit = [
     'tests/*',
     'apollo/__main__.py'
 ]
@@ -128,18 +127,15 @@ omit =[
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
-exclude_lines =[
+exclude_lines = [
     # Have to re-enable the standard pragma
     'pragma: no cover',
-
     # Don't complain about missing debug-only code:
     'def __repr__',
     'if self\.debug',
-
     # Don't complain if tests don't hit defensive assertion code:
     'raise AssertionError',
     'raise NotImplementedError',
-
     # Don't complain if non-runnable code isn't run:
     'if 0:',
     'if __name__ == .__main__.:'
@@ -154,19 +150,19 @@ skip_empty = true
 
 
 [tool.isort]
-py_version=39
-profile="black"
-line_length="100"
+py_version = 39
+profile = "black"
+line_length = "100"
 known_first_party = ["apollo", "configs", "tests"]
 skip = [".github", "tools", "docs", "examples", ".nox", ".venv", ".pytest_cache", "dist"]
-skip_gitignore=true
-atomic=true
-lines_after_imports=2
-ignore_comments=true
-virtual_env='./venv'
-remove_redundant_aliases=true
-color_output=true
-supported_extensions=["py"]
+skip_gitignore = true
+atomic = true
+lines_after_imports = 2
+ignore_comments = true
+virtual_env = './venv'
+remove_redundant_aliases = true
+color_output = true
+supported_extensions = ["py"]
 
 
 [tool.black]
@@ -174,17 +170,17 @@ supported_extensions=["py"]
 diff = "no"
 color = true
 line-length = 100
-exclude='/(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|venv|\.svn|_build|buck-out|build|dist|__pypackages__|\.pyi)/'
-include='\.py?$'
+exclude = '/(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|venv|\.svn|_build|buck-out|build|dist|__pypackages__|\.pyi)/'
+include = '\.py?$'
 target-version = ["py39"]
 
 
 [tool.pylint.main]
-extension-pkg-allow-list = ['PySide6', 'av']
+extension-pkg-allow-list = ['PySide6', 'av', 'dependency_injector']
 fail-under = 1000
 ignore = [".github", "tools", "docs", "examples", ".nox", ".venv", ".pytest_cache", "dist"]
-ignore-paths ='/(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|venv|\.svn|_build|buck-out|build|dist|__pypackages__|\.pyi)/'
-ignore-patterns='(.*temp\.py$)|(.*mainwindow\.py$)'
+ignore-paths = '/(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|venv|\.svn|_build|buck-out|build|dist|__pypackages__|\.pyi)/'
+ignore-patterns = '(.*temp\.py$)|(.*mainwindow\.py$)'
 jobs = 0
 limit-inference-results = 100
 persistent = true
@@ -222,14 +218,14 @@ valid-metaclass-classmethod-first-arg = ["cls"]
 
 [tool.pylint.design]
 max-args = 5
-max-attributes = 7
+max-attributes = 20
 max-bool-expr = 5
-max-branches = 15
+max-branches = 20
 max-locals = 15
 max-parents = 7
-max-public-methods = 20
+max-public-methods = 50
 max-returns = 6
-max-statements = 50
+max-statements = 100
 min-public-methods = 0
 
 
@@ -269,7 +265,9 @@ disable = [
     "logging-fstring-interpolation",
     "invalid-name",
     "missing-module-docstring",
-    "unnecessary-lambda"
+    "unnecessary-lambda",
+    "too-many-statements",
+    "unused-argument",
 ]
 enable = ["c-extension-no-member"]
 

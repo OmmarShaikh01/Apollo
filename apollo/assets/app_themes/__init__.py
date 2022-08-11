@@ -1,18 +1,27 @@
 """
 Lazy Loads all the application assets
 """
+import dataclasses
 import json
 import os
-from collections import namedtuple
 from pathlib import PurePath
 
-from PySide6 import QtWidgets
-
-from apollo.assets.stylesheets import generate_resource, load_theme
-from configs import settings
+from apollo.assets.stylesheets import generate_resource
+from configs import settings as CONFIG
 
 
-CONFIG = settings
+@dataclasses.dataclass
+class Icon:
+    """
+    AppIcon Object, provied paths to differnt variation of icon
+    """
+
+    danger: str
+    disabled: str
+    primary: str
+    secondary: str
+    success: str
+    warning: str
 
 
 class _AppIcons:
@@ -20,7 +29,7 @@ class _AppIcons:
     Container for AppIcon paths
     """
 
-    __slots__ = [
+    __slots__ = (
         "ADD",
         "ARROW_BACK",
         "ARROW_FORWARD",
@@ -93,9 +102,9 @@ class _AppIcons:
         "VOLUME_MUTE",
         "VOLUME_OFF",
         "VOLUME_UP",
-    ]
+    )
 
-    def __getattribute__(self, item):
+    def __getattribute__(self, item) -> Icon:
         try:
             return object.__getattribute__(self, item)
         except AttributeError:
@@ -106,28 +115,21 @@ class _AppIcons:
         """
         lazy loader for all icon paths
         """
-
-        def loader():
-            Icon = namedtuple(
-                "Icon", ["danger", "disabled", "primary", "secondary", "success", "warning"]
-            )
-            path = PurePath(os.path.dirname(__file__), "__loaded_theme__", "icons")
-            for file in os.listdir(path / "primary"):
-                name, _ = os.path.splitext(file)
-                value = Icon(
-                    danger=str((path / "danger" / str(file)).as_posix()),
-                    disabled=str((path / "disabled" / str(file)).as_posix()),
-                    primary=str((path / "primary" / str(file)).as_posix()),
-                    secondary=str((path / "secondary" / str(file)).as_posix()),
-                    success=str((path / "success" / str(file)).as_posix()),
-                    warning=str((path / "warning" / str(file)).as_posix()),
-                )
-                object.__setattr__(self, str(name).upper(), value)
-
         path = PurePath(os.path.dirname(__file__), "__loaded_theme__", "icons")
         if not os.path.exists(path):
             raise RuntimeError("Failed To Fetch Resurces")
-        loader()
+        parh = PurePath(os.path.dirname(__file__), "__loaded_theme__", "icons")
+        for file in os.listdir(parh / "primary"):
+            name, _ = os.path.splitext(file)
+            value = Icon(
+                danger=str(parh / "danger" / str(file)),
+                disabled=str(parh / "disabled" / str(file)),
+                primary=str(parh / "primary" / str(file)),
+                secondary=str(parh / "secondary" / str(file)),
+                success=str(parh / "success" / str(file)),
+                warning=str(parh / "warning" / str(file)),
+            )
+            object.__setattr__(self, str(name).upper(), value)
 
 
 def get_apptheme() -> dict:

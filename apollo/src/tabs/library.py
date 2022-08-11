@@ -8,7 +8,7 @@ from apollo.assets.stylesheets import luminosity
 from apollo.db.models import LibraryModel, ModelProvider, QueueModel
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from apollo.src.views.delegates import ViewDelegates, set_delegate
-from apollo.utils import Apollo_Main_UI_TypeAlias, get_logger
+from apollo.utils import Apollo_Main_UI_TypeStub, get_logger
 from configs import settings
 
 
@@ -21,7 +21,7 @@ class Library_Tab_Interactions(abc.ABC):
     Library_Tab_Interactions
     """
 
-    def __init__(self, ui: Apollo_Main_UI_TypeAlias) -> None:
+    def __init__(self, ui: Apollo_Main_UI_TypeStub) -> None:
         """
         Constructor
 
@@ -398,7 +398,7 @@ class Library_Tab(Library_Tab_Interactions, Library_Tab_Controller):
     Library_Tab
     """
 
-    def __init__(self, ui: Apollo_Main_UI_TypeAlias) -> None:
+    def __init__(self, ui: Apollo_Main_UI_TypeStub) -> None:
         self.UI = ui
         Library_Tab_Interactions.__init__(self, self.UI)
         Library_Tab_Controller.__init__(self)

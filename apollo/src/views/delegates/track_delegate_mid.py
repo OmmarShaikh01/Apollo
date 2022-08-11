@@ -7,7 +7,6 @@ from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import QFrame, QGridLayout, QHBoxLayout, QLabel, QSizePolicy, QSpacerItem
 
 from apollo.assets.app_themes import AppIcons
-from apollo.db.models import QueueModel
 from apollo.media import Mediafile
 from apollo.src.views.delegates._base_delegate import CustomItemDelegate
 from apollo.utils import get_logger
@@ -17,8 +16,9 @@ LOGGER = get_logger(__name__)
 
 
 class TrackDelegate_Mid(CustomItemDelegate):
-    def __init__(self, parent: Optional[QtCore.QObject] = None):
-        super().__init__(parent)
+    """
+    Delegate class to display in Library List view
+    """
 
     def paint(
         self,
@@ -26,13 +26,30 @@ class TrackDelegate_Mid(CustomItemDelegate):
         option: QtWidgets.QStyleOptionViewItem,
         index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
     ) -> None:
+        """
+        Paint event invoked each time a draw call is invoked
+
+        Args:
+            painter (QtGui.QPainter): Parent widget painter
+            option (QtWidgets.QStyleOptionViewItem): widget style options
+            index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): Current item index
+        """
         self.draw_widget(painter, option, index)
 
+    # pylint: disable=W0613
     def sizeHint(
         self,
         option: QtWidgets.QStyleOptionViewItem,
         index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
     ) -> QtCore.QSize:
+        """
+        Args:
+            option (QtWidgets.QStyleOptionViewItem): widget style options
+            index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): Current item index
+
+        Returns:
+            QtCore.QSize: Qt widets size hint, that defines the display size
+        """
         # noinspection PyUnresolvedReferences
         w, h = option.rect.width(), 72
         return QtCore.QSize(w, h)
@@ -44,6 +61,14 @@ class TrackDelegate_Mid(CustomItemDelegate):
         option: QtWidgets.QStyleOptionViewItem,
         index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
     ) -> None:
+        """
+        Draws the delegate widget
+
+        Args:
+            painter (QtGui.QPainter): Parent widget painter
+            option (QtWidgets.QStyleOptionViewItem): widget style options
+            index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): Current item index
+        """
         pixmap = QtGui.QPixmap(option.rect.width(), option.rect.height())
         painter.save()
 
@@ -77,12 +102,24 @@ class TrackDelegate_Mid(CustomItemDelegate):
 
         painter.restore()
 
+    # pylint: disable=R0914,R0915
     def get_widget(
         self,
         option: QtWidgets.QStyleOptionViewItem,
         index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
         parent: Optional[QtWidgets.QWidget] = None,
     ) -> QtWidgets.QWidget:
+        """
+        Returns Widget to paint inplace of delegate
+
+        Args:
+            option (QtWidgets.QStyleOptionViewItem): widget style options
+            index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): Current item index
+            parent (Optional[QtWidgets.QWidget]): Parent widget
+
+        Returns:
+            QtWidgets.QWidget: Widget to paint inplace of delegate
+        """
         # widget creation
         TrackDelegate_Mid_Frame = QFrame(None)
         TrackDelegate_Mid_Frame.setObjectName("TrackDelegate_Mid_Frame")
@@ -227,6 +264,13 @@ class TrackDelegate_Mid(CustomItemDelegate):
     def _widget_set_data(
         self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex], **kwargs
     ):
+        """
+        Sets relevant data passed in from kwargs to the widget
+
+        Args:
+            index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): current item index
+            **kwargs: data to set into the widget
+        """
         TrackDelegate_Mid_Cover_Pixmap = kwargs["TrackDelegate_Mid_Cover_Pixmap"]
         TrackDelegate_Mid_isLiked_Pixmap = kwargs["TrackDelegate_Mid_isLiked_Pixmap"]
         TrackDelegate_Mid_title_label = kwargs["TrackDelegate_Mid_title_label"]
@@ -268,8 +312,15 @@ class TrackDelegate_Mid(CustomItemDelegate):
         widget: QtWidgets.QLabel,
         index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
     ):
+        """
+        Sets A cover image to a Display
+
+        Args:
+            widget (QtWidgets.QLabel): Parent widget to set image to
+            index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): current item index
+        """
         current_index_id = index.model().index(index.row(), 0).data()
-        if current_index_id not in self._cover_cache.keys():
+        if current_index_id not in self._cover_cache:
             current_index_path = index.model().index(index.row(), 1).data()
             if os.path.exists(current_index_path) and Mediafile.isSupported(current_index_path):
                 # noinspection PyUnresolvedReferences
@@ -279,9 +330,8 @@ class TrackDelegate_Mid(CustomItemDelegate):
                 pixmap = pixmap.scaled(widget.size(), mode=Qt.SmoothTransformation)
                 widget.setPixmap(pixmap)
                 self.set_cover_to_cache(current_index_id, pixmap)
-                return None
-
-        pixmap = self.get_cover_from_cache(current_index_id)
-        if pixmap.size() != widget.size():
-            pixmap = pixmap.scaled(widget.size(), mode=Qt.SmoothTransformation)
-        widget.setPixmap(pixmap)
+        else:
+            pixmap = self.get_cover_from_cache(current_index_id)
+            if pixmap.size() != widget.size():
+                pixmap = pixmap.scaled(widget.size(), mode=Qt.SmoothTransformation)
+            widget.setPixmap(pixmap)

@@ -16,8 +16,7 @@ from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from configs import settings as _settings
 
 
-ROOT = _settings.project_root
-_LOGGER = None
+_GLOBAL_LOGGER = None
 
 
 def get_logger(name: str) -> logging.Logger:
@@ -26,58 +25,58 @@ def get_logger(name: str) -> logging.Logger:
 
     Args:
         name (str): name of the logger instance
-        level (int): logging level
 
     Returns:
         logging.Logger: return the logger instance
     """
-    if _LOGGER is not None:
-        return _LOGGER
+    # pylint: disable=W0603
+    global _GLOBAL_LOGGER
 
-    if str(_settings.LOGGER_LEVEL).upper() == "DEBUG":
-        log_level = logging.DEBUG
-    elif str(_settings.LOGGER_LEVEL).upper() == "INFO":
-        log_level = logging.INFO
-    elif str(_settings.LOGGER_LEVEL).upper() == "WARNING":
-        log_level = logging.WARNING
-    elif str(_settings.LOGGER_LEVEL).upper() == "ERROR":
-        log_level = logging.ERROR
-    elif str(_settings.LOGGER_LEVEL).upper() == "CRITICAL":
-        log_level = logging.CRITICAL
-    else:
-        log_level = logging.INFO
+    if _GLOBAL_LOGGER is None:
+        ROOT = _settings.project_root
+        if str(_settings.LOGGER_LEVEL).upper() == "DEBUG":
+            log_level = logging.DEBUG
+        elif str(_settings.LOGGER_LEVEL).upper() == "INFO":
+            log_level = logging.INFO
+        elif str(_settings.LOGGER_LEVEL).upper() == "WARNING":
+            log_level = logging.WARNING
+        elif str(_settings.LOGGER_LEVEL).upper() == "ERROR":
+            log_level = logging.ERROR
+        elif str(_settings.LOGGER_LEVEL).upper() == "CRITICAL":
+            log_level = logging.CRITICAL
+        else:
+            log_level = logging.INFO
 
-    logger = logging.getLogger(name)
-    env = str(_settings.current_env).upper()
+        logger = logging.getLogger(name)
+        env = str(_settings.current_env).upper()
 
-    if env in ["TESTING", "PRODUCTION", "QT_TESTING"]:
-        # pylint: disable=C0301
-        formatter = logging.Formatter(
-            f"[{env}] [%(asctime)s: %(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s"
-        )
-        if not os.path.isdir(os.path.join(ROOT, "logs")):
-            os.mkdir(os.path.join(ROOT, "logs"))
-        log_path = os.path.join(ROOT, "logs", f"apollo_{env.lower()}.log")
-        log_mode = "w"
-        formatter.default_time_format = "%H:%M:%S"
-        file_handler = logging.FileHandler(log_path, mode=log_mode)
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
+        if env in ["TESTING", "PRODUCTION", "QT_TESTING"]:
+            # pylint: disable=C0301
+            formatter = logging.Formatter(
+                f"[{env}] [%(asctime)s: %(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s"
+            )
+            if not os.path.isdir(os.path.join(ROOT, "logs")):
+                os.mkdir(os.path.join(ROOT, "logs"))
+            log_path = os.path.join(ROOT, "logs", f"apollo_{env.lower()}.log")
+            log_mode = "w"
+            formatter.default_time_format = "%H:%M:%S"
+            file_handler = logging.FileHandler(log_path, mode=log_mode)
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
 
-    if env in ["PRODUCTION"]:
-        formatter = logging.Formatter(
-            f"[{env}] [%(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s"
-        )
-        stream_handler = logging.StreamHandler(sys.stdout)
-        stream_handler.setFormatter(formatter)
-        logger.addHandler(stream_handler)
+        if env in ["PRODUCTION"]:
+            # pylint: disable=C0301
+            formatter = logging.Formatter(
+                f"[{env}] [%(levelname)8s]:: [%(module)s/%(funcName)s (Line %(lineno)d)]: %(message)s"
+            )
+            stream_handler = logging.StreamHandler(sys.stdout)
+            stream_handler.setFormatter(formatter)
+            logger.addHandler(stream_handler)
 
-    logger.setLevel(log_level)
-    return logger
+        logger.setLevel(log_level)
+        _GLOBAL_LOGGER = logger
 
-
-# noinspection PyRedeclaration
-_LOGGER = get_logger(__name__)
+    return _GLOBAL_LOGGER
 
 
 def timeit(method: Callable) -> Callable:
@@ -90,6 +89,7 @@ def timeit(method: Callable) -> Callable:
     Returns:
         a wrapped function object that can be executed
     """
+    _LOGGER = get_logger(__name__)
 
     def exe(*args, **kwargs):
         try:
@@ -114,6 +114,7 @@ def exec_line(msg: str, method: Callable):
         msg (str): Message to print to stdout
         method (Callable): Callback object to be used
     """
+    _LOGGER = get_logger(__name__)
     try:
         t1 = time.time()
         method()
@@ -135,6 +136,7 @@ def threadit(method: Callable) -> Callable:
     Returns:
         a wrapped function object that can be executed
     """
+    _LOGGER = get_logger(__name__)
 
     def exe(*args, **kwargs) -> None:
         thread = threading.Thread(
@@ -183,6 +185,7 @@ class Apollo_Global_Signals(QtCore.QObject):
     """
     Global Signal Handler
     """
+
     PlayTrackSignal = QtCore.Signal(str)
 
 
@@ -225,12 +228,14 @@ class ApolloWarning:
     Warning classs used to raise warnings and log them at the same tinme
     """
 
+    _LOGGER = get_logger(__name__)
+
     def __init__(self, msg: str) -> None:
         warnings.warn(UserWarning(msg))
-        _LOGGER.warning(msg)
+        self._LOGGER.warning(msg)
 
 
-class Apollo_Main_UI_TypeAlias(QtWidgets.QMainWindow, Apollo_MainWindow):
+class Apollo_Main_UI_TypeStub(QtWidgets.QMainWindow, Apollo_MainWindow):
     """
     Empty Class For Type Checker
     """

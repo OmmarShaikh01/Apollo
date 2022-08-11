@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 from PySide6 import QtCore
 
-from apollo.db.database import Database, RecordSet
+from apollo.db import Database, RecordSet
 from apollo.db.models.paged_table import PagedTableModel
 from apollo.media import Stream
 
@@ -276,7 +276,10 @@ class QueueModel(PagedTableModel):
         if data:
             self.insert_into_queue(data)
 
-    def play_shuffled(self, indexes: Optional[list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]] = None):
+    def play_shuffled(
+        self,
+        indexes: Optional[list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]] = None,
+    ):
         # pylint: disable=C0301
         """
         Adds selected indexes to the playing queue (shuffled)

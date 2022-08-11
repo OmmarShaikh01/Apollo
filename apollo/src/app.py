@@ -22,7 +22,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from apollo.src.tabs import Library_Tab, Playback_Bar
-from apollo.utils import Apollo_Global_Signals, Apollo_Main_UI_TypeAlias, get_logger
+from apollo.utils import Apollo_Global_Signals, Apollo_Main_UI_TypeStub, get_logger
 from configs import settings
 from configs.config import write_config
 
@@ -49,7 +49,7 @@ class Apollo_UI(QtWidgets.QMainWindow, Apollo_MainWindow):
 
 
 class Apollo_Interactions(abc.ABC):
-    UI: Apollo_Main_UI_TypeAlias = None
+    UI: Apollo_Main_UI_TypeStub = None
 
     def __init__(self: Apollo):
         self.connect_interactions()
@@ -84,7 +84,7 @@ class Apollo_Interactions(abc.ABC):
 
 
 class Apollo_Controller(abc.ABC):
-    UI: Apollo_Main_UI_TypeAlias = None
+    UI: Apollo_Main_UI_TypeStub = None
 
     def __init__(self: Apollo):
         self.load_states()
@@ -103,13 +103,13 @@ class Apollo_Controller(abc.ABC):
 
 
 class Apollo(Apollo_Interactions, Apollo_Controller):
-    UI: Apollo_Main_UI_TypeAlias = None
+    UI: Apollo_Main_UI_TypeStub = None
     _LIBRARY: Library_Tab = None
     _NOW_PLAYING: Playback_Bar = None
 
     def __init__(self):
         # noinspection PyTypeChecker
-        self.UI: Apollo_Main_UI_TypeAlias = Apollo_UI()
+        self.UI: Apollo_Main_UI_TypeStub = Apollo_UI()
 
         Apollo_Interactions.__init__(self)
         Apollo_Controller.__init__(self)

@@ -9,6 +9,10 @@ from apollo.src.views.delegates.track_delegate_small_queue import TrackDelegate_
 
 
 class ViewDelegates(enum.Enum):
+    """
+    Enum Class for delegates
+    """
+
     TrackDelegate_Small = "TrackDelegate_Small"
     TrackDelegate_Small_Queue = "TrackDelegate_Small_Queue"
     TrackDelegate_Mid = "TrackDelegate_Mid"
@@ -18,6 +22,13 @@ class ViewDelegates(enum.Enum):
 
 
 def set_delegate(view: QtWidgets.QAbstractItemView, delegate: Optional[ViewDelegates] = None):
+    """
+    Delegate setter for views
+
+    Args:
+        view (QtWidgets.QAbstractItemView): Parent View
+        delegate (Optional[ViewDelegates]): Delegate Type
+    """
     if delegate is None:
         view.setItemDelegate(QtWidgets.QStyledItemDelegate())
 
@@ -29,6 +40,3 @@ def set_delegate(view: QtWidgets.QAbstractItemView, delegate: Optional[ViewDeleg
 
     elif delegate.name == "TrackDelegate_Small_Queue":
         view.setItemDelegate(TrackDelegate_Small_Queue())
-
-    else:
-        return None

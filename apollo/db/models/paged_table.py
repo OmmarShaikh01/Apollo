@@ -6,7 +6,7 @@ from typing import Any, Optional, Union
 
 from PySide6 import QtCore, QtGui, QtSql
 
-from apollo.db.database import Database, RecordSet
+from apollo.db import Database, RecordSet
 from apollo.utils import get_logger
 
 

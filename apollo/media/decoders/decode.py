@@ -184,7 +184,6 @@ class Stream(ABC):
     def __init__(self, path: PurePath) -> None:
         self.path = path
         self.stream_info = self._get_stream_info()
-        super().__init__()
 
     def __str__(self):  # pragma: no cover
         return json.dumps(self.SynthTags, indent=2)

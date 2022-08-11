@@ -7,10 +7,9 @@ from mutagen.mp3 import MP3
 
 from apollo.media.decoders.decode import Stream
 from apollo.utils import ApolloWarning, get_logger
-from configs import settings
+from configs import settings as CONFIG
 
 
-CONFIG = settings
 LOGGER = get_logger(__name__)
 
 

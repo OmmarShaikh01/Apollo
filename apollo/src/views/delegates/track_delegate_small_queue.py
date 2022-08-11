@@ -15,8 +15,9 @@ LOGGER = get_logger(__name__)
 
 
 class TrackDelegate_Small_Queue(CustomItemDelegate):
-    def __init__(self, parent: Optional[QtCore.QObject] = None):
-        super().__init__(parent)
+    """
+    Delegate class to display in Queue List view
+    """
 
     def paint(
         self,
@@ -24,14 +25,32 @@ class TrackDelegate_Small_Queue(CustomItemDelegate):
         option: QtWidgets.QStyleOptionViewItem,
         index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
     ) -> None:
+        """
+        Paint event invoked each time a draw call is invoked
+
+        Args:
+            painter (QtGui.QPainter): Parent widget painter
+            option (QtWidgets.QStyleOptionViewItem): widget style options
+            index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): Current item index
+        """
         self.draw_widget(painter, option, index)
 
+    # pylint: disable=W0613
     def sizeHint(
         self,
         option: QtWidgets.QStyleOptionViewItem,
         index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
     ) -> QtCore.QSize:
+        """
+        Args:
+            option (QtWidgets.QStyleOptionViewItem): widget style options
+            index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): Current item index
+
+        Returns:
+            QtCore.QSize: Qt widets size hint, that defines the display size
+        """
         # noinspection PyUnresolvedReferences
+
         w, h = option.rect.width(), 48
         return QtCore.QSize(w, h)
 
@@ -42,6 +61,14 @@ class TrackDelegate_Small_Queue(CustomItemDelegate):
         option: QtWidgets.QStyleOptionViewItem,
         index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
     ) -> None:
+        """
+        Draws the delegate widget
+
+        Args:
+            painter (QtGui.QPainter): Parent widget painter
+            option (QtWidgets.QStyleOptionViewItem): widget style options
+            index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): Current item index
+        """
         pixmap = QtGui.QPixmap(option.rect.width(), option.rect.height())
         painter.save()
 
@@ -83,12 +110,24 @@ class TrackDelegate_Small_Queue(CustomItemDelegate):
 
         painter.restore()
 
+    # pylint: disable=R0914,R0915
     def get_widget(
         self,
         option: QtWidgets.QStyleOptionViewItem,
         index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
         parent: Optional[QtWidgets.QWidget] = None,
     ) -> QtWidgets.QWidget:
+        """
+        Returns Widget to paint inplace of delegate
+
+        Args:
+            option (QtWidgets.QStyleOptionViewItem): widget style options
+            index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): Current item index
+            parent (Optional[QtWidgets.QWidget]): Parent widget
+
+        Returns:
+            QtWidgets.QWidget: Widget to paint inplace of delegate
+        """
         TrackDelegate_Small_Queue_Frame = QtWidgets.QFrame(None)
         TrackDelegate_Small_Queue_Frame.setObjectName("TrackDelegate_Small_Queue_Frame")
         sizePolicy = QtWidgets.QSizePolicy(
@@ -206,6 +245,13 @@ class TrackDelegate_Small_Queue(CustomItemDelegate):
     def _widget_set_data(
         self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex], **kwargs
     ):
+        """
+        Sets relevant data passed in from kwargs to the widget
+
+        Args:
+            index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): current item index
+            **kwargs: data to set into the widget
+        """
         TrackDelegate_Small_Queue_Cover_pixmap = kwargs["TrackDelegate_Small_Queue_Cover_pixmap"]
         TrackDelegate_Small_Queue_time_label = kwargs["TrackDelegate_Small_Queue_time_label"]
         TrackDelegate_Small_Queue_title_label = kwargs["TrackDelegate_Small_Queue_title_label"]
@@ -239,8 +285,15 @@ class TrackDelegate_Small_Queue(CustomItemDelegate):
         widget: QtWidgets.QLabel,
         index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
     ):
+        """
+        Sets A cover image to a Display
+
+        Args:
+            widget (QtWidgets.QLabel): Parent widget to set image to
+            index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): current item index
+        """
         current_index_id = index.model().index(index.row(), 1).data()
-        if current_index_id not in self._cover_cache.keys():
+        if current_index_id not in self._cover_cache:
             current_index_path = index.model().index(index.row(), 2).data()
             if os.path.exists(current_index_path) and Mediafile.isSupported(current_index_path):
                 # noinspection PyUnresolvedReferences
@@ -250,9 +303,8 @@ class TrackDelegate_Small_Queue(CustomItemDelegate):
                 pixmap = pixmap.scaled(widget.size(), mode=Qt.SmoothTransformation)
                 widget.setPixmap(pixmap)
                 self.set_cover_to_cache(current_index_id, pixmap)
-                return None
-
-        pixmap = self.get_cover_from_cache(current_index_id)
-        if pixmap.size() != widget.size():
-            pixmap = pixmap.scaled(widget.size(), mode=Qt.SmoothTransformation)
-        widget.setPixmap(pixmap)
+        else:
+            pixmap = self.get_cover_from_cache(current_index_id)
+            if pixmap.size() != widget.size():
+                pixmap = pixmap.scaled(widget.size(), mode=Qt.SmoothTransformation)
+            widget.setPixmap(pixmap)

@@ -17,10 +17,10 @@ from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 from apollo.media import Mediafile
 from apollo.utils import ApolloWarning, get_logger
-from configs import settings, write_config
+from configs import settings as CONFIG
+from configs import write_config
 
 
-CONFIG = settings
 LOGGER = get_logger(__name__)
 
 
@@ -40,71 +40,6 @@ class QueryExecutionFailed(Exception):
     """Raised when execution fails"""
 
     __module__ = "Database"
-
-
-class Connection(QSqlDatabase):
-    """Connector used execute queries"""
-
-    def __init__(self, db_path: str):
-        """
-        Constructor
-
-        Args:
-            db_path (str): database file path to connect
-        """
-        self.database = self.is_valid_db(db_path)
-        self.name = str(uuid.uuid4())
-        super().__init__("QSQLITE")
-        self.addDatabase("QSQLITE", self.name)
-        self.setDatabaseName(str(self.database))
-
-    def __enter__(self) -> QSqlDatabase:
-        """
-        Returns:
-            QSqlDatabase: a connection object used to execute queries
-        """
-        if self.open() and self.isValid() and self.isOpen():
-            self.exec("PRAGMA foreign_keys=ON")
-            return self
-        raise ConnectionError(self.database)
-
-    def __exit__(self, exc_type: BaseException, value: BaseException, _traceback: TracebackType):
-        """
-        Args:
-            exc_type (BaseException): Exception type
-            value (BaseException): Exception Value
-            _traceback (TracebackType): Traceback stack
-        """
-        if any([exc_type, value, _traceback]):  # pragma: no cover
-            # pylint: disable=W1203
-            LOGGER.error(f"Type: {exc_type}\nValue: {value}\nTraceback:\n{_traceback}")
-        self.commit()
-        self.close()
-        QSqlDatabase.removeDatabase(self.name)
-
-    @staticmethod
-    def is_valid_db(db_path: Union[str, PurePath]) -> Union[str, PurePath]:
-        """
-        Connection validator used to connect to a database
-
-        Args:
-            db_path (Union[str, PurePath]): database path
-
-        Returns:
-            Union[str, PurePath]: if the connection file is valid, otherwise None
-
-        Raises:
-              ValueError: when database file is invalid
-        """
-        if db_path == ":memory:":
-            return db_path
-
-        if os.path.splitext(db_path)[1] == ".db":
-            if isinstance(db_path, str):
-                db_path = PurePath(db_path)
-            return db_path
-
-        raise ValueError(db_path)
 
 
 @dataclasses.dataclass
@@ -227,6 +162,71 @@ class RecordSet:
         raise IndexError(f"Invalid Key Used: {key}")
 
 
+class Connection(QSqlDatabase):
+    """Connector used execute queries"""
+
+    def __init__(self, db_path: str):
+        """
+        Constructor
+
+        Args:
+            db_path (str): database file path to connect
+        """
+        self.database = self.is_valid_db(db_path)
+        self.name = str(uuid.uuid4())
+        super().__init__("QSQLITE")
+        self.addDatabase("QSQLITE", self.name)
+        self.setDatabaseName(str(self.database))
+
+    def __enter__(self) -> QSqlDatabase:
+        """
+        Returns:
+            QSqlDatabase: a connection object used to execute queries
+        """
+        if self.open() and self.isValid() and self.isOpen():
+            self.exec("PRAGMA foreign_keys=ON")
+            return self
+        raise ConnectionError(self.database)
+
+    def __exit__(self, exc_type: BaseException, value: BaseException, _traceback: TracebackType):
+        """
+        Args:
+            exc_type (BaseException): Exception type
+            value (BaseException): Exception Value
+            _traceback (TracebackType): Traceback stack
+        """
+        if any([exc_type, value, _traceback]):  # pragma: no cover
+            # pylint: disable=W1203
+            LOGGER.error(f"Type: {exc_type}\nValue: {value}\nTraceback:\n{_traceback}")
+        self.commit()
+        self.close()
+        QSqlDatabase.removeDatabase(self.name)
+
+    @staticmethod
+    def is_valid_db(db_path: Union[str, PurePath]) -> Union[str, PurePath]:
+        """
+        Connection validator used to connect to a database
+
+        Args:
+            db_path (Union[str, PurePath]): database path
+
+        Returns:
+            Union[str, PurePath]: if the connection file is valid, otherwise None
+
+        Raises:
+              ValueError: when database file is invalid
+        """
+        if db_path == ":memory:":
+            return db_path
+
+        if os.path.splitext(db_path)[1] == ".db":
+            if isinstance(db_path, str):
+                db_path = PurePath(db_path)
+            return db_path
+
+        raise ValueError(db_path)
+
+
 class Database:
     """
     Database class for all database queries and methods
@@ -329,8 +329,8 @@ class Database:
             QueryExecutionFailed: when a query fails to execute
         """
 
-        def _dedent_query(query_str: str):
-            lines = query_str.splitlines()
+        def _dedent_query(_query_str: str):
+            lines = _query_str.splitlines()
             return "\n".join(line.lstrip() for line in lines)
 
         connection_info = str(conn)
@@ -411,40 +411,6 @@ class Database:
         return conn
 
 
-def load_purepath_paths(path_list: list[str]) -> list[PurePath]:
-    """
-    Load purepath paths
-
-    Args:
-        path_list (list[str]): list of FS paths
-
-    Returns:
-        list[PurePath]: List of FS paths
-    """
-    new_path_list = []
-    for path in path_list:
-        if os.path.exists(path):
-            new_path_list.append(PurePath(path))
-    return new_path_list
-
-
-def load_str_paths(path_list: list[PurePath]) -> list[str]:
-    """
-    Load str paths
-
-    Args:
-        path_list (list[PurePath]): list of FS paths
-
-    Returns:
-        list[str]: List of FS paths
-    """
-    new_path_list = []
-    for path in path_list:
-        if os.path.exists(path):
-            new_path_list.append(str(path.as_posix()))
-    return new_path_list
-
-
 class LibraryManager(Database):
     """
     Library Manager, Manages all media files indexed by Apollo
@@ -455,7 +421,7 @@ class LibraryManager(Database):
 
     def __init__(self, path: str = None):
         super().__init__(path)
-        self._dirs_watched = load_purepath_paths(
+        self._dirs_watched = self.load_purepath_paths(
             CONFIG.get("APOLLO.LIBRARY_MANAGER.WATCHED_DIRS", "")
         )
 
@@ -463,7 +429,7 @@ class LibraryManager(Database):
         """
         saves loacal states to config
         """
-        CONFIG["APOLLO.LIBRARY_MANAGER.WATCHED_DIRS"] = load_str_paths(self._dirs_watched)
+        CONFIG["APOLLO.LIBRARY_MANAGER.WATCHED_DIRS"] = self.load_str_paths(self._dirs_watched)
         write_config()
 
     def add_dir_to_watcher(self, path: PurePath):
@@ -556,18 +522,18 @@ class LibraryManager(Database):
         if isinstance(path, list):
             path = [item if not isinstance(item, str) else PurePath(item) for item in path]
 
-        part = 250
-        if len(path) <= part:
+        partition = 250  # Defines the partition limit for each threads task
+        if len(path) <= partition:
             exe(path)
         else:
-            cuts = int(round(len(path) / part, 0))
+            cuts = int(round(len(path) / partition, 0))
             with ThreadPoolExecutor(max_workers=8) as executor:
                 thread = 0
-                start, end = 0, part
+                start, end = 0, partition
                 for cut in range(cuts):
                     executor.submit(exe, (path[start:end]))
                     if (cut + 1) > cuts:
-                        start, end = start + part, end + part
+                        start, end = start + partition, end + partition
                         thread += 1
                     else:
                         executor.submit(exe, (path[end:]))
@@ -611,3 +577,37 @@ class LibraryManager(Database):
         Rescans Directories that are monitored
         """
         self.scan_directories(self._dirs_watched)
+
+    @staticmethod
+    def load_purepath_paths(path_list: list[str]) -> list[PurePath]:
+        """
+        Load purepath paths
+
+        Args:
+            path_list (list[str]): list of FS paths
+
+        Returns:
+            list[PurePath]: List of FS paths
+        """
+        new_path_list = []
+        for path in path_list:
+            if os.path.exists(path):
+                new_path_list.append(PurePath(path))
+        return new_path_list
+
+    @staticmethod
+    def load_str_paths(path_list: list[PurePath]) -> list[str]:
+        """
+        Load str paths
+
+        Args:
+            path_list (list[PurePath]): list of FS paths
+
+        Returns:
+            list[str]: List of FS paths
+        """
+        new_path_list = []
+        for path in path_list:
+            if os.path.exists(path):
+                new_path_list.append(str(path.as_posix()))
+        return new_path_list

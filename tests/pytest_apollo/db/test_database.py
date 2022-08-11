@@ -1,3 +1,4 @@
+# pylint: disable
 import os
 import random
 import tempfile
@@ -17,8 +18,6 @@ from apollo.db.database import (
     QueryBuildFailed,
     QueryExecutionFailed,
     RecordSet,
-    load_purepath_paths,
-    load_str_paths,
 )
 from apollo.media.decoders import Stream
 from apollo.utils import get_logger
@@ -95,7 +94,7 @@ def get_library_manager():
 
 
 @pytest.fixture
-def get_filled_library_manager(get_library_manager: Database, records_library_manager: RecordSet):
+def get_filled_library_manager(get_library_manager: Database):
     db = get_library_manager
     copy_mock_data()
     yield db
@@ -471,7 +470,7 @@ class Test_LibraryManager:
 
             db.save_states()
             with CONFIG.fresh():
-                assert load_purepath_paths(
+                assert db.load_purepath_paths(
                     CONFIG.get("APOLLO.LIBRARY_MANAGER.WATCHED_DIRS", "")
                 ) == [ROOT]
 

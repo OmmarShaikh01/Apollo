@@ -15,7 +15,7 @@ from apollo.db.models import LibraryModel, ModelProvider, QueueModel
 from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
 from apollo.media import Mediafile
 from apollo.src.views.delegates import ViewDelegates, set_delegate
-from apollo.utils import Apollo_Main_UI_TypeAlias, get_logger
+from apollo.utils import Apollo_Main_UI_TypeStub, get_logger
 from configs import settings
 
 
@@ -154,7 +154,7 @@ class Playback_Bar_Interactions(abc.ABC):
     _ELAPSED_TIME = CONFIG.get("APOLLO.PLAYBACK_BAR.ELAPSED_TIME", 0)
     _CURRENT_PLAYING = CONFIG.get("APOLLO.PLAYBACK_BAR.CURRENT_PLAYING", None)
 
-    def __init__(self, ui: Apollo_Main_UI_TypeAlias) -> None:
+    def __init__(self, ui: Apollo_Main_UI_TypeStub) -> None:
         """
         Constructor
 
@@ -523,7 +523,7 @@ class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO:
     Playback_Bar
     """
 
-    def __init__(self, ui: Apollo_Main_UI_TypeAlias) -> None:
+    def __init__(self, ui: Apollo_Main_UI_TypeStub) -> None:
         self.UI = ui
         Playback_Bar_Interactions.__init__(self, self.UI)
         Playback_Bar_Controller.__init__(self)
