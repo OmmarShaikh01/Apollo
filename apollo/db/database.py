@@ -154,7 +154,19 @@ class RecordSet:
 
         return "\n----\nEMPTY\n----\nEMPTY\n----\n"
 
-    def get(self, key: Union[int, tuple[Union[str, int], int]], default: Optional[Any] = None):
+    def get(
+        self, key: Union[int, tuple[Union[str, int], int]], default: Optional[Any] = None
+    ) -> Any:
+        """
+        Get Item Callback
+
+        Args:
+            key (Union[int, tuple[Union[str, int], int]]): Key, index
+            default (Any): Default on index or keyerror
+
+        Returns:
+            Any: value at index, otherwise default
+        """
         try:
             return self[key]
         except (KeyError, IndexError):
@@ -164,13 +176,14 @@ class RecordSet:
         if isinstance(key, int):
             return self.records[key]
 
-        elif isinstance(key, tuple) and len(key) == 2:
+        if isinstance(key, tuple) and len(key) == 2:
             if isinstance(key[0], int):
                 return self.records[key[1]][key[0]]
-            elif isinstance(key[0], str) and key[0] in self.fields:
+
+            if isinstance(key[0], str) and key[0] in self.fields:
                 return self.records[key[1]][self.fields.index(key[0])]
 
-        elif isinstance(key, slice):
+        if isinstance(key, slice):
             return self.records[key]
 
         raise IndexError(f"Invalid Key Used: {key}")
@@ -180,15 +193,15 @@ class RecordSet:
             if len(self.records) > key:
                 self.records[key] = value
                 return None
-            else:
-                self.records.append(value)
-                return None
 
-        elif isinstance(key, tuple) and len(key) == 2:
+            self.records.append(value)
+            return None
+
+        if isinstance(key, tuple) and len(key) == 2:
             if isinstance(key[0], int):
                 self.records[key[1]][key[0]] = value
                 return None
-            elif isinstance(key[0], str) and key[0] in self.fields:
+            if isinstance(key[0], str) and key[0] in self.fields:
                 self.records[key[1]][self.fields.index(key[0])] = value
                 return None
 
@@ -199,15 +212,15 @@ class RecordSet:
             del self.records[key]
             return None
 
-        elif isinstance(key, tuple) and len(key) == 2:
+        if isinstance(key, tuple) and len(key) == 2:
             if isinstance(key[0], int):
                 del self.records[key[1]][key[0]]
                 return None
-            elif isinstance(key[0], str) and key[0] in self.fields:
+            if isinstance(key[0], str) and key[0] in self.fields:
                 del self.records[key[1]][self.fields.index(key[0])]
                 return None
 
-        elif isinstance(key, slice):
+        if isinstance(key, slice):
             del self.records[key]
             return None
 

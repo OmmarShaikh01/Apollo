@@ -8,7 +8,7 @@ import threading
 import time
 import traceback
 import warnings
-from typing import Callable, Optional
+from typing import Callable
 
 from PySide6 import QtCore, QtWidgets
 
@@ -183,11 +183,7 @@ class Apollo_Global_Signals(QtCore.QObject):
     """
     Global Signal Handler
     """
-
     PlayTrackSignal = QtCore.Signal(str)
-
-    def __init__(self, parent: Optional[QtCore.QObject] = None) -> None:
-        super().__init__(parent)
 
 
 class ApolloSignal:

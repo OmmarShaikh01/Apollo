@@ -79,8 +79,9 @@ class QueueModel(PagedTableModel):
     def insert_into_queue(
         self, indexes: list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]
     ):
+        # pylint: disable=C0301
         """
-        INserts the given indexes into the queue table
+        Inserts the given indexes into the queue table
 
         Args:
             indexes (list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]): Items to add to the queue
@@ -94,6 +95,7 @@ class QueueModel(PagedTableModel):
         self.fetch_data(self.FETCH_DATA_DOWN)
 
     def play_now(self, indexes: list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]):
+        # pylint: disable=C0301
         """
         Adds selected index to the top of the playing queue
 
@@ -111,6 +113,7 @@ class QueueModel(PagedTableModel):
         indexes: list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]],
         current_index: Optional[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]] = None,
     ):
+        # pylint: disable=C0301
         """
         Queues items after the currently playing item
 
@@ -145,6 +148,7 @@ class QueueModel(PagedTableModel):
         self,
         indexes: list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]],
     ):
+        # pylint: disable=C0301
         """
         Queues items at the end
 
@@ -168,6 +172,7 @@ class QueueModel(PagedTableModel):
         self,
         index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
     ):
+        # pylint: disable=C0301
         """
         Adds items with similar artist to the queue
 
@@ -203,6 +208,7 @@ class QueueModel(PagedTableModel):
         self,
         index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
     ):
+        # pylint: disable=C0301
         """
         Adds items with similar album to the queue
 
@@ -238,6 +244,7 @@ class QueueModel(PagedTableModel):
         self,
         index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex],
     ):
+        # pylint: disable=C0301
         """
         Adds items with similar genre to the queue
 
@@ -269,25 +276,29 @@ class QueueModel(PagedTableModel):
         if data:
             self.insert_into_queue(data)
 
-    def play_shuffled(self, indexes: list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]):
+    def play_shuffled(self, indexes: Optional[list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]] = None):
+        # pylint: disable=C0301
         """
         Adds selected indexes to the playing queue (shuffled)
 
         Args:
-            indexes list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]: Items to add to the queue
+            indexes Optional[list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]]: Items to add to the queue
         """
-        indexes = list(map(lambda x: x.data(), indexes))
+        if indexes is not None:
+            indexes = list(map(lambda x: x.data(), indexes))
+
         with self._db.connector as conn:
             self._db.execute("DELETE FROM queue", conn)
-            indexes = list(
-                map(
-                    lambda x: x[0],
-                    self._db.execute(
-                        "SELECT library.FILEID from library",
-                        conn,
-                    ).records,
+            if indexes is None:
+                indexes = list(
+                    map(
+                        lambda x: x[0],
+                        self._db.execute(
+                            "SELECT library.FILEID from library",
+                            conn,
+                        ).records,
+                    )
                 )
-            )
 
         random.shuffle(indexes)
         self.insert_into_queue(indexes)

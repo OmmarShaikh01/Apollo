@@ -2,9 +2,6 @@
 Main entry point for apollo as a module
 
 executes apollo inside a production env config
-
-TODO:
-Add vendor packages in build
 """
 import os
 import sys
@@ -12,6 +9,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
+# pylint: disable=C0413
 from apollo.main import main
 
 

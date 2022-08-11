@@ -215,7 +215,7 @@ development = ["black", "flake8", "mypy", "pytest", "types-colorama"]
 
 [[package]]
 name = "coverage"
-version = "6.4.2"
+version = "6.4.3"
 description = "Code coverage measurement for Python"
 category = "dev"
 optional = false
@@ -237,6 +237,23 @@ python-versions = "*"
 
 [package.dependencies]
 makefun = ">=1.5.0"
+
+[[package]]
+name = "dependency-injector"
+version = "4.40.0"
+description = "Dependency injection framework for Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = ">=1.7.0,<=1.16.0"
+
+[package.extras]
+aiohttp = ["aiohttp"]
+flask = ["flask"]
+pydantic = ["pydantic"]
+yaml = ["pyyaml"]
 
 [[package]]
 name = "dill"
@@ -2850,7 +2867,7 @@ python-versions = "<3.11,>=3.6"
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -3099,7 +3116,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9, <3.11"
-content-hash = "f50b7d6de0b8dab1c566fe3e07e5cb286bdaafbaa3892e66e8306f3825fece79"
+content-hash = "530b7f35b6f6836793de68a5608d6e6dc0c511ae18e94a0584a4db8a415a8ea3"
 
 [metadata.files]
 alabaster = [
@@ -3189,6 +3206,7 @@ decopatch = [
     {file = "decopatch-1.4.10-py2.py3-none-any.whl", hash = "sha256:e151f7f93de2b1b3fd3f3272dcc7cefd1a69f68ec1c2d8e288ecd9deb36dc5f7"},
     {file = "decopatch-1.4.10.tar.gz", hash = "sha256:957f49c93f4150182c23f8fb51d13bb3213e0f17a79e09c8cca7057598b55720"},
 ]
+dependency-injector = []
 dill = []
 distlib = []
 docutils = [

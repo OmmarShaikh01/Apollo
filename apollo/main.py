@@ -14,6 +14,7 @@ settings.setenv("PRODUCTION")
 settings.validators.validate_all(only_current_env=True)
 
 
+# pylint: disable=C0415
 def main() -> None:
     """
     Main entry point to launch Apollo

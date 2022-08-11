@@ -22,6 +22,7 @@ BENCHMARK = CONFIG.benchmark_formats  # TODO: remove not
 MODEL_ROWS, MODEL_COLUMNS = len(LIBRARY_TABLE), len(["PLAYORDER", *Stream.TAG_FRAMES])
 
 
+# noinspection PyProtectedMember
 @pytest.fixture
 def model_provider() -> QueueModel:
     copy_mock_data()

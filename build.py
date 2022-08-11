@@ -8,14 +8,25 @@ import PyInstaller.__main__
 import tomli
 
 
-def kwargs_flat(kwarg: str, _list: Union[list, filter, map]):
+def kwargs_call(kwarg: str, _list: Union[list, filter, map]) -> str:
+    """
+    crates a generator object that is used to create command to call kwargs
+    with multiple values
+
+    Args:
+        kwarg (str): Key Word
+        _list (Union[list, filter, map]): Parameters to pass
+
+    Returns:
+        str: key word or the parameter alternatively
+    """
     counter = 0
     for i in range(len(_list) * 2):
         if (i % 2) != 0:
-            yield _list[counter]
+            yield str(_list[counter])
             counter += 1
             continue
-        yield kwarg
+        yield str(kwarg)
 
 
 ROOT = Path(os.path.dirname(__file__))
@@ -53,7 +64,7 @@ exe_options = [
     *("--specpath", str(ROOT / "dist")),
     *("--distpath", str(ROOT / "dist")),
     *("--workpath", str(ROOT / "dist" / "build")),
-    *kwargs_flat(
+    *kwargs_call(
         "--add-data",
         [
             os.pathsep.join((str(ROOT / "LICENSE"), ".")),
@@ -73,9 +84,9 @@ exe_options = [
             ],
         ],
     ),
-    *kwargs_flat("--collect-all", ["apollo", "dynaconf"]),
-    *kwargs_flat("--hidden-import", ["dynaconf", "python-dotenv"]),
-    *kwargs_flat("--paths", [str(ROOT)]),
+    *kwargs_call("--collect-all", ["apollo", "dynaconf"]),
+    *kwargs_call("--hidden-import", ["dynaconf", "python-dotenv"]),
+    *kwargs_call("--paths", [str(ROOT)]),
 ]
 
 # noinspection PyUnresolvedReferences

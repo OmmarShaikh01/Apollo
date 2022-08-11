@@ -140,9 +140,9 @@ def get_apptheme() -> dict:
     path = PurePath(os.path.dirname(__file__), "__loaded_theme__", "apptheme.json")
     if not os.path.exists(path):
         raise RuntimeError("Failed To Fetch Resurces")
-    else:
-        with open(path, encoding="utf-8") as file:
-            return json.load(file)
+
+    with open(path, encoding="utf-8") as file:
+        return json.load(file)
 
 
 _path = PurePath(os.path.dirname(__file__), "__loaded_theme__")

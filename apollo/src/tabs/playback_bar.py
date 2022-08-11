@@ -528,6 +528,7 @@ class Playback_Bar(Playback_Bar_Interactions, Playback_Bar_Controller):  # TODO:
         Playback_Bar_Interactions.__init__(self, self.UI)
         Playback_Bar_Controller.__init__(self)
         self.bind_models(self.UI.queue_main_listview)
+        self.cb_load_track_info(self._CURRENT_PLAYING)
 
     def save_states(self):
         """

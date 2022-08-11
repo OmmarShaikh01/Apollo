@@ -167,11 +167,11 @@ class Test_Recordset:
         assert expected == original
 
     def test_delete_3(self):
-        expected = RecordSet(
-            ["field_1", "field_2", "field_3"], [list(range(3)), list(range(3)), list(range(2))]
-        )
         original = RecordSet(
             ["field_1", "field_2", "field_3"], [list(range(3)), list(range(3)), list(range(3))]
+        )
+        expected = RecordSet(
+            ["field_1", "field_2", "field_3"], [list(range(3)), list(range(3)), list(range(2))]
         )
 
         del original[("field_3", 2)]
@@ -181,7 +181,7 @@ class Test_Recordset:
             ["field_1", "field_2", "field_3"], [list(range(3)), list(range(3)), list(range(1))]
         )
 
-        del original[(2, 1)]
+        del original[(1, 2)]
         assert expected == original
 
 
