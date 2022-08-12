@@ -3,8 +3,8 @@ from typing import Optional, Union
 
 from PySide6 import QtCore
 
-from apollo.db import Database, RecordSet
-from apollo.db.models.paged_table import PagedTableModel
+from apollo.database import Database, RecordSet
+from apollo.database.models.paged_table import PagedTableModel
 from apollo.media import Stream
 
 
@@ -19,8 +19,7 @@ class QueueModel(PagedTableModel):
     PRIVATE_FIELDS = ["PLAYORDER", "FILEID", "FILEPATH", "FILENAME", "FILESIZE", "FILEEXT"]
 
     def __init__(self) -> None:
-        super().__init__("queue")
-        self._db = Database()
+        super().__init__("queue", Database())
 
     @property
     def SelectQuery(self) -> str:

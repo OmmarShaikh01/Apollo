@@ -4,15 +4,14 @@ import os
 import re
 import shutil
 from pathlib import PurePath
-from typing import Optional
+from typing import Optional, Union
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from apollo.utils import ApolloWarning, get_logger
-from configs import settings
+from configs import settings as CONFIG
 
 
-CONFIG = settings
 LOGGER = get_logger(__name__)
 ASSETS = PurePath(os.path.dirname(os.path.dirname(__file__)))
 
@@ -33,39 +32,53 @@ except ImportError:
 
 
 # Template functions anv variable declaration ---------------------------------
-def opacity(color: str, value: Optional[float] = 0.5) -> str:
+def opacity(
+    color: str, value: Optional[float] = 0.5, as_str: Optional[bool] = True
+) -> Union[QtGui.QColor, str]:
     """
     Colour opacity filter
 
     Args:
         color (str): color
         value (Optional[float]): opacity value (0 to 1)
+        as_str (Optional[bool]): set true to return value as str
 
     Returns:
         str: rgba string
+        QtGui.QColor: Colour object
     """
     r, g, b = color[1:][0:2], color[1:][2:4], color[1:][4:]
-    color = QtGui.QColor.fromRgb(int(r, 16), int(g, 16), int(b, 16))
-    color.setAlphaF(value)
-    return f"rgba({color.red()}, {color.green()}, {color.blue()}, {round(color.alphaF(), 3)})"
+    color = QtGui.QColor.fromRgbF(int(r, 16), int(g, 16), int(b, 16), value)
+
+    if as_str:
+        return f"rgba({color.red()}, {color.green()}, {color.blue()}, {round(color.alphaF(), 3)})"
+    return color
 
 
-def luminosity(color: str, brightness: Optional[float] = 0) -> str:
+def luminosity(
+    color: str, brightness: Optional[float] = 0, as_str: Optional[bool] = True
+) -> Union[QtGui.QColor, str]:
     """
     Colour luminosity filter
 
     Args:
         color (str): color
         brightness (Optional[float]): luminosity value (-1 to 1)
+        as_str (Optional[bool]): set true to return value as str
 
     Returns:
         str: rgba string
+        QtGui.QColor: Colour object
     """
     r, g, b = color[1:][0:2], color[1:][2:4], color[1:][4:]
     r, g, b = int(r, 16), int(g, 16), int(b, 16)
     # pylint: disable=C3001
     lumin = lambda x: int(min(255, (x + (255 * brightness))))
-    return f"rgba({lumin(r)}, {lumin(g)}, {lumin(b)}, {float(1)})"
+    color = QtGui.QColor.fromRgb(lumin(r), lumin(g), lumin(b))
+
+    if as_str:
+        return f"rgba({color.red()}, {color.green()}, {color.blue()}, {float(1)})"
+    return color
 
 
 # End region ------------------------------------------------------------------
@@ -157,43 +170,44 @@ class ResourceGenerator:
         """
         Uses the themes colours to generate the icon pack
         """
-        rgba = lambda r, g, b, a: QtGui.QColor.fromRgb(r, g, b, a).name()
-        primary = str(eval(luminosity(self.app_theme["QTCOLOR_PRIMARYTEXTCOLOR"], 0.4)))
-        secondary = str(eval(luminosity(self.app_theme["QTCOLOR_SECONDARYCOLOR"], 0.1)))
-        disabled = str(eval(luminosity(self.app_theme["QTCOLOR_PRIMARYCOLOR"], 0.5)))
-        success = str(eval(luminosity(self.app_theme["QTCOLOR_SUCCESS"], 0.1)))
-        warning = str(eval(luminosity(self.app_theme["QTCOLOR_WARNING"], 0)))
-        danger = str(eval(luminosity(self.app_theme["QTCOLOR_DANGER"], 0)))
+
+        def replace_file_content(_file_content: str, _file: str, _type: str, _color: str):
+            """
+            Replaces placeholder color of the SVG file with given color
+
+            Args:
+                _file_content (str): file contents
+                _file (str): file name
+                _type (str): style type
+                _color (str): replacement color
+            """
+            with open(
+                (self.GENERATED / "icons" / _type / _file), "w", encoding="utf-8"
+            ) as file_output:
+                file_output.write(self.replace_svg_colour(_file_content, _color))
+
+        primary = str(
+            luminosity(self.app_theme["QTCOLOR_PRIMARYTEXTCOLOR"], 0.4, as_str=False).name()
+        )
+        secondary = str(
+            luminosity(self.app_theme["QTCOLOR_SECONDARYCOLOR"], 0.1, as_str=False).name()
+        )
+        disabled = str(luminosity(self.app_theme["QTCOLOR_PRIMARYCOLOR"], 0.5, as_str=False).name())
+        success = str(luminosity(self.app_theme["QTCOLOR_SUCCESS"], 0.1, as_str=False).name())
+        warning = str(luminosity(self.app_theme["QTCOLOR_WARNING"], as_str=False).name())
+        danger = str(luminosity(self.app_theme["QTCOLOR_DANGER"], as_str=False).name())
 
         self._validate_output_dir()
         for _dir, _sdir, _files in os.walk(self.ICONS):
             for file in filter(lambda ext: str(os.path.splitext(ext)[1]).lower() == ".svg", _files):
                 with open(PurePath(_dir, file), encoding="utf-8") as svg_file:
                     content = svg_file.read()
-                    with open(
-                        (self.GENERATED / "icons" / "primary" / file), "w", encoding="utf-8"
-                    ) as file_output:
-                        file_output.write(self.replace_svg_colour(content, primary))
-                    with open(
-                        (self.GENERATED / "icons" / "secondary" / file), "w", encoding="utf-8"
-                    ) as file_output:
-                        file_output.write(self.replace_svg_colour(content, secondary))
-                    with open(
-                        (self.GENERATED / "icons" / "disabled" / file), "w", encoding="utf-8"
-                    ) as file_output:
-                        file_output.write(self.replace_svg_colour(content, disabled))
-                    with open(
-                        (self.GENERATED / "icons" / "success" / file), "w", encoding="utf-8"
-                    ) as file_output:
-                        file_output.write(self.replace_svg_colour(content, success))
-                    with open(
-                        (self.GENERATED / "icons" / "warning" / file), "w", encoding="utf-8"
-                    ) as file_output:
-                        file_output.write(self.replace_svg_colour(content, warning))
-                    with open(
-                        (self.GENERATED / "icons" / "danger" / file), "w", encoding="utf-8"
-                    ) as file_output:
-                        file_output.write(self.replace_svg_colour(content, danger))
+                    replace_file_content(content, file, "primary", primary)
+                    replace_file_content(content, file, "secondary", secondary)
+                    replace_file_content(content, file, "disabled", disabled)
+                    replace_file_content(content, file, "success", success)
+                    replace_file_content(content, file, "warning", warning)
+                    replace_file_content(content, file, "danger", danger)
 
     @staticmethod
     def replace_svg_colour(

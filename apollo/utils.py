@@ -12,8 +12,8 @@ from typing import Callable
 
 from PySide6 import QtCore, QtWidgets
 
-from apollo.layout.mainwindow import Ui_MainWindow as Apollo_MainWindow
-from configs import settings as _settings
+from apollo.layout import Apollo_MainWindow
+from configs import settings as _CONFIG
 
 
 _GLOBAL_LOGGER = None
@@ -33,22 +33,22 @@ def get_logger(name: str) -> logging.Logger:
     global _GLOBAL_LOGGER
 
     if _GLOBAL_LOGGER is None:
-        ROOT = _settings.project_root
-        if str(_settings.LOGGER_LEVEL).upper() == "DEBUG":
+        ROOT = _CONFIG.project_root
+        if str(_CONFIG.LOGGER_LEVEL).upper() == "DEBUG":
             log_level = logging.DEBUG
-        elif str(_settings.LOGGER_LEVEL).upper() == "INFO":
+        elif str(_CONFIG.LOGGER_LEVEL).upper() == "INFO":
             log_level = logging.INFO
-        elif str(_settings.LOGGER_LEVEL).upper() == "WARNING":
+        elif str(_CONFIG.LOGGER_LEVEL).upper() == "WARNING":
             log_level = logging.WARNING
-        elif str(_settings.LOGGER_LEVEL).upper() == "ERROR":
+        elif str(_CONFIG.LOGGER_LEVEL).upper() == "ERROR":
             log_level = logging.ERROR
-        elif str(_settings.LOGGER_LEVEL).upper() == "CRITICAL":
+        elif str(_CONFIG.LOGGER_LEVEL).upper() == "CRITICAL":
             log_level = logging.CRITICAL
         else:
             log_level = logging.INFO
 
         logger = logging.getLogger(name)
-        env = str(_settings.current_env).upper()
+        env = str(_CONFIG.current_env).upper()
 
         if env in ["TESTING", "PRODUCTION", "QT_TESTING"]:
             # pylint: disable=C0301
@@ -92,6 +92,7 @@ def timeit(method: Callable) -> Callable:
     _LOGGER = get_logger(__name__)
 
     def exe(*args, **kwargs):
+        """inner function"""
         try:
             t1 = time.time()
             result = method(*args, **kwargs)
@@ -99,8 +100,7 @@ def timeit(method: Callable) -> Callable:
             _LOGGER.debug(f"{method} Executed in {round(time.time() - t1, 8)}s")
             return result
         except Exception as e:
-            print(e, "\n", traceback.print_tb(sys.exc_info()[-1]))
-            _LOGGER.error(e)
+            _LOGGER.error("".join((e, "\n", traceback.print_tb(sys.exc_info()[-1]))))
             raise e
 
     return exe
@@ -121,8 +121,7 @@ def exec_line(msg: str, method: Callable):
         # pylint: disable=W1203
         _LOGGER.debug(f"Message: {msg}> Time: {round(time.time() - t1, 8)}")
     except Exception as e:
-        print(e, "\n", traceback.print_tb(sys.exc_info()[-1]))
-        _LOGGER.error(e)
+        _LOGGER.error("".join((e, "\n", traceback.print_tb(sys.exc_info()[-1]))))
         raise e
 
 
@@ -139,9 +138,10 @@ def threadit(method: Callable) -> Callable:
     _LOGGER = get_logger(__name__)
 
     def exe(*args, **kwargs) -> None:
+        """inner function"""
         thread = threading.Thread(
             target=lambda: (  # pylint: disable=W1203
-                _LOGGER.info(f"Thread {thread.native_id}: {method}"),
+                _LOGGER.debug(f"Thread {thread.native_id}: {method}"),
                 method(*args, **kwargs),
             )
         )
@@ -172,7 +172,7 @@ def set_dark_title_bar(window: QtWidgets.QWidget):
     Args:
         window (QtWidgets.QWidge): Window to set title bar dark for
     """
-    if _settings["APOLLO.MAIN.IS_TITLEBAR_DARK"]:
+    if _CONFIG["APOLLO.MAIN.IS_TITLEBAR_DARK"]:
         import ctypes
 
         HWND = window.winId()
@@ -190,7 +190,7 @@ class Apollo_Global_Signals(QtCore.QObject):
 
 
 class ApolloSignal:
-    """Signals for attaching slots"""
+    """Non Qt Signal for attaching slots"""
 
     def __init__(self):
         """constructor"""
@@ -235,9 +235,37 @@ class ApolloWarning:
         self._LOGGER.warning(msg)
 
 
-class Apollo_Main_UI_TypeStub(QtWidgets.QMainWindow, Apollo_MainWindow):
+# TypeAlias ---------------------------------------------------------------------------------------
+class Apollo_Generic_View:
     """
-    Empty Class For Type Checker
+    Base call For all Views
     """
 
+    def setup_conections(self):
+        """
+        Sets up all the connection for the UI
+        """
+        raise NotImplementedError
+
+    def setup_defaults(self):
+        """
+        Sets up default states for all UI Widgets and objects
+        """
+        raise NotImplementedError
+
+    def save_states(self):
+        """
+        Saves current states for all UI Widgets and objects
+        """
+        raise NotImplementedError
+
+
+class Apollo_Main_UI_TypeAlias(QtWidgets.QMainWindow, Apollo_MainWindow):
+    """TypeAlias"""
+
+
+class Apollo_Main_TypeAlias:
+    """TypeAlias"""
+
+    UI: Apollo_Main_UI_TypeAlias
     SIGNALS: Apollo_Global_Signals

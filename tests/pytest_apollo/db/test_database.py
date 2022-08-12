@@ -11,7 +11,7 @@ import pytest_cases
 import pytest_mock
 from PySide6.QtSql import QSqlQuery
 
-from apollo.db.database import (
+from apollo.database import (
     Connection,
     Database,
     LibraryManager,
@@ -73,6 +73,7 @@ def library_table_records_row():
 
 @pytest.fixture
 def get_database():
+    Database.reset()
     db = Database()
     yield db
     clean_temp_dir()
@@ -88,13 +89,14 @@ def get_filled_database(get_database: Database, records: RecordSet):
 
 @pytest.fixture
 def get_library_manager():
+    LibraryManager.reset()
     db = LibraryManager()
     yield db
     clean_temp_dir()
 
 
 @pytest.fixture
-def get_filled_library_manager(get_library_manager: Database):
+def get_filled_library_manager(get_library_manager: LibraryManager):
     db = get_library_manager
     copy_mock_data()
     yield db

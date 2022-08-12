@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from apollo.db.models.library import LibraryModel
+from apollo.database.models.library import LibraryModel
 from apollo.media import Stream
 from apollo.utils import get_logger
 from configs import settings
@@ -53,11 +53,6 @@ class Test_LibraryModel:
         if os.path.isfile(CONFIG.db_path):
             os.remove(CONFIG.db_path)
             return None
-
-    def test_provider(self):
-        from apollo.db.models import ModelProvider
-
-        assert isinstance(ModelProvider.get_model(LibraryModel), LibraryModel)
 
     def test_init_model_with_data(self, model_provider: LibraryModel):
         model = model_provider

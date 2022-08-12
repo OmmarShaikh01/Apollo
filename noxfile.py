@@ -13,7 +13,7 @@ nox.options.pythons = SUPPORTED_PYTHON
 nox.options.reuse_existing_virtualenvs = True
 
 
-def _upgrade_basic(session: nox.Session, install_dev: bool = True, black_run = True):
+def _upgrade_basic(session: nox.Session, install_dev: bool = True, black_run=True):
     """
     upgrades the newly created venv with poetry lock dependencies
 
@@ -180,7 +180,7 @@ def lint_apollo(session: nox.Session):
         session (nox.Session): nox session
     """
     os.chdir(os.path.dirname(__file__))
-    _upgrade_basic(session, black_run = False)
+    _upgrade_basic(session, black_run=False)
     for file in os.listdir(r".\apollo\layout"):
         file, ext = os.path.splitext(file)
         if ext == ".ui":
@@ -197,7 +197,7 @@ def lint_apollo(session: nox.Session):
     session.run("isort", "--quiet", ".")
     session.run("black", "--quiet", ".")
     try:
-        session.run("pylint", ".", success_codes=list(range(0, 50)))
+        session.run("pylint", "apollo", success_codes=list(range(0, 50)))
     finally:
         pass
 

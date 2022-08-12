@@ -121,13 +121,14 @@ class _AppIcons:
         parh = PurePath(os.path.dirname(__file__), "__loaded_theme__", "icons")
         for file in os.listdir(parh / "primary"):
             name, _ = os.path.splitext(file)
+            file = str(file)
             value = Icon(
-                danger=str(parh / "danger" / str(file)),
-                disabled=str(parh / "disabled" / str(file)),
-                primary=str(parh / "primary" / str(file)),
-                secondary=str(parh / "secondary" / str(file)),
-                success=str(parh / "success" / str(file)),
-                warning=str(parh / "warning" / str(file)),
+                danger=str(parh / "danger" / file),
+                disabled=str(parh / "disabled" / file),
+                primary=str(parh / "primary" / file),
+                secondary=str(parh / "secondary" / file),
+                success=str(parh / "success" / file),
+                warning=str(parh / "warning" / file),
             )
             object.__setattr__(self, str(name).upper(), value)
 
@@ -147,8 +148,8 @@ def get_apptheme() -> dict:
         return json.load(file)
 
 
-_path = PurePath(os.path.dirname(__file__), "__loaded_theme__")
-if not os.path.exists(_path):
+# Initilization -----------------------------------------------------------------------------------
+if not os.path.exists(PurePath(os.path.dirname(__file__), "__loaded_theme__")):
     generate_resource(CONFIG.loaded_theme, True)
 
 AppIcons = _AppIcons()

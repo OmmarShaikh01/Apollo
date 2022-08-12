@@ -2,7 +2,8 @@ from typing import Any
 
 import pytest
 
-from apollo.db.models import PagedTableModel
+from apollo.database.models import PagedTableModel
+from apollo.database import Database
 from apollo.media import Stream
 from apollo.utils import get_logger
 from tests.pytest_apollo.conftest import clean_temp_dir, copy_mock_data
@@ -13,7 +14,7 @@ LOGGER = get_logger(__name__)
 
 class MockPagedTableModel(PagedTableModel):
     def __init__(self, table_name: str):
-        super().__init__(table_name)
+        super().__init__(table_name, Database())
 
     @property
     def SelectQuery(self) -> str:

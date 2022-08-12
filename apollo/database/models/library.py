@@ -1,5 +1,5 @@
-from apollo.db import LibraryManager
-from apollo.db.models.paged_table import PagedTableModel
+from apollo.database import LibraryManager
+from apollo.database.models.paged_table import PagedTableModel
 from apollo.media import Stream
 
 
@@ -11,8 +11,7 @@ class LibraryModel(PagedTableModel):
     PRIVATE_FIELDS = ["FILEID", "FILEPATH", "FILENAME", "FILESIZE", "FILEEXT"]
 
     def __init__(self) -> None:
-        super().__init__("library")
-        self._db = LibraryManager()
+        super().__init__("library", LibraryManager())
 
     @property
     def SelectQuery(self) -> str:

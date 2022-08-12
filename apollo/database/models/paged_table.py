@@ -6,7 +6,7 @@ from typing import Any, Optional, Union
 
 from PySide6 import QtCore, QtGui, QtSql
 
-from apollo.db import Database, RecordSet
+from apollo.database import Database, RecordSet
 from apollo.utils import get_logger
 
 
@@ -68,10 +68,10 @@ class PagedTableModel(QtGui.QStandardItemModel):
     FETCH_DATA_DOWN = 0
     FETCH_DATA_UP = 1
 
-    def __init__(self, table_name: str):
+    def __init__(self, table_name: str, database: Database):
         super().__init__()
         self._table_name = table_name
-        self._db = Database()
+        self._db = database
         self._window = PageWindow(sort_col=self.Columns[0])
         self.set_global_row_count()
 

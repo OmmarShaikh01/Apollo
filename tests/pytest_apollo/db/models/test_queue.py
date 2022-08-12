@@ -6,7 +6,7 @@ import pytest
 from PySide6 import QtCore
 from pytest_mock import MockerFixture
 
-from apollo.db.models.queue import QueueModel
+from apollo.database.models.queue import QueueModel
 from apollo.media import Stream
 from apollo.utils import get_logger
 from configs import settings
@@ -58,11 +58,6 @@ class Test_QueueModel:
         if os.path.isfile(CONFIG.db_path):
             os.remove(CONFIG.db_path)
             return None
-
-    def test_provider(self, model_provider: QueueModel):
-        from apollo.db.models import ModelProvider
-
-        assert isinstance(ModelProvider.get_model(QueueModel), QueueModel)
 
     def test_init_model_with_data(self, model_provider: QueueModel):
         model = model_provider
