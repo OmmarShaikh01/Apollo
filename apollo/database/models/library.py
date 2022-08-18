@@ -1,6 +1,13 @@
+from typing import Union
+
+from PySide6 import QtCore
+
 from apollo.database import LibraryManager
 from apollo.database.models.paged_table import PagedTableModel
 from apollo.media import Stream
+from apollo.utils import get_logger
+
+LOGGER = get_logger(__name__)
 
 
 class LibraryModel(PagedTableModel):
@@ -83,3 +90,24 @@ class LibraryModel(PagedTableModel):
                 f"SELECT {cols} FROM library where library.FILEID = '{fid}'", conn
             )
         return data
+
+    def update_track_rating(
+        self,
+        rating: Union[int, float],
+        indexes: list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]
+    ):
+        if 0 <= rating <= 5:
+            indexes = list(map(lambda x: f"'{x.data()}'", indexes))
+            with self._db.connector as conn:
+                query = f"UPDATE library SET POPULARIMETER = {rating} WHERE FILEID IN ({', '.join(indexes)})"
+                self._db.execute(query, conn)
+
+    def update_current_track_rating(
+        self,
+        rating: Union[int, float],
+        fid: str
+    ):
+        if 0 <= rating <= 5 and fid:
+            with self._db.connector as conn:
+                query = f"UPDATE library SET POPULARIMETER = {rating} WHERE FILEID IN ('{fid}')"
+                self._db.execute(query, conn)

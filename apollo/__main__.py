@@ -24,8 +24,8 @@ def main() -> None:
     CONFIG.validators.validate_all(only_current_env=True)
 
     from apollo.__version__ import __version__
-    from apollo.assets.stylesheets import load_theme
     from apollo.app.main import Apollo
+    from apollo.assets.stylesheets import load_theme
     from apollo.utils import get_logger
 
     LOGGER = get_logger(__name__)
@@ -39,13 +39,6 @@ def main() -> None:
     WINDLL = ctypes.windll
     myappid = f"apollo.apollo.player.{'_'.join(map(str, __version__))}"
     WINDLL.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-
-    # Sets Dark Title Bar
-    if CONFIG["APOLLO.MAIN.IS_TITLEBAR_DARK"]:
-        HWND = window.UI.winId()
-        WINDLL.dwmapi.DwmSetWindowAttribute(
-            HWND, 20, ctypes.byref(ctypes.c_int(2)), ctypes.sizeof(ctypes.c_int(2))
-        )
 
     window.UI.show()
     window.UI.raise_()

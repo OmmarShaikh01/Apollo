@@ -12,7 +12,7 @@ from typing import Callable
 
 from PySide6 import QtCore, QtWidgets
 
-from apollo.layout import Apollo_MainWindow
+from apollo.layout import Apollo_MainWindow_UI
 from configs import settings as _CONFIG
 
 
@@ -241,6 +241,8 @@ class Apollo_Generic_View:
     Base call For all Views
     """
 
+    SIGNALS = Apollo_Global_Signals()
+
     def setup_conections(self):
         """
         Sets up all the connection for the UI
@@ -260,12 +262,8 @@ class Apollo_Generic_View:
         raise NotImplementedError
 
 
-class Apollo_Main_UI_TypeAlias(QtWidgets.QMainWindow, Apollo_MainWindow):
-    """TypeAlias"""
-
-
 class Apollo_Main_TypeAlias:
     """TypeAlias"""
 
-    UI: Apollo_Main_UI_TypeAlias
+    UI: Apollo_MainWindow_UI
     SIGNALS: Apollo_Global_Signals

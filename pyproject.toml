@@ -265,6 +265,7 @@ disable = [
     "logging-fstring-interpolation",
     "invalid-name",
     "missing-module-docstring",
+    "missing-function-docstring",
     "unnecessary-lambda",
     "too-many-statements",
     "unused-argument",

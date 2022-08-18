@@ -6,14 +6,15 @@ from PySide6 import QtCore
 from apollo.database import Database, RecordSet
 from apollo.database.models.paged_table import PagedTableModel
 from apollo.media import Stream
+from apollo.utils import get_logger
+
+LOGGER = get_logger(__name__)
 
 
 class QueueModel(PagedTableModel):
     """
     Queue Paged Table Model
     """
-
-    Queue_Updated = QtCore.Signal()
 
     CURRENT_FILE_ID = None
     PRIVATE_FIELDS = ["PLAYORDER", "FILEID", "FILEPATH", "FILENAME", "FILESIZE", "FILEEXT"]
@@ -89,7 +90,6 @@ class QueueModel(PagedTableModel):
         records = [[i, d] for i, d in enumerate(indexes)]
         with self._db.connector as conn:
             self._db.batch_insert(RecordSet(cols, records), "queue", conn)
-        self.Queue_Updated.emit()
         self.clear()
         self.fetch_data(self.FETCH_DATA_DOWN)
 
@@ -110,7 +110,6 @@ class QueueModel(PagedTableModel):
     def queue_next(
         self,
         indexes: list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]],
-        current_index: Optional[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]] = None,
     ):
         # pylint: disable=C0301
         """
@@ -118,7 +117,6 @@ class QueueModel(PagedTableModel):
 
         Args:
             indexes (list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]): Indexes to queue
-            current_index (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): Current playing index
         """
         indexes = list(map(lambda x: x.data(), indexes))
         with self._db.connector as conn:
@@ -128,18 +126,15 @@ class QueueModel(PagedTableModel):
                 )
             )
 
-        if len(data) != 0 and current_index is not None:
-            current_index = current_index.data()
+        if len(data) != 0 and self.CURRENT_FILE_ID is not None:
+            current_index = self.CURRENT_FILE_ID
             pos = data.index(current_index)
             if pos == 0:
-                indexes = [data[0], *indexes, *data[(pos + 1) :]]
+                indexes = [data[0], *indexes, *data[(pos + 1):]]
             elif pos == (len(data) - 1):
                 indexes = [*data, *indexes]
             else:
-                indexes = [*data[0:pos], *indexes, *data[pos:]]
-
-        elif len(data) != 0 and current_index is None:
-            indexes = [*data, *indexes]
+                indexes = [*data[0:pos + 1], *indexes, *data[pos + 1:]]
 
         self.insert_into_queue(indexes)
 

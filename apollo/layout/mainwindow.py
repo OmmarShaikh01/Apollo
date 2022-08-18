@@ -18,11 +18,12 @@ from PySide6.QtCore import (
     QPoint,
     QRect,
     QSize,
+    Qt,
     QTime,
     QUrl,
-    Qt,
 )
 from PySide6.QtGui import (
+    QAction,
     QBrush,
     QColor,
     QConicalGradient,
@@ -51,6 +52,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QListView,
     QMainWindow,
+    QMenu,
     QMenuBar,
     QPushButton,
     QSizePolicy,
@@ -663,7 +665,36 @@ class Ui_MainWindow(object):
         self.menubar.setMaximumSize(QSize(16777215, 24))
         self.menubar.setDefaultUp(True)
         self.menubar.setNativeMenuBar(True)
+        self.menuFile = QMenu(self.menubar)
+        self.menuFile.setObjectName("menuFile")
+        sizePolicy7.setHeightForWidth(self.menuFile.sizePolicy().hasHeightForWidth())
+        self.menuFile.setSizePolicy(sizePolicy7)
+        self.menuFile.setMinimumSize(QSize(0, 0))
+        self.menuFile.setMaximumSize(QSize(16777215, 16777215))
+        self.menuEdit = QMenu(self.menubar)
+        self.menuEdit.setObjectName("menuEdit")
+        sizePolicy7.setHeightForWidth(self.menuEdit.sizePolicy().hasHeightForWidth())
+        self.menuEdit.setSizePolicy(sizePolicy7)
+        self.menuEdit.setMinimumSize(QSize(0, 0))
+        self.menuEdit.setMaximumSize(QSize(16777215, 16777215))
+        self.menuTools = QMenu(self.menubar)
+        self.menuTools.setObjectName("menuTools")
+        sizePolicy7.setHeightForWidth(self.menuTools.sizePolicy().hasHeightForWidth())
+        self.menuTools.setSizePolicy(sizePolicy7)
+        self.menuTools.setMinimumSize(QSize(0, 0))
+        self.menuTools.setMaximumSize(QSize(16777215, 16777215))
+        self.menuHelp = QMenu(self.menubar)
+        self.menuHelp.setObjectName("menuHelp")
+        sizePolicy7.setHeightForWidth(self.menuHelp.sizePolicy().hasHeightForWidth())
+        self.menuHelp.setSizePolicy(sizePolicy7)
+        self.menuHelp.setMinimumSize(QSize(0, 0))
+        self.menuHelp.setMaximumSize(QSize(16777215, 16777215))
         MainWindow.setMenuBar(self.menubar)
+
+        self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuEdit.menuAction())
+        self.menubar.addAction(self.menuTools.menuAction())
+        self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
 
@@ -724,5 +755,9 @@ class Ui_MainWindow(object):
             QCoreApplication.translate("MainWindow", "Stream Info", None)
         )
         self.track_info_cover_pixmap.setText("")
+        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", "File", None))
+        self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", "Edit", None))
+        self.menuTools.setTitle(QCoreApplication.translate("MainWindow", "Tools", None))
+        self.menuHelp.setTitle(QCoreApplication.translate("MainWindow", "Help", None))
 
     # retranslateUi

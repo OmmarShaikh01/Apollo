@@ -16,12 +16,17 @@ def _ui_states_validators() -> Validator:
     """
     MAIN = ("CURRENT_TAB", "IS_TITLEBAR_DARK")
 
+    NOW_PLAYING_TAB = ()
+
+    PLAYLIST_TAB = ()
+
+    AUDIO_INTERFACE_TAB = ()
+
     PLAYBACK_BAR = (
         "STATE_PLAY",
         "STATE_SHUFFLE",
         "STATE_REPEAT",
         "VOLUME_LEVEL",
-        "LOADED_TRACK",
         "BYPASS_PROCESSOR",
         "ELAPSED_TIME",
         "CURRENT_PLAYING",
@@ -30,9 +35,14 @@ def _ui_states_validators() -> Validator:
     LIBRARY_TAB = ("DELEGATE_TYPE",)
 
     MAIN = [f"APOLLO.MAIN.{x}" for x in MAIN]
+    NOW_PLAYING_TAB = [f"APOLLO.NOW_PLAYING_TAB.{x}" for x in NOW_PLAYING_TAB]
+    AUDIO_INTERFACE_TAB = [f"APOLLO.AUDIO_INTERFACE_TAB.{x}" for x in AUDIO_INTERFACE_TAB]
     PLAYBACK_BAR = [f"APOLLO.PLAYBACK_BAR.{x}" for x in PLAYBACK_BAR]
+    PLAYLIST_TAB = [f"APOLLO.PLAYLIST_TAB.{x}" for x in PLAYLIST_TAB]
     LIBRARY_TAB = [f"APOLLO.LIBRARY_TAB.{x}" for x in LIBRARY_TAB]
-    return Validator(*MAIN, *PLAYBACK_BAR, *LIBRARY_TAB)
+    return Validator(
+        *MAIN, *LIBRARY_TAB, *NOW_PLAYING_TAB, *PLAYLIST_TAB, *AUDIO_INTERFACE_TAB, *PLAYBACK_BAR
+    )
 
 
 def validate() -> list[Validator]:
@@ -67,7 +77,7 @@ def validate() -> list[Validator]:
     validator = (
         Validator(
             "db_path",
-            default=os.path.join(PROJECT_ROOT, "apollo", "db", "apollo.db"),
+            default=os.path.join(PROJECT_ROOT, "apollo", "database", "apollo.db"),
             must_exist=True,
             env=env,
         ),

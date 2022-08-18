@@ -2,8 +2,8 @@ from typing import Any
 
 import pytest
 
-from apollo.database.models import PagedTableModel
 from apollo.database import Database
+from apollo.database.models import PagedTableModel
 from apollo.media import Stream
 from apollo.utils import get_logger
 from tests.pytest_apollo.conftest import clean_temp_dir, copy_mock_data

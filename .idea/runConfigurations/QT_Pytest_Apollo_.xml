@@ -13,8 +13,6 @@
     <option name="_new_additionalArguments" value="&quot;&quot;" />
     <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/pytest_qt_apollo&quot;" />
     <option name="_new_targetType" value="&quot;PATH&quot;" />
-    <method v="2">
-      <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_Compile QT" />
-    </method>
+    <method v="2" />
   </configuration>
 </component>

@@ -9,7 +9,6 @@ from typing import Optional, Union
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from apollo.utils import ApolloWarning, get_logger
-from configs import settings as CONFIG
 
 
 LOGGER = get_logger(__name__)

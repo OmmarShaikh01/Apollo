@@ -209,213 +209,9 @@ class Test_QueueModel:
                     )
                 )
             )
-            model.queue_next(
-                list(
-                    map(
-                        lambda x: get_model_index(x[0]),
-                        model._db.execute(
-                            f"{self.SELECT_QUERY} LIMIT 10, 10",
-                            conn,
-                        ).records,
-                    )
-                ),
-                list(
-                    map(
-                        lambda x: get_model_index(x[0]),
-                        model._db.execute(
-                            f"{self.SELECT_QUERY} LIMIT 5, 1",
-                            conn,
-                        ).records,
-                    )
-                )[0],
-            )
-            EXPECTED = [
-                "TESTING_FILEPATH_0",
-                "TESTING_FILEPATH_1",
-                "TESTING_FILEPATH_10",
-                "TESTING_FILEPATH_100",
-                "TESTING_FILEPATH_1000",
-                "TESTING_FILEPATH_1006",
-                "TESTING_FILEPATH_1007",
-                "TESTING_FILEPATH_1008",
-                "TESTING_FILEPATH_1009",
-                "TESTING_FILEPATH_101",
-                "TESTING_FILEPATH_1010",
-                "TESTING_FILEPATH_1011",
-                "TESTING_FILEPATH_1012",
-                "TESTING_FILEPATH_1013",
-                "TESTING_FILEPATH_1014",
-                "TESTING_FILEPATH_1001",
-                "TESTING_FILEPATH_1002",
-                "TESTING_FILEPATH_1003",
-                "TESTING_FILEPATH_1004",
-                "TESTING_FILEPATH_1005",
-            ]
-
-            assert all(
-                (
-                    model.index(r, 2).data() == exp
-                    for r, exp in zip(range(model.rowCount()), EXPECTED)
-                )
-            )
-
-        with model._db.connector as conn:
-            model._db.execute("DELETE FROM queue", conn)
-            model.play_now(
-                list(
-                    map(
-                        lambda x: get_model_index(x[0]),
-                        model._db.execute(
-                            f"{self.SELECT_QUERY} LIMIT 10",
-                            conn,
-                        ).records,
-                    )
-                )
-            )
-            model.queue_next(
-                list(
-                    map(
-                        lambda x: get_model_index(x[0]),
-                        model._db.execute(
-                            f"{self.SELECT_QUERY} LIMIT 10, 10",
-                            conn,
-                        ).records,
-                    )
-                ),
-                list(
-                    map(
-                        lambda x: get_model_index(x[0]),
-                        model._db.execute(
-                            f"{self.SELECT_QUERY} LIMIT 1",
-                            conn,
-                        ).records,
-                    )
-                )[0],
-            )
-            EXPECTED = [
-                "TESTING_FILEPATH_0",
-                "TESTING_FILEPATH_1006",
-                "TESTING_FILEPATH_1007",
-                "TESTING_FILEPATH_1008",
-                "TESTING_FILEPATH_1009",
-                "TESTING_FILEPATH_101",
-                "TESTING_FILEPATH_1010",
-                "TESTING_FILEPATH_1011",
-                "TESTING_FILEPATH_1012",
-                "TESTING_FILEPATH_1013",
-                "TESTING_FILEPATH_1014",
-                "TESTING_FILEPATH_1",
-                "TESTING_FILEPATH_10",
-                "TESTING_FILEPATH_100",
-                "TESTING_FILEPATH_1000",
-                "TESTING_FILEPATH_1001",
-                "TESTING_FILEPATH_1002",
-                "TESTING_FILEPATH_1003",
-                "TESTING_FILEPATH_1004",
-                "TESTING_FILEPATH_1005",
-            ]
-            assert all(
-                (
-                    model.index(r, 2).data() == exp
-                    for r, exp in zip(range(model.rowCount()), EXPECTED)
-                )
-            )
-
-        with model._db.connector as conn:
-            model._db.execute("DELETE FROM queue", conn)
-            model.play_now(
-                list(
-                    map(
-                        lambda x: get_model_index(x[0]),
-                        model._db.execute(
-                            f"{self.SELECT_QUERY} LIMIT 10",
-                            conn,
-                        ).records,
-                    )
-                )
-            )
-            model.queue_next(
-                list(
-                    map(
-                        lambda x: get_model_index(x[0]),
-                        model._db.execute(
-                            f"{self.SELECT_QUERY} LIMIT 10, 10",
-                            conn,
-                        ).records,
-                    )
-                ),
-                list(
-                    map(
-                        lambda x: get_model_index(x[0]),
-                        model._db.execute(
-                            f"{self.SELECT_QUERY} LIMIT 9, 1",
-                            conn,
-                        ).records,
-                    )
-                )[0],
-            )
-
-            EXPECTED = [
-                "TESTING_FILEPATH_0",
-                "TESTING_FILEPATH_1",
-                "TESTING_FILEPATH_10",
-                "TESTING_FILEPATH_100",
-                "TESTING_FILEPATH_1000",
-                "TESTING_FILEPATH_1001",
-                "TESTING_FILEPATH_1002",
-                "TESTING_FILEPATH_1003",
-                "TESTING_FILEPATH_1004",
-                "TESTING_FILEPATH_1005",
-                "TESTING_FILEPATH_1006",
-                "TESTING_FILEPATH_1007",
-                "TESTING_FILEPATH_1008",
-                "TESTING_FILEPATH_1009",
-                "TESTING_FILEPATH_101",
-                "TESTING_FILEPATH_1010",
-                "TESTING_FILEPATH_1011",
-                "TESTING_FILEPATH_1012",
-                "TESTING_FILEPATH_1013",
-                "TESTING_FILEPATH_1014",
-            ]
-            assert all(
-                (
-                    model.index(r, 2).data() == exp
-                    for r, exp in zip(range(model.rowCount()), EXPECTED)
-                )
-            )
-
-        with model._db.connector as conn:
-            model._db.execute("DELETE FROM queue", conn)
-            model.queue_next(
-                list(
-                    map(
-                        lambda x: get_model_index(x[0]),
-                        model._db.execute(
-                            f"{self.SELECT_QUERY} LIMIT 10",
-                            conn,
-                        ).records,
-                    )
-                ),
-            )
-
-            EXPECTED = [
-                "TESTING_FILEPATH_0",
-                "TESTING_FILEPATH_1",
-                "TESTING_FILEPATH_10",
-                "TESTING_FILEPATH_100",
-                "TESTING_FILEPATH_1000",
-                "TESTING_FILEPATH_1001",
-                "TESTING_FILEPATH_1002",
-                "TESTING_FILEPATH_1003",
-                "TESTING_FILEPATH_1004",
-                "TESTING_FILEPATH_1005",
-            ]
-            assert all(
-                (
-                    model.index(r, 2).data() == exp
-                    for r, exp in zip(range(model.rowCount()), EXPECTED)
-                )
-            )
+            data = model._db.execute(f"{self.SELECT_QUERY} LIMIT 5, 1", conn).records[0][0]
+            model.CURRENT_FILE_ID = data
+            LOGGER.info(model)
             model.queue_next(
                 list(
                     map(
@@ -427,7 +223,6 @@ class Test_QueueModel:
                     )
                 )
             )
-
             EXPECTED = [
                 "TESTING_FILEPATH_0",
                 "TESTING_FILEPATH_1",
@@ -435,10 +230,6 @@ class Test_QueueModel:
                 "TESTING_FILEPATH_100",
                 "TESTING_FILEPATH_1000",
                 "TESTING_FILEPATH_1001",
-                "TESTING_FILEPATH_1002",
-                "TESTING_FILEPATH_1003",
-                "TESTING_FILEPATH_1004",
-                "TESTING_FILEPATH_1005",
                 "TESTING_FILEPATH_1006",
                 "TESTING_FILEPATH_1007",
                 "TESTING_FILEPATH_1008",
@@ -449,81 +240,12 @@ class Test_QueueModel:
                 "TESTING_FILEPATH_1012",
                 "TESTING_FILEPATH_1013",
                 "TESTING_FILEPATH_1014",
-            ]
-            assert all(
-                (
-                    model.index(r, 2).data() == exp
-                    for r, exp in zip(range(model.rowCount()), EXPECTED)
-                )
-            )
-
-        with model._db.connector as conn:
-            model._db.execute("DELETE FROM queue", conn)
-            model.queue_last(
-                list(
-                    map(
-                        lambda x: get_model_index(x[0]),
-                        model._db.execute(
-                            f"{self.SELECT_QUERY} LIMIT 10",
-                            conn,
-                        ).records,
-                    )
-                ),
-            )
-
-            EXPECTED = [
-                "TESTING_FILEPATH_0",
-                "TESTING_FILEPATH_1",
-                "TESTING_FILEPATH_10",
-                "TESTING_FILEPATH_100",
-                "TESTING_FILEPATH_1000",
-                "TESTING_FILEPATH_1001",
                 "TESTING_FILEPATH_1002",
                 "TESTING_FILEPATH_1003",
                 "TESTING_FILEPATH_1004",
                 "TESTING_FILEPATH_1005",
             ]
-            assert all(
-                (
-                    model.index(r, 2).data() == exp
-                    for r, exp in zip(range(model.rowCount()), EXPECTED)
-                )
-            )
 
-            model.queue_last(
-                list(
-                    map(
-                        lambda x: get_model_index(x[0]),
-                        model._db.execute(
-                            f"{self.SELECT_QUERY} LIMIT 10, 10",
-                            conn,
-                        ).records,
-                    )
-                )
-            )
-
-            EXPECTED = [
-                "TESTING_FILEPATH_0",
-                "TESTING_FILEPATH_1",
-                "TESTING_FILEPATH_10",
-                "TESTING_FILEPATH_100",
-                "TESTING_FILEPATH_1000",
-                "TESTING_FILEPATH_1001",
-                "TESTING_FILEPATH_1002",
-                "TESTING_FILEPATH_1003",
-                "TESTING_FILEPATH_1004",
-                "TESTING_FILEPATH_1005",
-                "TESTING_FILEPATH_1006",
-                "TESTING_FILEPATH_1007",
-                "TESTING_FILEPATH_1008",
-                "TESTING_FILEPATH_1009",
-                "TESTING_FILEPATH_101",
-                "TESTING_FILEPATH_1010",
-                "TESTING_FILEPATH_1011",
-                "TESTING_FILEPATH_1012",
-                "TESTING_FILEPATH_1013",
-                "TESTING_FILEPATH_1014",
-            ]
             assert all(
                 (
                     model.index(r, 2).data() == exp

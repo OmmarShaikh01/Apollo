@@ -181,6 +181,22 @@ QMenu::item:disabled {
     color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
 }
 
+QMenuBar {
+    background-color: transparent;
+    spacing: 2px; /* spacing between menu bar items */
+}
+
+QMenuBar::item {
+    min-width: 64px;
+    padding: 4px 8px;
+    background: transparent;
+    border-radius: 2px;
+}
+
+QMenuBar::item:pressed,
+QMenuBar::item:selected { /* when selected using mouse or keyboard */
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+}
 
 {% include './view.css.jinja' %}
 {% include './containers.css.jinja' %}
