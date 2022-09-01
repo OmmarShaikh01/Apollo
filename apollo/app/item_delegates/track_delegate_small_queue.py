@@ -226,6 +226,12 @@ class TrackDelegate_Small_Queue(CustomItemDelegate):
         if option.widget.width() <= 320:
             TrackDelegate_Small_Queue_number_label.hide()
 
+        # noinspection PyUnresolvedReferences
+        TrackDelegate_Small_Queue_Frame.setGeometry(option.rect)
+        TrackDelegate_Small_Queue_title_label.setFixedWidth(int(parent.width() * 0.5))
+        TrackDelegate_Small_Queue_artist_label.setFixedWidth(int(parent.width() * 0.5))
+        TrackDelegate_Small_Queue_album_label.setFixedWidth(int(parent.width() * 0.5))
+
         # widget set data
         self._widget_set_data(
             index,
@@ -263,21 +269,22 @@ class TrackDelegate_Small_Queue(CustomItemDelegate):
         TrackDelegate_Small_Queue_Cover_pixmap.setText("")
         self.set_cover_img(TrackDelegate_Small_Queue_Cover_pixmap, index)
 
-        TrackDelegate_Small_Queue_title_label.setText(
-            str(index.model().index(index.row(), 7).data())
+        self.elide_text(
+            TrackDelegate_Small_Queue_title_label, str(index.model().index(index.row(), 7).data())
         )
-        TrackDelegate_Small_Queue_artist_label.setText(
-            str(index.model().index(index.row(), 8).data())
+        self.elide_text(
+            TrackDelegate_Small_Queue_artist_label, str(index.model().index(index.row(), 9).data())
         )
-        TrackDelegate_Small_Queue_album_label.setText(
-            str(index.model().index(index.row(), 17).data())
+        self.elide_text(
+            TrackDelegate_Small_Queue_album_label, str(index.model().index(index.row(), 17).data())
         )
 
         song_len = datetime.timedelta(seconds=float(index.model().index(index.row(), 35).data()))
-        TrackDelegate_Small_Queue_time_label.setText(str(song_len))
+
+        TrackDelegate_Small_Queue_time_label.setText(str(song_len).split(".", maxsplit=1)[0])
 
         TrackDelegate_Small_Queue_number_label.setText(
-            str(index.model().index(index.row(), 0).data())
+            str(int(index.model().index(index.row(), 0).data()) + 1)
         )
 
     def set_cover_img(

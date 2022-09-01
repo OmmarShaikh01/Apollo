@@ -23,7 +23,9 @@ def drawStars(stars: float, painter: QtGui.QPainter):
             _pos (int): Position to draw star at
             _size (int): Size of the pixmap
         """
-        painter.drawPixmap(QtCore.QPoint(_pos, 6), QtGui.QPixmap.fromImage(QtGui.QImage(star)).scaled(_size, _size))
+        painter.drawPixmap(
+            QtCore.QPoint(_pos, 6), QtGui.QPixmap.fromImage(QtGui.QImage(star)).scaled(_size, _size)
+        )
 
     painter.save()
     size = 24

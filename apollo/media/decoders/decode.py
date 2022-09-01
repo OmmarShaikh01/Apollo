@@ -1,11 +1,67 @@
+import abc
 import hashlib
 import json
 import os
 from abc import ABC, abstractmethod
 from pathlib import PurePath
-from typing import Any
+from typing import Any, Iterator, Union
 
+import av
+import numpy as np
 from mutagen.id3 import APIC
+
+
+class Decoder(ABC):
+    """
+    Decoder Base class
+    """
+
+    def __init__(self):
+        self.is_seeking = False
+
+    @abc.abstractmethod
+    def decode(self) -> Iterator[Union[av.AudioFrame, None]]:
+        """
+        Generator object to get AudioFrames
+
+        Returns:
+            Iterator[Union[av.AudioFrame, None]]: Iterator object to get AudioFrames
+        """
+
+    @abc.abstractmethod
+    def get(self) -> Union[av.AudioFrame, None]:
+        """
+        Getter callback to get a frame
+
+        Returns:
+            av.AudioFrame: Decoded AudioFrame
+        """
+
+    @abc.abstractmethod
+    def seek(self, time: float):
+        """
+        Seeks to a given time in the audio buffer
+
+        Args:
+            time (float): Time to seek to
+        """
+
+    @abc.abstractmethod
+    def reset_buffer(self):
+        """
+        Resets the file pointer to the start of the file
+        """
+
+    @abc.abstractmethod
+    def normalize_frame(self, frame: av.audio.AudioFrame) -> np.ndarray:
+        """
+        Normalizes the frame value to (-1 - 1)
+        Args:
+            frame (av.audio.AudioFrame):
+
+        Returns:
+            np.ndarray: normalized frame
+        """
 
 
 class Stream(ABC):

@@ -11,6 +11,10 @@ if TYPE_CHECKING:
 
 
 class Audio_Interface_Tab(Apollo_Generic_View):
+    """
+    Audio Interface Tab
+    """
+
     def __init__(self, ui: Apollo_MainWindow_UI):
         self.SIGNALS = Apollo_Global_Signals()
         self.UI = ui

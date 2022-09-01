@@ -7,7 +7,6 @@ import sys
 import threading
 import time
 import traceback
-import warnings
 from typing import Callable
 
 from PySide6 import QtCore, QtWidgets
@@ -187,6 +186,7 @@ class Apollo_Global_Signals(QtCore.QObject):
     """
 
     PlayTrackSignal = QtCore.Signal(str)
+    BeginPlayTrackSignal = QtCore.Signal(str)
 
 
 class ApolloSignal:
@@ -231,7 +231,7 @@ class ApolloWarning:
     _LOGGER = get_logger(__name__)
 
     def __init__(self, msg: str) -> None:
-        warnings.warn(UserWarning(msg))
+        # warnings.warn(msg)
         self._LOGGER.warning(msg)
 
 

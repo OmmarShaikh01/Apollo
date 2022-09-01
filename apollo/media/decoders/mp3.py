@@ -2,10 +2,11 @@ from pathlib import PurePath
 from typing import Any, Iterator, Union
 
 import av
+import numpy as np
 from mutagen.id3 import APIC, ID3
 from mutagen.mp3 import MP3
 
-from apollo.media.decoders.decode import Stream
+from apollo.media.decoders.decode import Decoder, Stream
 from apollo.utils import ApolloWarning, get_logger
 from configs import settings as CONFIG
 
@@ -13,7 +14,7 @@ from configs import settings as CONFIG
 LOGGER = get_logger(__name__)
 
 
-class MP3_Decoder:
+class MP3_Decoder(Decoder):
     """
     Decoder class for handling MP3 files
     """
@@ -25,6 +26,8 @@ class MP3_Decoder:
         Returns:
             path (PurePath): path to the file to decode
         """
+        super().__init__()
+
         self.file_path = path
         # noinspection PyUnresolvedReferences
         self.InputStream: av.container.InputContainer = av.open(str(self.file_path))
@@ -41,20 +44,27 @@ class MP3_Decoder:
             Iterator[Union[av.AudioFrame, None]]: Iterator object to get AudioFrames
         """
         # actual decoding and demuxing of file
-        for packet in self.InputStream.demux(audio=0):
-            if not packet.size <= 0:
-                for frame in packet.decode():
-                    for resam_frame in self.resampler.resample(frame):
-                        yield resam_frame
+        stream = filter(
+            lambda _packet: not (_packet.size <= 0 and _packet.is_corrupt),
+            self.InputStream.demux(audio=0),
+        )
 
-    def get(self) -> av.AudioFrame:
+        for packet in stream:
+            for res_frame in map(lambda _frame: self.resampler.resample(_frame), packet.decode()):
+                for frame in res_frame:
+                    yield frame
+
+    def get(self) -> Union[av.AudioFrame, None]:
         """
         Getter callback to get a frame
 
         Returns:
             av.AudioFrame: Decoded AudioFrame
         """
-        return next(self._decoder)
+        try:
+            return next(self._decoder)
+        except StopIteration:
+            return None
 
     def seek(self, time: float):
         """
@@ -63,7 +73,9 @@ class MP3_Decoder:
         Args:
             time (float): Time to seek to
         """
+        self.is_seeking = True
         self.InputStream.seek(int(time * av.time_base), any_frame=True)
+        self.is_seeking = False
 
     def reset_buffer(self):
         """
@@ -73,6 +85,11 @@ class MP3_Decoder:
         # noinspection PyUnresolvedReferences
         self.InputStream = av.open(str(self.file_path))
         self._decoder = self.decode()
+
+    def normalize_frame(self, frame: av.audio.AudioFrame) -> np.ndarray:
+        array: np.ndarray = frame.to_ndarray()
+        array_max = 32767
+        return np.around(array / array_max if array_max != 0 else array, 6)
 
 
 class MP3_File(Stream):

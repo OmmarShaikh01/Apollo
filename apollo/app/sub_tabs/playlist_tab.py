@@ -11,6 +11,10 @@ if TYPE_CHECKING:
 
 
 class Playlist_Tab(Apollo_Generic_View):
+    """
+    Playlist Tab
+    """
+
     def __init__(self, ui: Apollo_MainWindow_UI):
         self.SIGNALS = Apollo_Global_Signals()
         self.UI = ui

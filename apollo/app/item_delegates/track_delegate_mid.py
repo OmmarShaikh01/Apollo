@@ -242,6 +242,10 @@ class TrackDelegate_Mid(CustomItemDelegate):
 
         horizontalLayout_2.addWidget(TrackDelegate_Mid_time_label)
 
+        # noinspection PyUnresolvedReferences
+        TrackDelegate_Mid_Frame.setGeometry(option.rect)
+        TrackDelegate_Mid_title_label.setFixedWidth(int(parent.width() * 0.5))
+
         # widget set data
         self._widget_set_data(
             index,
@@ -296,8 +300,12 @@ class TrackDelegate_Mid(CustomItemDelegate):
             pixmap = pixmap.scaled(QtCore.QSize(32, 32), mode=Qt.SmoothTransformation)
             TrackDelegate_Mid_isLiked_Pixmap.setPixmap(pixmap)
 
-        TrackDelegate_Mid_title_label.setText(str(index.model().index(index.row(), 6).data()))
-        TrackDelegate_Mid_artist_label.setText(str(index.model().index(index.row(), 8).data()))
+        self.elide_text(
+            TrackDelegate_Mid_title_label, str(index.model().index(index.row(), 6).data())
+        )
+        self.elide_text(
+            TrackDelegate_Mid_artist_label, str(index.model().index(index.row(), 8).data())
+        )
         TrackDelegate_Mid_album_label.setText(str(index.model().index(index.row(), 16).data()))
 
         TrackDelegate_Mid_misc1_label.setText(str(index.model().index(index.row(), 73).data()))
@@ -305,7 +313,7 @@ class TrackDelegate_Mid(CustomItemDelegate):
         TrackDelegate_Mid_misc3_label.setText(str(index.model().index(index.row(), 75).data()))
 
         song_len = datetime.timedelta(seconds=float(index.model().index(index.row(), 34).data()))
-        TrackDelegate_Mid_time_label.setText(str(song_len))
+        TrackDelegate_Mid_time_label.setText(str(song_len).split(".", maxsplit=1)[0])
 
     def set_cover_img(
         self,

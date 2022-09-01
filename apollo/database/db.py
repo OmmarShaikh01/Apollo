@@ -13,10 +13,12 @@ from pathlib import PurePath
 from types import TracebackType
 from typing import Any, Optional, Union
 
+from PySide6 import QtCore, QtWidgets
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
+from apollo.layout import set_app_icon
 from apollo.media import Mediafile
-from apollo.utils import ApolloWarning, get_logger
+from apollo.utils import ApolloSignal, ApolloWarning, get_logger, set_dark_title_bar
 from configs import settings as CONFIG
 from configs import write_config
 
@@ -232,6 +234,8 @@ class Database:
     Database class for all database queries and methods
     """
 
+    ModifidedDBData_Signal = ApolloSignal()
+
     def __init__(self, path: str = None):
         """
         Constructor
@@ -311,6 +315,7 @@ class Database:
                 conn.rollback()
                 raise QueryExecutionFailed(msg)
             conn.commit()
+            Database.ModifidedDBData_Signal.emit(table)
 
     @staticmethod
     def execute(query: Union[str, QSqlQuery], conn: Connection) -> RecordSet:
@@ -358,6 +363,7 @@ class Database:
         data = []
         while query.next():
             data.append([query.value(idx) for idx in keys])
+
         return RecordSet(keys, data)
 
     def import_data(self, records: dict):
@@ -421,6 +427,9 @@ class LibraryManager(Database):
 
     def __init__(self, path: str = None):
         super().__init__(path)
+
+        self.progress_dialogue: Optional[QtWidgets.QProgressDialog] = None
+
         self._dirs_watched = self.load_purepath_paths(
             CONFIG.get("APOLLO.LIBRARY_MANAGER.WATCHED_DIRS", "")
         )
@@ -486,6 +495,13 @@ class LibraryManager(Database):
             path Union[list[PurePath, str], str, PurePath]: Paths to the files
         """
 
+        def scanned(_path: Union[list[PurePath, str], str, PurePath]):
+            if self.progress_dialogue is not None:
+                current = self.progress_dialogue.value() + 1
+                maximum = self.progress_dialogue.maximum()
+                current = current if current < maximum else maximum
+                self.progress_dialogue.setValue(current)
+
         def exe(_path: list):
             try:
                 files_scanned = []
@@ -494,6 +510,7 @@ class LibraryManager(Database):
                         mediafile = Mediafile(file_path)
                         if mediafile:
                             files_scanned.append(list(mediafile.Records.values()))
+                            scanned(_path)
                         else:
                             ApolloWarning(f"Skipped {file_path}")
                     else:
@@ -522,6 +539,7 @@ class LibraryManager(Database):
         if isinstance(path, list):
             path = [item if not isinstance(item, str) else PurePath(item) for item in path]
 
+        self._cb_requested_progress_bar(path)
         partition = 250  # Defines the partition limit for each threads task
         if len(path) <= partition:
             exe(path)
@@ -611,3 +629,68 @@ class LibraryManager(Database):
             if os.path.exists(path):
                 new_path_list.append(str(path.as_posix()))
         return new_path_list
+
+    def _cb_requested_progress_bar(self, path: list[PurePath, str]):
+        """
+        Handles request for progress bar to track files scanned
+
+        Args:
+            path (list[PurePath, str]): List of all path that are being scanned
+        """
+
+        def _canceled():
+            """
+            Deletes the Progresbar from memory
+            """
+            self.progress_dialogue = None
+            LOGGER.info("Scanned All")
+
+        self.progress_dialogue = QtWidgets.QProgressDialog(
+            labelText="Scanning Files",
+            cancelButtonText="Cancel",
+            minimum=0,
+            maximum=len(path),
+        )
+
+        # noinspection PyTypeChecker
+        set_app_icon(self.progress_dialogue)
+        set_dark_title_bar(self.progress_dialogue)
+
+        self.progress_dialogue.setWindowTitle("Scanning Files")
+        self.progress_dialogue.setWindowModality(QtCore.Qt.ApplicationModal)
+        self.progress_dialogue.show()
+
+        # noinspection PyUnresolvedReferences
+        # pylint: disable=E1101
+        self.progress_dialogue.canceled.connect(_canceled)
+
+    def clear_library(self):
+        """
+        Clears the lirary table
+        """
+        with self.connector as connection:
+            connection.transaction()
+            try:
+                self.execute("DELETE FROM library", connection)
+            except QueryExecutionFailed:
+                connection.rollback()
+
+            Database.ModifidedDBData_Signal.emit()
+
+    def delete_track(self, fids: list[str], table: str):
+        """
+        Deletes fids from given table
+
+        Args:
+            fids (list[str]): fids to delete
+            table (str): table to delete fids from
+        """
+        fids = ", ".join(map(lambda x: f"'{x}'", fids))
+        with self.connector as connection:
+            connection.transaction()
+            try:
+                self.execute(f"DELETE FROM {table} WHERE {table}.FILEID IN ({fids})", connection)
+            except QueryExecutionFailed:
+                connection.rollback()
+
+            Database.ModifidedDBData_Signal.emit(table)

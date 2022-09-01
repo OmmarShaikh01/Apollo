@@ -7,6 +7,7 @@ from apollo.database.models.paged_table import PagedTableModel
 from apollo.media import Stream
 from apollo.utils import get_logger
 
+
 LOGGER = get_logger(__name__)
 
 
@@ -18,6 +19,7 @@ class LibraryModel(PagedTableModel):
     PRIVATE_FIELDS = ["FILEID", "FILEPATH", "FILENAME", "FILESIZE", "FILEEXT"]
 
     def __init__(self) -> None:
+        self._db: LibraryManager
         super().__init__("library", LibraryManager())
 
     @property
@@ -94,20 +96,41 @@ class LibraryModel(PagedTableModel):
     def update_track_rating(
         self,
         rating: Union[int, float],
-        indexes: list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]
+        indexes: list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]],
     ):
+        # pylint: disable=C0301
+        """
+        Updates track ratings for the given indexes
+
+        Args:
+            rating (Union[int, float]): Rating value
+            indexes (list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]): file id
+        """
         if 0 <= rating <= 5:
             indexes = list(map(lambda x: f"'{x.data()}'", indexes))
             with self._db.connector as conn:
-                query = f"UPDATE library SET POPULARIMETER = {rating} WHERE FILEID IN ({', '.join(indexes)})"
+                query = f"""
+                UPDATE library 
+                SET POPULARIMETER = {rating} 
+                WHERE FILEID IN ({', '.join(indexes)})
+                """
                 self._db.execute(query, conn)
 
-    def update_current_track_rating(
-        self,
-        rating: Union[int, float],
-        fid: str
-    ):
+    def update_current_track_rating(self, rating: Union[int, float], fid: str):
+        """
+        Updates track ratings for the Current track
+
+        Args:
+            rating (Union[int, float]): Rating value
+            fid (str): file id
+        """
         if 0 <= rating <= 5 and fid:
             with self._db.connector as conn:
                 query = f"UPDATE library SET POPULARIMETER = {rating} WHERE FILEID IN ('{fid}')"
                 self._db.execute(query, conn)
+
+    def clear_library(self):
+        """
+        Clears library table
+        """
+        self._db.clear_library()

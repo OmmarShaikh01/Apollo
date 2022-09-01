@@ -203,10 +203,12 @@ settings.toml
 testing_settings.toml
 
 # Misc Development files
+*.db
 *.pymon
 *.profile
 desktop.ini
-/apollo/db/*.db
+/apollo/database/apollo.db
+/apollo/database/*.db
 /apollo/apollo.ini
 /apollo/assets/stylesheets/generated/
 /apollo/assets/stylesheets/build/

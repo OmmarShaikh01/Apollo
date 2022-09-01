@@ -8,6 +8,7 @@ from apollo.database.models.paged_table import PagedTableModel
 from apollo.media import Stream
 from apollo.utils import get_logger
 
+
 LOGGER = get_logger(__name__)
 
 
@@ -16,10 +17,12 @@ class QueueModel(PagedTableModel):
     Queue Paged Table Model
     """
 
+    ModelUpdatedSignal = QtCore.Signal()
     CURRENT_FILE_ID = None
     PRIVATE_FIELDS = ["PLAYORDER", "FILEID", "FILEPATH", "FILENAME", "FILESIZE", "FILEEXT"]
 
     def __init__(self) -> None:
+        self._db: Database
         super().__init__("queue", Database())
 
     @property
@@ -92,6 +95,7 @@ class QueueModel(PagedTableModel):
             self._db.batch_insert(RecordSet(cols, records), "queue", conn)
         self.clear()
         self.fetch_data(self.FETCH_DATA_DOWN)
+        self.ModelUpdatedSignal.emit()
 
     def play_now(self, indexes: list[Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]]):
         # pylint: disable=C0301
@@ -130,11 +134,11 @@ class QueueModel(PagedTableModel):
             current_index = self.CURRENT_FILE_ID
             pos = data.index(current_index)
             if pos == 0:
-                indexes = [data[0], *indexes, *data[(pos + 1):]]
+                indexes = [data[0], *indexes, *data[(pos + 1) :]]
             elif pos == (len(data) - 1):
                 indexes = [*data, *indexes]
             else:
-                indexes = [*data[0:pos + 1], *indexes, *data[pos + 1:]]
+                indexes = [*data[0 : pos + 1], *indexes, *data[pos + 1 :]]
 
         self.insert_into_queue(indexes)
 

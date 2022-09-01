@@ -96,3 +96,15 @@ class CustomItemDelegate(QtWidgets.QStyledItemDelegate):
             bool: if event is accepted return true, otherwise false
         """
         return False
+
+    @staticmethod
+    def elide_text(widget: QtWidgets.QLabel, text: str):
+        """
+        elids long texts to fit into view
+
+        Args:
+            widget (QtWidgets.QLabel): Parent widget to set text to
+            text (str): text
+        """
+        text = widget.fontMetrics().elidedText(text, QtCore.Qt.ElideRight, widget.rect().width())
+        widget.setText(text)

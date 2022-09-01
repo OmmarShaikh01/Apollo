@@ -15,7 +15,13 @@ if TYPE_CHECKING:
 LOGGER = get_logger(__name__)
 
 
+# disable linting warnings because local imports are defined on runtime
+# pylint: disable=C0415
 class Now_Playing_Tab(Apollo_Generic_View):
+    """
+    Now Playing Tab
+    """
+
     def __init__(self, ui: Apollo_MainWindow_UI):
         self.UI = ui
         self.MODEL_PROVIDER = Model_Provider
@@ -78,25 +84,40 @@ class Now_Playing_Tab(Apollo_Generic_View):
             if model.fetch_data(model.FETCH_DATA_DOWN):
                 reset_slider()
 
-    def _cb_list_item_clicked(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
-        data = index
+    def _cb_list_item_clicked(self, data: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        """
+        Plays item on double click
+
+        Args:
+            data (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): query data
+        """
         if data.row() != -1:
             data = self.MODEL_PROVIDER.QueueModel().index(data.row(), 1).data()
             self.MODEL_PROVIDER.QueueModel().CURRENT_FILE_ID = data
             self.UI.queue_main_listview.repaint()
             self.SIGNALS.PlayTrackSignal.emit(self.MODEL_PROVIDER.QueueModel().CURRENT_FILE_ID)
 
+    # pylint: disable=W0612
     def _cb_context_menu_library_listview(self, pos: QtCore.QPoint):
+        """
+        Handles Context menu request
+
+        Args:
+            pos (Qtcore.QPoint): Pos to draw menu at
+        """
         view = self.UI.queue_main_listview
         model = self.MODEL_PROVIDER.QueueModel()
         current_record = model.get_row_atIndex(view.indexAt(pos))
         menu = QtWidgets.QMenu(view)
 
-        # Menu Defination
-        menu.addAction("temp")
-
         # Execution
         menu.exec(QtGui.QCursor.pos())
 
     def cb_on_search_query(self, query: str):
+        """
+        Filter model using search query
+
+        Args:
+            query (str): filter query
+        """
         self.MODEL_PROVIDER.QueueModel().set_filter(query)

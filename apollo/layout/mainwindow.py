@@ -8,42 +8,10 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (
-    QCoreApplication,
-    QDate,
-    QDateTime,
-    QLocale,
-    QMetaObject,
-    QObject,
-    QPoint,
-    QRect,
-    QSize,
-    Qt,
-    QTime,
-    QUrl,
-)
-from PySide6.QtGui import (
-    QAction,
-    QBrush,
-    QColor,
-    QConicalGradient,
-    QCursor,
-    QFont,
-    QFontDatabase,
-    QGradient,
-    QIcon,
-    QImage,
-    QKeySequence,
-    QLinearGradient,
-    QPainter,
-    QPalette,
-    QPixmap,
-    QRadialGradient,
-    QTransform,
-)
+from PySide6.QtCore import QCoreApplication, QMetaObject, QRect, QSize, Qt
+from PySide6.QtGui import QAction, QFont
 from PySide6.QtWidgets import (
     QAbstractItemView,
-    QApplication,
     QButtonGroup,
     QFrame,
     QGridLayout,
@@ -51,7 +19,6 @@ from PySide6.QtWidgets import (
     QLabel,
     QLineEdit,
     QListView,
-    QMainWindow,
     QMenu,
     QMenuBar,
     QPushButton,
@@ -74,6 +41,10 @@ class Ui_MainWindow(object):
         MainWindow.setWindowOpacity(1.000000000000000)
         MainWindow.setStyleSheet("")
         MainWindow.setUnifiedTitleAndToolBarOnMac(False)
+        self.actionScan_Folders_for_New_Files = QAction(MainWindow)
+        self.actionScan_Folders_for_New_Files.setObjectName("actionScan_Folders_for_New_Files")
+        self.actionAdd_Files_to_Library = QAction(MainWindow)
+        self.actionAdd_Files_to_Library.setObjectName("actionAdd_Files_to_Library")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -707,6 +678,12 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", "Apollo", None))
+        self.actionScan_Folders_for_New_Files.setText(
+            QCoreApplication.translate("MainWindow", "Scan Folders for New Files", None)
+        )
+        self.actionAdd_Files_to_Library.setText(
+            QCoreApplication.translate("MainWindow", "Add Files to Library", None)
+        )
         self.library_tab_switch_button.setText(
             QCoreApplication.translate("MainWindow", "Library", None)
         )

@@ -47,7 +47,7 @@ def main() -> None:
 
     app.exec()
     LOGGER.info(msg="Application Exit")
-    LOGGER.info(msg=f"\n{json.dumps(CONFIG.to_dict(), indent=2)}")
+    LOGGER.debug(msg=f"\n{json.dumps(CONFIG.to_dict(), indent=2)}")
 
 
 if __name__ == "__main__":

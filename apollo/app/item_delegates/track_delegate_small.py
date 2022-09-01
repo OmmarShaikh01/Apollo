@@ -74,7 +74,6 @@ class TrackDelegate_Small(CustomItemDelegate):
         # Draws widget into delegate
         s_painter = QtGui.QPainter(pixmap)
         widget = self.get_widget(option, index, option.widget)
-        widget.setGeometry(option.rect)
 
         # Checks state
         state = option.state
@@ -201,13 +200,17 @@ class TrackDelegate_Small(CustomItemDelegate):
         TrackDelegate_Small_artist_label.setAlignment(
             Qt.AlignLeading | Qt.AlignLeft | Qt.AlignVCenter
         )
-
         verticalLayout.addWidget(TrackDelegate_Small_artist_label)
 
         gridLayout_2.addWidget(frame_2, 0, 2, 1, 1)
 
         gridLayout_2.setColumnStretch(2, 1)
         gridLayout_2.setColumnStretch(3, 1)
+
+        # noinspection PyUnresolvedReferences
+        TrackDelegate_Small_Frame.setGeometry(option.rect)
+        TrackDelegate_Small_title_label.setFixedWidth(int(parent.width() * 0.5))
+        TrackDelegate_Small_album_label.setFixedWidth(int(parent.width() * 0.2))
 
         # widget set data
         self._widget_set_data(
@@ -257,12 +260,18 @@ class TrackDelegate_Small(CustomItemDelegate):
             pixmap = pixmap.scaled(QtCore.QSize(24, 24), mode=Qt.SmoothTransformation)
             TrackDelegate_Small_isLiked_Pixmap.setPixmap(pixmap)
 
-        TrackDelegate_Small_title_label.setText(str(index.model().index(index.row(), 6).data()))
-        TrackDelegate_Small_artist_label.setText(str(index.model().index(index.row(), 8).data()))
-        TrackDelegate_Small_album_label.setText(str(index.model().index(index.row(), 16).data()))
+        self.elide_text(
+            TrackDelegate_Small_title_label, str(index.model().index(index.row(), 6).data())
+        )
+        self.elide_text(
+            TrackDelegate_Small_artist_label, str(index.model().index(index.row(), 8).data())
+        )
+        self.elide_text(
+            TrackDelegate_Small_album_label, str(index.model().index(index.row(), 16).data())
+        )
 
         song_len = datetime.timedelta(seconds=float(index.model().index(index.row(), 34).data()))
-        TrackDelegate_Small_time_label.setText(str(song_len))
+        TrackDelegate_Small_time_label.setText(str(song_len).split(".", maxsplit=1)[0])
 
     def set_cover_img(
         self,

@@ -22,6 +22,10 @@ LOGGER = get_logger(__name__)
 
 
 class Library_Tab(Apollo_Generic_View):
+    """
+    Library Tab
+    """
+
     _DELEGATE_TYPE = CONFIG.get(
         "APOLLO.LIBRARY_TAB.DELEGATE_TYPE", str(ViewDelegates.TrackDelegate_Small.value)
     )
@@ -49,6 +53,7 @@ class Library_Tab(Apollo_Generic_View):
     def save_states(self):
         CONFIG["APOLLO.LIBRARY_TAB.DELEGATE_TYPE"] = self._DELEGATE_TYPE
 
+    # pylint: disable=C0415
     def _bind_model(self):
         """
         Binds models with Views
@@ -111,7 +116,23 @@ class Library_Tab(Apollo_Generic_View):
                 reset_slider()
 
     def _cb_context_menu_library_listview(self, pos: QtCore.QPoint):
+        """
+        Handles Context menu request
+
+        Args:
+            pos (Qtcore.QPoint): Pos to draw menu at
+        """
+
         def get_field(col: str) -> str:
+            """
+            Get field of the selected row
+
+            Args:
+                col (str): column name
+
+            Returns:
+                str: data that is at column
+            """
             value = (
                 ""
                 if len(current_record.records[0]) == 0
@@ -149,79 +170,196 @@ class Library_Tab(Apollo_Generic_View):
         menu.addSeparator()
 
         menu_2 = menu.addMenu("Set Rating")
-        menu_2.addAction(f"Set Rating 0.0", lambda: self._cb_track_rating(0))
-        menu_2.addAction(f"Set Rating 1.0", lambda: self._cb_track_rating(1))
-        menu_2.addAction(f"Set Rating 2.0", lambda: self._cb_track_rating(2))
-        menu_2.addAction(f"Set Rating 3.0", lambda: self._cb_track_rating(3))
-        menu_2.addAction(f"Set Rating 4.0", lambda: self._cb_track_rating(4))
-        menu_2.addAction(f"Set Rating 5.0", lambda: self._cb_track_rating(5))
+        menu_2.addAction("Set Rating 0.0", lambda: self._cb_update_track_rating(0))
+        menu_2.addAction("Set Rating 1.0", lambda: self._cb_update_track_rating(1))
+        menu_2.addAction("Set Rating 2.0", lambda: self._cb_update_track_rating(2))
+        menu_2.addAction("Set Rating 3.0", lambda: self._cb_update_track_rating(3))
+        menu_2.addAction("Set Rating 4.0", lambda: self._cb_update_track_rating(4))
+        menu_2.addAction("Set Rating 5.0", lambda: self._cb_update_track_rating(5))
 
         menu.addSeparator()
         menu_3 = menu.addMenu("Search")
+        menu_3.addAction(
+            "Locate in Explorer",
+            lambda: self._cb_locate_in_explorer(view.indexAt(pos)),
+        )
+        menu_3.addAction(
+            "Locate in Web Browser",
+            lambda: self._cb_locate_in_web_browser(view.indexAt(pos)),
+        )
 
         # Execution
         menu.exec(QtGui.QCursor.pos())
 
-    def _cb_list_item_clicked(self, index: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
-        data = index
+    def _cb_list_item_clicked(self, data: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        """
+        Plays item on double click
+
+        Args:
+            data (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): query data
+        """
         if data.row() != -1:
             self.MODEL_PROVIDER.QueueModel().play_now([data])
             self.play_top_track()
 
     def cb_on_search_query(self, query: str):
+        """
+        Filter model using search query
+
+        Args:
+            query (str): filter query
+        """
         self.MODEL_PROVIDER.LibraryModel().set_filter(query)
 
     def _cb_play_now(self):
+        """
+        Plays selected tracks
+        """
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
         if data:
             self.MODEL_PROVIDER.QueueModel().play_now(data)
             self.play_top_track()
 
     def _cb_queue_next(self):
+        """
+        Queues selected tracks after current track
+        """
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
         if data:
             self.MODEL_PROVIDER.QueueModel().queue_next(data)
             self.play_top_track()
 
     def _cb_queue_last(self):
+        """
+        Queues selected tracks at the end of the queue
+        """
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
         if data:
             self.MODEL_PROVIDER.QueueModel().queue_last(data)
             self.play_top_track()
 
-    def _cb_play_artist(self, data):
+    def _cb_play_artist(self, data: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        """
+        Plays selected track, using artist
+
+        Args:
+            data (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): query data
+        """
         if data.row() != -1:
             self.MODEL_PROVIDER.QueueModel().play_artist(data)
             self.play_top_track()
 
-    def _cb_play_album(self, data):
+    def _cb_play_album(self, data: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        """
+        Plays selected track, using album
+
+        Args:
+            data (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): query data
+        """
         if data.row() != -1:
             self.MODEL_PROVIDER.QueueModel().play_album(data)
             self.play_top_track()
 
-    def _cb_play_genre(self, data):
+    def _cb_play_genre(self, data: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        """
+        Plays selected track, using genre
+
+        Args:
+            data (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): query data
+        """
         if data.row() != -1:
             self.MODEL_PROVIDER.QueueModel().play_genre(data)
             self.play_top_track()
 
     def _cb_play_shuffled(self):
+        """
+        Plays selected tracks, as shuffled
+        """
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
         if data:
             self.MODEL_PROVIDER.QueueModel().play_shuffled(data)
             self.play_top_track()
 
     def _cb_play_all_shuffled(self):
+        """
+        Plays selected tracks, as all shuffled
+        """
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
         if data:
             self.MODEL_PROVIDER.QueueModel().play_shuffled()
             self.play_top_track()
 
-    def _cb_track_rating(self, rating: float):
+    def _cb_update_track_rating(self, rating: float):
+        """
+        Updates the rating information of selected tracks
+
+        Args:
+            rating (float): rating information
+        """
         data = self.UI.library_main_listview.selectionModel().selectedRows(0)
         if data:
             self.MODEL_PROVIDER.LibraryModel().update_track_rating(rating, data)
 
+    def _cb_find_artist(self, data: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        """
+        Locates track in Library Table, using artist
+
+        Args:
+            data (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): query data
+        """
+        if data.row() != -1 and data.data():
+            self.MODEL_PROVIDER.LibraryModel().search_artist(data.data())
+
+    def _cb_find_similar(self, data: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        """
+        Locates track in Library Table, using media similarity
+
+        Args:
+            data (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): query data
+        """
+        if data.row() != -1 and data.data():
+            self.MODEL_PROVIDER.LibraryModel().set_filter(data.data())
+
+    def _cb_find_title(self, data: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        """
+        Locates track in Library Table, using title
+
+        Args:
+            data (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): query data
+        """
+        if data.row() != -1 and data.data():
+            self.MODEL_PROVIDER.LibraryModel().search_title(data.data())
+
+    # pylint: disable=W0511
+    def _cb_locate_in_explorer(self, data: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]):
+        """
+        Locates track in Windows file explorer
+
+        Args:
+            data (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): query data
+        """
+        if data.row() != -1:
+            # TODO: Implementation
+            LOGGER.info("Implementation Required")
+
+    # pylint: disable=W0511
+    def _cb_locate_in_web_browser(
+        self, data: Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]
+    ):
+        """
+        Locates track using a web query
+
+        Args:
+            data (Union[QtCore.QModelIndex, QtCore.QPersistentModelIndex]): query data
+        """
+        if data.row() != -1:
+            # TODO: Implementation
+            LOGGER.info("Implementation Required")
+
     def play_top_track(self):
+        """
+        Starts Playing the top Track from the Queue
+        """
         model = self.MODEL_PROVIDER.QueueModel()
         model.CURRENT_FILE_ID = model.index(0, 1).data()
         self.UI.queue_main_listview.repaint()
