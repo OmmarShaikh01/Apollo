@@ -1,0 +1,325 @@
+QHeaderView {
+    height: 24px;
+}
+
+QHeaderView::section {
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    text-transform: uppercase;
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+    padding: 0px 8px;
+    height: 24px;
+    border-radius: 0px;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+QHeaderView::section:vertical {}
+
+QHeaderView::section:horizontal {}
+
+
+QTableView QTableCornerButton::section {
+  background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+  border: 0px solid {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+}
+
+QTableView, QListView {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+QTableView::item, QListView::item {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+    padding: 4px;
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border-bottom: none;
+}
+
+QTableView::item:selected, QListView::item:selected {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+}
+
+QTableView::item:selected:focus, QListView::item:selected:focus {
+    border-bottom: 1px solid {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+}
+
+QTableView::item:disabled, QListView::item:disabled {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+}
+
+
+/* TrackDelegate_Small_Frame ---------------------------------------------------------------------------------------- */
+
+QFrame#TrackDelegate_Small_Frame[STATE='DEFAULT'] {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+}
+
+QFrame#TrackDelegate_Small_Frame[STATE='IS_PLAYING'] {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYDARKCOLOR, 0.075)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+}
+
+QFrame#TrackDelegate_Small_Frame[STATE='SELECTED'], QFrame#TrackDelegate_Small_Frame[STATE='HOVER'] {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.15)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+}
+
+QFrame#TrackDelegate_Small_Frame[STATE='DEFAULT'] QLabel#TrackDelegate_Small_Cover_Pixmap {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.05)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+    border-radius: 4px;
+    margin-left: 2px;
+}
+
+QFrame#TrackDelegate_Small_Frame[STATE='IS_PLAYING'] QLabel#TrackDelegate_Small_Cover_Pixmap {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYDARKCOLOR, 0.05)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+    border-radius: 4px;
+    margin-left: 2px;
+}
+
+QFrame#TrackDelegate_Small_Frame[STATE='SELECTED'] QLabel#TrackDelegate_Small_Cover_Pixmap,
+QFrame#TrackDelegate_Small_Frame[STATE='HOVER'] QLabel#TrackDelegate_Small_Cover_Pixmap{
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.125)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+    border-radius: 4px;
+    margin-left: 2px;
+}
+
+QFrame#TrackDelegate_Small_Frame[STATE='DEFAULT'] QFrame {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+}
+
+QFrame#TrackDelegate_Small_Frame[STATE='IS_PLAYING'] QFrame {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYDARKCOLOR, 0.075)}};
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+}
+
+QFrame#TrackDelegate_Small_Frame[STATE='SELECTED'] QFrame, QFrame#TrackDelegate_Small_Frame[STATE='HOVER'] QFrame {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.15)}};
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+}
+
+QFrame#TrackDelegate_Small_Frame QLabel#TrackDelegate_Small_title_label,
+QFrame#TrackDelegate_Small_Frame QLabel#TrackDelegate_Small_time_label {
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    font-weight: bold;
+    font-size: 14px;
+}
+
+
+/* TrackDelegate_Mid_Frame ---------------------------------------------------------------------------------------- */
+
+QFrame#TrackDelegate_Mid_Frame[STATE='DEFAULT'] {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+}
+
+QFrame#TrackDelegate_Mid_Frame[STATE='IS_PLAYING'] {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYDARKCOLOR, 0.075)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+}
+
+QFrame#TrackDelegate_Mid_Frame[STATE='SELECTED'], QFrame#TrackDelegate_Mid_Frame[STATE='HOVER'] {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.15)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+}
+
+QFrame#TrackDelegate_Mid_Frame[STATE='DEFAULT'] QLabel#TrackDelegate_Mid_Cover_pixmap {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.05)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+    border-radius: 4px;
+    margin-left: 2px;
+}
+
+QFrame#TrackDelegate_Mid_Frame[STATE='IS_PLAYING'] QLabel#TrackDelegate_Mid_Cover_pixmap {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYDARKCOLOR, 0.05)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+    border-radius: 4px;
+    margin-left: 2px;
+}
+
+QFrame#TrackDelegate_Mid_Frame[STATE='SELECTED'] QLabel#TrackDelegate_Mid_Cover_pixmap,
+QFrame#TrackDelegate_Mid_Frame[STATE='HOVER'] QLabel#TrackDelegate_Mid_Cover_pixmap{
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.125)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+    border-radius: 4px;
+    margin-left: 2px;
+}
+
+
+QFrame#TrackDelegate_Mid_Frame[STATE='DEFAULT'] QFrame {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+}
+
+QFrame#TrackDelegate_Mid_Frame[STATE='IS_PLAYING'] QFrame {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYDARKCOLOR, 0.075)}};
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+}
+
+QFrame#TrackDelegate_Mid_Frame[STATE='SELECTED'] QFrame, QFrame#TrackDelegate_Mid_Frame[STATE='HOVER'] QFrame {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.15)}};
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+}
+
+QFrame#TrackDelegate_Mid_Frame QLabel#TrackDelegate_Mid_title_label,
+QFrame#TrackDelegate_Mid_Frame QLabel#TrackDelegate_Mid_album_label,
+QFrame#TrackDelegate_Mid_Frame QLabel#TrackDelegate_Mid_time_label {
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    font-weight: bold;
+    font-size: 14px;
+}
+
+QFrame#TrackDelegate_Mid_Frame QLabel#TrackDelegate_Mid_misc1_label,
+QFrame#TrackDelegate_Mid_Frame QLabel#TrackDelegate_Mid_misc2_label,
+QFrame#TrackDelegate_Mid_Frame QLabel#TrackDelegate_Mid_misc3_label {
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    font-weight: 500;
+    font-size: 10px;
+}
+
+
+/* TrackDelegate_Small_Queue_Frame ---------------------------------------------------------------------------------- */
+
+QFrame#TrackDelegate_Small_Queue_Frame[STATE='DEFAULT'] {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+}
+
+QFrame#TrackDelegate_Small_Queue_Frame[STATE='IS_PLAYING'] {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYDARKCOLOR, 0.075)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+}
+
+QFrame#TrackDelegate_Small_Queue_Frame[STATE='SELECTED'], QFrame#TrackDelegate_Small_Queue_Frame[STATE='HOVER'] {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.15)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+}
+
+QFrame#TrackDelegate_Small_Queue_Frame[STATE='DEFAULT'] QLabel#TrackDelegate_Small_Queue_Cover_pixmap {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.05)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+    border-radius: 4px;
+    margin-left: 2px;
+}
+
+QFrame#TrackDelegate_Small_Queue_Frame[STATE='IS_PLAYING'] QLabel#TrackDelegate_Small_Queue_Cover_pixmap {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYDARKCOLOR, 0.0)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+    border-radius: 4px;
+    margin-left: 2px;
+}
+
+QFrame#TrackDelegate_Small_Queue_Frame[STATE='SELECTED'] QLabel#TrackDelegate_Small_Queue_Cover_pixmap,
+QFrame#TrackDelegate_Small_Queue_Frame[STATE='HOVER'] QLabel#TrackDelegate_Small_Queue_Cover_pixmap{
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.125)}};
+    min-height: 24px;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border: none;
+    border-radius: 4px;
+    margin-left: 2px;
+}
+
+QFrame#TrackDelegate_Small_Queue_Frame[STATE='DEFAULT'] QFrame {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+}
+
+QFrame#TrackDelegate_Small_Queue_Frame[STATE='IS_PLAYING'] QFrame {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYDARKCOLOR, 0.075)}};
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+}
+
+QFrame#TrackDelegate_Small_Queue_Frame[STATE='SELECTED'] QFrame,
+QFrame#TrackDelegate_Small_Queue_Frame[STATE='HOVER'] QFrame {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.15)}};
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+}
+
+QFrame#TrackDelegate_Small_Queue_Frame QLabel#TrackDelegate_Small_Queue_title_label,
+QFrame#TrackDelegate_Small_Queue_Frame QLabel#TrackDelegate_Small_Queue_time_label,
+QFrame#TrackDelegate_Small_Queue_Frame QLabel#TrackDelegate_Small_Queue_number_label {
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    font-weight: bold;
+    font-size: 12px;
+}
+
+QFrame#TrackDelegate_Small_Queue_Frame QLabel#TrackDelegate_Small_Queue_album_label,
+QFrame#TrackDelegate_Small_Queue_Frame QLabel#TrackDelegate_Small_Queue_artist_label {
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    selection-color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    font-weight: 500;
+    font-size: 10px;
+}

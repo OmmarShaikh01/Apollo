@@ -1,0 +1,204 @@
+/* ----------------------------------------------------------------------------
+QTCOLOR_PRIMARYCOLOR
+QTCOLOR_PRIMARYLIGHTCOLOR
+QTCOLOR_PRIMARYDARKCOLOR
+QTCOLOR_SECONDARYCOLOR
+QTCOLOR_SECONDARYLIGHTCOLOR
+QTCOLOR_SECONDARYDARKCOLOR
+QTCOLOR_PRIMARYTEXTCOLOR
+QTCOLOR_SECONDARYTEXTCOLOR
+QTCOLOR_DANGER
+QTCOLOR_WARNING
+QTCOLOR_SUCCESS
+
+FONT_FAMILY
+
+FILTER_OPACITY(color: str, value: Optional[int] = (0 to 1))
+FILTER_LUMINOSITY(color: str, value: Optional[int] = (0 to 1))
+---------------------------------------------------------------------------- */
+
+
+* {
+    font-family: {{FONT_FAMILY}};
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+    color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    selection-background-color: {{QTCOLOR_PRIMARYLIGHTCOLOR}};
+    selection-color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+*:focus {
+   outline: none;
+}
+
+QSplitter {
+    background-color: transparent;
+    border: none;
+}
+
+QTabWidget::pane {
+    border: none;
+}
+
+QMainWindow::separator:vertical,
+QSplitter::handle:horizontal {
+    border: 0;
+}
+
+QMainWindow::separator:horizontal,
+QSplitter::handle:vertical {
+    border: 0;
+}
+
+QMainWindow::separator:vertical:hover,
+QSplitter::handle:horizontal:hover {
+    border: 1px solid {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.1)}};
+    border-radius: 1px;
+    margin: 2px 0px 2px 0px;
+}
+
+QMainWindow::separator:horizontal:hover,
+QSplitter::handle:vertical:hover {
+    border: 1px solid {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.1)}};
+    border-radius: 1px;
+    margin: 0px 2px 0px 2px;
+}
+
+QScrollBar:horizontal {
+    border: 0;
+    background: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};;
+    height: 8px;
+}
+
+QScrollBar:vertical {
+    border: 0;
+    background: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};;
+    width: 8px;
+}
+
+QScrollBar::handle {
+    background: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYLIGHTCOLOR, 0.1)}};
+    border-radius: 4px;
+}
+
+QScrollBar::handle:vertical:hover,
+QScrollBar::handle:horizontal:hover {
+    background: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYLIGHTCOLOR, 0.175)}};
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical,
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    border: 0;
+    background: transparent;
+    width: 0px;
+    height: 0px;
+}
+
+
+QMenu {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.1)}};
+    border: 1px solid {{QTCOLOR_PRIMARYDARKCOLOR}};
+    border-radius: 4px;
+    min-width: 128px;
+}
+
+QMenu::separator {
+    height: 2px;
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.1)}};
+}
+
+QMenu::right-arrow{
+    image: url('icons_primary:/RIGHTARROW.svg');
+    width: 16px;
+    height: 16px;
+}
+
+QMenu::right-arrow:selected{
+    image: url('icons_disabled:/RIGHTARROW.svg');
+}
+
+QMenu::indicator:non-exclusive:unchecked {
+    image: url('icons_primary:/CHECKBOX_UNCHECKED.svg');
+}
+
+QMenu::indicator:non-exclusive:unchecked:selected {
+    image: url('icons_primary:/CHECKBOX_UNCHECKED_INVERT.svg');
+}
+
+QMenu::indicator:non-exclusive:checked {
+    image: url('icons_primary:/CHECKBOX_CHECKED.svg');
+}
+
+QMenu::indicator:non-exclusive:checked:selected {
+    image: url('icons_primary:/CHECKBOX_CHECKED_INVERT.svg');
+}
+
+QMenu::indicator:exclusive:unchecked {
+    image: url('icons_primary:/RADIOBUTTON_UNCHECKED.svg');
+}
+
+QMenu::indicator:exclusive:unchecked:selected {
+    image: url('icons_primary:/RADIOBUTTON_UNCHECKED_INVERT.svg');
+}
+
+QMenu::indicator:exclusive:checked {
+    image: url('icons_primary:/RADIOBUTTON_CHECKED.svg');
+}
+
+QMenu::indicator:exclusive:checked:selected {
+    image: url('icons_primary:/RADIOBUTTON_CHECKED_INVERT.svg');
+}
+
+QComboBox::item,
+QCalendarWidget QMenu::item,
+QMenu::item {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.075)}};
+    height: 20px;
+    min-width: 128px;
+    border: 0px solid transparent;
+    color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+    padding: 4px 16px 4px 16px;
+}
+
+QComboBox::item:selected,
+QCalendarWidget QMenu::item:selected,
+QMenu::item:selected,
+QComboBox::item:hover,
+QCalendarWidget QMenu::item:hover,
+QMenu::item:hover {
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+    color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+    border-radius: 0px;
+}
+
+QComboBox::item:disabled,
+QCalendarWidget QMenu::item:disabled,
+QMenu::item:disabled {
+    color: {{QTCOLOR_SECONDARYTEXTCOLOR}};
+}
+
+QMenuBar {
+    background-color: transparent;
+    spacing: 2px; /* spacing between menu bar items */
+}
+
+QMenuBar::item {
+    min-width: 64px;
+    padding: 4px 8px;
+    background: transparent;
+    border-radius: 2px;
+}
+
+QMenuBar::item:pressed,
+QMenuBar::item:selected { /* when selected using mouse or keyboard */
+    background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+}
+
+{% include './view.css.jinja' %}
+{% include './containers.css.jinja' %}
+{% include './display_widgets.css.jinja' %}
+{% include './buttons.css.jinja' %}

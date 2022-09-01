@@ -193,8 +193,36 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# Ignore dynaconf secret files
+.secrets.*
+qt_testing_settings.local.toml
+settings.local.toml
+testing_settings.local.toml
+qt_testing_settings.toml
+settings.toml
+testing_settings.toml
+
 # Misc Development files
-/.env.development
-/.ini
-/.idea/
-/default.db
+*.db
+*.pymon
+*.profile
+desktop.ini
+/apollo/database/apollo.db
+/apollo/database/*.db
+/apollo/apollo.ini
+/apollo/assets/stylesheets/generated/
+/apollo/assets/stylesheets/build/
+/apollo/assets/app_themes/__loaded_theme__/
+/docs/build/
+/tests/coverage/
+/tests/tempdir/
+/tests/pytest_qt_apollo/output/
+/tests/.profiles/
+/tests/linter_output.txt
+/tests/pytest_config/*.toml
+/vendor/*
+!/vendor/readme.md
+!/vendor/__init__.py
+/dist
+/logs
+/.nox

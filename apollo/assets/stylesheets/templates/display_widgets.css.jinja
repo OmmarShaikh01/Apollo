@@ -1,0 +1,77 @@
+{% macro style_label(name = '', luminosity = 0.1) %}
+    QLabel{% if name != '' %}#{{name}}{% endif %}{
+        border: none;
+        background: transparent;
+        color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+        padding-left: 2px;
+    }
+{% endmacro %}
+
+
+{% macro style_bold_label(name = '', luminosity = 0.1) %}
+    QLabel{% if name != '' %}#{{name}}{% endif %}{
+        color: {{FILTER_OPACITY(QTCOLOR_PRIMARYTEXTCOLOR, 0.8)}};
+        border: none;
+        background: transparent;
+        padding-left: 2px;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+{% endmacro %}
+
+
+{% macro style_slider(name = '', orientation = 'horizontal') %}
+    QSlider {
+        background-color: transparent;
+    }
+
+    QSlider::groove:{{orientation}} {
+        position: absolute;
+        left: 4px;
+        right: 4px;
+        background-color: transparent;
+    }
+
+    QSlider::handle:{{orientation}} {
+        background: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.1)}};
+        border-radius: 2px;
+        margin: 0 -4px;
+    }
+
+    QSlider::add-page:{{orientation}} {
+        background: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.175)}};
+        margin: 2px -4px;
+        border-radius: 2px;
+    }
+
+    QSlider::sub-page:{{orientation}} {
+        background: {{FILTER_LUMINOSITY(QTCOLOR_SECONDARYCOLOR, 0.1)}};
+        margin: 2px -4px;
+        border-radius: 2px;
+    }
+{% endmacro %}
+
+
+{% macro style_inputs() %}
+    QDateTimeEdit, QSpinBox, QDoubleSpinBox, QTextEdit, QLineEdit, QComboBox, QPlainTextEdit, QTextEdit {
+        color: {{QTCOLOR_PRIMARYTEXTCOLOR}};
+        background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.2)}};
+        border: 1px solid {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.25)}};
+        border-radius: 4px;
+        padding: 2px 8px;
+    }
+
+    QDateTimeEdit:disabled, QSpinBox:disabled, QDoubleSpinBox:disabled, QTextEdit:disabled, QLineEdit:disabled,
+    QComboBox:disabled, QPlainTextEdit:disabled, QTextEdit:disabled {
+        color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, 0.25)}};
+    }
+{% endmacro %}
+/* END REGION -------------------------------------------------------------- */
+
+{{ style_label() }}
+{{ style_bold_label(name = 'label_18') }}
+{{ style_bold_label(name = 'label_19') }}
+
+{{ style_inputs() }}
+{{ style_slider(orientation = 'horizontal') }}
+{{ style_slider(orientation = 'vertical') }}

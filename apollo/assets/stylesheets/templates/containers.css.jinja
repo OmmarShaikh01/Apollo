@@ -1,0 +1,88 @@
+{% macro style_qtwidget(name = '', luminosity = 0, custom = '') %}
+    QWidget{% if name != '' %}#{{name}}{% endif %} {
+        background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, luminosity)}};
+        {% if custom != '' %}
+            {{custom}}
+        {% endif %}
+    }
+{% endmacro %}
+
+
+{% macro style_qtwidget_transparent(name = '', custom = '') %}
+    QWidget{% if name != '' %}#{{name}}{% endif %} {
+        background-color: {{FILTER_OPACITY(QTCOLOR_PRIMARYDARKCOLOR, 0)}};
+        {% if custom != '' %}
+            {{custom}}
+        {% endif %}
+    }
+{% endmacro %}
+
+
+{% macro style_qtframe(name = '', luminosity = 0, custom = '') %}
+    QFrame{% if name != '' %}#{{name}}{% endif %} {
+        background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, luminosity)}};
+        {% if custom != '' %}
+            {{custom}}
+        {% endif %}
+    }
+{% endmacro %}
+
+
+{% macro style_qtframe_transparent(name = '', custom = '') %}
+    QFrame{% if name != '' %}#{{name}}{% endif %} {
+        background-color: {{FILTER_OPACITY(QTCOLOR_PRIMARYDARKCOLOR, 0)}};
+        {% if custom != '' %}
+            {{custom}}
+        {% endif %}
+    }
+{% endmacro %}
+
+
+{% macro style_qtframe_rounded(name = '', luminosity = 0, radius = '4px', custom = '') %}
+    QFrame{% if name != '' %}#{{name}}{% endif %} {
+        background-color: {{FILTER_LUMINOSITY(QTCOLOR_PRIMARYDARKCOLOR, luminosity)}};
+        border: 0;
+        margin: 2px;
+        padding: 1px;
+        border-radius: {{radius}};
+        {% if custom != '' %}
+            {{custom}}
+        {% endif %}
+    }
+{% endmacro %}
+/* END REGION -------------------------------------------------------------- */
+
+
+{{ style_qtwidget() }}
+{{ style_qtwidget('menubar', 0.075) }}
+{{ style_qtwidget('centralwidget', 0.075) }}
+{{ style_qtwidget_transparent('playback_footer_track_rating') }}
+{{ style_qtwidget_transparent('main_tabs_stack_widget') }}
+{{ style_qtwidget('library_main_tab', 0.125, custom='border-radius: 4px;') }}
+{{ style_qtwidget('playlist_main_tab', 0.125, custom='border-radius: 4px;') }}
+{{ style_qtwidget('now_playing_main_tab', 0.125, custom='border-radius: 4px;') }}
+{{ style_qtwidget('audiofx_main_tab', 0.125, custom='border-radius: 4px;') }}
+
+
+{{ style_qtframe() }}
+{{ style_qtframe('main_tabs_frame', 0.125, custom = 'padding: 0px 2px 2px 2px;') }}
+{{ style_qtframe_transparent('main_tabs_queue_frame') }}
+{{ style_qtframe_transparent('main_tabs_queue_frame_splitter') }}
+{{ style_qtframe_rounded('main_tabs_stack_frame', 0.175) }}
+{{ style_qtframe_rounded('main_tabs_queue_frame_queue', 0.175) }}
+{{ style_qtframe_rounded('main_tabs_queue_frame_trackinfo', 0.175) }}
+
+{{ style_qtframe('navbar_header_frame', 0.125, custom = 'padding: 2px 2px 0px 2px;') }}
+{{ style_qtframe_transparent('track_info_misc_1', custom = 'font-size: 11px;') }}
+{{ style_qtframe_transparent('track_info_misc_2', custom = 'font-size: 11px;') }}
+{{ style_qtframe_transparent('track_info_misc_3', custom = 'font-size: 11px;') }}
+{{ style_qtframe_transparent('navbar_header_button_frame') }}
+{{ style_qtframe_transparent('navbar_header_search_frame') }}
+
+{{ style_qtframe('playback_footer_frame', 0.075) }}
+{{ style_qtframe_transparent('playback_footer_frame_L') }}
+{{ style_qtframe_transparent('playback_footer_frame_M') }}
+{{ style_qtframe_transparent('playback_footer_frame_R') }}
+{{ style_qtframe_transparent('playback_footer_frame_M_info') }}
+{{ style_qtframe_rounded('main_tabs_track_info_frame', 0.15, custom = 'padding: 4px 0px 0px 0px;') }}
+{{ style_qtframe_rounded('track_info_cover_pixmap', 0.125, custom = 'padding: 2px; image: url("icons_secondary:/MUSIC_NOTE.svg");') }}

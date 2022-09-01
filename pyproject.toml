@@ -1,0 +1,321 @@
+[project]
+name = "Apollo"
+version = "0.1.0"
+description = "Apollo is a Open-Source music player for playback and organization of audio files on windows"
+license = { file = "LICENSE" }
+
+
+[tool.poetry]
+name = "Apollo"
+version = "0.1.0"
+description = "Apollo is a Open-Source music player for playback and organization of audio files on windows"
+authors = ["Ommar Shaikh"]
+license = "GPL-3.0-only"
+readme = "readme.md"
+packages = [
+    { include = "apollo" },
+    { include = "configs" },
+    { include = "vendor" },
+]
+include = [
+    "apollo/assets/*",
+    "vendor/*",
+    "pyproject.toml",
+    "poetry.lock",
+    "poetry.toml",
+    "build.py",
+    "icon.ico",
+    "icon.bmp",
+    "splash.bmp",
+]
+exclude = [
+    'configs/default_testing_settings.toml',
+    'configs/default_qt_testing_settings.toml',
+    'configs/settings.toml',
+    'configs/testing_settings.toml',
+    'configs/qt_testing_settings.toml',
+    'configs/settings.local.toml',
+    'configs/testing_settings.local.toml',
+    'configs/qt_testing_settings.local.toml',
+    'apollo/assets/app_themes/__loaded_theme__',
+    'apollo/layout/*.ui',
+    'apollo/database/*.db'
+]
+
+
+[tool.poetry.build]
+generate-setup-file = false
+
+
+[tool.poetry.dependencies]
+python = ">=3.9, <3.11"
+PySide6 = "^6.3.0"
+mutagen = "^1.45.1"
+av = "^9.2.0"
+dynaconf = "^3.1.9"
+pyo = "^1.0.4"
+numpy = "^1.22.4"
+requests = "^2.27.1"
+tomli = "^2.0.1"
+dependency-injector = "^4.40.0"
+
+
+[tool.poetry.dev-dependencies]
+Sphinx = "^4.5.0"
+sphinx-rtd-theme = "^1.0.0"
+autoclasstoc = "^1.5.1"
+pytest = "^7.1.2"
+pytest-cov = "^3.0.0"
+pytest-cases = "^3.6.12"
+pytest-mock = "^3.7.0"
+nox = "^2022.1.7"
+Jinja2 = "^3.1.2"
+pytest-qt = "^4.0.2"
+memory-profiler = "^0.60.0"
+black = "^22.6.0"
+pylint = "^2.14.4"
+pytest-sugar = "^0.9.4"
+isort = "^5.10.1"
+coverage = { extras = ["toml"], version = "^6.4.1" }
+pyinstaller = "^5.2"
+auto-py-to-exe = "^2.20.1"
+Nuitka = "^0.9.4"
+PyAutoGUI = "^0.9.53"
+python-dotenv = { extras = ["cli"], version = "^0.20.0" }
+
+
+[tool.poetry.scripts]
+poetry = 'poetry.console:run'
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests/pytest_apollo",
+    "tests/pytest_config",
+    "tests/pytest_qt_apollo"
+]
+addopts = [
+    "--capture=sys",
+    "--cache-clear",
+    "--color=yes",
+    "--code-highlight=yes",
+    "--disable-warnings",
+    "--last-failed",
+    "--no-header",
+    "--durations=10",
+]
+filterwarnings = ["ignore::DeprecationWarning"]
+console_output_style = "progress"
+cache_dir = "tests/.pytest_cache"
+qt_api = "pyside6"
+
+
+[tool.coverage.run]
+source = ['apollo', 'configs']
+branch = true
+data_file = 'tests/coverage/.coverage'
+omit = [
+    'tests/*',
+    'apollo/__main__.py'
+]
+
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_lines = [
+    # Have to re-enable the standard pragma
+    'pragma: no cover',
+    # Don't complain about missing debug-only code:
+    'def __repr__',
+    'if self\.debug',
+    # Don't complain if tests don't hit defensive assertion code:
+    'raise AssertionError',
+    'raise NotImplementedError',
+    # Don't complain if non-runnable code isn't run:
+    'if 0:',
+    'if __name__ == .__main__.:'
+]
+ignore_errors = false
+skip_empty = true
+
+
+[tool.coverage.html]
+directory = 'tests/coverage/html'
+skip_empty = true
+
+
+[tool.isort]
+py_version = 39
+profile = "black"
+line_length = "100"
+known_first_party = ["apollo", "configs", "tests"]
+skip = [".github", "tools", "docs", "examples", ".nox", ".venv", ".pytest_cache", "dist"]
+skip_gitignore = true
+atomic = true
+lines_after_imports = 2
+ignore_comments = true
+virtual_env = './venv'
+remove_redundant_aliases = true
+color_output = true
+supported_extensions = ["py"]
+
+
+[tool.black]
+--check = "no"
+diff = "no"
+color = true
+line-length = 100
+exclude = '/(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|venv|\.svn|_build|buck-out|build|dist|__pypackages__|\.pyi)/'
+include = '\.py?$'
+target-version = ["py39"]
+
+
+[tool.pylint.main]
+extension-pkg-allow-list = ['PySide6', 'av', 'dependency_injector']
+fail-under = 1000
+ignore = [".github", "tools", "docs", "examples", ".nox", ".venv", ".pytest_cache", "dist"]
+ignore-paths = '/(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|venv|\.svn|_build|buck-out|build|dist|__pypackages__|\.pyi)/'
+ignore-patterns = '(.*temp\.py$)|(.*mainwindow\.py$)'
+jobs = 0
+limit-inference-results = 100
+persistent = true
+py-version = "3.9"
+recursive = true
+suggestion-mode = true
+
+
+[tool.pylint.basic]
+argument-naming-style = "snake_case"
+attr-naming-style = "snake_case"
+bad-names = ["foo", "bar", "baz", "toto", "tutu", "tata"]
+class-attribute-naming-style = "any"
+class-const-naming-style = "UPPER_CASE"
+class-naming-style = "PascalCase"
+class-rgx = "[A-Z][a-z]+"
+const-naming-style = "UPPER_CASE"
+docstring-min-length = -1
+function-naming-style = "snake_case"
+good-names = ["i", "j", "k", "ex", "Run", "_"]
+inlinevar-naming-style = "any"
+method-naming-style = "snake_case"
+module-naming-style = "snake_case"
+no-docstring-rgx = "($^|^__)"
+property-classes = ["abc.abstractproperty"]
+variable-naming-style = "snake_case"
+
+
+[tool.pylint.classes]
+defining-attr-methods = ["__init__", "__new__", "setUp", "__post_init__"]
+exclude-protected = ["_asdict", "_fields", "_replace", "_source", "_make"]
+valid-classmethod-first-arg = ["cls"]
+valid-metaclass-classmethod-first-arg = ["cls"]
+
+
+[tool.pylint.design]
+max-args = 5
+max-attributes = 20
+max-bool-expr = 5
+max-branches = 20
+max-locals = 15
+max-parents = 7
+max-public-methods = 50
+max-returns = 6
+max-statements = 100
+min-public-methods = 0
+
+
+[tool.pylint.exceptions]
+overgeneral-exceptions = ["BaseException", "Exception"]
+
+
+[tool.pylint.format]
+ignore-long-lines = "^\\s*(# )?<?https?://\\S+>?$"
+indent-after-paren = 4
+indent-string = "    "
+max-line-length = 100
+
+
+[tool.pylint.imports]
+allow-wildcard-with-all = false
+known-third-party = ["enchant"]
+
+
+[tool.pylint.logging]
+logging-format-style = "new"
+logging-modules = ["logging"]
+
+
+[tool.pylint."messages control"]
+confidence = ["HIGH", "CONTROL_FLOW", "INFERENCE", "INFERENCE_FAILURE", "UNDEFINED"]
+disable = [
+    "raw-checker-failed",
+    "bad-inline-option",
+    "locally-disabled",
+    "file-ignored",
+    "suppressed-message",
+    "useless-suppression",
+    "deprecated-pragma",
+    "use-symbolic-message-instead",
+    "bare-except",
+    "logging-fstring-interpolation",
+    "invalid-name",
+    "missing-module-docstring",
+    "unnecessary-lambda",
+    "too-many-statements",
+    "unused-argument",
+]
+enable = ["c-extension-no-member"]
+
+
+[tool.pylint.miscellaneous]
+notes = ["FIXME", "XXX", "TODO"]
+
+
+[tool.pylint.refactoring]
+max-nested-blocks = 5
+never-returning-functions = ["sys.exit", "argparse.parse_error"]
+
+
+[tool.pylint.reports]
+evaluation = "max(0, 0 if fatal else 100.0 - ((float(5 * error + warning + refactor + convention) / statement) * 100))"
+output-format = "text:./tests/linter_output.txt,colorized"
+reports = false
+score = true
+
+
+[tool.pylint.similarities]
+ignore-comments = true
+ignore-docstrings = true
+ignore-imports = true
+ignore-signatures = true
+min-similarity-lines = 4
+
+
+[tool.pylint.spelling]
+max-spelling-suggestions = 4
+spelling-ignore-comment-directives = "fmt: on,fmt: off,noqa:,noqa,nosec,isort:skip,mypy:"
+
+
+[tool.pylint.typecheck]
+contextmanager-decorators = ["contextlib.contextmanager"]
+ignore-none = true
+ignore-on-opaque-inference = true
+ignored-checks-for-mixins = ["no-member", "not-async-context-manager", "not-context-manager", "attribute-defined-outside-init"]
+ignored-classes = ["optparse.Values", "thread._local", "_thread._local", "argparse.Namespace"]
+missing-member-hint = true
+missing-member-hint-distance = 1
+missing-member-max-choices = 1
+mixin-class-rgx = ".*[Mm]ixin"
+
+
+[tool.pylint.variables]
+allow-global-unused-variables = true
+callbacks = ["cb_", "_cb", "call_on"]
+dummy-variables-rgx = "_+$|(_[a-zA-Z0-9_]*[a-zA-Z0-9]+?$)|dummy|^ignored_|^unused_"
+ignored-argument-names = "_.*|^ignored_|^unused_"
+redefining-builtins-modules = ["six.moves", "past.builtins", "future.builtins", "builtins", "io"]
