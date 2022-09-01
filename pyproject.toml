@@ -39,7 +39,7 @@ exclude = [
     'configs/qt_testing_settings.local.toml',
     'apollo/assets/app_themes/__loaded_theme__',
     'apollo/layout/*.ui',
-    'apollo/db/*.db'
+    'apollo/database/*.db'
 ]
 
 
@@ -204,7 +204,7 @@ good-names = ["i", "j", "k", "ex", "Run", "_"]
 inlinevar-naming-style = "any"
 method-naming-style = "snake_case"
 module-naming-style = "snake_case"
-no-docstring-rgx = "^_"
+no-docstring-rgx = "($^|^__)"
 property-classes = ["abc.abstractproperty"]
 variable-naming-style = "snake_case"
 
@@ -265,7 +265,6 @@ disable = [
     "logging-fstring-interpolation",
     "invalid-name",
     "missing-module-docstring",
-    "missing-function-docstring",
     "unnecessary-lambda",
     "too-many-statements",
     "unused-argument",

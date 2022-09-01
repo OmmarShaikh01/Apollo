@@ -84,8 +84,8 @@ exe_options = [
             ],
         ],
     ),
-    *kwargs_call("--collect-all", ["apollo", "dynaconf"]),
-    *kwargs_call("--hidden-import", ["dynaconf", "python-dotenv"]),
+    *kwargs_call("--collect-all", ["apollo", "dynaconf", "dependency_injector"]),
+    *kwargs_call("--hidden-import", ["dynaconf", "dependency_injector", "av", "PySide6"]),
     *kwargs_call("--paths", [str(ROOT)]),
 ]
 
